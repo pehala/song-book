@@ -1,0 +1,143 @@
+{% extends "../base.html" %}
+{% load markdown %}
+{% load i18n %}
+{% load static %}
+
+{% block extra_head %}
+    <script src="//cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
+    <script src="//cdn.jsdelivr.net/npm/bootstrap-input-spinner@1.12.7/src/bootstrap-input-spinner.js"></script>
+    <script src="{% static 'js/bootstrap-show-modal.js' %}"></script>
+{%  endblock %}
+{% block extra_nav %}
+{#    <div class="col-sm-2 m-auto row">#}
+{#        <label for="search col-form-label">{% trans "Search" %}</label>#}
+{#        <input class="search form-control col-sm-8" id="search" size="25" />#}
+{#    </div>#}
+{% endblock %}
+{% block body %}
+    <div id="songs">
+        <div class="control">
+            <div class="input-group mb-3 ml-1">
+                <div class="input-group-prepend">
+                    <span class="input-group-text">{% trans "Search" %}</span>
+                </div>
+            <input class="search" />
+            <button class="btn btn-secondary sort ml-3 float-left" data-sort="name">{% trans "Sort by name" %}</button>
+            <button class="btn btn-secondary sort ml-3 float-right" data-sort="author">{% trans "Sort by author" %}</button>
+            </div>
+        </div>
+
+        <ul class="song-list list">
+        {% for song in songs %}
+            <li>
+             <span class="d-none name">{{ song.text }}</span>
+             <span class="d-none author">{{ song.author }}</span>
+             <div class="collapsible-controller w-100 mb-2" onclick="collapsible(this,'{{ song.song_number }}')">
+                <h2 class="d-inline">{{ song.song_number }}. {{ song.name }}</h2>
+                {% if user.is_authenticated %}
+                   <form class="d-inline ml-3" action="{% url 'chords:edit' pk=song.id %}" method="get">
+                       <input class="btn btn-secondary" type="submit" value="{%  trans "Edit" %}"/>
+                   </form>
+                   <button class="btn btn-danger ml-2" onclick="confirmDelete(event, '{{ song.name }}', '{% url 'chords:delete' pk=song.id %}')">
+                        {% trans "Delete" %}
+                   </button>
+                {%  endif %}
+             </div>
+             <div id="{{ song.song_number }}" style="display: none;">
+                <div class="input-group mb-3">
+                    <div class="input-group-prepend">
+                      <span class="input-group-text">{% trans "Transpose" %}</span>
+                    </div>
+                    <input class="form-control-sm" type="number" value="0" min="-11" max="11" step="1" previous_value=0 onchange="transpose(event, this, {{ song.song_number }} )"/>
+                </div>
+                <div class="text-wrap song-text">
+                {{ song.text|show_markdown|safe }}
+                </div>
+             </div>
+            </li>
+        {% endfor %}
+        </ul>
+    </div>
+    <script>
+    function confirmDelete(event, songName, url) {
+        $.showConfirm({
+            title: "{% trans "Please confirm" %}", body: "{% blocktrans %}Are you sure you wanna delete song{% endblocktrans %} " + songName + "?", textTrue: "Yes", textFalse: "No",
+            onSubmit: function (result) {
+                if (result) {
+                    window.location.replace(url);
+                }
+            }
+        });
+        event.stopPropagation();
+        event.preventDefault();
+    }
+
+    function collapsible(element, id) {
+        const collapsible = $('#' + id);
+
+        if (collapsible.hasClass('unrolled') === true) {
+            collapsible.slideUp();
+        } else {
+            collapsible.slideDown();
+        }
+        collapsible.toggleClass("unrolled");
+        element.classList.toggle("unrolled");
+    }
+
+    const regex = /[CDEFGAB](b|#)?/g;
+
+    $("input[type='number']").inputSpinner({
+        groupClass: "transposer",
+    });
+
+    function transposeChord(chord, amount) {
+        const scale = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+        const normalizeMap = {"Cb":"B", "Db":"C#", "Eb":"D#", "Fb":"E", "Gb":"F#", "Ab":"G#", "Bb":"A#",  "E#":"F", "B#":"C"};
+        return chord.replace(regex, function(match) {
+            let i = (scale.indexOf((normalizeMap[match] ? normalizeMap[match] : match)) + amount) % scale.length;
+            return scale[ i < 0 ? i + scale.length : i ];
+        })
+    }
+
+    function transpose(event, object, id) {
+        const input = $(object);
+        const old_value = input.attr("previous_value");
+        const new_value = input.val();
+        const diff = new_value - old_value;
+        $("#" + id).find(".chord").each(function(element) {
+            $( this ).html(transposeChord($( this ).html(), diff))
+        });
+        input.attr("previous_value", new_value);
+    }
+
+    const songList = new List('songs', {valueNames: [ 'name', 'author' ]});
+    </script>
+
+{#    <div class="row scoreboard-div" id="table">#}
+{#        <table class="table col-sm-1 table-bordered">#}
+{#            <thead class="thead-dark">#}
+{#                <tr>#}
+{#                    <th scope="col">{% trans "Name" %}</th>#}
+{#                    <th scope="col">{% trans "Points" %}</th>#}
+{#                </tr>#}
+{#            </thead>#}
+{#            <tbody class="list">#}
+{#                {% for record in records %}#}
+{#                <tr class="redir" onclick='location.href="{% url "llamas:detail" name=record.person %}"'>#}
+{#                    <td>{{ record.person }}</td>#}
+{#                    <td class="total">{{ record.total_points }}</td>#}
+{#                </tr>#}
+{#                {% endfor %}#}
+{#            </tbody>#}
+{#        </table>#}
+{#    </div>#}
+{#    <hr class="bottomHR">#}
+{#    <div class="highest-div">#}
+{#        <h3 class="winnerHeader">{% trans "Winner" %}</h3>#}
+{#        {% if records|length > 0 %}#}
+{#            <span class="highest">{% blocktrans with person=records.0.person points=records.0.total_points %}{{ person }}</span> with <span class="body">{{ points}}</span> points{% endblocktrans %}#}
+{#        {% else %}#}
+{#            <span class="highest">{% trans "Nobody has got a single point, yet. You all need to be funnier, come on guys" %}</span>#}
+{#        {% endif %}#}
+{#        </div>#}
+{% endblock %}

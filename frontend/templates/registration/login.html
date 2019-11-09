@@ -1,0 +1,14 @@
+{% extends "../base-framed.html" %}
+{% load i18n %}
+{% load bootstrap4 %}
+{% block title %}{% trans "Login" %} {% endblock %}
+{% block header %}{% trans "Login" %} {% endblock %}
+{% block framed_body %}
+  <form method="post">
+    {% csrf_token %}
+    {% bootstrap_form form %}
+    {% buttons %}
+        <button type="submit" class="btn btn-primary">{% trans "Enter" %}</button>
+    {% endbuttons %}
+  </form>
+{% endblock %}

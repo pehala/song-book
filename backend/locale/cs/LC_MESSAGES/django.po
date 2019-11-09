@@ -1,0 +1,82 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-11-09 15:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
+"<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
+
+#: backend/models.py:14
+msgid "Song Name"
+msgstr "Název písničky"
+
+#: backend/models.py:16
+msgid "Author"
+msgstr "Autor"
+
+#: backend/models.py:17
+msgid "Youtube Link"
+msgstr "Odkaz na Youtube"
+
+#: backend/models.py:18
+msgid "Language"
+msgstr "Jazyk"
+
+#: backend/models.py:19
+msgid "Lyrics"
+msgstr "Text"
+
+#: backend/models.py:22
+msgid "Song"
+msgstr "Písnička"
+
+#: backend/models.py:23
+msgid "Songs"
+msgstr "Písničky"
+
+#: backend/views.py:45
+#, python-format
+msgid "Song with id %(id)s was successfully edited"
+msgstr "Písnička s id %(id)s byla úspěšně upravena"
+
+#: backend/views.py:47
+#, python-format
+msgid "Song with id %(id)s was successfully created"
+msgstr "Písnička s id %(id)s byla úspěšně přidána"
+
+#~ msgid "Editor"
+#~ msgstr "Editor"
+
+#~ msgid "Preview"
+#~ msgstr "Náhled"
+
+#~ msgid "Add a song"
+#~ msgstr "Přidat písničku"
+
+msgid "Account"
+msgstr "Účet"
+
+msgid "Logout"
+msgstr "Odhlásit se"
+
+msgid "Submit"
+msgstr "Poslat"
+
+msgid "Song List"
+msgstr "Zpěvníček"
+
+msgid "Login"
+msgstr "Přihlášení"

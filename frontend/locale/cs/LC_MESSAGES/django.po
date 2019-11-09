@@ -1,0 +1,100 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2019-11-09 15:36+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
+"<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
+
+#: frontend/templates/base.html:15 frontend/templates/base.html:30
+msgid "Jerry's songs"
+msgstr "Jerryho zpěvníček"
+
+#: frontend/templates/base.html:41
+msgid "Logged as"
+msgstr "Přihlášen jako"
+
+#: frontend/templates/base.html:50
+msgid "Language"
+msgstr "Jazyk"
+
+#: frontend/templates/chords/add.html:5 frontend/templates/chords/add.html:6
+#, fuzzy
+#| msgid "Song List"
+msgid "Song Editor"
+msgstr "Zpěvníček"
+
+#: frontend/templates/chords/add.html:12
+msgid "Submit"
+msgstr "Odeslat"
+
+#: frontend/templates/chords/index.html:22
+msgid "Search"
+msgstr "Hledání"
+
+#: frontend/templates/chords/index.html:25
+msgid "Sort by name"
+msgstr "Řazení podle jména"
+
+#: frontend/templates/chords/index.html:26
+msgid "Sort by author"
+msgstr "Řazení podle autora"
+
+#: frontend/templates/chords/index.html:39
+msgid "Edit"
+msgstr "Upravit"
+
+#: frontend/templates/chords/index.html:42
+msgid "Delete"
+msgstr "Smazat"
+
+#: frontend/templates/chords/index.html:49
+msgid "Transpose"
+msgstr "Transpozice"
+
+#: frontend/templates/chords/index.html:64
+msgid "Please confirm"
+msgstr "Prosím potvrďte"
+
+#: frontend/templates/chords/index.html:64
+msgid "Are you sure you wanna delete song"
+msgstr "Jste si jistí že chce smazat písničku"
+
+#: frontend/templates/markdownx/widget2.html:6
+msgid "Editor"
+msgstr ""
+
+#: frontend/templates/markdownx/widget2.html:9
+msgid "Preview"
+msgstr "Náhled"
+
+#: frontend/templates/registration/login.html:4
+#: frontend/templates/registration/login.html:5
+msgid "Login"
+msgstr "Přihlásit se"
+
+#: frontend/templates/registration/login.html:11
+msgid "Enter"
+msgstr ""
+
+#~ msgid "English"
+#~ msgstr "Anglicky"
+
+#~ msgid "Czech"
+#~ msgstr "Česky"
+
+#~ msgid "Song"
+#~ msgstr "Písnička"

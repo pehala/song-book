@@ -1,0 +1,22 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+
+[packages]
+django = "*"
+django-bootstrap4 = "*"
+libsass = "*"
+django-compressor = "*"
+django-sass-processor = "*"
+markdown = "*"
+django-static-jquery = "*"
+django-markdownx = "*"
+django-simple-menu = "*"
+djangorestframework = "*"
+django-rest-swagger = "*"
+netifaces = "*"
+psycopg2-binary = "*"
+markdown3-newtab = "*"
