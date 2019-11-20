@@ -17,18 +17,18 @@
 {% block body %}
     <div id="songs">
         <div class="control">
-            <div class="input-group mb-3 ml-1">
+            <div class="input-group mb-3 ml-1 w-100" style="max-width: 500px;">
                 <div class="input-group-prepend">
                     <span class="input-group-text">{% trans "Search" %}</span>
                 </div>
-                <input class="search" />
-                <div class="input-group-prepend d-inline">
-                    <span class="input-group-btn">
-                        <button class="btn btn-outline-secondary sort" data-sort="index">{% trans "Index" %}</button>
-                        <button class="btn btn-outline-secondary sort" data-sort="name">{% trans "Name" %}</button>
-                        <button class=" btn btn-outline-secondary sort" data-sort="author">{% trans "Author" %}</button>
-                    </span>
-                </div>
+                <input class="search form-control" />
+            </div>
+            <div class="input-group d-inline justify-content-center">
+                <span class="ml-1 input-group-prepend d-flex justify-content-sm-start justify-content-center">
+                    <button class="btn btn-outline-secondary sort" data-sort="index" type="button">{% trans "Index" %}</button>
+                    <button class="btn btn-outline-secondary sort" data-sort="name" type="button">{% trans "Name" %}</button>
+                    <button class="btn btn-outline-secondary sort" data-sort="author" type="button" style="border-top-right-radius: 0.25rem;border-bottom-right-radius: 0.25rem;">{% trans "Author" %}</button>
+                </span>
             </div>
         </div>
 

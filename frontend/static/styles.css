@@ -48,6 +48,8 @@ td, th { border: 1px solid black; padding: 5px; }
 
 .tableForm { margin: auto; }
 
+.custom-justify { justify-content: center; }
+
 hr { background-color: #c4c2bd; height: 2px; }
 
 label { margin: auto; }
