@@ -93,8 +93,9 @@ msgstr ""
 msgid "Add a song"
 msgstr "Přidat písničku"
 
-msgid "Youtube link"
-msgstr "Odkaz na Youtube"
+#~msgid "Youtube link"
+#~msgstr "Odkaz na Youtube"
+
 #~ msgid "English"
 #~ msgstr "Anglicky"
 

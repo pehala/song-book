@@ -44,10 +44,13 @@
                 {%  endif %}
              </div>
              <div id="{{ song.song_number }}" style="display: none;">
+                <div>
+
+                </div>
                 <div class="input-group mb-3">
                     {% if song.link %}
                         <a href="{{ song.link }}" class="btn btn-primary" role="button" aria-pressed="true">
-                            <i class="fab fa-youtube"></i> {% trans "Youtube link" %}
+                            <i class="fab fa-youtube"></i> {#{% trans "Youtube link" %}#}
                         </a>
                     {% endif %}
                     <div class="input-group-prepend">
@@ -92,6 +95,8 @@
     const regex = /[CDEFGAB](b|#)?/g;
 
     $("input[type='number']").inputSpinner({
+        decrementButton: "<i class=\"fas fa-plus\"></i>", // button text
+        incrementButton: "<i class=\"fas fa-minus\"></i>",
         groupClass: "transposer",
     });
 
