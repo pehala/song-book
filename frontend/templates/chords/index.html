@@ -74,6 +74,10 @@
         {% endfor %}
         </ul>
     </div>
+    <a id="back-to-top" href="#" class="btn btn-primary btn-lg back-to-top" role="button" title="Click to return on the top page" data-toggle="tooltip" data-placement="left">
+        <span class="icon-up-open"></span>
+    </a>
+
     <script>
     function confirmDelete(event, songName, url) {
         $.showConfirm({
@@ -87,7 +91,26 @@
         event.stopPropagation();
         event.preventDefault();
     }
+    $(document).ready(function(){
+         $(window).scroll(function () {
+                if ($(this).scrollTop() > 50) {
+                    $('#back-to-top').fadeIn();
+                } else {
+                    $('#back-to-top').fadeOut();
+                }
+            });
+            // scroll body to 0px on click
+            $('#back-to-top').click(function () {
+                $('#back-to-top').tooltip('hide');
+                $('body,html').animate({
+                    scrollTop: 0
+                }, 800);
+                return false;
+            });
 
+            $('#back-to-top').tooltip('show');
+
+    });
     function collapsible(element, id) {
         const collapsible = $('#' + id);
 
@@ -131,31 +154,4 @@
     const songList = new List('songs', {valueNames: [ 'name', 'author', 'text', 'index' ]});
     </script>
 
-{#    <div class="row scoreboard-div" id="table">#}
-{#        <table class="table col-sm-1 table-bordered">#}
-{#            <thead class="thead-dark">#}
-{#                <tr>#}
-{#                    <th scope="col">{% trans "Name" %}</th>#}
-{#                    <th scope="col">{% trans "Points" %}</th>#}
-{#                </tr>#}
-{#            </thead>#}
-{#            <tbody class="list">#}
-{#                {% for record in records %}#}
-{#                <tr class="redir" onclick='location.href="{% url "llamas:detail" name=record.person %}"'>#}
-{#                    <td>{{ record.person }}</td>#}
-{#                    <td class="total">{{ record.total_points }}</td>#}
-{#                </tr>#}
-{#                {% endfor %}#}
-{#            </tbody>#}
-{#        </table>#}
-{#    </div>#}
-{#    <hr class="bottomHR">#}
-{#    <div class="highest-div">#}
-{#        <h3 class="winnerHeader">{% trans "Winner" %}</h3>#}
-{#        {% if records|length > 0 %}#}
-{#            <span class="highest">{% blocktrans with person=records.0.person points=records.0.total_points %}{{ person }}</span> with <span class="body">{{ points}}</span> points{% endblocktrans %}#}
-{#        {% else %}#}
-{#            <span class="highest">{% trans "Nobody has got a single point, yet. You all need to be funnier, come on guys" %}</span>#}
-{#        {% endif %}#}
-{#        </div>#}
 {% endblock %}

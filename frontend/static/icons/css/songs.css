@@ -1,11 +1,11 @@
 @font-face {
   font-family: 'songs';
-  src: url('../font/songs.eot?59321157');
-  src: url('../font/songs.eot?59321157#iefix') format('embedded-opentype'),
-       url('../font/songs.woff2?59321157') format('woff2'),
-       url('../font/songs.woff?59321157') format('woff'),
-       url('../font/songs.ttf?59321157') format('truetype'),
-       url('../font/songs.svg?59321157#songs') format('svg');
+  src: url('../font/songs.eot?8118239');
+  src: url('../font/songs.eot?8118239#iefix') format('embedded-opentype'),
+       url('../font/songs.woff2?8118239') format('woff2'),
+       url('../font/songs.woff?8118239') format('woff'),
+       url('../font/songs.ttf?8118239') format('truetype'),
+       url('../font/songs.svg?8118239#songs') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -15,7 +15,7 @@
 @media screen and (-webkit-min-device-pixel-ratio:0) {
   @font-face {
     font-family: 'songs';
-    src: url('../font/songs.svg?59321157#songs') format('svg');
+    src: url('../font/songs.svg?8118239#songs') format('svg');
   }
 }
 */
@@ -61,4 +61,5 @@
 .icon-up-dir:before { content: '\e803'; } /* '' */
 .icon-plus:before { content: '\e804'; } /* '' */
 .icon-minus:before { content: '\e805'; } /* '' */
+.icon-up-open:before { content: '\e806'; } /* '' */
 .icon-youtube-play:before { content: '\f16a'; } /* '' */
