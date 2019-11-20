@@ -90,6 +90,11 @@ msgstr "Přihlásit se"
 msgid "Enter"
 msgstr ""
 
+msgid "Add a song"
+msgstr "Přidat písničku"
+
+msgid "Youtube link"
+msgstr "Odkaz na Youtube"
 #~ msgid "English"
 #~ msgstr "Anglicky"
 

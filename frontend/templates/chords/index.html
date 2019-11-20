@@ -45,6 +45,11 @@
              </div>
              <div id="{{ song.song_number }}" style="display: none;">
                 <div class="input-group mb-3">
+                    {% if song.link %}
+                        <a href="{{ song.link }}" class="btn btn-primary" role="button" aria-pressed="true">
+                            <i class="fab fa-youtube"></i> {% trans "Youtube link" %}
+                        </a>
+                    {% endif %}
                     <div class="input-group-prepend">
                       <span class="input-group-text">{% trans "Transpose" %}</span>
                     </div>

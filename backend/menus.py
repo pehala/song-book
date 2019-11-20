@@ -5,7 +5,7 @@ from menu import MenuItem, Menu
 llamas_children = (
     MenuItem("Add a song",
              reverse("backend:add")),
-    MenuItem("List",
+    MenuItem("Song List",
              reverse("backend:index"))
 )
 
