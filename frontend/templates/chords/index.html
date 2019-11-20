@@ -30,7 +30,8 @@
         <ul class="song-list list">
         {% for song in songs %}
             <li>
-             <span class="d-none name">{{ song.text }}</span>
+             <span class="d-none text">{{ song.text }}</span>
+             <span class="d-none name">{{ song.name }}</span>
              <span class="d-none author">{{ song.author }}</span>
              <div class="collapsible-controller w-100 mb-2" onclick="collapsible(this,'{{ song.song_number }}')">
                 <h2 class="d-inline">{{ song.song_number }}. {{ song.name }}</h2>
