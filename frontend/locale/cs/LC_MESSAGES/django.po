@@ -46,16 +46,16 @@ msgid "Search"
 msgstr "Hledání"
 
 #: frontend/templates/chords/index.html:25
-msgid "Sort by name"
-msgstr "Řazení podle jména"
+msgid "Name"
+msgstr "Jméno"
 
 #: frontend/templates/chords/index.html:26
-msgid "Sort by author"
-msgstr "Řazení podle autora"
+msgid "Author"
+msgstr "Autor"
 
 #: frontend/templates/chords/index.html:26
-msgid "Sort by index"
-msgstr "Řazení podle čísla"
+msgid "Index"
+msgstr "Číslo"
 
 #: frontend/templates/chords/index.html:39
 msgid "Edit"

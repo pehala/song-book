@@ -21,10 +21,14 @@
                 <div class="input-group-prepend">
                     <span class="input-group-text">{% trans "Search" %}</span>
                 </div>
-            <input class="search" />
-            <button class="icon btn btn-secondary sort ml-3 float-left" data-sort="name">{% trans "Sort by name" %}</button>
-            <button class="icon btn btn-secondary sort ml-3 float-right" data-sort="index">{% trans "Sort by index" %}</button>
-            <button class="icon btn btn-secondary sort ml-3 float-right" data-sort="author">{% trans "Sort by author" %}</button>
+                <input class="search" />
+                <div class="input-group-prepend d-inline">
+                    <span class="input-group-btn">
+                        <button class="btn btn-outline-secondary sort" data-sort="index">{% trans "Index" %}</button>
+                        <button class="btn btn-outline-secondary sort" data-sort="name">{% trans "Name" %}</button>
+                        <button class=" btn btn-outline-secondary sort" data-sort="author">{% trans "Author" %}</button>
+                    </span>
+                </div>
             </div>
         </div>
 
@@ -124,7 +128,7 @@
         input.attr("previous_value", new_value);
     }
 
-    const songList = new List('songs', {valueNames: [ 'name', 'author' ]});
+    const songList = new List('songs', {valueNames: [ 'name', 'author', 'text', 'index' ]});
     </script>
 
 {#    <div class="row scoreboard-div" id="table">#}
