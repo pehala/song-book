@@ -1,0 +1,8 @@
+
+.icon-zoom-in:before { content: '\e800'; } /* '' */
+.icon-zoom-out:before { content: '\e801'; } /* '' */
+.icon-down-dir:before { content: '\e802'; } /* '' */
+.icon-up-dir:before { content: '\e803'; } /* '' */
+.icon-plus:before { content: '\e804'; } /* '' */
+.icon-minus:before { content: '\e805'; } /* '' */
+.icon-youtube-play:before { content: '\f16a'; } /* '' */

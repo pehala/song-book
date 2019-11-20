@@ -53,6 +53,10 @@ msgstr "Řazení podle jména"
 msgid "Sort by author"
 msgstr "Řazení podle autora"
 
+#: frontend/templates/chords/index.html:26
+msgid "Sort by index"
+msgstr "Řazení podle čísla"
+
 #: frontend/templates/chords/index.html:39
 msgid "Edit"
 msgstr "Upravit"

@@ -3,6 +3,10 @@
 
 .song-text { margin-top: 20px; line-height: 2; margin-left: 10px; }
 
+.asc:after { font-family: "songs"; margin-left: 3px; content: "\E803"; text-rendering: auto; -webkit-font-smoothing: antialiased; }
+
+.desc:after { font-family: "songs"; margin-left: 3px; content: "\E802"; text-rendering: auto; -webkit-font-smoothing: antialiased; }
+
 .transposer { max-width: 200px; }
 
 .collapsible-controller { display: inline-block; }

@@ -22,19 +22,22 @@
                     <span class="input-group-text">{% trans "Search" %}</span>
                 </div>
             <input class="search" />
-            <button class="btn btn-secondary sort ml-3 float-left" data-sort="name">{% trans "Sort by name" %}</button>
-            <button class="btn btn-secondary sort ml-3 float-right" data-sort="author">{% trans "Sort by author" %}</button>
+            <button class="icon btn btn-secondary sort ml-3 float-left" data-sort="name">{% trans "Sort by name" %}</button>
+            <button class="icon btn btn-secondary sort ml-3 float-right" data-sort="index">{% trans "Sort by index" %}</button>
+            <button class="icon btn btn-secondary sort ml-3 float-right" data-sort="author">{% trans "Sort by author" %}</button>
             </div>
         </div>
 
         <ul class="song-list list">
         {% for song in songs %}
             <li>
+             <span class="d-none index">{{ song.song_number }}</span>
              <span class="d-none text">{{ song.text }}</span>
              <span class="d-none name">{{ song.name }}</span>
              <span class="d-none author">{{ song.author }}</span>
              <div class="collapsible-controller w-100 mb-2" onclick="collapsible(this,'{{ song.song_number }}')">
                 <h2 class="d-inline">{{ song.song_number }}. {{ song.name }}</h2>
+                <h6 class="d-inline" >{{ song.author }}</h6>
                 {% if user.is_authenticated %}
                    <form class="d-inline ml-3" action="{% url 'chords:edit' pk=song.id %}" method="get">
                        <input class="btn btn-secondary" type="submit" value="{%  trans "Edit" %}"/>
@@ -51,7 +54,7 @@
                 <div class="input-group mb-3">
                     {% if song.link %}
                         <a href="{{ song.link }}" class="btn btn-primary" role="button" aria-pressed="true">
-                            <i class="fab fa-youtube"></i> {#{% trans "Youtube link" %}#}
+                            <i class="icon-youtube-play"></i> {#{% trans "Youtube link" %}#}
                         </a>
                     {% endif %}
                     <div class="input-group-prepend">
@@ -96,8 +99,8 @@
     const regex = /[CDEFGAB](b|#)?/g;
 
     $("input[type='number']").inputSpinner({
-        decrementButton: "<i class=\"fas fa-plus\"></i>", // button text
-        incrementButton: "<i class=\"fas fa-minus\"></i>",
+        decrementButton: "<i class=\"icon-minus\"></i>", // button text
+        incrementButton: "<i class=\"icon-plus\"></i>",
         groupClass: "transposer",
     });
 
