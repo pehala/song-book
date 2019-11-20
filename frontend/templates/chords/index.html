@@ -17,13 +17,13 @@
 {% block body %}
     <div id="songs">
         <div class="control">
-            <div class="input-group mb-3 mx-1 w-100 pr-3" style="max-width: 500px;">
+            <div class="input-group mb-3 mx-1 w-100 pr-3 mb-2" style="max-width: 500px;">
                 <div class="input-group-prepend">
                     <span class="input-group-text">{% trans "Search" %}</span>
                 </div>
                 <input class="search form-control" />
             </div>
-            <div class="input-group d-inline justify-content-center">
+            <div class="input-group d-inline justify-content-center mb-2">
                 <span class="ml-1 input-group-prepend d-flex justify-content-sm-start justify-content-center">
                     <button class="btn btn-outline-secondary sort" data-sort="index" type="button">{% trans "Index" %}</button>
                     <button class="btn btn-outline-secondary sort" data-sort="name" type="button">{% trans "Name" %}</button>
@@ -32,7 +32,7 @@
             </div>
         </div>
 
-        <ul class="song-list list">
+        <ul class="song-list list mt-2">
         {% for song in songs %}
             <li>
              <span class="d-none index">{{ song.song_number }}</span>
