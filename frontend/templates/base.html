@@ -13,14 +13,12 @@
 <html lang="en">
 <head>
     <title>{% block title %} {% trans "Jerry's songs" %} {% endblock %}</title>
+    <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"/>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script type="text/javascript" src="{% static 'static_jquery/js/jquery.js' %}"></script>
-{#    <script data-search-pseudo-elements defer src="https://kit.fontawesome.com/254080697d.js" crossorigin="anonymous"></script>#}
-{#    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>#}
-{#    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />#}
+{#    <script type="text/javascript" src="{% static 'static_jquery/js/jquery.min.js' %}"></script>#}
     {% bootstrap_css %}
-    {% bootstrap_javascript %}
+    {% bootstrap_javascript jquery=True%}
     <link rel="stylesheet" type="text/css" href="{% static 'icons/css/songs.css' %}">
     <link rel="stylesheet" type="text/css" href="{% sass_src 'styles.sass' %}">
     <link rel="stylesheet" type="text/css" href="{% sass_src 'navbar4.sass' %}">

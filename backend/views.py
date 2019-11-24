@@ -15,12 +15,12 @@ from backend.models import Song
 
 
 def index(request):
-    songs = Song.objects.filter(locale=request.LANGUAGE_CODE).order_by("-date").annotate(
+    songs = Song.objects.filter(locale=request.LANGUAGE_CODE).annotate(
             song_number=Window(
                 expression=Rank(),
                 partition_by=[F('locale')],
                 order_by=F('id').asc()
-            ))
+            )).order_by("song_number")
     return render(request, 'chords/index.html', {'songs': songs})
 
 
