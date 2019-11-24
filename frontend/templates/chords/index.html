@@ -3,6 +3,7 @@
 {% load i18n %}
 {% load static %}
 {% load compress %}
+{% load cache %}
 
 {% block extra_head %}
     <script src="//cdnjs.cloudflare.com/ajax/libs/list.js/1.5.0/list.min.js"></script>
@@ -12,6 +13,7 @@
     {%  endcompress %}
 {%  endblock %}
 {% block body %}
+    {% cache 900 index %}
     <div id="songs">
         <div class="control">
             <div class="input-group mb-3 mx-1 w-100 pr-3 mb-2" style="max-width: 500px;">
@@ -37,7 +39,7 @@
              <span class="d-none name">{{ song.name }}</span>
              <span class="d-none author">{{ song.author }}</span>
              <div class="collapsible-controller w-100 mb-2" onclick="collapsible(this,'{{ song.song_number }}')">
-                <h2 class="d-inline">{{ song.song_number }}. {{ song.name }}</h2>
+                 <h2 class="d-inline"><span style="width: 50px;">{{ song.song_number }}.</span> {{ song.name }}</h2>
                 {%  if song.author %}
                     <h6 class="d-inline" >{{ song.author }}</h6>
                 {%  endif %}
@@ -156,4 +158,5 @@
     });
     </script>
     {% endcompress js %}
+    {% endcache %}
 {% endblock %}
