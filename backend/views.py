@@ -1,20 +1,18 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Window, F
-from django.db.models.functions import DenseRank, Rank
+from django.db.models.functions import Rank
 from django.http import HttpResponseBadRequest, HttpResponseNotFound
 from django.shortcuts import render, redirect, get_object_or_404
 # Create your views here.
 from django.urls import reverse
 from django.utils.translation import gettext_lazy
-from django.views.decorators.cache import cache_page
 
 from django.core.cache import cache
 from backend.forms import SongForm
 from backend.models import Song
 
 
-#@cache_page(60 * 15, key_prefix="index")
 def index(request):
     songs = cache.get("songs", default=Song.objects.filter(locale=request.LANGUAGE_CODE).annotate(
             song_number=Window(

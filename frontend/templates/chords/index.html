@@ -31,14 +31,14 @@
             </div>
         </div>
 
-        <ul class="song-list list mt-2">
+        <ul class="song-list list mt-2 row ml-1">
         {% for song in songs %}
-            <li>
+            <li class="col-lg-6">
              <span class="d-none index">{{ song.song_number }}</span>
              <span class="d-none text">{{ song.text }}</span>
              <span class="d-none name">{{ song.name }}</span>
              <span class="d-none author">{{ song.author }}</span>
-             <div class="collapsible-controller w-100 mb-2" onclick="collapsible(this,'{{ song.song_number }}')">
+             <div class="collapsible-controller w-100  mb-2" onclick="collapsible(this,'{{ song.song_number }}')">
                  <h2 class="d-inline"><span style="width: 50px;">{{ song.song_number }}.</span> {{ song.name }}</h2>
                 {%  if song.author %}
                     <h6 class="d-inline" >{{ song.author }}</h6>

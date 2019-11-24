@@ -15,9 +15,9 @@
 
 .collapsible-controller.unrolled:after { content: "\2796"; }
 
-.song-list { list-style-type: none; padding-left: 0; }
+.song-list { list-style-type: none; padding-left: 0; border-left: 6px solid #ccc; }
 
-.song-list li { border-left: 6px solid #ccc; padding-left: 15px; }
+.song-list li { padding-left: 15px; }
 
 /* Unicode character for "minus" sign (-) */
 html, body { height: 100%; }
