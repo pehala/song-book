@@ -3,7 +3,7 @@ from django.core.validators import RegexValidator
 from django.db import models
 
 # Create your models here.
-from django.db.models import Model, CharField, URLField, PositiveIntegerField, DateField
+from django.db.models import Model, CharField, URLField, PositiveIntegerField, DateField, PositiveSmallIntegerField
 from django.utils.translation import gettext_lazy as _
 from markdownx.models import MarkdownxField
 
@@ -13,6 +13,7 @@ from markdownx.models import MarkdownxField
 class Song(Model):
     name = CharField(verbose_name=_('Song Name'), max_length=100)
     date = DateField(auto_now_add=True, editable=False)
+    capo = PositiveSmallIntegerField(verbose_name="Capo", default=0)
     author = CharField(verbose_name=_('Author'), max_length=100, null=True, blank=True)
     link = URLField(verbose_name=_("Youtube Link"), null=True, blank=True)
     locale = CharField(choices=settings.LANGUAGES, verbose_name=_('Language'), max_length=5, default="Czech")
