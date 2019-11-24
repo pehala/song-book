@@ -1,5 +1,6 @@
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
 from django.db.models import Window, F
 from django.db.models.aggregates import Sum
 from django.db.models.functions import DenseRank, Rank
@@ -7,6 +8,7 @@ from django.http import HttpResponseBadRequest, HttpResponseNotFound
 from django.shortcuts import render, redirect, get_object_or_404
 # Create your views here.
 from django.utils.translation import gettext_lazy
+from django.views.decorators.cache import cache_page
 from rest_framework import status
 from django.conf import settings
 
@@ -14,6 +16,7 @@ from backend.forms import SongForm
 from backend.models import Song
 
 
+@cache_page(60 * 15, key_prefix="index")
 def index(request):
     songs = Song.objects.filter(locale=request.LANGUAGE_CODE).annotate(
             song_number=Window(
@@ -22,11 +25,6 @@ def index(request):
                 order_by=F('id').asc()
             )).order_by("song_number")
     return render(request, 'chords/index.html', {'songs': songs})
-
-
-@login_required
-def add(request):
-    return render(request, 'chords/add.html', {'form': SongForm()})
 
 
 @login_required
@@ -47,6 +45,7 @@ def edit(request, pk):
                 text = gettext_lazy("Song with id %(id)s was successfully created")
 
             messages.success(request, text % {'id': song.id})
+            cache.delete("index")
             # Save was successful, so redirect to another page
             return redirect('chords:index')
         else:
