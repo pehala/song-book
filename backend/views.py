@@ -14,7 +14,8 @@ from backend.models import Song
 
 
 def index(request):
-    songs = cache.get("songs", default=Song.objects.filter(locale=request.LANGUAGE_CODE).annotate(
+    locale = request.LANGUAGE_CODE
+    songs = cache.get("songs-%s" % locale, default=Song.objects.filter(locale=locale).annotate(
             song_number=Window(
                 expression=Rank(),
                 partition_by=[F('locale')],

@@ -13,7 +13,6 @@
     {%  endcompress %}
 {%  endblock %}
 {% block body %}
-    {% cache 900 index %}
     <div id="songs">
         <div class="control">
             <div class="input-group mb-3 mx-1 w-100 pr-3 mb-2" style="max-width: 500px;">
@@ -155,5 +154,4 @@
     });
     </script>
     {% endcompress js %}
-    {% endcache %}
 {% endblock %}
