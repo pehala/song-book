@@ -2,13 +2,13 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Window, F
 from django.db.models.functions import Rank
-from django.http import HttpResponseBadRequest, HttpResponseNotFound, HttpResponse
+from django.http import HttpResponseBadRequest, HttpResponseNotFound
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
 from django.utils.translation import gettext_lazy
 
 from django.core.cache import cache
-from django_xhtml2pdf.utils import pdf_decorator, generate_pdf, render_to_pdf_response
+from django_xhtml2pdf.utils import render_to_pdf_response
 
 from backend.forms import SongForm
 from backend.models import Song
