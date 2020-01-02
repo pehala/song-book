@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-11-09 15:36+0000\n"
+"POT-Creation-Date: 2020-01-02 15:39+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,51 +23,54 @@ msgstr ""
 msgid "Song Name"
 msgstr "Název písničky"
 
-#: backend/models.py:16
+#: backend/models.py:17
 msgid "Author"
 msgstr "Autor"
 
-#: backend/models.py:17
+#: backend/models.py:18
 msgid "Youtube Link"
 msgstr "Odkaz na Youtube"
 
-#: backend/models.py:18
+#: backend/models.py:19
 msgid "Language"
 msgstr "Jazyk"
 
-#: backend/models.py:19
+#: backend/models.py:20
 msgid "Lyrics"
 msgstr "Text"
 
-#: backend/models.py:22
+#: backend/models.py:23
 msgid "Song"
 msgstr "Písnička"
 
-#: backend/models.py:23
+#: backend/models.py:24
 msgid "Songs"
 msgstr "Písničky"
 
-#: backend/views.py:45
+#: backend/views.py:47
 #, python-format
 msgid "Song with id %(id)s was successfully edited"
 msgstr "Písnička s id %(id)s byla úspěšně upravena"
 
-#: backend/views.py:47
+#: backend/views.py:49
 #, python-format
 msgid "Song with id %(id)s was successfully created"
 msgstr "Písnička s id %(id)s byla úspěšně přidána"
 
-#~ msgid "Editor"
-#~ msgstr "Editor"
+msgid "Editor"
+msgstr "Editor"
 
-#~ msgid "Preview"
-#~ msgstr "Náhled"
+msgid "Preview"
+msgstr "Náhled"
 
-#~ msgid "Add a song"
-#~ msgstr "Přidat písničku"
+msgid "Add a song"
+msgstr "Přidat písničku"
 
 msgid "Account"
 msgstr "Účet"
+
+msgid "Change password"
+msgstr "Změna hesla"
 
 msgid "Logout"
 msgstr "Odhlásit se"
@@ -80,3 +83,9 @@ msgstr "Zpěvníček"
 
 msgid "Login"
 msgstr "Přihlášení"
+
+msgid "songlist"
+msgstr "zpevnik"
+
+msgid "Export to PDF"
+msgstr "Exportovat do PDF"

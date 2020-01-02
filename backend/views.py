@@ -2,26 +2,32 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Window, F
 from django.db.models.functions import Rank
-from django.http import HttpResponseBadRequest, HttpResponseNotFound
+from django.http import HttpResponseBadRequest, HttpResponseNotFound, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
-# Create your views here.
 from django.urls import reverse
 from django.utils.translation import gettext_lazy
 
 from django.core.cache import cache
+from django_xhtml2pdf.utils import pdf_decorator, generate_pdf, render_to_pdf_response
+
 from backend.forms import SongForm
 from backend.models import Song
 
 
 def index(request):
+    songs = fetch_songs(request)
+    return render(request, 'chords/index.html', {'songs': songs})
+
+
+def fetch_songs(request):
     locale = request.LANGUAGE_CODE
     songs = cache.get("songs-%s" % locale, default=Song.objects.filter(locale=locale).annotate(
-            song_number=Window(
-                expression=Rank(),
-                partition_by=[F('locale')],
-                order_by=F('id').asc()
-            )).order_by("song_number"), version=None)
-    return render(request, 'chords/index.html', {'songs': songs})
+        song_number=Window(
+            expression=Rank(),
+            partition_by=[F('locale')],
+            order_by=F('id').asc()
+        )).order_by("song_number"), version=None)
+    return songs
 
 
 @login_required
@@ -51,6 +57,7 @@ def edit(request, pk):
     return render(request, 'chords/add.html', {'form': form})
 
 
+@login_required
 def delete(request, pk):
     song = Song.objects.get(pk=pk)
     if song is not None:
@@ -58,6 +65,12 @@ def delete(request, pk):
         return redirect('chords:index')
     else:
         return HttpResponseNotFound()
+
+
+def export(request):
+    songs = fetch_songs(request)
+    file_name = gettext_lazy("songlist") + ".pdf"
+    return render_to_pdf_response('chords/pdf/index.html', context={'songs': songs}, pdfname=file_name)
 
 
 def expire_view_cache(view_name, namespace=None, method="GET"):

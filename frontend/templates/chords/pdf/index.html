@@ -1,0 +1,74 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{% trans "Jerry's songs" %}</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <style type="text/css">
+        @font-face {
+            font-family: "Open Sans";
+            src: url(OpenSans-Regular.ttf);
+        }
+        @font-face {
+          font-family: "Open Sans";
+          font-weight: bold;
+          src: url(OpenSans-Bold.ttf);
+        }
+        .chord { font-weight: bold; }
+        .song-text { margin-top: 20px; line-height: 4; margin-left: 10px; }
+        pdftoc.pdftoclevel0 {
+            font-size: 14pt;
+            margin-top: 0.5em;
+        }
+        .song-list { list-style-type: none; padding-left: 0;}
+        .song-list li { padding-left: 15px; }
+        #header_content { font-family: 'Open Sans', serif; }
+        p { font-family: 'Open Sans', serif; text-align: left; margin-bottom: 3rem; font-size: 14pt; }
+        h2 {font-size: 36pt; text-align: center; margin-bottom: 0; margin-top: 0}
+        .main-title {font-size: 40pt; text-align: center; margin-top: 0; margin-bottom: 20pt}
+        .author {font-size: 24pt; text-align: center; margin-top: 10pt}
+        body {font-family: serif;}
+
+        @page {
+            size: a4 portrait;
+            @frame header_frame {           /* Static Frame */
+                -pdf-frame-content: header_content;
+                left: 50pt; width: 512pt; top: 50pt; height: 30pt;
+            }
+            @frame content_frame {          /* Content Frame */
+                left: 50pt; width: 512pt; top: 80pt; height: 642pt;
+            }
+            @frame footer_frame {           /* Another static Frame */
+                -pdf-frame-content: footer_content;
+                left: 50pt; width: 512pt; top: 772pt; height: 20pt;
+            }
+        }
+    </style>
+</head>
+<body>
+        <!-- Content for Static Frame 'header_frame' -->
+        <div id="header_content">
+            {% trans "Jerry's songs" %}
+        </div>
+
+        <div>
+            <div class="main-title">{% trans "Table of contents" %}</div>
+            <pdf:toc />
+        </div>
+        <ul class="song-list">
+        {% for song in songs %}
+            <div>
+                <pdf:nextpage/>
+            </div>
+            <li>
+                {% include "chords/pdf/song.html" with song=song %}
+            </li>
+        {% endfor %}
+        </ul>
+
+        <!-- Content for Static Frame 'footer_frame' -->
+        <div id="footer_content">
+            {% trans "Page"%} <pdf:pagenumber/> {% trans "of"%} <pdf:pagecount/>
+        </div>
+</body>
+</html>

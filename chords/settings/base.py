@@ -14,18 +14,14 @@ import os
 from django.utils.translation import ugettext_lazy as _
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from backend.markdown.chords import ChordsExtension
+from backend.markdown.chords_pdf import ChordsPDFExtension
+from backend.markdown.spaces import SpacesExtension
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/2.2/howto/deployment/checklist/
-
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '$sr-v9zx(s!!q)6*2!1#t_+-z5ku*$+=edf*gstxjwz3opj94n'
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
 # Application definition
 
@@ -49,7 +45,15 @@ INSTALLED_APPS = [
 MARKDOWNX_MARKDOWN_EXTENSIONS = [
     'markdown.extensions.nl2br',
     'markdown3_newtab',
-    ChordsExtension()
+    ChordsExtension(),
+    SpacesExtension()
+]
+
+MARKDOWNX_PDF_MARKDOWN_EXTENSIONS = [
+    'markdown.extensions.nl2br',
+    'markdown3_newtab',
+    ChordsPDFExtension(),
+    SpacesExtension()
 ]
 
 MIDDLEWARE = [
@@ -70,7 +74,7 @@ ROOT_URLCONF = 'chords.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, 'chords/../frontend/templates')]
+        'DIRS': [os.path.join(BASE_DIR, '../frontend/templates')]
         ,
         'APP_DIRS': True,
         'OPTIONS': {
@@ -103,7 +107,7 @@ WSGI_APPLICATION = 'chords.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, '../../db.sqlite3'),
     }
 }
 
@@ -160,4 +164,4 @@ STATIC_URL = '/static/'
 LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/'
 
-from .settings_local import *
+SESSION_COOKIE_AGE = 86400

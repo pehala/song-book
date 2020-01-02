@@ -6,7 +6,7 @@ verify_ssl = true
 [dev-packages]
 
 [packages]
-django = "*"
+django = "==2.2.8"
 django-bootstrap4 = "*"
 libsass = "*"
 django-compressor = "*"
@@ -20,3 +20,8 @@ django-rest-swagger = "*"
 netifaces = "*"
 psycopg2-binary = "*"
 markdown3-newtab = "*"
+django-xhtml2pdf = "*"
+reportlab = "==3.4.0"
+
+[requires]
+python_version = "3"

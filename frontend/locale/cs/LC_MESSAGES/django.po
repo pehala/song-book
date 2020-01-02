@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2019-11-09 15:36+0000\n"
+"POT-Creation-Date: 2020-01-02 15:39+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,15 +19,17 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
-#: frontend/templates/base.html:15 frontend/templates/base.html:30
+#: frontend/templates/base.html:16 frontend/templates/base.html:31
+#: frontend/templates/chords/pdf/index.html:5
+#: frontend/templates/chords/pdf/index.html:50
 msgid "Jerry's songs"
 msgstr "Jerryho zpěvníček"
 
-#: frontend/templates/base.html:41
+#: frontend/templates/base.html:42
 msgid "Logged as"
 msgstr "Přihlášen jako"
 
-#: frontend/templates/base.html:50
+#: frontend/templates/base.html:51
 msgid "Language"
 msgstr "Jazyk"
 
@@ -41,41 +43,56 @@ msgstr "Zpěvníček"
 msgid "Submit"
 msgstr "Odeslat"
 
-#: frontend/templates/chords/index.html:22
+#: frontend/templates/chords/index.html:20
 msgid "Search"
 msgstr "Hledání"
-
-#: frontend/templates/chords/index.html:25
-msgid "Name"
-msgstr "Jméno"
-
-#: frontend/templates/chords/index.html:26
-msgid "Author"
-msgstr "Autor"
 
 #: frontend/templates/chords/index.html:26
 msgid "Index"
 msgstr "Číslo"
 
-#: frontend/templates/chords/index.html:39
+#: frontend/templates/chords/index.html:27
+msgid "Name"
+msgstr "Jméno"
+
+#: frontend/templates/chords/index.html:28
+msgid "Author"
+msgstr "Autor"
+
+#: frontend/templates/chords/index.html:47
+#: frontend/templates/chords/song.html:15
 msgid "Edit"
 msgstr "Upravit"
 
-#: frontend/templates/chords/index.html:42
+#: frontend/templates/chords/index.html:50
+#: frontend/templates/chords/song.html:18
 msgid "Delete"
 msgstr "Smazat"
 
-#: frontend/templates/chords/index.html:49
+#: frontend/templates/chords/index.html:62
+#: frontend/templates/chords/song.html:30
 msgid "Transpose"
 msgstr "Transpozice"
 
-#: frontend/templates/chords/index.html:64
+#: frontend/templates/chords/index.html:81
 msgid "Please confirm"
 msgstr "Prosím potvrďte"
 
-#: frontend/templates/chords/index.html:64
+#: frontend/templates/chords/index.html:81
 msgid "Are you sure you wanna delete song"
 msgstr "Jste si jistí že chce smazat písničku"
+
+#: frontend/templates/chords/pdf/index.html:54
+msgid "Table of contents"
+msgstr "Obsah"
+
+#: frontend/templates/chords/pdf/index.html:70
+msgid "Page"
+msgstr "Strana"
+
+#: frontend/templates/chords/pdf/index.html:70
+msgid "of"
+msgstr "z"
 
 #: frontend/templates/markdownx/widget2.html:6
 msgid "Editor"
@@ -97,14 +114,11 @@ msgstr ""
 msgid "Add a song"
 msgstr "Přidat písničku"
 
-#~msgid "Youtube link"
-#~msgstr "Odkaz na Youtube"
+msgid "English"
+msgstr "Anglicky"
 
-#~ msgid "English"
-#~ msgstr "Anglicky"
+msgid "Czech"
+msgstr "Česky"
 
-#~ msgid "Czech"
-#~ msgstr "Česky"
-
-#~ msgid "Song"
-#~ msgstr "Písnička"
+msgid "Song"
+msgstr "Písnička"
