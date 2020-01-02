@@ -39,8 +39,7 @@ INSTALLED_APPS = [
     'django_static_jquery',
     'sass_processor',
     'markdownx',
-    'menu',
-    'django_xhtml2pdf'
+    'menu'
 ]
 
 MARKDOWNX_MARKDOWN_EXTENSIONS = [
