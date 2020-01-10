@@ -7,8 +7,11 @@
 {#        <div class="author">{{ song.author }}</div>#}
 {#    {%  endif %}#}
  </div>
+<pdf:nextframe/>
+<pdf:nexttemplate name="second_page" />
  <div>
     <div class="text-wrap song-text">
     {{ song.text|show_pdf_markdown|safe }}
     </div>
  </div>
+<pdf:nexttemplate name="first_page" />

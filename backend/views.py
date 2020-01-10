@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.db.models import Window, F
@@ -69,7 +70,7 @@ def delete(request, pk):
 
 def export(request):
     songs = fetch_songs(request)
-    file_name = gettext_lazy("songlist") + ".pdf"
+    file_name = f"%s-%s.pdf" % (gettext_lazy("songlist"), datetime.now().strftime("%Y%m%d%H%M%S"))
     return render_to_pdf_response('chords/pdf/index.html', context={'songs': songs}, pdfname=file_name)
 
 
