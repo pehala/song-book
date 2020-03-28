@@ -89,3 +89,6 @@ msgstr "zpevnik"
 
 msgid "Export to PDF"
 msgstr "Exportovat do PDF"
+
+msgid "Table of Contents"
+msgstr "Obsah"

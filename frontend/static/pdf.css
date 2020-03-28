@@ -1,0 +1,51 @@
+@font-face { font-family: "Open Sans"; src: url(/static/OpenSans-Regular.ttf); }
+
+@font-face { font-family: "Open Sans"; font-weight: bold; src: url(/static/OpenSans-Bold.ttf); }
+
+@page { @bottom-left { content: counter(page);
+    font-size: 9pt;
+    height: 1cm;
+    text-align: center;
+    width: 1cm; }
+  @top-center { content: string(title);
+    font-size: 9pt;
+    height: 1cm;
+    vertical-align: middle;
+    width: 100%; }
+  @bottom-right { content: string(name);
+    font-size: 9pt;
+    height: 1cm;
+    vertical-align: middle;
+    width: 100%; } }
+
+.chord { font-weight: bold; }
+
+html { font-family: "Open Sans", serif; font-size: 10pt; }
+
+html body h2, html body h3, html body h4 { color: black; font-weight: 400; }
+
+html body h2 { break-before: always; font-size: 24pt; string-set: heading content(); margin-bottom: 10pt; margin-top: 0; }
+
+html body h3 { font-weight: 300; font-size: 15pt; }
+
+html body h4 { font-size: 13pt; }
+
+html body .name { string-set: name content(); }
+
+html body article#columns section { columns: 2; column-gap: 1cm; padding-top: 0; }
+
+html body article#columns section p { text-align: justify; }
+
+html body article#contents { padding-top: 1cm; }
+
+html body article#contents h1 { string-set: title content(); font-size: 28pt; width: 100%; text-align: center; }
+
+html body article#contents h3 { font-size: 20pt; font-weight: 400; margin-bottom: 10pt; margin-top: 10pt; width: 100%; text-align: center; break-after: avoid; }
+
+html body article#contents ul { list-style: none; padding-left: 0; columns: 2; column-gap: 1cm; column-rule-style: solid; column-rule-width: 1px; break-before: avoid; }
+
+html body article#contents ul li { border-top: .25pt solid #c1c1c1; margin: .25cm 0; padding-top: .25cm; }
+
+html body article#contents ul li a { color: inherit; text-decoration: inherit; }
+
+html body article#contents ul li a::before { content: target-text(attr(href)); }

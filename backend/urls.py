@@ -14,13 +14,15 @@ Including another URLconf
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
 from django.urls import path
+from django.views.decorators.cache import cache_page
 
 from backend import views
+from backend.views import PDFSongs
 
 urlpatterns = [
     path('', views.index, name="index"),
     path('add', views.edit, {"pk": None}, name="add"),
     path('edit/<int:pk>', views.edit, name="edit"),
     path('delete/<int:pk>', views.delete, name="delete"),
-    path('export', views.export, name="export"),
+    path('export', PDFSongs.as_view(), name="export"),
 ]

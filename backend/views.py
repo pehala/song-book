@@ -6,9 +6,12 @@ from django.db.models.functions import Rank
 from django.http import HttpResponseBadRequest, HttpResponseNotFound
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
+from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy
 
 from django.core.cache import cache
+from django.views.decorators.cache import cache_page
+from django_weasyprint import WeasyTemplateView
 from django_xhtml2pdf.utils import render_to_pdf_response
 
 from backend.forms import SongForm
@@ -63,15 +66,10 @@ def delete(request, pk):
     song = Song.objects.get(pk=pk)
     if song is not None:
         song.delete()
+        expire_view_cache("chords:index")
         return redirect('chords:index')
     else:
         return HttpResponseNotFound()
-
-
-def export(request):
-    songs = fetch_songs(request)
-    file_name = f"%s-%s.pdf" % (gettext_lazy("songlist"), datetime.now().strftime("%Y%m%d%H%M%S"))
-    return render_to_pdf_response('chords/pdf/index.html', context={'songs': songs}, pdfname=file_name)
 
 
 def expire_view_cache(view_name, namespace=None, method="GET"):
@@ -87,7 +85,6 @@ def expire_view_cache(view_name, namespace=None, method="GET"):
 
     """
     from django.http import HttpRequest
-    from django.utils.cache import get_cache_key
     from django.core.cache import cache
     request = HttpRequest()
     request.method = method
@@ -98,3 +95,22 @@ def expire_view_cache(view_name, namespace=None, method="GET"):
     # get cache key, expire if the cached item exists:
     cache.clear()
     return False
+
+
+@method_decorator(cache_page(60 * 60 * 24), name='dispatch')
+class PDFSongs(WeasyTemplateView):
+    template_name = "chords/pdf/index.html"
+    pdf_attachment = False
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        songs = fetch_songs(self.request)
+        context['songs'] = fetch_songs(self.request)
+        context['sorted_songs'] = sorted(songs, key=lambda song: song.name)
+        return context
+
+    def get_pdf_filename(self):
+        return '{name}-{at}.pdf'.format(
+            name=gettext_lazy("songlist"),
+            at=datetime.now().strftime('%Y%m%d-%H%M'),
+        )
