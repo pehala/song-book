@@ -12,7 +12,6 @@ from django.utils.translation import gettext_lazy
 from django.core.cache import cache
 from django.views.decorators.cache import cache_page
 from django_weasyprint import WeasyTemplateView
-from django_xhtml2pdf.utils import render_to_pdf_response
 
 from backend.forms import SongForm
 from backend.models import Song

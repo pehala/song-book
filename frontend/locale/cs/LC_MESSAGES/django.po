@@ -122,3 +122,10 @@ msgstr "Česky"
 
 msgid "Song"
 msgstr "Písnička"
+
+msgid  "Password changed"
+msgstr "Heslo změněno"
+
+msgid  "Password was successfully changed"
+msgstr "Heslo bylo úspěšně změněno"
+
