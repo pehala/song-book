@@ -1,18 +1,20 @@
 """Utility functions"""
 from time import time
-
-from django.utils.translation import gettext_lazy
-
 from pdf.models import PDFRequest, RequestType, Status
 
 
 def request_pdf_regeneration(locale):
     """Requests automatic PDF regeneration if none is pending"""
     if not PDFRequest.objects.filter(type=RequestType.EVENT, status=Status.QUEUED, locale=locale):
-        PDFRequest(type=RequestType.EVENT,
-                   status=Status.QUEUED,
-                   locale=locale,
-                   filename=f"{gettext_lazy('songlist')}-{locale}").save()
+        generate_pdf(locale).save()
+
+
+def generate_pdf(locale):
+    """Returns PDFRequest for basic"""
+    return PDFRequest(type=RequestType.EVENT,
+                      status=Status.QUEUED,
+                      locale=locale,
+                      filename=f"songbook-{locale}")
 
 
 class Timer:
