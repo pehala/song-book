@@ -22,5 +22,6 @@ urlpatterns = [
     path('accounts/', include('django.contrib.auth.urls')),
     url(r'^markdownx/', include('markdownx.urls')),
     path('i18n/', include('django.conf.urls.i18n')),
+    url('pdf/', include(('pdf.urls', "pdf"), namespace="pdf")),
     url(r'^', include(('backend.urls', "backend"), namespace="chords")),
 ]

@@ -36,6 +36,8 @@ def edit(request, pk):
             else:
                 text = gettext_lazy("Song with id %(id)s was successfully created")
 
+            request_pdf_regeneration(locale=request.LANGUAGE_CODE)
+
             messages.success(request, text % {'id': song.id})
             expire_view_cache("chords:index")
             # Save was successful, so redirect to another page
@@ -51,6 +53,7 @@ def delete(request, pk):
     song = Song.objects.get(pk=pk)
     if song is not None:
         song.delete()
+        request_pdf_regeneration(locale=request.LANGUAGE_CODE)
         expire_view_cache("chords:index")
         return redirect('chords:index')
     else:

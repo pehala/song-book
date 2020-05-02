@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'backend',
+    'pdf',
     'compressor',
     'frontend',
     'bootstrap4',
