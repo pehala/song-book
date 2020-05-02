@@ -24,9 +24,3 @@ urlpatterns = [
     path('i18n/', include('django.conf.urls.i18n')),
     url(r'^', include(('backend.urls', "backend"), namespace="chords")),
 ]
-# urlpatterns += i18n_patterns(
-#     path('about/', about_views.main, name='about'),
-#     path('news/', include(news_patterns, namespace='news')),
-# )
-
-

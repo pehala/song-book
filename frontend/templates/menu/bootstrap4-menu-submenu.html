@@ -2,17 +2,10 @@
 <div class="dropdown-menu" aria-labelledby="{{ name }}">
     {% for item in items %}
         {% if item.visible %}
-{#            <li class="dropdown-item{% if item.selected %} active{% endif %}{% if item.children %} dropdown-submenu{% endif %}">#}
             {% if item.separator %}
                 <div class="dropdown-divider"></div>
             {% endif %}
             <a class="dropdown-item" href="{{ item.url }}">{% trans item.title %}</a>
-{#            {% if item.children %}#}
-{#                {% with items=item.children template_name='menu/bootstrap4-menu-submenu.html' %}#}
-{#                   {% include template_name %}#}
-{#                {% endwith %}#}
-{#            {% endif %}#}
-{#            </li>#}
         {% endif %}
     {% endfor %}
 </div>

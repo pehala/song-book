@@ -5,7 +5,6 @@
             <li class="divider-vertical"></li>
         {% endif %}
 
-{#        <li class="nav-item{% if item.selected %} active{% endif %}{% if item.children %} dropdown{% endif %}"#}
         <li class="nav-item{% if item.children %} dropdown{% endif %}"
             id="top-menu-{{ item.slug }}">
             {% if item.children %}

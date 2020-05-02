@@ -4,15 +4,16 @@ url = "https://pypi.org/simple"
 verify_ssl = true
 
 [dev-packages]
+pylint = "*"
+pylint-django = "*"
 
 [packages]
-django = "==2.2.10"
+django = "==3.0.5"
 django-bootstrap4 = "*"
 django-compressor = "*"
 django-markdownx = "*"
 django-sass-processor = "*"
 django-simple-menu = "*"
-django-static-jquery = "*"
 django-weasyprint = "*"
 libsass = "*"
 markdown = "*"

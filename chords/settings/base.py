@@ -36,7 +36,6 @@ INSTALLED_APPS = [
     'compressor',
     'frontend',
     'bootstrap4',
-    'django_static_jquery',
     'sass_processor',
     'markdownx',
     'menu'

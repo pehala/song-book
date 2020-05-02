@@ -1,36 +1,22 @@
-from datetime import datetime
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.db.models import Window, F
-from django.db.models.functions import Rank
 from django.http import HttpResponseBadRequest, HttpResponseNotFound
 from django.shortcuts import render, redirect, get_object_or_404
 from django.urls import reverse
-from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy
-
-from django.core.cache import cache
-from django.views.decorators.cache import cache_page
-from django_weasyprint import WeasyTemplateView
+from django.views.decorators.cache import cache_control, cache_page
 
 from backend.forms import SongForm
 from backend.models import Song
+from backend.utils import fetch_all_songs
+from pdf.utils import request_pdf_regeneration
 
 
+@cache_control(max_age=1200)
+@cache_page(60 * 60 * 24)
 def index(request):
-    songs = fetch_songs(request)
+    songs = fetch_all_songs(locale=request.LANGUAGE_CODE)
     return render(request, 'chords/index.html', {'songs': songs})
-
-
-def fetch_songs(request):
-    locale = request.LANGUAGE_CODE
-    songs = cache.get("songs-%s" % locale, default=Song.objects.filter(locale=locale).annotate(
-        song_number=Window(
-            expression=Rank(),
-            partition_by=[F('locale')],
-            order_by=F('id').asc()
-        )).order_by("song_number"), version=None)
-    return songs
 
 
 @login_required
@@ -94,22 +80,3 @@ def expire_view_cache(view_name, namespace=None, method="GET"):
     # get cache key, expire if the cached item exists:
     cache.clear()
     return False
-
-
-@method_decorator(cache_page(60 * 60 * 24), name='dispatch')
-class PDFSongs(WeasyTemplateView):
-    template_name = "chords/pdf/index.html"
-    pdf_attachment = False
-
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        songs = fetch_songs(self.request)
-        context['songs'] = fetch_songs(self.request)
-        context['sorted_songs'] = sorted(songs, key=lambda song: song.name)
-        return context
-
-    def get_pdf_filename(self):
-        return '{name}-{at}.pdf'.format(
-            name=gettext_lazy("songlist"),
-            at=datetime.now().strftime('%Y%m%d-%H%M'),
-        )

@@ -2,20 +2,18 @@ from django.urls import reverse
 
 from menu import MenuItem, Menu
 
-llamas_children = (
+song_children = (
     MenuItem("Add a song",
              reverse("backend:add")),
     MenuItem("Song List",
              reverse("backend:index")),
-    MenuItem("Export to PDF",
-             reverse("backend:export"))
 )
 
 Menu.add_item("main", MenuItem("Songs",
                                reverse("backend:index"),
-                               children=llamas_children))
+                               children=song_children))
 
-children = (
+account_children = (
     MenuItem("Log in",
              reverse("login"),
              check=lambda request: not request.user.is_authenticated),
@@ -29,4 +27,4 @@ children = (
 
 Menu.add_item("account", MenuItem("Account",
                                   reverse("login"),
-                                  children=children))
+                                  children=account_children))
