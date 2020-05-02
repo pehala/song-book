@@ -1,12 +1,11 @@
-from django.conf import settings
+"""Forms for backend app"""
 from django.forms import ModelForm
 
-from backend.fields import ListTextWidget
 from backend.models import Song
 
 
 class SongForm(ModelForm):
-
+    """Song form"""
     class Meta:
         model = Song
         fields = '__all__'

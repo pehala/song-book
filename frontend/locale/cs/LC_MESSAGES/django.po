@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-01-02 15:39+0000\n"
+"POT-Creation-Date: 2020-05-02 15:49+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -111,6 +111,20 @@ msgstr "Přihlásit se"
 msgid "Enter"
 msgstr ""
 
+#: frontend/templates/registration/password_change_done.html:3
+#: frontend/templates/registration/password_change_done.html:4
+msgid "Password changed"
+msgstr "Heslo změněno"
+
+#: frontend/templates/registration/password_change_done.html:6
+msgid "Password was successfully changed"
+msgstr "Heslo bylo úspěšně změněno"
+
+#: frontend/templates/registration/password_change_form.html:4
+#: frontend/templates/registration/password_change_form.html:5
+msgid "Change password"
+msgstr ""
+
 msgid "Add a song"
 msgstr "Přidat písničku"
 
@@ -122,10 +136,3 @@ msgstr "Česky"
 
 msgid "Song"
 msgstr "Písnička"
-
-msgid  "Password changed"
-msgstr "Heslo změněno"
-
-msgid  "Password was successfully changed"
-msgstr "Heslo bylo úspěšně změněno"
-

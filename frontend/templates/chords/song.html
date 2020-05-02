@@ -11,10 +11,10 @@
         <h6 class="d-inline" >{{ song.author }}</h6>
     {%  endif %}
     {% if user.is_authenticated %}
-       <form class="d-inline ml-3" action="{% url 'chords:edit' pk=song.id %}" method="get">
+       <form class="d-inline ml-3" action="{% url 'chords:edit' primary_key=song.id %}" method="get">
            <input class="btn btn-secondary" type="submit" value="{%  trans "Edit" %}"/>
        </form>
-       <button class="btn btn-danger ml-2" onclick="confirmDelete(event, '{{ song.name }}', '{% url 'chords:delete' pk=song.id %}')">
+       <button class="btn btn-danger ml-2" onclick="confirmDelete(event, '{{ song.name }}', '{% url 'chords:delete' primary_key=song.id %}')">
             {% trans "Delete" %}
        </button>
     {%  endif %}

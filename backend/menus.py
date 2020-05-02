@@ -1,3 +1,4 @@
+"""Menus for backend app"""
 from django.urls import reverse
 
 from menu import MenuItem, Menu
