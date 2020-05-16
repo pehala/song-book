@@ -86,12 +86,14 @@ TEMPLATES = [
         },
     },
 ]
+
 STATICFILES_FINDERS = [
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
     'sass_processor.finders.CssFinder',
     'compressor.finders.CompressorFinder',
 ]
+
 COMPRESS_ENABLED = True
 SASS_PRECISION = 8
 SASS_OUTPUT_STYLE = 'compact'
@@ -106,7 +108,7 @@ WSGI_APPLICATION = 'chords.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, '../db.sqlite3'),
+        'NAME': os.path.join(BASE_DIR, '../../db.sqlite3'),
     }
 }
 

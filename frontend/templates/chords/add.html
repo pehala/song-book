@@ -5,7 +5,7 @@
 {% block title %} {% trans "Song Editor" %} {% endblock %}
 {% block header %} {% trans "Song Editor" %} {% endblock %}
 {% block framed_body %}
-    <form  method="post">
+    <form method="post">
         {% csrf_token %}
         {% bootstrap_form form %}
         {% buttons %}
