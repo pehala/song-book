@@ -54,13 +54,11 @@ def edit(request, primary_key):
 @login_required
 def delete(request, primary_key):
     """Deletes song"""
-    song = Song.objects.get(pk=primary_key)
-    if song is not None:
-        song.delete()
-        request_pdf_regeneration(locale=request.LANGUAGE_CODE)
-        expire_view_cache("chords:index")
-        return redirect('chords:index')
-    return HttpResponseNotFound()
+    song = get_object_or_404(Song, pk=primary_key)
+    song.delete()
+    request_pdf_regeneration(locale=request.LANGUAGE_CODE)
+    expire_view_cache("chords:index")
+    return redirect('chords:index')
 
 
 def expire_view_cache(view_name, namespace=None, method="GET"):
