@@ -71,14 +71,20 @@
         {% endfor %}
         </ul>
     </div>
-    <a id="back-to-top" href="#" class="btn btn-primary btn-lg back-to-top" role="button" title="Click to return on the top page" data-toggle="tooltip" data-placement="left">
+    <button id="back-to-top" class="btn btn-info btn-lg back-to-top" role="button" title="Click to return on the top page" data-toggle="tooltip" data-placement="left">
         <span class="icon-up-open"></span>
-    </a>
+    </button>
+    <button id="scroll-down" class="btn btn-info btn-lg scroll_button" role="button" title="Click to scroll down" data-placement="left">
+        <span class="icon-down-open"></span>
+    </button>
     {% compress js %}
     <script>
     function confirmDelete(event, songName, url) {
         $.showConfirm({
-            title: "{% trans "Please confirm" %}", body: "{% blocktrans %}Are you sure you wanna delete song{% endblocktrans %} " + songName + "?", textTrue: "Yes", textFalse: "No",
+            title: "{% trans 'Please confirm' %}",
+            body: `{% blocktrans %}Are you sure you wanna delete song{% endblocktrans %} ${songName}?`,
+            textTrue: "Yes",
+            textFalse: "No",
             onSubmit: function (result) {
                 if (result) {
                     window.location.replace(url);
@@ -89,23 +95,33 @@
         event.preventDefault();
     }
     $(document).ready(function(){
+         const back_to_top = $('#back-to-top')
          $(window).scroll(function () {
                 if ($(this).scrollTop() > 50) {
-                    $('#back-to-top').fadeIn();
+                    back_to_top.fadeIn();
                 } else {
-                    $('#back-to-top').fadeOut();
+                    back_to_top.fadeOut();
                 }
             });
-            // scroll body to 0px on click
-            $('#back-to-top').click(function () {
-                $('#back-to-top').tooltip('hide');
-                $('body,html').animate({
-                    scrollTop: 0
-                }, 800);
-                return false;
-            });
+        // scroll body to 0px on click
 
-            $('#back-to-top').tooltip('show');
+        back_to_top.click(function () {
+            back_to_top.tooltip('hide');
+            $('body,html').animate({
+                scrollTop: 0
+            }, 800);
+            return false;
+        });
+
+        // back_to_top.tooltip('show');
+        $( "#scroll-down" ).click(function() {
+            console.log("test3")
+            const scrollAmount = (typeof window.outerHeight != 'undefined') ? Math.max(window.outerHeight, $(window).height()):$(window).height()
+            console.log(scrollAmount)
+            $('html, body').animate({
+                scrollTop: `+=${0.8 * scrollAmount}`
+             }, 800);
+        });
 
     });
     function collapsible(element, id) {
