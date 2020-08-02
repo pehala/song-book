@@ -15,8 +15,12 @@
     text-align: center
     width: 1cm
 
-  //@top-center
-  //  content: none
+  @bottom-center
+    content: string(date)
+    font-size: 9pt
+    height: 1cm
+    vertical-align: middle
+    width: 100%
 
   @top-center
     content: string(title)
@@ -31,6 +35,16 @@
     height: 1cm
     vertical-align: middle
     width: 100%
+
+.date
+  string-set: date content()
+  text-align: center
+  font-family: "Open Sans", serif
+  font-size: 12pt
+  break-after: avoid
+
+.contents
+  break-after: avoid
 
 .chord
   font-weight: bold

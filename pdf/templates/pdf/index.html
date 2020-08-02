@@ -13,7 +13,8 @@
 <body>
     <article id="contents">
       <h1>{% trans "Jerry's songs" %}</h1>
-      <h3><span class="name">{% trans "Table of Contents" %}</span></h3>
+      <p class="date">{% now "SHORT_DATE_FORMAT" %}</p>
+      <h3 class="contents name">{% trans "Table of Contents" %}</h3>
       <ul>
         {% for song in sorted_songs %}
             <li><a href="#{{ song.id }}-title"></a></li>
