@@ -1,3 +1,4 @@
+"""Management command for generating PDF files from requests"""
 from argparse import ArgumentParser
 from datetime import datetime
 from math import ceil
@@ -22,6 +23,24 @@ def update_status(request: PDFRequest, status: Status, generate_all=False):
     if not generate_all:
         request.status = status
         request.save()
+
+
+def default_filename():
+    """Default filename"""
+    return 'songlist-{at}'.format(
+        at=datetime.now().strftime('%Y%m%d-%H%M'),
+    )
+
+
+def get_base_url():
+    """
+    Determine base URL to fetch CSS files from `WEASYPRINT_BASEURL` or
+    fall back to using the root path of the URL used in the request.
+    """
+    return getattr(
+        settings, 'WEASYPRINT_BASEURL',
+        reverse("chords:index")
+    )
 
 
 class Command(BaseCommand):
@@ -67,7 +86,7 @@ class Command(BaseCommand):
             try:
                 timer = Timer()
                 with translation.override(request.locale), timer:
-                    name = request.filename or self.default_filename()
+                    name = request.filename or default_filename()
                     print(f"Generating {name}.pdf")
                     string = render_to_string(template_name=TEMPLATE, context={
                         "songs": songs,
@@ -76,30 +95,16 @@ class Command(BaseCommand):
                     weasyprint.HTML(
                         string=string,
                         url_fetcher=django_url_fetcher,
-                        base_url=self.get_base_url()
+                        base_url=get_base_url()
                     ).write_pdf(f"{settings.STATIC_ROOT}/{name}.pdf")
                 total_duration += timer.duration
                 request.time_elapsed = ceil(timer.duration)
                 update_status(request, Status.DONE, generate_all)
                 print(f"Done in {request.time_elapsed} seconds")
 
+            # pylint: disable=bare-except
             except:
                 print("failed")
                 update_status(request, Status.FAILED, generate_all)
 
         return f"Processed {num} requests in {ceil(total_duration)} seconds"
-
-    def default_filename(self):
-        return 'songlist-{at}'.format(
-            at=datetime.now().strftime('%Y%m%d-%H%M'),
-        )
-
-    def get_base_url(self):
-        """
-        Determine base URL to fetch CSS files from `WEASYPRINT_BASEURL` or
-        fall back to using the root path of the URL used in the request.
-        """
-        return getattr(
-            settings, 'WEASYPRINT_BASEURL',
-            reverse("chords:index")
-        )
