@@ -6,6 +6,7 @@ CHORD_RE = r'({)(.*?)}'
 
 
 class ChordsPDFExtension(Extension):
+    """Extension for Chords in PDF"""
     def extendMarkdown(self, md):
         """Chords markdown extension for usage in PDF files"""
         # Insert del pattern into markdown parser

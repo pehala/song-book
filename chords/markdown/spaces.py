@@ -21,7 +21,7 @@ class SpacesPattern(SimpleTagInlineProcessor):
         tag.set("class", "spaces")
         count = int(tag.text)
         txt = ""
-        for i in range(count):
+        for _ in range(count):
             txt += "&nbsp;"
         tag.text = txt
         return tag, start, end
