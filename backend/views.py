@@ -19,7 +19,7 @@ from pdf.utils import request_pdf_regeneration
 def index(request):
     """Index page"""
     songs = fetch_all_songs(locale=request.LANGUAGE_CODE)
-    return render(request, 'chords/index.html', {'songs': songs})
+    return render(request, 'songs/index.html', {'songs': songs})
 
 
 @login_required
@@ -48,7 +48,7 @@ def edit(request, primary_key):
             return redirect('chords:index')
         return HttpResponseBadRequest()
 
-    return render(request, 'chords/add.html', {'form': form})
+    return render(request, 'songs/add.html', {'form': form})
 
 
 @login_required

@@ -13,9 +13,9 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 from django.utils.translation import ugettext_lazy as _
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-from backend.markdown.chords import ChordsExtension
-from backend.markdown.chords_pdf import ChordsPDFExtension
-from backend.markdown.spaces import SpacesExtension
+from chords.markdown.chords import ChordsExtension
+from chords.markdown.chords_pdf import ChordsPDFExtension
+from chords.markdown.spaces import SpacesExtension
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
