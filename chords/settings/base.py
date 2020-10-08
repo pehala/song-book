@@ -45,6 +45,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+
+    'debug_toolbar',
 ]
 
 MARKDOWNX_MARKDOWN_EXTENSIONS = [
@@ -74,7 +76,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'backend.middleware.settings.SiteNameMiddleware',
-    'backend.middleware.settings.CacheTimeoutMiddleware'
+    'backend.middleware.settings.CacheTimeoutMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'chords.urls'
