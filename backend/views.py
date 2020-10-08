@@ -30,9 +30,15 @@ class SongListView(ListView):
     template_name = 'songs/index.html'
     context_object_name = 'songs'
 
-    def add_fields(self, song):
+    def add_fields(self, song, cached_text, uncached_text):
         """Adds additional fields to the JSON"""
-        song['text'] = cache.get_or_set(get_song_cache_key(song["id"]), lambda: template_markdown.convert(song['text']))
+        key = get_song_cache_key(song["id"])
+        if key in cached_text:
+            text = cached_text[key]
+        else:
+            text = template_markdown.convert(song['text'])
+            uncached_text[key] = text
+        song['text'] = text
         if self.request.user.is_authenticated:
             song['edit_url'] = reverse("chords:edit", kwargs={"pk": song["id"]})
             song['delete_url'] = reverse("chords:delete", kwargs={"pk": song["id"]})
@@ -41,12 +47,19 @@ class SongListView(ListView):
         context_data = super().get_context_data(object_list=object_list, **kwargs)
 
         frozen = list(context_data['songs'])
+        keys = [get_song_cache_key(song.id) for song in frozen]
+        cached_texts = cache.get_many(keys)
+        uncached_texts = {}
+
         songs = context_data['songs'].values()
 
         for i, _ in enumerate(songs):
             frozen[i].number = i + 1
             songs[i]['number'] = i + 1
-            self.add_fields(songs[i])
+            self.add_fields(songs[i], cached_texts, uncached_texts)
+
+        if len(uncached_texts) > 0:
+            cache.set_many(uncached_texts)
 
         context_data['hash'] = hash(frozenset(frozen))
         context_data['songs'] = json.dumps(list(songs), cls=DjangoJSONEncoder)
