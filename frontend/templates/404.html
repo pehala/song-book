@@ -1,0 +1,19 @@
+{% extends "base/frame.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Not found" %} {%  endblock %}
+{% block header %} {% trans "Not found" %} {% endblock %}
+
+{% block framed_body %}
+    <p>
+    {% if exception == "Resolver404" %}
+        {% blocktranslate with request=request_path trimmed%}
+Welp, nothing is at {{ request }}. Like, literally nothing. Not even cockroaches or russians. How did you get here? Are you sure this is the right URL?
+        {% endblocktranslate %}
+    {% else %}
+        {% blocktranslate with exception=exception trimmed%}
+It seems you turned wrong somewhere, there is nothing here but small midget wizard with long beard telling you reason what you did wrong:<br> <b>{{ exception }}</b>
+        {% endblocktranslate %}
+    {% endif %}
+    </p>
+{% endblock %}

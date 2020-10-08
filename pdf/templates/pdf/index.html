@@ -6,13 +6,13 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>{% trans "Jerry's songs" %}</title>
+    <title>{% trans name %}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <link rel="stylesheet" type="text/css" href="{% sass_src 'pdf.sass' %}">
 </head>
 <body>
     <article id="contents">
-      <h1>{% trans "Jerry's songs" %}</h1>
+      <h1>{% trans name %}</h1>
       <p class="date">{% now "SHORT_DATE_FORMAT" %}</p>
       <h3 class="contents name">{% trans "Table of Contents" %}</h3>
       <ul>
@@ -22,11 +22,11 @@
       </ul>
     </article>
     {% for song in songs %}
-        <article id="columns">
+        <article class="columns">
           <h2 id="{{ song.id }}-title">{{ song.song_number }}. <span class="name">{{ song.name }}</span></h2>
-          <h3>{{ song.author }}</h3>
+          <h3>{{ song.author }} {% if song.capo > 0 %}<span class="right">Capo {{ song.capo }}</span> {% endif %}</h3>
 
-          <section id="columns">
+          <section>
             {{ song.text|show_pdf_markdown|safe }}
           </section>
         </article>

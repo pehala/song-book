@@ -1,0 +1,11 @@
+{% extends "base/frame.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Bad Request" %} {%  endblock %}
+{% block header %} {% trans "Bad Request" %}  {% endblock %}
+
+{% block framed_body %}
+    <p>
+        {% trans "There is something wrong there, I don't think this is the way to do it? Aren't some of the data missing? Or in the wrong format?" %}
+    </p>
+{% endblock %}

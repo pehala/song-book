@@ -8,10 +8,12 @@ pylint = "*"
 pylint-django = "*"
 
 [packages]
-django = "==3.0.7"
+django = "==3.1.1"
 django-bootstrap4 = "*"
 django-compressor = "*"
+django-datatables-view = "*"
 django-markdownx = "*"
+django-redis = "*"
 django-sass-processor = "*"
 django-simple-menu = "*"
 django-weasyprint = "*"

@@ -1,31 +1,35 @@
 """Menus for backend app"""
 from django.urls import reverse
+from django.utils.translation import gettext_noop as _
 
 from menu import MenuItem, Menu
 
-song_children = (
-    MenuItem("Add a song",
+admin_children = (
+    MenuItem(_("Categories"),
+             reverse("category:list")),
+    MenuItem(_("Add a song"),
              reverse("backend:add")),
-    MenuItem("Song List",
-             reverse("backend:index")),
+    MenuItem(_("Add Category"),
+             reverse("category:add"))
 )
 
-Menu.add_item("main", MenuItem("Songs",
-                               reverse("backend:index"),
-                               children=song_children))
+Menu.add_item("admin", MenuItem(_("Admin"),
+                                reverse("backend:index"),
+                                children=admin_children,
+                                check=lambda request: request.user.is_authenticated))
 
 account_children = (
-    MenuItem("Log in",
+    MenuItem(_("Log in"),
              reverse("login"),
              check=lambda request: not request.user.is_authenticated),
-    MenuItem("Logout",
+    MenuItem(_("Logout"),
              reverse("logout"),
              check=lambda request: request.user.is_authenticated),
-    MenuItem("Change password",
+    MenuItem(_("Change password"),
              reverse("password_change"),
              check=lambda request: request.user.is_authenticated)
 )
 
-Menu.add_item("account", MenuItem("Account",
+Menu.add_item("account", MenuItem(_("Account"),
                                   reverse("login"),
                                   children=account_children))

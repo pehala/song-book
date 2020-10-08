@@ -11,11 +11,13 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 """
 
 import os
-from django.utils.translation import ugettext_lazy as _
+
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
-from backend.markdown.chords import ChordsExtension
-from backend.markdown.chords_pdf import ChordsPDFExtension
-from backend.markdown.spaces import SpacesExtension
+from django.conf.global_settings import gettext_noop
+
+from chords.markdown.chords import ChordsExtension
+from chords.markdown.chords_pdf import ChordsPDFExtension
+from chords.markdown.spaces import SpacesExtension
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -26,20 +28,23 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # Application definition
 
 INSTALLED_APPS = [
+    'frontend',
+    'category',
+    'backend',
+    'pdf',
+
+    'compressor',
+    'bootstrap4',
+    'sass_processor',
+    'markdownx',
+    'menu',
+
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'backend',
-    'pdf',
-    'compressor',
-    'frontend',
-    'bootstrap4',
-    'sass_processor',
-    'markdownx',
-    'menu'
 ]
 
 MARKDOWNX_MARKDOWN_EXTENSIONS = [
@@ -58,6 +63,7 @@ MARKDOWNX_PDF_MARKDOWN_EXTENSIONS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'backend.middleware.DisableClientSideCachingMiddleware',
     'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -67,6 +73,8 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'backend.middleware.settings.SiteNameMiddleware',
+    'backend.middleware.settings.CacheTimeoutMiddleware'
 ]
 
 ROOT_URLCONF = 'chords.urls'
@@ -74,7 +82,7 @@ ROOT_URLCONF = 'chords.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [os.path.join(BASE_DIR, '../frontend/templates')],
+        'DIRS': [],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -138,8 +146,8 @@ AUTH_PASSWORD_VALIDATORS = [
 LANGUAGE_CODE = 'cs'
 
 LANGUAGES = (
-    ('en', _('English')),
-    ('cs', _('Czech')),
+    ('en', 'English'),
+    ('cs', 'Česky'),
 )
 
 TIME_ZONE = 'UTC'
@@ -166,3 +174,32 @@ LOGOUT_REDIRECT_URL = '/'
 LOGIN_REDIRECT_URL = '/'
 
 SESSION_COOKIE_AGE = 86400
+
+MEDIA_ROOT = "chords/media"
+MEDIA_URL = "/media/"
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'WARNING',
+    },
+    'loggers': {
+        'django': {
+            'handlers': ['console'],
+            'level': os.getenv('DJANGO_LOG_LEVEL', 'INFO'),
+            'propagate': False,
+        },
+    },
+}
+
+# Custom settings
+SITE_NAME = gettext_noop("Jerry's songs")
+PDF_FILE_DIR = 'pdfs'
+CACHE_TIMEOUT = 86400

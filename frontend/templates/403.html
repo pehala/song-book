@@ -1,0 +1,11 @@
+{% extends "base/frame.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Permission denied" %} {%  endblock %}
+{% block header %} {% trans "Permission denied" %} {% endblock %}
+
+{% block framed_body %}
+    <p>
+        {% trans "Didn't your Mom tell you to not enter websites you don't have permissions for? Get out of here!" %}
+    </p>
+{% endblock %}

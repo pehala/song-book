@@ -1,21 +1,28 @@
 """Management command for generating PDF files from requests"""
+import logging
+import os
+import tempfile
 from argparse import ArgumentParser
-from datetime import datetime
 from math import ceil
+from pathlib import Path
 
 import weasyprint
+from django.conf import settings
+from django.core.files import File
 from django.core.management import BaseCommand
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import translation
-from django.conf import settings
 from django_weasyprint.utils import django_url_fetcher
 
-from backend.views import fetch_all_songs
+from category.models import Category
 from pdf.models import PDFRequest, Status
-from pdf.utils import Timer, generate_pdf
+from pdf.utils import Timer, generate_pdf_request
 
 TEMPLATE = "pdf/index.html"
+
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
 
 
 def update_status(request: PDFRequest, status: Status, generate_all=False):
@@ -23,13 +30,6 @@ def update_status(request: PDFRequest, status: Status, generate_all=False):
     if not generate_all:
         request.status = status
         request.save()
-
-
-def default_filename():
-    """Default filename"""
-    return 'songlist-{at}'.format(
-        at=datetime.now().strftime('%Y%m%d-%H%M'),
-    )
 
 
 def get_base_url():
@@ -56,55 +56,59 @@ class Command(BaseCommand):
                             help="Number of requests to process, will process all requests if not value is specified")
         parser.add_argument('--all',
                             action='store_true',
-                            help="Regenerates PDF for all locales")
+                            help="Regenerates PDF for all categories")
 
+    # pylint: disable=too-many-locals
     def handle(self, *args, **options):
+        Path(f"{settings.MEDIA_ROOT}/{settings.PDF_FILE_DIR}").mkdir(parents=True, exist_ok=True)
         total_duration = 0
         generate_all = options["all"]
 
         if generate_all:
-            objects = [generate_pdf(locale=locale[0]) for locale in settings.LANGUAGES]
-            num = len(settings.LANGUAGES)
+            objects = [generate_pdf_request(category) for category in Category.objects.filter(generate_pdf=True)]
         else:
             objects = PDFRequest.objects.filter(status=Status.QUEUED)
             if options["requests"] > 0:
                 objects = objects[:options["requests"]]
-            num = objects.count()
 
-            if num == 0:
-                return "No requests, doing nothing"
+        num = len(objects)
+        if num == 0:
+            return "No requests, doing nothing"
 
         for request in objects:
-            if generate_all or request.songs.count() == 0:
-                songs = fetch_all_songs(locale=request.locale)
-            else:
-                songs = request.songs
+            songs = request.get_songs()
             sorted_songs = sorted(songs, key=lambda song: song.name)
 
             update_status(request, Status.IN_PROGRESS, generate_all)
 
             try:
                 timer = Timer()
-                with translation.override(request.locale), timer:
-                    name = request.filename or default_filename()
-                    print(f"Generating {name}.pdf")
-                    string = render_to_string(template_name=TEMPLATE, context={
-                        "songs": songs,
-                        "sorted_songs": sorted_songs
-                    })
-                    weasyprint.HTML(
-                        string=string,
-                        url_fetcher=django_url_fetcher,
-                        base_url=get_base_url()
-                    ).write_pdf(f"{settings.STATIC_ROOT}/{name}.pdf")
-                total_duration += timer.duration
-                request.time_elapsed = ceil(timer.duration)
-                update_status(request, Status.DONE, generate_all)
-                print(f"Done in {request.time_elapsed} seconds")
+                rel_path = f"{settings.PDF_FILE_DIR}/{request.filename}.pdf"
+                with tempfile.TemporaryFile(mode="a+b") as file:
+                    with translation.override(request.locale), timer:
+                        name = os.path.basename(rel_path)
+                        logger.info("Generating %s", name)
+                        logger.debug("from request %s", request)
+                        string = render_to_string(template_name=TEMPLATE, context={
+                            "songs": songs,
+                            "sorted_songs": sorted_songs,
+                            "name": request.name or "Jerry's songs"
+                        })
+                        weasyprint.HTML(
+                            string=string,
+                            url_fetcher=django_url_fetcher,
+                            base_url=get_base_url()
+                        ).write_pdf(file)
+                    request.file.save(rel_path, File(file, name=rel_path))
+                    total_duration += timer.duration
+                    request.time_elapsed = ceil(timer.duration)
 
-            # pylint: disable=bare-except
-            except:
-                print("failed")
+                    update_status(request, Status.DONE, generate_all)
+                    logger.info("Done in %i seconds", request.time_elapsed)
+
+            # pylint: disable=broad-except
+            except Exception as exception:
+                logger.error("Request failed: %s", str(exception))
                 update_status(request, Status.FAILED, generate_all)
 
         return f"Processed {num} requests in {ceil(total_duration)} seconds"

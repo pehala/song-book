@@ -1,20 +1,39 @@
 """Utility functions"""
 from time import time
-from pdf.models import PDFRequest, RequestType, Status
+
+from django.db import transaction
+from django.utils import translation
+from django.utils.translation import gettext
+
+from pdf.models import PDFRequest, RequestType, Status, PDFSong
 
 
-def request_pdf_regeneration(locale):
+def request_pdf_regeneration(category):
     """Requests automatic PDF regeneration if none is pending"""
-    if not PDFRequest.objects.filter(type=RequestType.EVENT, status=Status.QUEUED, locale=locale):
-        generate_pdf(locale).save()
+    if not PDFRequest.objects.filter(type=RequestType.EVENT, status=Status.QUEUED, category=category).exists():
+        generate_pdf_request(category)
 
 
-def generate_pdf(locale):
+def generate_pdf_request(category):
     """Returns PDFRequest for basic"""
-    return PDFRequest(type=RequestType.EVENT,
-                      status=Status.QUEUED,
-                      locale=locale,
-                      filename=f"songbook-{locale}")
+    with transaction.atomic():
+        request = PDFRequest(type=RequestType.EVENT,
+                             status=Status.QUEUED,
+                             category=category,
+                             filename=get_filename(category),
+                             locale=category.locale)
+        request.save()
+        for song_number, song in enumerate(category.song_set.all()):
+            PDFSong(request=request,
+                    song=song,
+                    song_number=song_number + 1).save()
+
+
+def get_filename(category):
+    """Returns filename for category based on its locale"""
+    with translation.override(category.locale):
+        text = gettext('songbook')
+        return f"{text}-{category.name}"
 
 
 class Timer:

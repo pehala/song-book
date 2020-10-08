@@ -1,21 +1,31 @@
 """Models for backend app"""
-from django.conf import settings
 
-from django.db.models import Model, CharField, URLField, DateField, PositiveSmallIntegerField
+from django.db.models import Model, CharField, URLField, DateField, PositiveSmallIntegerField, ManyToManyField
 from django.utils.translation import gettext_lazy as _
 from markdownx.models import MarkdownxField
+
+from category.models import Category
 
 
 class Song(Model):
     """Song model"""
-    name = CharField(verbose_name=_('Song Name'), max_length=100)
+    name = CharField(verbose_name=_('Name'), max_length=100)
     date = DateField(auto_now_add=True, editable=False)
     capo = PositiveSmallIntegerField(verbose_name="Capo", default=0)
     author = CharField(verbose_name=_('Author'), max_length=100, null=True, blank=True)
     link = URLField(verbose_name=_("Youtube Link"), null=True, blank=True)
-    locale = CharField(choices=settings.LANGUAGES, verbose_name=_('Language'), max_length=5, default="Czech")
+    categories = ManyToManyField(Category)
     text = MarkdownxField(verbose_name=_('Lyrics'))
 
     class Meta:
         verbose_name = _('Song')
         verbose_name_plural = _('Songs')
+        ordering = ['date']
+
+    def __hash__(self):
+        values = [self.name, self.date, self.capo, self.author,
+                  self.link, self.categories, self.text]
+        if hasattr(self, "song_number"):
+            # pylint: disable=no-member
+            values.append(self.song_number)
+        return hash(frozenset(values))

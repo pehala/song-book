@@ -1,0 +1,145 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2020-10-08 18:10+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
+"<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
+
+#: pdf/forms.py:35
+msgid "Each song has to have distinct song number"
+msgstr "Každá písnička musí mít unikátní číslo"
+
+#: pdf/menus.py:25
+msgid "Create new PDF"
+msgstr "Vytvořit nové PDF"
+
+#: pdf/menus.py:27 pdf/templates/pdf/requests/list.html:5
+#: pdf/templates/pdf/requests/list.html:6
+#: pdf/templates/pdf/requests/select.html:6
+#: pdf/templates/pdf/requests/select.html:7
+msgid "PDF Requests"
+msgstr "PDF požadavky"
+
+#: pdf/menus.py:31
+msgid "PDF"
+msgstr ""
+
+#: pdf/menus.py:39
+msgid "Files"
+msgstr "Soubory"
+
+#: pdf/models.py:49
+msgid "Filename of the generated PDF, please do not include .pdf"
+msgstr "Název vygenerovaného PDF, prosím piště bez přípony .pdf"
+
+#: pdf/models.py:52
+msgid "Language to be used in the generated PDF"
+msgstr "Jazyk pro použití ve vygenerovaných PDF"
+
+#: pdf/models.py:56
+msgid "Name to be used on the title page of the PDF"
+msgstr "Jméno pro titulní stranu pdf souboru"
+
+#: pdf/templates/pdf/index.html:17
+msgid "Table of Contents"
+msgstr "Obsah"
+
+#: pdf/templates/pdf/requests/assign.html:5
+#: pdf/templates/pdf/requests/assign.html:6
+msgid "Number assignment"
+msgstr "Přiřazení čísel"
+
+#: pdf/templates/pdf/requests/assign.html:9
+msgid "Please, now assign each song a number that will be used in the PDF"
+msgstr "Teď prosím přiřaďte každé písničce její číslo v PDF souboru"
+
+#: pdf/templates/pdf/requests/assign.html:41
+msgid "Finish"
+msgstr "Dokončit"
+
+#: pdf/templates/pdf/requests/list.html:12
+msgid "Filename"
+msgstr "Název souboru"
+
+#: pdf/templates/pdf/requests/list.html:13
+msgid "Name"
+msgstr "Jméno"
+
+#: pdf/templates/pdf/requests/list.html:14
+msgid "Date Created"
+msgstr "Datum vytvořené"
+
+#: pdf/templates/pdf/requests/list.html:15
+msgid "Last updated"
+msgstr "Naposledy změněno"
+
+#: pdf/templates/pdf/requests/list.html:16
+msgid "Type"
+msgstr "Typ"
+
+#: pdf/templates/pdf/requests/list.html:17
+msgid "Status"
+msgstr "Status"
+
+#: pdf/templates/pdf/requests/list.html:18
+msgid "Link"
+msgstr "Odkaz"
+
+#: pdf/templates/pdf/requests/list.html:19
+msgid "Time elapsed"
+msgstr "Délka generování"
+
+#: pdf/templates/pdf/requests/list.html:20
+msgid "Category"
+msgstr "Kategorie"
+
+#: pdf/templates/pdf/requests/list.html:30
+msgid "Automatic"
+msgstr "Automaticky"
+
+#: pdf/templates/pdf/requests/list.html:42
+#: pdf/templates/pdf/requests/list.html:50
+msgid "None"
+msgstr "Nic"
+
+#: pdf/templates/pdf/requests/select.html:14
+msgid "Please select which songs would you like to include in the pdf"
+msgstr "Prosím vyberte písničky které byste chtěli mít v PDF souboru"
+
+#: pdf/templates/pdf/requests/select.html:52
+msgid "Finish selecting"
+msgstr "Dokončit výběr"
+
+#: pdf/utils.py:35
+msgid "songbook"
+msgstr "zpevnik"
+
+#: pdf/views.py:53
+msgid "Required parameters not found"
+msgstr "Požadované parametry nenalezeny"
+
+#: pdf/views.py:58
+msgid "You need to select at least one song"
+msgstr "Musíte vybrat alespoň jednu písničku"
+
+#: pdf/views.py:85
+#, python-format
+msgid "PDF Request with id %(id)s was successfully created"
+msgstr "PDF požadavek se id %(id)s byl úspěšně vytvořen"
+
+#~ msgid "songlist"
+#~ msgstr "zpevnik"

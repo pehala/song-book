@@ -5,7 +5,7 @@
             {% if item.separator %}
                 <div class="dropdown-divider"></div>
             {% endif %}
-            <a class="dropdown-item" href="{{ item.url }}">{% trans item.title %}</a>
+            <a class="dropdown-item" href="{{ item.url }}">{% if item.skip_translate %}{{ item.title }}{% else %}{% trans item.title %}{% endif %}</a>
         {% endif %}
     {% endfor %}
 </div>
