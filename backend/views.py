@@ -4,6 +4,7 @@ import json
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.cache import cache
 from django.core.serializers.json import DjangoJSONEncoder
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
@@ -13,9 +14,14 @@ from django_datatables_view.base_datatable_view import BaseDatatableView
 
 from backend.forms import SongForm
 from backend.models import Song
-from backend.templatetags.markdown import show_markdown
+from backend.templatetags.markdown import template_markdown
 from backend.utils import regenerate_pdf
 from category.models import Category
+
+
+def get_song_cache_key(song_id):
+    """Returns cache key for song caching"""
+    return f"song.{song_id}"
 
 
 class SongListView(ListView):
@@ -26,7 +32,7 @@ class SongListView(ListView):
 
     def add_fields(self, song):
         """Adds additional fields to the JSON"""
-        song['text'] = show_markdown(song['text'])
+        song['text'] = cache.get_or_set(get_song_cache_key(song["id"]), lambda: template_markdown.convert(song['text']))
         if self.request.user.is_authenticated:
             song['edit_url'] = reverse("chords:edit", kwargs={"pk": song["id"]})
             song['delete_url'] = reverse("chords:delete", kwargs={"pk": song["id"]})
@@ -81,6 +87,7 @@ class SongUpdateView(SuccessMessageMixin, UpdateView):
     def form_valid(self, form):
         if len(form.changed_data) > 0:
             regenerate_pdf(self.object)
+            cache.delete(get_song_cache_key(self.object.id))
         return super().form_valid(form)
 
 
@@ -95,6 +102,7 @@ class SongDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         response = super().delete(request, *args, **kwargs)
         regenerate_pdf(self.object)
+        cache.delete(get_song_cache_key(self.object.id))
         messages.success(self.request, self.success_message % self.object.name)
         return response
 
