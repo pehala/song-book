@@ -12,18 +12,16 @@ $border-color: $bgHighlight
   margin-left: 10px
 
 .asc:after
-  font-family: "songs"
   margin-left: 3px
   //font-weight: 900
-  content: "\E803"
+  content: '\2191'
   text-rendering: auto
   -webkit-font-smoothing: antialiased
 
 .desc:after
-  font-family: "songs"
   margin-left: 3px
   //font-weight: 900
-  content: "\E802"
+  content: '\2193'
   text-rendering: auto
   -webkit-font-smoothing: antialiased
 
@@ -33,7 +31,7 @@ $border-color: $bgHighlight
 .collapsible-controller
   display: inline-block
 
-.collapsible-controller:after
+.collapsible-controller > .tag:after
   content: '\02795' /* Unicode character for "plus" sign (+) */
   font-size: 13px
   color: black
@@ -42,16 +40,14 @@ $border-color: $bgHighlight
   margin-right: 20px
   vertical-align: middle
 
-.collapsible-controller.unrolled:after
-  content: "\2796"
+.collapsible-controller.unrolled > .tag:after
+  content: '\2796'
 
 .song-list
-  list-style-type: none
-  padding-left: 0
   border-left: 6px solid #ccc
-
-.song-list li
-  padding-left: 15px
+td
+  margin: 0
+  padding: 0
 
 /* Unicode character for "minus" sign (-) */
 
@@ -97,26 +93,13 @@ textarea.readonly
   color: black
   width: 100%
 
-td, th
-  border: 1px solid black
-  padding: 5px
-
-#addTable td:nth-child(1)
-  width: 50px
-
-#addTable td:nth-child(2)
-  width: 100%
-
-#addTable tr:last-child
-  height: 150px
-
 .tableForm
   margin: auto
 
 .back-to-top
     cursor: pointer
     position: fixed
-    bottom: 75px
+    top: 20px
     right: 20px
     display: none
 

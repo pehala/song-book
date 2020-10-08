@@ -1,84 +1,107 @@
 """Views for backend app"""
+import json
+
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponseBadRequest, HttpResponseNotFound, HttpRequest
-from django.shortcuts import render, redirect, get_object_or_404
-from django.urls import reverse
-from django.utils.translation import gettext_lazy
-from django.views.decorators.cache import cache_control, cache_page
-from django.core.cache import cache
+from django.contrib.messages.views import SuccessMessageMixin
+from django.core.serializers.json import DjangoJSONEncoder
+from django.urls import reverse_lazy, reverse
+from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django_datatables_view.base_datatable_view import BaseDatatableView
 
 from backend.forms import SongForm
 from backend.models import Song
-from backend.utils import fetch_all_songs
-from pdf.utils import request_pdf_regeneration
+from backend.templatetags.markdown import show_markdown
+from backend.utils import regenerate_pdf
+from category.models import Category
 
 
-@cache_control(max_age=1200)
-@cache_page(60 * 60 * 24)
-def index(request):
-    """Index page"""
-    songs = fetch_all_songs(locale=request.LANGUAGE_CODE)
-    return render(request, 'chords/index.html', {'songs': songs})
+class SongListView(ListView):
+    """Lists songs in the one page application"""
+    model = Song
+    template_name = 'songs/index.html'
+    context_object_name = 'songs'
+
+    def add_fields(self, song):
+        """Adds additional fields to the JSON"""
+        song['text'] = show_markdown(song['text'])
+        if self.request.user.is_authenticated:
+            song['edit_url'] = reverse("chords:edit", kwargs={"pk": song["id"]})
+            song['delete_url'] = reverse("chords:delete", kwargs={"pk": song["id"]})
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context_data = super().get_context_data(object_list=object_list, **kwargs)
+
+        frozen = list(context_data['songs'])
+        songs = context_data['songs'].values()
+
+        for i, _ in enumerate(songs):
+            frozen[i].number = i + 1
+            songs[i]['number'] = i + 1
+            self.add_fields(songs[i])
+
+        context_data['hash'] = hash(frozenset(frozen))
+        context_data['songs'] = json.dumps(list(songs), cls=DjangoJSONEncoder)
+        return context_data
 
 
-@login_required
-def edit(request, primary_key):
-    """Add/Update page for songs"""
-    if primary_key:
-        song = get_object_or_404(Song, pk=primary_key)
-    else:
-        song = Song(locale=request.LANGUAGE_CODE)
-
-    form = SongForm(request.POST or None, instance=song)
-    if request.POST:
-        if form.is_valid():
-            song = form.save()
-
-            if primary_key:
-                text = gettext_lazy("Song with id %(id)s was successfully edited")
-            else:
-                text = gettext_lazy("Song with id %(id)s was successfully created")
-
-            request_pdf_regeneration(locale=request.LANGUAGE_CODE)
-
-            messages.success(request, text % {'id': song.id})
-            expire_view_cache("chords:index")
-            # Save was successful, so redirect to another page
-            return redirect('chords:index')
-        return HttpResponseBadRequest()
-
-    return render(request, 'chords/add.html', {'form': form})
+class IndexSongListView(SongListView):
+    """Shows first available category"""
+    def get_queryset(self):
+        if Category.objects.count() > 0:
+            category = Category.objects.all()[0]
+            return super().get_queryset().filter(categories__slug=category.slug)
+        return super().get_queryset()
 
 
-@login_required
-def delete(request, primary_key):
-    """Deletes song"""
-    song = get_object_or_404(Song, pk=primary_key)
-    song.delete()
-    request_pdf_regeneration(locale=request.LANGUAGE_CODE)
-    expire_view_cache("chords:index")
-    return redirect('chords:index')
+@method_decorator(login_required, name='dispatch')
+class SongCreateView(SuccessMessageMixin, CreateView):
+    """Creates new song"""
+    form_class = SongForm
+    model = Song
+    template_name = 'songs/add.html'
+    success_message = _("Song %(name)s was successfully created")
+
+    def form_valid(self, form):
+        regenerate_pdf(self.object)
+        return super().form_valid(form)
 
 
-def expire_view_cache(view_name, namespace=None, method="GET"):
-    """
-    This function allows you to invalidate any item from the per-view cache.
-    It probably won't work with things cached using the per-site cache
-    middleware (because that takes account of the Vary: Cookie header).
-    This assumes you're using the Sites framework.
-    Arguments:
-        * path: The URL of the view to invalidate, like `/blog/posts/1234/`.
-        * key prefix: The same as that used for the cache_page()
-          function/decorator (if any).
+@method_decorator(login_required, name='dispatch')
+class SongUpdateView(SuccessMessageMixin, UpdateView):
+    """Updates existing song"""
+    form_class = SongForm
+    model = Song
+    template_name = 'songs/add.html'
+    success_url = reverse_lazy("backend:index")
+    success_message = _("Song %(name)s was successfully updated")
 
-    """
-    request = HttpRequest()
-    request.method = method
-    # Loookup the request path:
-    if namespace:
-        view_name = namespace + ":" + view_name
-    request.path = reverse(view_name)
-    # get cache key, expire if the cached item exists:
-    cache.clear()
-    return False
+    def form_valid(self, form):
+        if len(form.changed_data) > 0:
+            regenerate_pdf(self.object)
+        return super().form_valid(form)
+
+
+@method_decorator(login_required, name='dispatch')
+class SongDeleteView(DeleteView):
+    """Removes song"""
+    model = Song
+    template_name = "songs/confirm_delete.html"
+    success_url = reverse_lazy("backend:index")
+    success_message = _("Song %s was successfully deleted")
+
+    def delete(self, request, *args, **kwargs):
+        response = super().delete(request, *args, **kwargs)
+        regenerate_pdf(self.object)
+        messages.success(self.request, self.success_message % self.object.name)
+        return response
+
+
+@method_decorator(login_required, name='dispatch')
+class SongsDatatableView(BaseDatatableView):
+    """API for datatables that returns all songs"""
+    model = Song
+    max_display_length = 500
+    columns = ["name", "author", "capo"]

@@ -1,0 +1,80 @@
+{% extends "base/frame.html" %}
+{% load i18n %}
+{% load types %}
+{% load sass_tags %}
+
+{% block title %} {% trans "PDF Requests" %} {% endblock %}
+{% block header %} {% trans "PDF Requests" %}  {% endblock %}
+{% block extra_head %}
+<script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.22/b-1.6.4/r-2.2.6/rr-1.2.7/sb-1.0.0/sp-1.2.0/sl-1.3.1/datatables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="{% sass_src 'datatables.sass' %}">
+{% endblock %}
+
+{% block framed_body %}
+    <p class="text-center font-weight-bold">{% trans "Please select which songs would you like to include in the pdf" %}</p>
+    <table id="datatable" class="table table-bordered">
+        <thead class="thead-light">
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>Author</th>
+                <th>Capo</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for song in songs %}
+            <tr>
+                <td>{{ song.id }}</td>
+                <td>{{ song.name  }}</td>
+                <td>{{ song.author }}</td>
+                <td>{{ song.capo }}</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+    <form class="hidden" id="assign_form" action="{% url "pdf:assign" %}"></form>
+    <script>
+    const form = $('#assign_form')
+    function addSong(id) {
+        $("<input>")
+            .attr("type", "hidden")
+            .attr("name", "songs")
+            .val(id)
+            .appendTo(form);
+    }
+    $.fn.DataTable.ext.pager.numbers_length = 5;
+    $('#datatable').DataTable( {
+        processing: true,
+        select: 'multi+shift',
+        dom: 'frtipB',
+        buttons: [
+            {
+                text: '{% trans "Finish selecting" %}',
+                action: function (e, dt, node, config) {
+                    const rows = dt.rows( { selected: true } );
+                    const data = rows.data();
+                    for (var i = 0; i < rows.count(); i++) {
+                        const id = data[i][0]
+                        addSong(id)
+                    }
+                    form.submit()
+                }
+            }
+        ],
+        {#buttons: [#}
+        {#    {#}
+        {#        text: {% trans "Finish selecting" %},#}
+        {#        action: function() {#}
+        {#            var entries = table.rows( { selected: true } );#}
+        {#            console.log(entries);#}
+        {#        }#}
+        {#    }#}
+        {#]#}
+        {% if request.LANGUAGE_CODE == "cs"  %}
+        language: {
+                url: "//cdn.datatables.net/plug-ins/1.10.21/i18n/Czech.json"
+        },
+        {% endif %}
+    } );
+    </script>
+{% endblock %}

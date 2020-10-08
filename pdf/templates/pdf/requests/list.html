@@ -1,0 +1,57 @@
+{% extends "base/frame.html" %}
+{% load i18n %}
+{% load types %}
+
+{% block title %} {% trans "PDF Requests" %} {% endblock %}
+{% block header %} {% trans "PDF Requests" %}  {% endblock %}
+
+{% block framed_body %}
+    <table class="table table-bordered">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col">{% trans "Filename" %}</th>
+          <th scope="col">{% trans "Name" %}</th>
+          <th scope="col">{% trans "Date Created" %}</th>
+          <th scope="col">{% trans "Last updated" %}</th>
+          <th scope="col">{% trans "Type" %}</th>
+          <th scope="col">{% trans "Status" %}</th>
+          <th scope="col">{% trans "Link" %}</th>
+          <th scope="col">{% trans "Time elapsed" %}</th>
+          <th scope="col">{% trans "Category" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for request in requests %}
+        <tr>
+          <td>
+              {% if request.filename %}
+                {{ request.filename }}
+              {% else %}
+                {% trans "Automatic" %}
+              {% endif %}
+          </td>
+          <td>{{ request.name }}</td>
+          <td>{{ request.created_date }}</td>
+          <td>{{ request.update_date }}</td>
+          <td>{{ request.get_type_display }}</td>
+          <td style="background-color: {{ request.status|get_status_color }}">{{ request.get_status_display }}</td>
+          <td>
+              {% if request.file %}
+                <a href="{{ request.file.url }}">{{ request.file|filename }}</a>
+              {% else %}
+                {% trans "None" %}
+              {% endif %}
+          </td>
+          <td>{{ request.time_elapsed|default_if_none:0 }} s</td>
+          <td>
+              {% if request.category %}
+                <a href="{% url "category:index" slug=request.category.slug %}">{{ request.category.name }}</a>
+              {% else %}
+                {% trans "None" %}
+              {% endif %}
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,1 @@
+pipenv run pylint backend/ chords/ pdf/ frontend/ category/ --load-plugins pylint_django

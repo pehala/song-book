@@ -1,0 +1,36 @@
+{% extends "base/frame.html" %}
+{% load i18n %}
+
+{% block title %} {% trans "Categories" %} {% endblock %}
+{% block header %} {% trans "Categories" %}  {% endblock %}
+
+{% block framed_body %}
+    <table class="table table-bordered">
+      <thead class="thead-light">
+        <tr>
+          <th scope="col">{% trans "Name" %}</th>
+          <th scope="col">{% trans "URL pattern" %}</th>
+          <th scope="col">{% trans "PDF generation" %}</th>
+          <th scope="col">{% trans "Language" %}</th>
+          <th scope="col">{% trans "Edit" %}</th>
+          <th scope="col">{% trans "Remove" %}</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for category in categories %}
+        <tr>
+          <td>{{ category.name }}</td>
+          <td><a href="{% url "category:index" slug=category.slug %}">{% url "category:index" slug=category.slug %}</a></td>
+          <td>{% if category.generate_pdf %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td>
+          <td>{{ category.locale }}</td>
+          <td>
+              <a href="{% url "category:edit" pk=category.id %}" class="btn btn-primary">{% trans "Edit" %}</a>
+          </td>
+          <td>
+              <a href="{% url "category:delete" pk=category.id %}" class="btn btn-danger">{% trans "Delete" %}</a>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+{% endblock %}

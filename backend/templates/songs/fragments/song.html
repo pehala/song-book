@@ -1,0 +1,42 @@
+{% load i18n %}
+{% load markdown %}
+
+<li class="border-bottom rounded pt-1">
+    <span class="d-none index">{{ song.song_number }}</span>
+    <span class="d-none text">{{ song.text }}</span>
+    <span class="d-none name">{{ song.name }}</span>
+    <span class="d-none author">{{ song.author }}</span>
+    <div class="collapsible-controller w-100 mb-2" onclick="collapsible(this,'{{ song.song_number }}')">
+         <h2 class="d-inline"><span style="width: 50px;">{{ song.song_number }}.</span> {{ song.name }}</h2>
+        {%  if song.author %}
+            <h6 class="d-inline" >{{ song.author }}</h6>
+        {%  endif %}
+        <span class="float-right tag mr-1">
+        {% if user.is_authenticated %}
+               <form class="d-inline ml-3" action="{% url 'chords:edit' pk=song.id %}" method="get">
+                   <input class="btn btn-secondary" type="submit" value="{%  trans "Edit" %}"/>
+               </form>
+               <form class="d-inline ml-1 mr-2" action="{% url 'chords:delete' pk=song.id %}" method="get">
+                   <input class="btn btn-danger" type="submit" value="{% trans "Delete" %}"/>
+               </form>
+        {%  endif %}
+        </span>
+    </div>
+    <div id="{{ song.song_number }}" style="display: none;">
+    {% if song.capo > 0 %}<h5>Capo {{ song.capo }} </h5> {% endif %}
+    <div class="input-group mb-3">
+        {% if song.link %}
+            <a href="{{ song.link }}" class="btn btn-primary" role="button" aria-pressed="true">
+                <i class="icon-youtube-play"></i>
+            </a>
+        {% endif %}
+        <div class="input-group-prepend">
+          <span class="input-group-text">{% trans "Transpose" %}</span>
+        </div>
+        <input class="form-control-sm" type="number" value="0" min="-11" max="11" step="1" previous_value=0 onchange="transpose(event, this, {{ song.song_number }} )"/>
+    </div>
+        <div class="text-wrap song-text">
+        {{ song.text|show_markdown|safe }}
+        </div>
+    </div>
+</li>

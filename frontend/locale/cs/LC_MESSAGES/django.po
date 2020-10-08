@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-05-02 15:49+0000\n"
+"POT-Creation-Date: 2020-10-08 18:10+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,86 +19,76 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
-#: frontend/templates/base.html:16 frontend/templates/base.html:31
-#: frontend/templates/chords/pdf/index.html:5
-#: frontend/templates/chords/pdf/index.html:50
-msgid "Jerry's songs"
-msgstr "Jerryho zpěvníček"
+#: frontend/templates/400.html:4 frontend/templates/400.html:5
+msgid "Bad Request"
+msgstr "Špatný dotaz"
 
-#: frontend/templates/base.html:42
-msgid "Logged as"
-msgstr "Přihlášen jako"
+#: frontend/templates/400.html:9
+msgid ""
+"There is something wrong there, I don't think this is the way to do it? "
+"Aren't some of the data missing? Or in the wrong format?"
+msgstr ""
+"Něco tu nesedí. Nemyslím že tohle je ten správný způsob jak tohle udělat. "
+"Nechybí ti nějaká data? A neposlals je ve špatném formátu?"
 
-#: frontend/templates/base.html:51
-msgid "Language"
-msgstr "Jazyk"
+#: frontend/templates/403.html:4 frontend/templates/403.html:5
+msgid "Permission denied"
+msgstr "Přístup zamítnut"
 
-#: frontend/templates/chords/add.html:5 frontend/templates/chords/add.html:6
-#, fuzzy
-#| msgid "Song List"
-msgid "Song Editor"
-msgstr "Zpěvníček"
+#: frontend/templates/403.html:9
+msgid ""
+"Didn't your Mom tell you to not enter websites you don't have permissions "
+"for? Get out of here!"
+msgstr ""
+"Maminka ti neříkala že nemáš lozit na zakázané stránky? Vypadni! Tohle je "
+"jen pro přihlášené!"
 
-#: frontend/templates/chords/add.html:12
+#: frontend/templates/404.html:4 frontend/templates/404.html:5
+msgid "Not found"
+msgstr "Nenalezeno"
+
+#: frontend/templates/404.html:10
+#, python-format
+msgid ""
+"Welp, nothing is at %(request)s. Like, literally nothing. Not even "
+"cockroaches or russians. How did you get here? Are you sure this is the "
+"right URL?"
+msgstr ""
+"No, na adrese %(request)s není lautr nic. Jakože, doslova nic. Nežijí tu "
+"šváby a rusáci. Jak ses sem sakra dostal? Jsi si jistý že je tohle správná "
+"adresa?"
+
+#: frontend/templates/404.html:14
+#, python-format
+msgid ""
+"It seems you turned wrong somewhere, there is nothing here but small midget "
+"wizard with long beard telling you reason what you did wrong:<br> <b>"
+"%(exception)s</b>"
+msgstr ""
+"Vypadá to že si někde špatně uhl, není tu nic vyjma trpasličího čaroděje s "
+"dlouhými vousy který se ti snaží říct co pokazilo:<br> <b>%(exception)s</b>"
+
+#: frontend/templates/base/form.html:10
 msgid "Submit"
 msgstr "Odeslat"
 
-#: frontend/templates/chords/index.html:20
-msgid "Search"
-msgstr "Hledání"
+#: frontend/templates/base/index.html:15
+msgid "Jerry's songs"
+msgstr "Jerryho zpěvníček"
 
-#: frontend/templates/chords/index.html:26
-msgid "Index"
-msgstr "Číslo"
+#: frontend/templates/base/index.html:51
+msgid "Logged as"
+msgstr "Přihlášen jako"
 
-#: frontend/templates/chords/index.html:27
-msgid "Name"
-msgstr "Jméno"
+#: frontend/templates/base/index.html:60
+msgid "Language"
+msgstr "Jazyk"
 
-#: frontend/templates/chords/index.html:28
-msgid "Author"
-msgstr "Autor"
-
-#: frontend/templates/chords/index.html:47
-#: frontend/templates/chords/song.html:15
-msgid "Edit"
-msgstr "Upravit"
-
-#: frontend/templates/chords/index.html:50
-#: frontend/templates/chords/song.html:18
-msgid "Delete"
-msgstr "Smazat"
-
-#: frontend/templates/chords/index.html:62
-#: frontend/templates/chords/song.html:30
-msgid "Transpose"
-msgstr "Transpozice"
-
-#: frontend/templates/chords/index.html:81
-msgid "Please confirm"
-msgstr "Prosím potvrďte"
-
-#: frontend/templates/chords/index.html:81
-msgid "Are you sure you wanna delete song"
-msgstr "Jste si jistí že chce smazat písničku"
-
-#: frontend/templates/chords/pdf/index.html:54
-msgid "Table of contents"
-msgstr "Obsah"
-
-#: frontend/templates/chords/pdf/index.html:70
-msgid "Page"
-msgstr "Strana"
-
-#: frontend/templates/chords/pdf/index.html:70
-msgid "of"
-msgstr "z"
-
-#: frontend/templates/markdownx/widget2.html:6
+#: frontend/templates/markdownx/widget.html:6
 msgid "Editor"
 msgstr ""
 
-#: frontend/templates/markdownx/widget2.html:9
+#: frontend/templates/markdownx/widget.html:9
 msgid "Preview"
 msgstr "Náhled"
 
@@ -106,10 +96,6 @@ msgstr "Náhled"
 #: frontend/templates/registration/login.html:5
 msgid "Login"
 msgstr "Přihlásit se"
-
-#: frontend/templates/registration/login.html:11
-msgid "Enter"
-msgstr ""
 
 #: frontend/templates/registration/password_change_done.html:3
 #: frontend/templates/registration/password_change_done.html:4
@@ -123,16 +109,4 @@ msgstr "Heslo bylo úspěšně změněno"
 #: frontend/templates/registration/password_change_form.html:4
 #: frontend/templates/registration/password_change_form.html:5
 msgid "Change password"
-msgstr ""
-
-msgid "Add a song"
-msgstr "Přidat písničku"
-
-msgid "English"
-msgstr "Anglicky"
-
-msgid "Czech"
-msgstr "Česky"
-
-msgid "Song"
-msgstr "Písnička"
+msgstr "Změnit heslo"
