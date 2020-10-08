@@ -1,3 +1,4 @@
+"""Views for categories"""
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
 from django.http import Http404
@@ -13,7 +14,7 @@ from category.models import Category
 
 
 class CategorySongsListView(SongListView):
-
+    """Shows all songs in a category"""
     def get_queryset(self):
         slug = self.kwargs['slug']
         if not Category.objects.filter(slug=slug).exists():
@@ -24,6 +25,7 @@ class CategorySongsListView(SongListView):
 
 @method_decorator(login_required, name='dispatch')
 class CategoryListView(ListView):
+    """Lists all categories"""
     model = Category
     template_name = "category/list.html"
     context_object_name = "categories"
@@ -31,6 +33,7 @@ class CategoryListView(ListView):
 
 @method_decorator(login_required, name='dispatch')
 class CategoryCreateView(SuccessMessageMixin, CreateView):
+    """Create new category"""
     form_class = CategoryForm
     model = Category
     template_name = 'category/add.html'
@@ -40,6 +43,7 @@ class CategoryCreateView(SuccessMessageMixin, CreateView):
 
 @method_decorator(login_required, name='dispatch')
 class CategoryUpdateView(SuccessMessageMixin, UpdateView):
+    """Updates category"""
     form_class = CategoryForm
     model = Category
     template_name = 'category/add.html'
@@ -49,8 +53,8 @@ class CategoryUpdateView(SuccessMessageMixin, UpdateView):
 
 @method_decorator(login_required, name='dispatch')
 class CategoryDeleteView(SuccessMessageMixin, DeleteView):
+    """Removes category"""
     model = Category
     template_name = "category/confirm_delete.html"
     success_url = reverse_lazy("category:list")
     success_message = _("Category %(name)s was successfully deleted")
-

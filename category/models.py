@@ -1,9 +1,11 @@
+"""Models"""
 from django.conf import settings
 from django.db.models import Model, CharField, SlugField, BooleanField
 from django.utils.translation import gettext_lazy as _
 
 
 class Category(Model):
+    """Represents set of songs"""
     name = CharField(verbose_name=_('Name'), max_length=100, unique=True)
     slug = SlugField(verbose_name=_('URL pattern'), max_length=25, unique=True)
     generate_pdf = BooleanField(verbose_name=_('PDF generation'),
