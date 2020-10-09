@@ -81,7 +81,6 @@ msgid "Logged as"
 msgstr "Přihlášen jako"
 
 #: frontend/templates/base/index.html:60
-#, fuzzy
 #| msgid "Language"
 msgid "Site Language"
 msgstr "Jazyk stránky"
