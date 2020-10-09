@@ -6,9 +6,9 @@ from django.forms import formset_factory
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 from django.views.generic.base import TemplateResponseMixin, View
-from django.utils.translation import gettext_lazy as _
 
 from backend.models import Song
 from pdf.forms import RequestForm, PDFSongForm, BasePDFSongFormset

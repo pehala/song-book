@@ -3,7 +3,7 @@
 {% load sass_tags %}
 {% load i18n %}
 {% load menu %}
-{% load cache %}
+{#{% load cache %}#}
 
 {% get_current_language as LANGUAGE_CODE %}
 {% get_available_languages as LANGUAGES %}
@@ -25,7 +25,7 @@
 </head>
 <body>
 <div class="wrap">
-    {% cache request.CACHE_TIMEOUT menu request.user.is_authenticated LANGUAGE_CODE %}
+{#    {% cache request.CACHE_TIMEOUT menu request.user.is_authenticated LANGUAGE_CODE %}#}
     <nav class="navbar navbar-expand-lg navbar-light">
         <a class="navbar-brand" href="#">{% trans request.SITE_NAME %}</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
@@ -74,7 +74,7 @@
             </ul>
         </div>
     </nav>
-    {% endcache %}
+{#    {% endcache %}#}
     {% bootstrap_messages %}
     {% block body %}
         Here should be your text
