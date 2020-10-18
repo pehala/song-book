@@ -55,7 +55,7 @@ msgid ""
 "right URL?"
 msgstr ""
 "No, na adrese %(request)s není lautr nic. Jakože, doslova nic. Nežijí tu "
-"šváby a rusáci. Jak ses sem sakra dostal? Jsi si jistý že je tohle správná "
+"švábi a rusáci. Jak ses sem sakra dostal? Jsi si jistý že je tohle správná "
 "adresa?"
 
 #: frontend/templates/404.html:14

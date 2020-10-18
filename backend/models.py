@@ -20,7 +20,7 @@ class Song(Model):
     class Meta:
         verbose_name = _('Song')
         verbose_name_plural = _('Songs')
-        ordering = ['date']
+        ordering = ['date', 'id']
 
     def __hash__(self):
         values = [self.name, self.date, self.capo, self.author,
