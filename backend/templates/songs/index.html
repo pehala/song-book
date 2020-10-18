@@ -43,8 +43,8 @@
                   <span class="input-group-text">{% trans "Transpose" %}</span>
                 </div>
                 <input class="form-control-sm raw" type="number" value="0" min="-11" max="11" step="1" previous_value=0 onchange="transpose(event, this, <%:number%> )"/>
-                <%if capo > 0%><h5>Capo <%:capo%> </h5> <%/if%>
             </div>
+            <%if capo > 0%><h5>Capo <%:capo%> </h5> <%/if%>
             <div class="text-wrap song-text">
                 <%:text%>
             </div>
