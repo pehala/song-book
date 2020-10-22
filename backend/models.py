@@ -9,13 +9,13 @@ from category.models import Category
 
 class Song(Model):
     """Song model"""
-    name = CharField(verbose_name=_('Name'), max_length=100)
+    name = CharField(verbose_name=_("Name"), max_length=100)
     date = DateField(auto_now_add=True, editable=False)
     capo = PositiveSmallIntegerField(verbose_name="Capo", default=0)
-    author = CharField(verbose_name=_('Author'), max_length=100, null=True, blank=True)
+    author = CharField(verbose_name=_("Author"), max_length=100, null=True, blank=True)
     link = URLField(verbose_name=_("Youtube Link"), null=True, blank=True)
-    categories = ManyToManyField(Category)
-    text = MarkdownxField(verbose_name=_('Lyrics'))
+    categories = ManyToManyField(Category, verbose_name=_("Categories"))
+    text = MarkdownxField(verbose_name=_("Lyrics"))
 
     class Meta:
         verbose_name = _('Song')

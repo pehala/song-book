@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-09 08:10+0000\n"
+"POT-Creation-Date: 2020-10-22 21:08+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
-#: backend/menus.py:8
+#: backend/menus.py:8 backend/models.py:17
 msgid "Categories"
 msgstr "Kategorie"
 
@@ -103,7 +103,7 @@ msgid "Delete"
 msgstr "Smazat"
 
 #: backend/templates/songs/fragments/song.html:34
-#: backend/templates/songs/index.html:44 backend/templates/songs/song.html:30
+#: backend/templates/songs/index.html:43 backend/templates/songs/song.html:30
 msgid "Transpose"
 msgstr "Transponovat"
 
@@ -120,12 +120,12 @@ msgstr "Číslo, text nebo autor"
 msgid "Song %(name)s was successfully created"
 msgstr "Písnička %(name)s byla úspěšně přidána"
 
-#: backend/views.py:98
+#: backend/views.py:99
 #, python-format
 msgid "Song %(name)s was successfully updated"
 msgstr "Písnička %(name)s byla úspěšně upravena"
 
-#: backend/views.py:113
+#: backend/views.py:117
 #, python-format
 msgid "Song %s was successfully deleted"
 msgstr "Písnička %s byla úspěšně odstraněna"

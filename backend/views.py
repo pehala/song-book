@@ -82,10 +82,11 @@ class SongCreateView(SuccessMessageMixin, CreateView):
     model = Song
     template_name = 'songs/add.html'
     success_message = _("Song %(name)s was successfully created")
+    success_url = reverse_lazy("backend:index")
 
-    def form_valid(self, form):
+    def get_success_url(self):
         regenerate_pdf(self.object)
-        return super().form_valid(form)
+        return super().get_success_url()
 
 
 @method_decorator(login_required, name='dispatch')
