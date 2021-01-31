@@ -206,3 +206,9 @@ LOGGING = {
 SITE_NAME = gettext_noop("Jerry's songs")
 PDF_FILE_DIR = 'pdfs'
 CACHE_TIMEOUT = 86400
+
+# If true, it will prerender all markdowns on create/update and then use them in fetch requests
+USE_PRERENDERED_MARKDOWN = False
+# This settings will prerender markdown on fetch request and save it for future use, if it is empty
+# might incur performance penalties on production, for production deployment use
+USE_DYNAMIC_PRERENDER = False
