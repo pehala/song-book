@@ -206,3 +206,6 @@ LOGGING = {
 SITE_NAME = gettext_noop("Jerry's songs")
 PDF_FILE_DIR = 'pdfs'
 CACHE_TIMEOUT = 86400
+
+# Slug for category to be used on index page, if the category is not found it will return category with lowest id
+DEFAULT_CATEGORY = None
