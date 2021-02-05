@@ -22,4 +22,4 @@ jobs:
           pipenv update --dev
       - name: Lint with Pylint
         run: |
-          pipenv run pylint --load-plugins pylint_django pdf/ chords/ backend/ frontend/ category/
+          pipenv run pylint --load-plugins pylint_django pdf/ chords/ backend/ frontend/ category/ --django-settings-module=chords.settings.development
