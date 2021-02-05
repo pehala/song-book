@@ -1,6 +1,7 @@
 """Views for backend app"""
 import json
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
@@ -68,9 +69,14 @@ class SongListView(ListView):
 
 class IndexSongListView(SongListView):
     """Shows first available category"""
+
     def get_queryset(self):
         if Category.objects.count() > 0:
-            category = Category.objects.all()[0]
+            slug = settings.DEFAULT_CATEGORY
+            if slug and Category.objects.filter(slug=slug).exists():
+                category = Category.objects.get(slug=slug)
+            else:
+                category = Category.objects.all()[0]
             return super().get_queryset().filter(categories__slug=category.slug)
         return super().get_queryset()
 
