@@ -18,9 +18,14 @@ from backend.utils import regenerate_pdf, regenerate_prerender
 from category.models import Category
 
 
-def get_song_cache_key(song_id):
-    """Returns cache key for song caching"""
-    return f"song.{song_id}"
+def add_fields(song, authenticated: bool):
+    """Adds additional fields to the JSON"""
+
+    song['text'] = song["prerendered_web"]
+    if authenticated:
+        song['edit_url'] = reverse("chords:edit", kwargs={"pk": song["id"]})
+        song['delete_url'] = reverse("chords:delete", kwargs={"pk": song["id"]})
+    del song["prerendered_web"]
 
 
 class SongListView(ListView):
@@ -29,32 +34,19 @@ class SongListView(ListView):
     template_name = 'songs/index.html'
     context_object_name = 'songs'
 
-    def add_fields(self, song, song_object: Song):
-        """Adds additional fields to the JSON"""
-
-        # key = get_song_cache_key(song["id"])
-        # if key in cached_text:
-        #     text = cached_text[key]
-        # else:
-        #     text = template_markdown.convert(song['text'])
-        #     uncached_text[key] = text
-
-        song['text'] = song_object.rendered_web_markdown
-        if self.request.user.is_authenticated:
-            song['edit_url'] = reverse("chords:edit", kwargs={"pk": song["id"]})
-            song['delete_url'] = reverse("chords:delete", kwargs={"pk": song["id"]})
+    FIELDS = ["id", "name", "capo", "author", "link", "prerendered_web"]
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context_data = super().get_context_data(object_list=object_list, **kwargs)
+        authenticated = self.request.user.is_authenticated
 
-        objects = context_data['songs']
-        songs = context_data['songs'].values()
+        songs = list(context_data['songs'].values(*self.FIELDS))
 
         for i, _ in enumerate(songs):
             songs[i]['number'] = i + 1
-            self.add_fields(songs[i], objects[i])
+            add_fields(songs[i], authenticated)
 
-        context_data['songs'] = json.dumps(list(songs), cls=DjangoJSONEncoder)
+        context_data['songs'] = json.dumps(songs, cls=DjangoJSONEncoder)
         return context_data
 
 
