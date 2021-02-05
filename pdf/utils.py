@@ -23,10 +23,13 @@ def generate_pdf_request(category):
                              filename=get_filename(category),
                              locale=category.locale)
         request.save()
-        for song_number, song in enumerate(category.song_set.all()):
+        PDFSong.objects.bulk_create([
             PDFSong(request=request,
                     song=song,
-                    song_number=song_number + 1).save()
+                    song_number=song_number + 1)
+            for song_number, song in enumerate(category.song_set.all())
+        ])
+        return request
 
 
 def get_filename(category):
