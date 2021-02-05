@@ -209,3 +209,9 @@ CACHE_TIMEOUT = 86400
 
 # Slug for category to be used on index page, if the category is not found it will return category with lowest id
 DEFAULT_CATEGORY = None
+
+# If true, it will prerender all markdowns on create/update and then use them in fetch requests
+USE_PRERENDERED_MARKDOWN = False
+# This settings will prerender markdown on fetch request and save it for future use, if it is empty
+# might incur performance penalties on production, for production deployment use
+USE_DYNAMIC_PRERENDER = False

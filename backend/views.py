@@ -5,7 +5,6 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
-from django.core.cache import cache
 from django.core.serializers.json import DjangoJSONEncoder
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
@@ -15,8 +14,7 @@ from django_datatables_view.base_datatable_view import BaseDatatableView
 
 from backend.forms import SongForm
 from backend.models import Song
-from backend.templatetags.markdown import template_markdown
-from backend.utils import regenerate_pdf
+from backend.utils import regenerate_pdf, regenerate_prerender
 from category.models import Category
 
 
@@ -31,15 +29,17 @@ class SongListView(ListView):
     template_name = 'songs/index.html'
     context_object_name = 'songs'
 
-    def add_fields(self, song, cached_text, uncached_text):
+    def add_fields(self, song, song_object: Song):
         """Adds additional fields to the JSON"""
-        key = get_song_cache_key(song["id"])
-        if key in cached_text:
-            text = cached_text[key]
-        else:
-            text = template_markdown.convert(song['text'])
-            uncached_text[key] = text
-        song['text'] = text
+
+        # key = get_song_cache_key(song["id"])
+        # if key in cached_text:
+        #     text = cached_text[key]
+        # else:
+        #     text = template_markdown.convert(song['text'])
+        #     uncached_text[key] = text
+
+        song['text'] = song_object.rendered_web_markdown
         if self.request.user.is_authenticated:
             song['edit_url'] = reverse("chords:edit", kwargs={"pk": song["id"]})
             song['delete_url'] = reverse("chords:delete", kwargs={"pk": song["id"]})
@@ -47,22 +47,13 @@ class SongListView(ListView):
     def get_context_data(self, *, object_list=None, **kwargs):
         context_data = super().get_context_data(object_list=object_list, **kwargs)
 
-        frozen = list(context_data['songs'])
-        keys = [get_song_cache_key(song.id) for song in frozen]
-        cached_texts = cache.get_many(keys)
-        uncached_texts = {}
-
+        objects = context_data['songs']
         songs = context_data['songs'].values()
 
         for i, _ in enumerate(songs):
-            frozen[i].number = i + 1
             songs[i]['number'] = i + 1
-            self.add_fields(songs[i], cached_texts, uncached_texts)
+            self.add_fields(songs[i], objects[i])
 
-        if len(uncached_texts) > 0:
-            cache.set_many(uncached_texts)
-
-        context_data['hash'] = hash(frozenset(frozen))
         context_data['songs'] = json.dumps(list(songs), cls=DjangoJSONEncoder)
         return context_data
 
@@ -92,6 +83,7 @@ class SongCreateView(SuccessMessageMixin, CreateView):
 
     def get_success_url(self):
         regenerate_pdf(self.object)
+        regenerate_prerender(self.object)
         return super().get_success_url()
 
 
@@ -107,7 +99,7 @@ class SongUpdateView(SuccessMessageMixin, UpdateView):
     def form_valid(self, form):
         if len(form.changed_data) > 0:
             regenerate_pdf(self.object)
-            cache.delete(get_song_cache_key(self.object.id))
+            regenerate_prerender(self.object)
         return super().form_valid(form)
 
 
@@ -122,7 +114,6 @@ class SongDeleteView(DeleteView):
     def delete(self, request, *args, **kwargs):
         response = super().delete(request, *args, **kwargs)
         regenerate_pdf(self.object)
-        cache.delete(get_song_cache_key(self.object.id))
         messages.success(self.request, self.success_message % self.object.name)
         return response
 
