@@ -25,11 +25,10 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 
-def update_status(request: PDFRequest, status: Status, generate_all=False):
+def update_status(request: PDFRequest, status: Status):
     """Updates status of the request if it is in DB"""
-    if not generate_all:
-        request.status = status
-        request.save()
+    request.status = status
+    request.save()
 
 
 def get_base_url():
@@ -62,9 +61,8 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         Path(f"{settings.MEDIA_ROOT}/{settings.PDF_FILE_DIR}").mkdir(parents=True, exist_ok=True)
         total_duration = 0
-        generate_all = options["all"]
 
-        if generate_all:
+        if options["all"]:
             objects = [generate_pdf_request(category) for category in Category.objects.filter(generate_pdf=True)]
         else:
             objects = PDFRequest.objects.filter(status=Status.QUEUED)
@@ -79,7 +77,7 @@ class Command(BaseCommand):
             songs = request.get_songs()
             sorted_songs = sorted(songs, key=lambda song: song.name)
 
-            update_status(request, Status.IN_PROGRESS, generate_all)
+            update_status(request, Status.IN_PROGRESS)
 
             try:
                 timer = Timer()
@@ -103,12 +101,12 @@ class Command(BaseCommand):
                     total_duration += timer.duration
                     request.time_elapsed = ceil(timer.duration)
 
-                    update_status(request, Status.DONE, generate_all)
+                    update_status(request, Status.DONE)
                     logger.info("Done in %i seconds", request.time_elapsed)
 
             # pylint: disable=broad-except
             except Exception as exception:
                 logger.error("Request failed: %s", str(exception))
-                update_status(request, Status.FAILED, generate_all)
+                update_status(request, Status.FAILED)
 
         return f"Processed {num} requests in {ceil(total_duration)} seconds"
