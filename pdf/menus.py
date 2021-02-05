@@ -4,6 +4,7 @@ from django.utils.translation import gettext_lazy as _
 from menu import Menu, MenuItem
 
 from pdf.models import PDFRequest, Status
+from pdf.cachemenuitem import CacheMenuItem
 
 
 def distinct_requests():
@@ -12,12 +13,12 @@ def distinct_requests():
     PDFRequest.objects.filter(file__isnull=False, status=Status.DONE).distinct("filename")[:5]
 
     """
-    files = []
+    files = set()
     data = []
     for entry in PDFRequest.objects.filter(file__isnull=False, status=Status.DONE):
         if entry.filename not in files:
-            files.append(entry.filename)
-            data.append(entry)
+            files.add(entry.filename)
+            data.append(MenuItem(entry.filename, entry.file.url))
     return data
 
 
@@ -33,9 +34,9 @@ Menu.add_item("pdf", MenuItem(_("PDF"),
                               children=pdf_children,
                               check=lambda request: request.user.is_authenticated))
 
-files_children = [MenuItem(request.filename, request.file.url)
-                  for request
-                  in distinct_requests()]
-Menu.add_item("files", MenuItem(_("Files"),
-                                reverse("backend:index"),
-                                children=files_children))
+
+Menu.add_item("files", CacheMenuItem(title=_("Files"),
+                                     url=reverse("backend:index"),
+                                     generate_function=distinct_requests,
+                                     key="MENUITEMS",
+                                     timeout=60 * 60))
