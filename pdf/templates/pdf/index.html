@@ -27,7 +27,7 @@
           <h3>{{ song.author }} {% if song.capo > 0 %}<span class="right">Capo {{ song.capo }}</span> {% endif %}</h3>
 
           <section>
-            {{ song.text|show_pdf_markdown|safe }}
+            {{ song.rendered_pdf_markdown|safe }}
           </section>
         </article>
     {% endfor %}

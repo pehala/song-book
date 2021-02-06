@@ -11,4 +11,5 @@ class SongForm(ModelForm):
 
     class Meta:
         model = Song
-        fields = '__all__'
+        # pylint: disable=modelform-uses-exclude
+        exclude = ["prerendered_web", "prerendered_pdf"]

@@ -74,7 +74,7 @@ class Command(BaseCommand):
             return "No requests, doing nothing"
 
         for request in objects:
-            songs = request.get_songs()
+            songs = sorted(request.get_songs(), key=lambda song: song.song_number)
             sorted_songs = sorted(songs, key=lambda song: song.name)
 
             update_status(request, Status.IN_PROGRESS)
