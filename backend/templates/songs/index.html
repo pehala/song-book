@@ -4,14 +4,14 @@
 {% load i18n %}
 
 {% block extra_head %}
-    <script type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.22/datatables.min.js"></script>
-    <script src="//cdn.jsdelivr.net/npm/bootstrap-input-spinner@1.16.5/src/bootstrap-input-spinner.js"></script>
-    <script src="{% static 'js/chords.js' %}"></script>
+    <script async src="{% static 'js/chords.js' %}"></script>
+    <script defer type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.23/datatables.min.js"></script>
+    <script defer src="//cdn.jsdelivr.net/npm/bootstrap-input-spinner@1.16.5/src/bootstrap-input-spinner.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsrender/1.0.7/jsrender.min.js"
             integrity="sha512-Y6fnBD9Z/4xDuDemzJBaYAQBGD/EOuaonQDW4W3Khf9j6gbvFd+K48MCW9UeMZrs5F/hELIuy7Mjpf/Ss4tRxQ=="
-            crossorigin="anonymous">
+            crossorigin="anonymous"
+            defer>
     </script>
-
     <link rel="stylesheet" type="text/css" href="{% sass_src 'datatables.sass' %}">
 {%  endblock %}
 {% block body %}
@@ -68,7 +68,7 @@
     <button id="scroll-down" class="btn btn-info btn-lg scroll_button" role="button" title="Click to scroll down" data-placement="left">
         <span class="icon-down-open"></span>
     </button>
-    <script defer>
+    <script type="module">
     $.views.settings.delimiters("<%", "%>");
     $.fn.DataTable.ext.pager.numbers_length = 5;
     const table = $('#datatable').DataTable({
