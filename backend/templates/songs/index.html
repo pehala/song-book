@@ -71,6 +71,7 @@
     <script type="module">
     $.views.settings.delimiters("<%", "%>");
     $.fn.DataTable.ext.pager.numbers_length = 5;
+    $.templates("song", "#songTemplate")
     const table = $('#datatable').DataTable({
         processing: true,
         select: false,
@@ -94,7 +95,7 @@
             {
                 data: 'text',
                 render: function ( data, type, row ) {
-                    return $("#songTemplate").render(row);
+                    return $.render.song(row);
                 },
                 searchable: true,
             },
