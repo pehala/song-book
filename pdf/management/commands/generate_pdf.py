@@ -1,4 +1,5 @@
 """Management command for generating PDF files from requests"""
+import locale
 import logging
 import os
 import tempfile
@@ -16,6 +17,7 @@ from django.utils import translation
 from django_weasyprint.utils import django_url_fetcher
 
 from category.models import Category
+from pdf.locales import changed_locale, lang_to_locale
 from pdf.models import PDFRequest, Status
 from pdf.utils import Timer, generate_pdf_request
 
@@ -75,7 +77,8 @@ class Command(BaseCommand):
 
         for request in objects:
             songs = sorted(request.get_songs(), key=lambda song: song.song_number)
-            sorted_songs = sorted(songs, key=lambda song: song.name)
+            with changed_locale(lang_to_locale(request.locale)):
+                sorted_songs = sorted(songs, key=lambda song: locale.strxfrm(song.name))
 
             update_status(request, Status.IN_PROGRESS)
 
