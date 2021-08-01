@@ -1,4 +1,5 @@
 """Views for categories"""
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
@@ -43,7 +44,7 @@ class CategoryCreateView(SuccessMessageMixin, CreateView):
     success_message = _("Songbook %(name)s was successfully created")
 
     def get_success_message(self, cleaned_data):
-        cache.delete("CATEGORIES")
+        cache.delete(settings.CATEGORY_CACHE_KEY)
         return super().get_success_message(cleaned_data)
 
 
@@ -57,7 +58,7 @@ class CategoryUpdateView(SuccessMessageMixin, UpdateView):
     success_message = _("Songbook %(name)s was successfully updated")
 
     def get_success_message(self, cleaned_data):
-        cache.delete("CATEGORIES")
+        cache.delete(settings.CATEGORY_CACHE_KEY)
         return super().get_success_message(cleaned_data)
 
 
@@ -73,5 +74,5 @@ class CategoryDeleteView(DeleteView):
         obj = self.get_object()
         messages.success(self.request, self.success_message % obj.__dict__)
         response = super().delete(request, *args, **kwargs)
-        cache.delete("CATEGORIES")
+        cache.delete(settings.CATEGORY_CACHE_KEY)
         return response

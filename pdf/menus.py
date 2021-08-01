@@ -1,4 +1,5 @@
 """Menus for PDF app"""
+from django.conf import settings
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from menu import Menu, MenuItem
@@ -38,5 +39,5 @@ Menu.add_item("pdf", MenuItem(_("PDF"),
 Menu.add_item("files", CacheMenuItem(title=_("Files"),
                                      url=reverse("backend:index"),
                                      generate_function=distinct_requests,
-                                     key="PDFS",
+                                     key=settings.PDF_CACHE_KEY,
                                      timeout=60 * 60))

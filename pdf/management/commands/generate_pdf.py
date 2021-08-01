@@ -9,6 +9,7 @@ from pathlib import Path
 
 import weasyprint
 from django.conf import settings
+from django.core.cache import cache
 from django.core.files import File
 from django.core.management import BaseCommand
 from django.template.loader import render_to_string
@@ -112,4 +113,5 @@ class Command(BaseCommand):
                 logger.error("Request failed: %s", str(exception))
                 update_status(request, Status.FAILED)
 
+        cache.delete(settings.PDF_CACHE_KEY)
         return f"Processed {num} requests in {ceil(total_duration)} seconds"
