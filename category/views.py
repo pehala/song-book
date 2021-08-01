@@ -1,6 +1,8 @@
 """Views for categories"""
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
+from django.core.cache import cache
 from django.http import Http404
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
@@ -18,7 +20,7 @@ class CategorySongsListView(SongListView):
     def get_queryset(self):
         slug = self.kwargs['slug']
         if not Category.objects.filter(slug=slug).exists():
-            raise Http404(_("Category on url /%(slug)s does not exists") % {'slug': slug})
+            raise Http404(_("Songbook on url /%(slug)s does not exists") % {'slug': slug})
         return super().get_queryset() \
             .filter(categories__slug=slug)
 
@@ -38,7 +40,11 @@ class CategoryCreateView(SuccessMessageMixin, CreateView):
     model = Category
     template_name = 'category/add.html'
     success_url = reverse_lazy("category:list")
-    success_message = _("Category %(name)s was successfully created")
+    success_message = _("Songbook %(name)s was successfully created")
+
+    def get_success_message(self, cleaned_data):
+        cache.delete("CATEGORIES")
+        return super().get_success_message(cleaned_data)
 
 
 @method_decorator(login_required, name='dispatch')
@@ -48,13 +54,24 @@ class CategoryUpdateView(SuccessMessageMixin, UpdateView):
     model = Category
     template_name = 'category/add.html'
     success_url = reverse_lazy("category:list")
-    success_message = _("Category %(name)s was successfully updated")
+    success_message = _("Songbook %(name)s was successfully updated")
+
+    def get_success_message(self, cleaned_data):
+        cache.delete("CATEGORIES")
+        return super().get_success_message(cleaned_data)
 
 
 @method_decorator(login_required, name='dispatch')
-class CategoryDeleteView(SuccessMessageMixin, DeleteView):
+class CategoryDeleteView(DeleteView):
     """Removes category"""
     model = Category
     template_name = "category/confirm_delete.html"
     success_url = reverse_lazy("category:list")
-    success_message = _("Category %(name)s was successfully deleted")
+    success_message = _("Songbook %(name)s was successfully deleted")
+
+    def delete(self, request, *args, **kwargs):
+        obj = self.get_object()
+        messages.success(self.request, self.success_message % obj.__dict__)
+        response = super().delete(request, *args, **kwargs)
+        cache.delete("CATEGORIES")
+        return response

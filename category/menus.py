@@ -8,6 +8,7 @@ from pdf.cachemenuitem import CacheMenuItem
 
 
 def categories():
+    """Returns MenuItems for all Categories"""
     return [MenuItem(category["name"], reverse("category:index",
                                                kwargs={"slug": category["slug"]}), skip_translate=True)
             for category in Category.objects.values("name", "slug")]
