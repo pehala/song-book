@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-22 21:08+0000\n"
+"POT-Creation-Date: 2021-08-01 19:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,17 +19,19 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
-#: backend/menus.py:8 backend/models.py:17
-msgid "Categories"
-msgstr "Kategorie"
+#: backend/menus.py:8
+#| msgid "Songs"
+msgid "Songbook List"
+msgstr "Seznam zpěvníků"
 
 #: backend/menus.py:10
 msgid "Add a song"
 msgstr "Přidat písničku"
 
 #: backend/menus.py:12
-msgid "Add Category"
-msgstr "Přidat Kategorii"
+#| msgid "Songs"
+msgid "Add Songbook"
+msgstr "Přidat zpěvník"
 
 #: backend/menus.py:16
 msgid "Admin"
@@ -51,33 +53,33 @@ msgstr "Změna hesla"
 msgid "Account"
 msgstr "Účet"
 
-#: backend/models.py:12
+#: backend/models.py:22
 msgid "Name"
 msgstr "Název písničky"
 
-#: backend/models.py:15
+#: backend/models.py:25
 msgid "Author"
 msgstr "Autor"
 
-#: backend/models.py:16
+#: backend/models.py:26
 msgid "Youtube Link"
 msgstr "Odkaz na Youtube"
 
-#: backend/models.py:18
+#: backend/models.py:28
 msgid "Lyrics"
 msgstr "Text"
 
-#: backend/models.py:21
+#: backend/models.py:80
 msgid "Song"
 msgstr "Písnička"
 
-#: backend/models.py:22
+#: backend/models.py:81
 msgid "Songs"
 msgstr "Písničky"
 
 #: backend/templates/songs/add.html:4 backend/templates/songs/add.html:5
 msgid "Song Editor"
-msgstr "Editor"
+msgstr "Editor písničky"
 
 #: backend/templates/songs/confirm_delete.html:5
 #: backend/templates/songs/confirm_delete.html:6
@@ -93,42 +95,45 @@ msgid "Confirm"
 msgstr "Potvrdit"
 
 #: backend/templates/songs/fragments/song.html:17
-#: backend/templates/songs/index.html:27 backend/templates/songs/song.html:15
+#: backend/templates/songs/index.html:29 backend/templates/songs/song.html:15
 msgid "Edit"
 msgstr "Editor"
 
 #: backend/templates/songs/fragments/song.html:20
-#: backend/templates/songs/index.html:30 backend/templates/songs/song.html:18
+#: backend/templates/songs/index.html:32 backend/templates/songs/song.html:18
 msgid "Delete"
 msgstr "Smazat"
 
 #: backend/templates/songs/fragments/song.html:34
-#: backend/templates/songs/index.html:43 backend/templates/songs/song.html:30
+#: backend/templates/songs/index.html:45 backend/templates/songs/song.html:30
 msgid "Transpose"
 msgstr "Transponovat"
 
-#: backend/templates/songs/index.html:56
+#: backend/templates/songs/index.html:58
 msgid "Search"
 msgstr "Hledat"
 
-#: backend/templates/songs/index.html:58
+#: backend/templates/songs/index.html:60
 msgid "Number, text or author"
 msgstr "Číslo, text nebo autor"
 
-#: backend/views.py:84
+#: backend/views.py:73
 #, python-format
 msgid "Song %(name)s was successfully created"
 msgstr "Písnička %(name)s byla úspěšně přidána"
 
-#: backend/views.py:99
+#: backend/views.py:89
 #, python-format
 msgid "Song %(name)s was successfully updated"
 msgstr "Písnička %(name)s byla úspěšně upravena"
 
-#: backend/views.py:117
+#: backend/views.py:104
 #, python-format
 msgid "Song %s was successfully deleted"
 msgstr "Písnička %s byla úspěšně odstraněna"
+
+#~ msgid "Add Category"
+#~ msgstr "Přidat Kategorii"
 
 #~ msgid "Number"
 #~ msgstr "Číslo"
