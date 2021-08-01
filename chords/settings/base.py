@@ -13,13 +13,15 @@ https://docs.djangoproject.com/en/2.2/ref/settings/
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
+from pathlib import Path
+
 from django.conf.global_settings import gettext_noop
 
 from chords.markdown.chords import ChordsExtension
 from chords.markdown.chords_pdf import ChordsPDFExtension
 from chords.markdown.spaces import SpacesExtension
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+BASE_DIR = Path(__file__).resolve().parent.parent
 
 
 # Quick-start development settings - unsuitable for production
@@ -215,3 +217,5 @@ USE_PRERENDERED_MARKDOWN = False
 # This settings will prerender markdown on fetch request and save it for future use, if it is empty
 # might incur performance penalties on production, for production deployment use
 USE_DYNAMIC_PRERENDER = False
+
+DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
