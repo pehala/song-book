@@ -24,7 +24,7 @@ class Song(Model):
     capo = PositiveSmallIntegerField(verbose_name="Capo", default=0)
     author = CharField(verbose_name=_("Author"), max_length=100, null=True, blank=True)
     link = URLField(verbose_name=_("Youtube Link"), null=True, blank=True)
-    categories = ManyToManyField(Category, verbose_name=_("Categories"))
+    categories = ManyToManyField(Category, verbose_name=_("Songbooks"))
     text = MarkdownxField(verbose_name=_("Lyrics"))
     prerendered_web = TextField(null=True)
     prerendered_pdf = TextField(null=True)

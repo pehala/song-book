@@ -38,5 +38,5 @@ Menu.add_item("pdf", MenuItem(_("PDF"),
 Menu.add_item("files", CacheMenuItem(title=_("Files"),
                                      url=reverse("backend:index"),
                                      generate_function=distinct_requests,
-                                     key="MENUITEMS",
+                                     key="PDFS",
                                      timeout=60 * 60))

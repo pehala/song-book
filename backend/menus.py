@@ -5,11 +5,11 @@ from django.utils.translation import gettext_noop as _
 from menu import MenuItem, Menu
 
 admin_children = (
-    MenuItem(_("Categories"),
+    MenuItem(_("Songbook List"),
              reverse("category:list")),
     MenuItem(_("Add a song"),
              reverse("backend:add")),
-    MenuItem(_("Add Category"),
+    MenuItem(_("Add Songbook"),
              reverse("category:add"))
 )
 

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-10-22 21:08+0000\n"
+"POT-Creation-Date: 2021-08-01 19:48+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,22 +23,22 @@ msgstr ""
 msgid "Each song has to have distinct song number"
 msgstr "Každá písnička musí mít unikátní číslo"
 
-#: pdf/menus.py:25
+#: pdf/menus.py:26
 msgid "Create new PDF"
 msgstr "Vytvořit nové PDF"
 
-#: pdf/menus.py:27 pdf/templates/pdf/requests/list.html:5
+#: pdf/menus.py:28 pdf/templates/pdf/requests/list.html:5
 #: pdf/templates/pdf/requests/list.html:6
 #: pdf/templates/pdf/requests/select.html:6
 #: pdf/templates/pdf/requests/select.html:7
 msgid "PDF Requests"
 msgstr "PDF požadavky"
 
-#: pdf/menus.py:31
+#: pdf/menus.py:32
 msgid "PDF"
 msgstr ""
 
-#: pdf/menus.py:39
+#: pdf/menus.py:38
 msgid "Files"
 msgstr "Soubory"
 
@@ -124,7 +124,7 @@ msgstr "Prosím vyberte písničky které byste chtěli mít v PDF souboru"
 msgid "Finish selecting"
 msgstr "Dokončit výběr"
 
-#: pdf/utils.py:35
+#: pdf/utils.py:38
 msgid "songbook"
 msgstr "zpevnik"
 
