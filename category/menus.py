@@ -4,12 +4,17 @@ from django.utils.translation import gettext_lazy as _
 from menu import MenuItem, Menu
 
 from category.models import Category
+from pdf.cachemenuitem import CacheMenuItem
 
-children = [MenuItem(category["name"], reverse("category:index",
+
+def categories():
+    return [MenuItem(category["name"], reverse("category:index",
                                                kwargs={"slug": category["slug"]}), skip_translate=True)
-            for category
-            in Category.objects.values("name", "slug")]
+            for category in Category.objects.values("name", "slug")]
 
-Menu.add_item("songbook", MenuItem(_("Song books"),
-                                   reverse("backend:index"),
-                                   children=children))
+
+Menu.add_item("songbook", CacheMenuItem(title=_("Songbooks"),
+                                        url=reverse("backend:index"),
+                                        generate_function=categories,
+                                        key="CATEGORIES",
+                                        timeout=60 * 60 * 24 * 7))
