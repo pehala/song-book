@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-01 19:48+0000\n"
+"POT-Creation-Date: 2021-08-04 14:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,7 +20,6 @@ msgstr ""
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
 #: backend/menus.py:8
-#| msgid "Songs"
 msgid "Songbook List"
 msgstr "Seznam zpěvníků"
 
@@ -29,7 +28,6 @@ msgid "Add a song"
 msgstr "Přidat písničku"
 
 #: backend/menus.py:12
-#| msgid "Songs"
 msgid "Add Songbook"
 msgstr "Přidat zpěvník"
 
@@ -64,6 +62,12 @@ msgstr "Autor"
 #: backend/models.py:26
 msgid "Youtube Link"
 msgstr "Odkaz na Youtube"
+
+#: backend/models.py:27
+#, fuzzy
+#| msgid "Songbook List"
+msgid "Songbooks"
+msgstr "Seznam zpěvníků"
 
 #: backend/models.py:28
 msgid "Lyrics"

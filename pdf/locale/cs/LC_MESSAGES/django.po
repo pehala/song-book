@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-01 19:48+0000\n"
+"POT-Creation-Date: 2021-08-04 14:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,22 +23,22 @@ msgstr ""
 msgid "Each song has to have distinct song number"
 msgstr "Každá písnička musí mít unikátní číslo"
 
-#: pdf/menus.py:26
-msgid "Create new PDF"
-msgstr "Vytvořit nové PDF"
+#: pdf/menus.py:27
+msgid "Create PDF"
+msgstr "Vytvořit PDF"
 
-#: pdf/menus.py:28 pdf/templates/pdf/requests/list.html:5
+#: pdf/menus.py:29 pdf/templates/pdf/requests/list.html:5
 #: pdf/templates/pdf/requests/list.html:6
 #: pdf/templates/pdf/requests/select.html:6
 #: pdf/templates/pdf/requests/select.html:7
 msgid "PDF Requests"
 msgstr "PDF požadavky"
 
-#: pdf/menus.py:32
+#: pdf/menus.py:33
 msgid "PDF"
 msgstr ""
 
-#: pdf/menus.py:38
+#: pdf/menus.py:39
 msgid "Files"
 msgstr "Soubory"
 
@@ -107,14 +107,26 @@ msgstr "Délka generování"
 msgid "Category"
 msgstr "Kategorie"
 
-#: pdf/templates/pdf/requests/list.html:30
+#: pdf/templates/pdf/requests/list.html:21
+msgid "Delete file"
+msgstr "Odstranit soubor"
+
+#: pdf/templates/pdf/requests/list.html:31
 msgid "Automatic"
 msgstr "Automaticky"
 
-#: pdf/templates/pdf/requests/list.html:42
-#: pdf/templates/pdf/requests/list.html:50
+#: pdf/templates/pdf/requests/list.html:43
+#: pdf/templates/pdf/requests/list.html:51
 msgid "None"
 msgstr "Nic"
+
+#: pdf/templates/pdf/requests/list.html:56
+msgid "Delete"
+msgstr "Odstranit"
+
+#: pdf/templates/pdf/requests/list.html:58
+msgid "No file present"
+msgstr "Nemá soubor"
 
 #: pdf/templates/pdf/requests/select.html:14
 msgid "Please select which songs would you like to include in the pdf"
@@ -128,15 +140,25 @@ msgstr "Dokončit výběr"
 msgid "songbook"
 msgstr "zpevnik"
 
-#: pdf/views.py:53
+#: pdf/views.py:38
+#, python-format
+msgid "Unable to remove file from request %(id)s that doesn't have one"
+msgstr "Nepodařilo se odstranit soubor z požadavku %(id)s, protože žádný nemá"
+
+#: pdf/views.py:46
+#, python-format
+msgid "File %(name)s was successfully deleted"
+msgstr "Soubor %(name)s byl úspěšně odstraněn"
+
+#: pdf/views.py:78
 msgid "Required parameters not found"
 msgstr "Požadované parametry nenalezeny"
 
-#: pdf/views.py:58
+#: pdf/views.py:83
 msgid "You need to select at least one song"
 msgstr "Musíte vybrat alespoň jednu písničku"
 
-#: pdf/views.py:85
+#: pdf/views.py:110
 #, python-format
 msgid "PDF Request with id %(id)s was successfully created"
 msgstr "PDF požadavek se id %(id)s byl úspěšně vytvořen"
