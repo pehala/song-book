@@ -7,19 +7,3 @@ SECRET_KEY = '$sr-v9zx(s!!q)6*2!1#t_+-z5ku*$+=edf*gstxjwz3opj94n'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
-
-# CACHES = {
-#     'default': {
-#         'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
-#     }
-# }
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'postgres',
-        'USER': 'postgres',
-        'PASSWORD': 'postgres',
-        'HOST': 'localhost',
-        'PORT': '55432',
-    }
-}
