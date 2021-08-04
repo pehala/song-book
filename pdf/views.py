@@ -1,14 +1,18 @@
 """Views for PDF app"""
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
 from django.db import transaction
 from django.forms import formset_factory
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 from django.views.generic.base import TemplateResponseMixin, View
+from django.views.generic.detail import SingleObjectMixin
 
 from backend.models import Song
 from pdf.forms import RequestForm, PDFSongForm, BasePDFSongFormset
@@ -21,6 +25,29 @@ class RequestListView(ListView):
     model = PDFRequest
     template_name = "pdf/requests/list.html"
     context_object_name = "requests"
+
+
+@method_decorator(login_required, name='dispatch')
+class RequestRemoveFileView(View, SingleObjectMixin):
+    """Removes file from request"""
+    model = PDFRequest
+
+    # pylint: disable=invalid-name, unused-argument
+    def get(self, request, pk):
+        """Processes the request"""
+        obj = self.get_object()
+        if not obj.file:
+            messages.error(request, _("Unable to remove file from request %(id)s that doesn't have one")
+                           % {"id": obj.id})
+            return redirect("pdf:list")
+        name = obj.file.name
+        obj.file.delete()
+        obj.file = None
+        obj.save()
+
+        messages.success(request, _("File %(name)s was successfully deleted") % {"name": name})
+        cache.delete(settings.PDF_CACHE_KEY)
+        return redirect("pdf:list")
 
 
 @method_decorator(login_required, name='dispatch')
