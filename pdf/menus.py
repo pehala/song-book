@@ -17,15 +17,14 @@ def distinct_requests():
     files = set()
     data = []
     for entry in PDFRequest.objects.filter(file__isnull=False, status=Status.DONE):
-        # pylint: disable=protected-access
-        if entry.filename not in files and entry.file._file is not None:
+        if entry.filename not in files:
             files.add(entry.filename)
             data.append(MenuItem(entry.filename, entry.file.url))
     return data
 
 
 pdf_children = (
-    MenuItem(_("Create PDF"),
+    MenuItem(_("Create new PDF"),
              reverse("pdf:new")),
     MenuItem(_("PDF Requests"),
              reverse("pdf:list")),

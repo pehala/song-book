@@ -18,7 +18,6 @@
           <th scope="col">{% trans "Link" %}</th>
           <th scope="col">{% trans "Time elapsed" %}</th>
           <th scope="col">{% trans "Category" %}</th>
-          <th scope="col">{% trans "Delete file" %}</th>
         </tr>
       </thead>
       <tbody>
@@ -49,13 +48,6 @@
                 <a href="{% url "category:index" slug=request.category.slug %}">{{ request.category.name }}</a>
               {% else %}
                 {% trans "None" %}
-              {% endif %}
-          </td>
-          <td>
-              {% if request.file %}
-                <a href="{% url "pdf:remove_file" pk=request.id %}" class="btn btn-danger">{% trans "Delete" %}</a>
-              {% else %}
-                {% trans "No file present" %}
               {% endif %}
           </td>
         </tr>
