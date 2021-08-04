@@ -29,7 +29,7 @@ def distinct_requests():
 
 
 pdf_children = (
-    MenuItem(_("Create new PDF"),
+    MenuItem(_("Create PDF"),
              reverse("pdf:new")),
     MenuItem(_("PDF Requests"),
              reverse("pdf:list")),

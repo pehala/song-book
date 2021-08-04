@@ -140,6 +140,3 @@ msgstr "Musíte vybrat alespoň jednu písničku"
 #, python-format
 msgid "PDF Request with id %(id)s was successfully created"
 msgstr "PDF požadavek se id %(id)s byl úspěšně vytvořen"
-
-#~ msgid "songlist"
-#~ msgstr "zpevnik"
