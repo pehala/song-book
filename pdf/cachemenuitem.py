@@ -9,18 +9,12 @@ class CacheMenuItem(MenuItem):
         self.generate_function = generate_function
         self.key = key
         self.timeout = timeout
-        super().__init__(**kwargs)
+        super().__init__(children=self._callable, **kwargs)
 
-    @property
-    def children(self):
+    def _callable(self, _):
         """Returns children from cache or generate new one"""
         if self.key in cache:
             return cache.get(self.key)
         children = self.generate_function()
         cache.set(self.key, children, timeout=self.timeout)
         return children
-
-    # pylint: disable=unused-argument,no-self-use
-    @children.setter
-    def children(self, value):
-        return
