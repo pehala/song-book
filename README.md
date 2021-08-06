@@ -5,7 +5,7 @@ This project aims to create simple songbook for storing, managing and viewing so
 
 First clone the repository from Github and switch to the new directory:
 
-    $ git clone git@github.com/pehala/song-book.git
+    $ git clone https://github.com/pehala/song-book
     $ cd song-book
     
 Install pipenv and dependencies
@@ -20,3 +20,10 @@ Then simply apply the migrations:
 You can now run the development server:
 
     $ pipenv run python manage.py runserver
+
+##FAQ
+
+    'pipenv install' throws ERROR: Couldn't install package: rcssmin
+ Package installation failed...
+    Install apt-get install python3-dev (or yum install python3-devel etc.)
+
