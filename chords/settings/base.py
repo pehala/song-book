@@ -67,18 +67,16 @@ MARKDOWNX_PDF_MARKDOWN_EXTENSIONS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
-    'backend.middleware.DisableClientSideCachingMiddleware',
-    'django.middleware.cache.UpdateCacheMiddleware',
+    # 'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware',
+    # 'django.middleware.cache.FetchFromCacheMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'backend.middleware.settings.SiteNameMiddleware',
-    'backend.middleware.settings.CacheTimeoutMiddleware',
     'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
