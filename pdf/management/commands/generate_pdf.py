@@ -94,7 +94,7 @@ class Command(BaseCommand):
                         string = render_to_string(template_name=TEMPLATE, context={
                             "songs": songs,
                             "sorted_songs": sorted_songs,
-                            "name": request.name or translation.gettext("Jerry's songs"),
+                            "name": request.name or translation.gettext(settings.SITE_NAME),
                             "request": request
                         })
                         weasyprint.HTML(

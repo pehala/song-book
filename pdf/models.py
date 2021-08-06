@@ -17,16 +17,16 @@ fs = DateOverwriteStorage()
 
 class RequestType(TextChoices):
     """Type of PDF Request"""
-    EVENT = 'EV', 'Automated'
-    MANUAL = 'MA', 'Manual'
+    EVENT = 'EV', _('Automated')
+    MANUAL = 'MA', _('Manual')
 
 
 class Status(TextChoices):
     """Status of PDF Request"""
-    QUEUED = "QU", 'Queued'
-    IN_PROGRESS = "PR", 'In progress'
-    DONE = "DO", "Done"
-    FAILED = "FA", "Failed"
+    QUEUED = "QU", _('Queued')
+    IN_PROGRESS = "PR", _('In progress')
+    DONE = "DO", _("Done")
+    FAILED = "FA", _("Failed")
 
 
 class PDFRequest(Model):
@@ -88,7 +88,7 @@ class PDFSong(Model):
     """Through table for PDFRequest and Song"""
     song = ForeignKey(Song, on_delete=CASCADE)
     request = ForeignKey(PDFRequest, on_delete=CASCADE)
-    song_number = PositiveIntegerField(validators=[MinValueValidator(1)])
+    song_number = PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("Song number"))
 
     class Meta:
         unique_together = ['song_number', 'request', 'song']

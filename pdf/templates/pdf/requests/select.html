@@ -8,15 +8,16 @@
 {% block extra_head %}
 <script defer type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/b-1.7.1/sl-1.3.3/datatables.min.js"></script>
 <link rel="stylesheet" type="text/css" href="{% sass_src 'datatables.sass' %}">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.25/b-1.7.1/sl-1.3.3/datatables.min.css"/>
 {% endblock %}
 
 {% block framed_body %}
     <p class="text-center font-weight-bold">{% trans "Please select which songs would you like to include in the pdf" %}</p>
     <div class="input-group">
       <div class="input-group-prepend">
-        <div class="input-group-text">{% trans "Hledat" %}</div>
+        <div class="input-group-text">{% trans "Search" %}</div>
       </div>
-      <input type="text" class="form-control" id="searchInput" placeholder="Vložte text">
+      <input type="text" class="form-control" id="searchInput" placeholder={% trans "Insert query" %}>
     </div>
     <div class="d-flex flex-row justify-content-center">
     {% for category in categories %}
