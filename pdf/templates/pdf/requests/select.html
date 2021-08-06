@@ -68,6 +68,14 @@
         dom: 'rtipB',
         buttons: [
             {
+                text: '{% trans "Select All" %}',
+                action: function (e, dt, node, config) {
+                    dt.rows( {search:'applied'} ).select()
+                }
+            }, "selectNone",
+            {
+                extend: "selected",
+                className: "btn btn-success",
                 text: '{% trans "Finish selecting" %}',
                 action: function (e, dt, node, config) {
                     const rows = dt.rows( { selected: true } );
@@ -78,7 +86,7 @@
                     }
                     form.submit()
                 }
-            }
+            },
         ],
         {% if request.LANGUAGE_CODE == "cs"  %}
         language: {
