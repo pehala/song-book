@@ -6,7 +6,7 @@ This project aims to create simple songbook for storing, managing and viewing so
 
 First clone the repository from Github and switch to the new directory:
 
-    $ git clone https://github.com/pehala/song-book
+    $ git clone https://github.com/pehala/song-book.git
     $ cd song-book
     
 Install pipenv and dependencies
