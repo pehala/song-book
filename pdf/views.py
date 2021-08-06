@@ -11,6 +11,7 @@ from django.views.generic import ListView
 from django.views.generic.base import TemplateResponseMixin, View
 
 from backend.models import Song
+from category.models import Category
 from pdf.forms import RequestForm, PDFSongForm, BasePDFSongFormset
 from pdf.models import PDFRequest, RequestType
 
@@ -29,6 +30,11 @@ class RequestSongSelectorView(ListView):
     model = Song
     context_object_name = "songs"
     template_name = "pdf/requests/select.html"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        ctx = super().get_context_data(object_list=object_list, **kwargs)
+        ctx["categories"] = Category.objects.all()
+        return ctx
 
 
 @method_decorator(login_required, name='dispatch')
@@ -71,7 +77,7 @@ class RequestNumberSelectView(TemplateResponseMixin, View):
     # pylint: disable=unused-argument
     def post(self, request, *args, **kwargs):
         """POST request method handler"""
-        form = RequestForm(self.request.POST, prefix="request")
+        form = RequestForm(self.request.POST, request.FILES, prefix="request")
         formset = self.PDFSongFormset(self.request.POST, prefix="songs")
         if form.is_valid() and formset.is_valid():
             request = form.instance

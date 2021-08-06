@@ -7,7 +7,7 @@
 
 {% block framed_body %}
   <p class="text-center font-weight-bold">{% trans "Please, now assign each song a number that will be used in the PDF" %}</p>
-  <form method="post">
+  <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {% bootstrap_form form %}
     {{ formset.management_form }}

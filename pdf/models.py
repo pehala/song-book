@@ -4,7 +4,7 @@ from typing import List
 from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db.models import Model, DateField, DateTimeField, IntegerField, FileField, CharField, TextChoices, \
-    ManyToManyField, ForeignKey, CASCADE, SET_NULL, CheckConstraint, Q, PositiveIntegerField
+    ManyToManyField, ForeignKey, CASCADE, SET_NULL, CheckConstraint, Q, PositiveIntegerField, BooleanField, ImageField
 from django.utils.translation import gettext_lazy as _
 
 from backend.models import Song
@@ -46,15 +46,24 @@ class PDFRequest(Model):
     time_elapsed = IntegerField(null=True)
     file = FileField(null=True, storage=fs)
     filename = CharField(max_length=30, null=True,
-                         help_text=_("Filename of the generated PDF, please do not include .pdf"))
+                         help_text=_("Filename of the generated PDF, please do not include .pdf"),
+                         verbose_name=_("File name"))
     songs = ManyToManyField(Song, through="PDFSong")
-    locale = CharField(choices=settings.LANGUAGES, verbose_name='Language', max_length=5,
+    locale = CharField(choices=settings.LANGUAGES, verbose_name=_('Language'), max_length=5,
                        help_text=_("Language to be used in the generated PDF")
                        )
     category = ForeignKey(Category, null=True, on_delete=SET_NULL)
     name = CharField(max_length=100,
                      help_text=_("Name to be used on the title page of the PDF"),
+                     verbose_name=_("Name"),
                      default=settings.SITE_NAME)
+    show_date = BooleanField(default=True, verbose_name=_("Show date"),
+                             help_text=_("True, if the date should be included in the final PDF"))
+    image = ImageField(verbose_name=_("Title Image"),
+                       help_text=_("Optional title image of the songbook"),
+                       null=True,
+                       blank=True,
+                       upload_to='uploads/')
 
     def get_songs(self) -> List[Song]:
         """Returns all songs for request"""
