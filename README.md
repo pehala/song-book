@@ -24,7 +24,7 @@ You can now run the development server:
 
 ## FAQ
 
-1. 'pipenv install' throws 
+1. pipenv install throws 
 
        ERROR: Couldn't install package: rcssmin
        Package installation failed...
