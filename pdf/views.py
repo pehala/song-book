@@ -33,7 +33,9 @@ class RequestSongSelectorView(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         ctx = super().get_context_data(object_list=object_list, **kwargs)
-        ctx["categories"] = Category.objects.all()
+        categories = list(Category.objects.all())
+        ctx["categories"] = categories
+        ctx["slugs"] = list(map(lambda c: c.slug, categories))
         return ctx
 
 
