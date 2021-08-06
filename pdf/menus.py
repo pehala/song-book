@@ -16,15 +16,11 @@ def distinct_requests():
     """
     files = set()
     data = []
-    for entry in PDFRequest.objects.filter(file__isnull=False, status=Status.DONE):
+    for entry in PDFRequest.objects.filter(file__isnull=False, status=Status.DONE).exclude(file__exact=''):
         # pylint: disable=protected-access
         if entry.filename not in files:
-            try:
-                data.append(MenuItem(entry.filename, entry.file.url))
-                files.add(entry.filename)
-            # pylint: disable=bare-except
-            except:
-                continue
+            data.append(MenuItem(entry.filename, entry.file.url))
+            files.add(entry.filename)
     return data
 
 

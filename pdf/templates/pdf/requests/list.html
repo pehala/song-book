@@ -5,61 +5,97 @@
 {% block title %} {% trans "PDF Requests" %} {% endblock %}
 {% block header %} {% trans "PDF Requests" %}  {% endblock %}
 
+{% block extra_head %}
+<script defer type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.js"></script>
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.25/datatables.min.css"/>
+{% endblock %}
+
 {% block framed_body %}
-    <table class="table table-bordered">
-      <thead class="thead-light">
-        <tr>
-          <th scope="col">{% trans "Filename" %}</th>
-          <th scope="col">{% trans "Name" %}</th>
-          <th scope="col">{% trans "Date Created" %}</th>
-          <th scope="col">{% trans "Last updated" %}</th>
-          <th scope="col">{% trans "Type" %}</th>
-          <th scope="col">{% trans "Status" %}</th>
-          <th scope="col">{% trans "Link" %}</th>
-          <th scope="col">{% trans "Time elapsed" %}</th>
-          <th scope="col">{% trans "Category" %}</th>
-          <th scope="col">{% trans "Delete file" %}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for request in requests %}
-        <tr>
-          <td>
-              {% if request.filename %}
-                {{ request.filename }}
-              {% else %}
-                {% trans "Automatic" %}
-              {% endif %}
-          </td>
-          <td>{{ request.name }}</td>
-          <td>{{ request.created_date }}</td>
-          <td>{{ request.update_date }}</td>
-          <td>{{ request.get_type_display }}</td>
-          <td style="background-color: {{ request.status|get_status_color }}">{{ request.get_status_display }}</td>
-          <td>
-              {% if request.file %}
-                <a href="{{ request.file.url }}">{{ request.file|filename }}</a>
-              {% else %}
-                {% trans "None" %}
-              {% endif %}
-          </td>
-          <td>{{ request.time_elapsed|default_if_none:0 }} s</td>
-          <td>
-              {% if request.category %}
-                <a href="{% url "category:index" slug=request.category.slug %}">{{ request.category.name }}</a>
-              {% else %}
-                {% trans "None" %}
-              {% endif %}
-          </td>
-          <td>
-              {% if request.file %}
-                <a href="{% url "pdf:remove_file" pk=request.id %}" class="btn btn-danger">{% trans "Delete" %}</a>
-              {% else %}
-                {% trans "No file present" %}
-              {% endif %}
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+     <div class="input-group">
+      <div class="input-group-prepend">
+        <div class="input-group-text">{% trans "Search" %}</div>
+      </div>
+      <input type="text" class="form-control" id="searchInput" placeholder="{% trans "Insert query" %}">
+    </div>
+    <div class="table-responsive">
+        <table id="datatable" class="table table-bordered">
+          <thead class="thead-light">
+            <tr>
+              <th scope="col">{% trans "Name" %}</th>
+    {#          <th scope="col">{% trans "Filename" %}</th>#}
+              <th scope="col">{% trans "Date Created" %}</th>
+              <th scope="col">{% trans "Last updated" %}</th>
+              <th scope="col">{% trans "Type" %}</th>
+              <th scope="col">{% trans "Status" %}</th>
+              <th scope="col" data-orderable="false">{% trans "Link" %}</th>
+              <th scope="col">{% trans "Time elapsed" %}</th>
+              <th scope="col">{% trans "Category" %}</th>
+              <th scope="col" data-searchable="false" data-orderable="false">{% trans "Delete file" %}</th>
+              <th scope="col" data-searchable="false" data-orderable="false">{% trans "Regenerate" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for request in requests %}
+            <tr>
+              <td>{{ request.name }}</td>
+    {#          <td>#}
+    {#              {% if request.filename %}#}
+    {#                {{ request.filename }}#}
+    {#              {% else %}#}
+    {#                {% trans "Automatic" %}#}
+    {#              {% endif %}#}
+    {#          </td>#}
+              <td data-order="{{ request.created_date|date:"c" }}">{{ request.created_date}}</td>
+              <td data-order="{{ request.update_date|date:"c" }}">{{ request.update_date }}</td>
+              <td>{{ request.get_type_display }}</td>
+              <td style="background-color: {{ request.status|get_status_color }}">{{ request.get_status_display }}</td>
+              <td>
+                  {% if request.file %}
+                    <a href="{{ request.file.url }}">{{ request.file|filename }}</a>
+                  {% else %}
+                    {% trans "None" %}
+                  {% endif %}
+              </td>
+              <td>{{ request.time_elapsed|default_if_none:0 }} s</td>
+              <td>
+                  {% if request.category %}
+                    <a href="{% url "category:index" slug=request.category.slug %}">{{ request.category.name }}</a>
+                  {% else %}
+                    {% trans "None" %}
+                  {% endif %}
+              </td>
+              <td>
+                  {% if request.file %}
+                    <a href="{% url "pdf:remove_file" pk=request.id %}" class="btn btn-danger">{% trans "Delete" %}</a>
+                  {% else %}
+                    {% trans "No file present" %}
+                  {% endif %}
+              </td>
+              <td>
+                  {% if request.status != "QU" %}
+                    <a href="{% url "pdf:regenerate" pk=request.id %}" class="btn btn-primary">{% trans "Regenerate" %}</a>
+                  {% else %}
+                    {% trans "Already in queue" %}
+                  {% endif %}
+              </td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+    </div>
+    <script type="module">
+    const table = $('#datatable').DataTable({
+        processing: true,
+        order: [[ 2, "desc" ]],
+        dom: 'rtip',
+        {% if request.LANGUAGE_CODE == "cs"  %}
+            language: {
+                url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Czech.json"
+            },
+        {% endif %}
+    });
+    $("#searchInput").on("input", function (event) {
+        table.search($(this).val()).draw();
+    });
+    </script>
 {% endblock %}

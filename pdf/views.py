@@ -17,7 +17,7 @@ from django.views.generic.detail import SingleObjectMixin
 from backend.models import Song
 from category.models import Category
 from pdf.forms import RequestForm, PDFSongForm, BasePDFSongFormset
-from pdf.models import PDFRequest, RequestType
+from pdf.models import PDFRequest, RequestType, Status
 
 
 @method_decorator(login_required, name='dispatch')
@@ -26,6 +26,25 @@ class RequestListView(ListView):
     model = PDFRequest
     template_name = "pdf/requests/list.html"
     context_object_name = "requests"
+
+
+@method_decorator(login_required, name='dispatch')
+class RequestRegenerateView(View, SingleObjectMixin):
+    """Regenerates the PDF request"""
+    model = PDFRequest
+
+    # pylint: disable=invalid-name, unused-argument
+    def get(self, request, pk):
+        """Processes the request"""
+        obj = self.get_object()
+        if obj.status == Status.QUEUED:
+            messages.error(request, _("Request %(id)s is already in queue") % {"id": obj.id})
+            return redirect("pdf:list")
+        obj.status = Status.QUEUED
+        obj.save()
+
+        messages.success(request, _("Request %(id)s was marked for regeneration") % {"id": obj.id})
+        return redirect("pdf:list")
 
 
 @method_decorator(login_required, name='dispatch')
