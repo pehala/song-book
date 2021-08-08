@@ -6,12 +6,27 @@
 {% block title %} {% trans "PDF Requests" %} {% endblock %}
 {% block header %} {% trans "PDF Requests" %}  {% endblock %}
 {% block extra_head %}
-<script defer type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.22/b-1.6.4/r-2.2.6/rr-1.2.7/sb-1.0.0/sp-1.2.0/sl-1.3.1/datatables.min.js"></script>
+<script defer type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.10.25/b-1.7.1/sl-1.3.3/datatables.min.js"></script>
 <link rel="stylesheet" type="text/css" href="{% sass_src 'datatables.sass' %}">
+<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.10.25/b-1.7.1/sl-1.3.3/datatables.min.css"/>
 {% endblock %}
 
 {% block framed_body %}
     <p class="text-center font-weight-bold">{% trans "Please select which songs would you like to include in the pdf" %}</p>
+    <div class="input-group">
+      <div class="input-group-prepend">
+        <div class="input-group-text">{% trans "Search" %}</div>
+      </div>
+      <input type="text" class="form-control" id="searchInput" placeholder={% trans "Insert query" %}>
+    </div>
+    <div class="d-flex flex-row justify-content-center">
+    {% for category in categories %}
+      <div class="custom-control custom-switch align-middle mr-3">
+          <input type="checkbox" class="custom-control-input category-checkbox" name="online" id="{{ category.slug }}-checkbox" cat_name="{{ category.name }}"  checked>
+          <label class="custom-control-label" for="{{ category.slug }}-checkbox">{{ category.name }}</label>
+      </div>
+    {% endfor %}
+    </div>
     <table id="datatable" class="table table-bordered">
         <thead class="thead-light">
             <tr>
@@ -19,6 +34,7 @@
                 <th>Name</th>
                 <th>Author</th>
                 <th>Capo</th>
+                <th class="d-none">Categories</th>
             </tr>
         </thead>
         <tbody>
@@ -28,13 +44,17 @@
                 <td>{{ song.name  }}</td>
                 <td>{{ song.author }}</td>
                 <td>{{ song.capo }}</td>
+                {% with song.categories.all as cats %}
+                <td class="d-none">{{ cats|join:"," }}</td>
+                {% endwith %}
             </tr>
         {% endfor %}
         </tbody>
     </table>
     <form class="hidden" id="assign_form" action="{% url "pdf:assign" %}"></form>
     <script type="module">
-    const form = $('#assign_form')
+    const categories = {{ slugs|safe }};
+    const form = $('#assign_form');
     function addSong(id) {
         $("<input>")
             .attr("type", "hidden")
@@ -43,12 +63,20 @@
             .appendTo(form);
     }
     $.fn.DataTable.ext.pager.numbers_length = 5;
-    $('#datatable').DataTable( {
+    var table = $('#datatable').DataTable( {
         processing: true,
         select: 'multi+shift',
-        dom: 'frtipB',
+        dom: 'rtipB',
         buttons: [
             {
+                text: '{% trans "Select All" %}',
+                action: function (e, dt, node, config) {
+                    dt.rows( {search:'applied'} ).select()
+                }
+            }, "selectNone",
+            {
+                extend: "selected",
+                className: "btn btn-success",
                 text: '{% trans "Finish selecting" %}',
                 action: function (e, dt, node, config) {
                     const rows = dt.rows( { selected: true } );
@@ -59,13 +87,33 @@
                     }
                     form.submit()
                 }
-            }
+            },
         ],
         {% if request.LANGUAGE_CODE == "cs"  %}
         language: {
-                url: "//cdn.datatables.net/plug-ins/1.10.22/i18n/Czech.json"
+                url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Czech.json"
         },
         {% endif %}
     } );
+    $("#searchInput").on("input", function (event) {
+        table.search($(this).val()).draw();
+    });
+    function get_checkbox_value(x) {
+        const checkbox = $(`#${x}-checkbox`);
+        return {[x]: {"name": checkbox.attr("cat_name") , "checked": checkbox.is(":checked")}}
+    }
+    $(".category-checkbox").on("change", function (event) {
+        table.columns(4).search()
+        let dictionary = Object.assign({}, ...categories.map((x) => get_checkbox_value(x)));
+        const names = Object.values(dictionary)
+                    .filter( value => value.checked)
+                    .map( value => value.name);
+        if (names.length === 0) {
+            table.columns(4).search(-1).draw()
+            return
+        }
+        const regex = `(${names.join("|")})`
+        table.columns(4).search(regex, true, false, false).draw()
+    })
     </script>
 {% endblock %}

@@ -1,18 +1,23 @@
 """Views for PDF app"""
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.cache import cache
 from django.db import transaction
 from django.forms import formset_factory
 from django.http import HttpResponseBadRequest, HttpResponseRedirect
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 from django.views.generic.base import TemplateResponseMixin, View
+from django.views.generic.detail import SingleObjectMixin
 
 from backend.models import Song
+from category.models import Category
 from pdf.forms import RequestForm, PDFSongForm, BasePDFSongFormset
-from pdf.models import PDFRequest, RequestType
+from pdf.models import PDFRequest, RequestType, Status
 
 
 @method_decorator(login_required, name='dispatch')
@@ -24,11 +29,59 @@ class RequestListView(ListView):
 
 
 @method_decorator(login_required, name='dispatch')
+class RequestRegenerateView(View, SingleObjectMixin):
+    """Regenerates the PDF request"""
+    model = PDFRequest
+
+    # pylint: disable=invalid-name, unused-argument
+    def get(self, request, pk):
+        """Processes the request"""
+        obj = self.get_object()
+        if obj.status == Status.QUEUED:
+            messages.error(request, _("Request %(id)s is already in queue") % {"id": obj.id})
+            return redirect("pdf:list")
+        obj.status = Status.QUEUED
+        obj.save()
+
+        messages.success(request, _("Request %(id)s was marked for regeneration") % {"id": obj.id})
+        return redirect("pdf:list")
+
+
+@method_decorator(login_required, name='dispatch')
+class RequestRemoveFileView(View, SingleObjectMixin):
+    """Removes file from request"""
+    model = PDFRequest
+
+    # pylint: disable=invalid-name, unused-argument
+    def get(self, request, pk):
+        """Processes the request"""
+        obj = self.get_object()
+        if not obj.file:
+            messages.error(request, _("Unable to remove file from request %(id)s that doesn't have one")
+                           % {"id": obj.id})
+            return redirect("pdf:list")
+        name = obj.file.name
+        obj.file.delete()
+        obj.save()
+
+        messages.success(request, _("File %(name)s was successfully deleted") % {"name": name})
+        cache.delete(settings.PDF_CACHE_KEY)
+        return redirect("pdf:list")
+
+
+@method_decorator(login_required, name='dispatch')
 class RequestSongSelectorView(ListView):
     """Starts process of creating new PDFRequest by selecting songs for the request"""
     model = Song
     context_object_name = "songs"
     template_name = "pdf/requests/select.html"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        ctx = super().get_context_data(object_list=object_list, **kwargs)
+        categories = list(Category.objects.all())
+        ctx["categories"] = categories
+        ctx["slugs"] = list(map(lambda c: c.slug, categories))
+        return ctx
 
 
 @method_decorator(login_required, name='dispatch')
@@ -71,7 +124,7 @@ class RequestNumberSelectView(TemplateResponseMixin, View):
     # pylint: disable=unused-argument
     def post(self, request, *args, **kwargs):
         """POST request method handler"""
-        form = RequestForm(self.request.POST, prefix="request")
+        form = RequestForm(self.request.POST, request.FILES, prefix="request")
         formset = self.PDFSongFormset(self.request.POST, prefix="songs")
         if form.is_valid() and formset.is_valid():
             request = form.instance

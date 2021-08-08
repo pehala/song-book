@@ -94,13 +94,14 @@ class Command(BaseCommand):
                         string = render_to_string(template_name=TEMPLATE, context={
                             "songs": songs,
                             "sorted_songs": sorted_songs,
-                            "name": request.name or "Jerry's songs"
+                            "name": request.name or translation.gettext(settings.SITE_NAME),
+                            "request": request
                         })
                         weasyprint.HTML(
                             string=string,
                             url_fetcher=django_url_fetcher,
                             base_url=get_base_url()
-                        ).write_pdf(file)
+                        ).write_pdf(file, optimize_size=('fonts', 'images'))
                     request.file.save(rel_path, File(file, name=rel_path))
                     total_duration += timer.duration
                     request.time_elapsed = ceil(timer.duration)

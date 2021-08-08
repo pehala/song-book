@@ -6,14 +6,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>{% trans name %}</title>
+    <title>{{ name }}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <link rel="stylesheet" type="text/css" href="{% sass_src 'pdf.sass' %}">
 </head>
+{% if request.image %}
+<style>
+      @page :first {
+          background: url({{ request.image.path }}) no-repeat;
+          background-size: cover;
+          margin: 0;
+          @bottom-left { content: none; }
+          @bottom-center { content: none; }
+          @top-center { content: none; }
+          @bottom-right { content: none; }
+      }
+      .contents { break-after: avoid; page-break-before: always; }
+</style>
+{% endif %}
 <body>
     <article id="contents">
-      <h1>{% trans name %}</h1>
+      <h1>{{ name }}</h1>
+      {% if request.show_date %}
       <p class="date">{% now "SHORT_DATE_FORMAT" %}</p>
+      {% endif %}
       <h3 class="contents name">{% trans "Table of Contents" %}</h3>
       <ul>
         {% for song in sorted_songs %}
