@@ -4,13 +4,13 @@ from typing import List
 from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db.models import Model, DateField, DateTimeField, IntegerField, FileField, CharField, TextChoices, \
-    ManyToManyField, ForeignKey, CASCADE, SET_NULL, CheckConstraint, Q, PositiveIntegerField, BooleanField, ImageField
+    ManyToManyField, ForeignKey, CASCADE, SET_NULL, CheckConstraint, Q, PositiveIntegerField, BooleanField, \
+    ImageField, FloatField
 from django.utils.translation import gettext_lazy as _
 
 from backend.models import Song
 from category.models import Category
 from pdf.storage import DateOverwriteStorage
-
 
 fs = DateOverwriteStorage()
 
@@ -64,6 +64,12 @@ class PDFRequest(Model):
                        null=True,
                        blank=True,
                        upload_to='uploads/')
+    margin = FloatField(verbose_name=_("Title Image margins"),
+                        help_text=_("Margins for title image, might be needed for some printers"),
+                        default=0)
+    show_title = BooleanField(verbose_name=_("Show title"),
+                              help_text=_("True, if the title should be shown on the first page"),
+                              default=True)
 
     def get_songs(self) -> List[Song]:
         """Returns all songs for request"""
