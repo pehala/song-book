@@ -14,8 +14,8 @@
 <style>
       @page :first {
           background: url({{ request.image.path }}) no-repeat;
-          background-size: cover;
-          margin: 0;
+          background-size: contain;
+          margin: {{ request.margin|floatformat }}px {{ request.margin|floatformat }}px {{ request.margin|floatformat }}px {{ request.margin|floatformat }}px;
           @bottom-left { content: none; }
           @bottom-center { content: none; }
           @top-center { content: none; }
@@ -26,7 +26,7 @@
 {% endif %}
 <body>
     <article id="contents">
-      <h1>{{ name }}</h1>
+      <h1>{% if request.show_title %}{{ name }}{% endif %}</h1>
       {% if request.show_date %}
       <p class="date">{% now "SHORT_DATE_FORMAT" %}</p>
       {% endif %}

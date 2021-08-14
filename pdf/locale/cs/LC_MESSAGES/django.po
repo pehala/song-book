@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-06 15:21+0000\n"
+"POT-Creation-Date: 2021-08-14 20:13+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
-#: pdf/forms.py:18 pdf/models.py:58 pdf/templates/pdf/requests/list.html:23
+#: pdf/forms.py:18 pdf/models.py:58 pdf/templates/pdf/requests/list.html:24
 msgid "Name"
 msgstr "Jméno"
 
@@ -106,7 +106,23 @@ msgstr "Úvodní obrázek"
 msgid "Optional title image of the songbook"
 msgstr "Volitelný obrázek na úvodní stránku "
 
-#: pdf/models.py:91
+#: pdf/models.py:67
+msgid "Title Image margins"
+msgstr "Odsazení úvodního obrázku"
+
+#: pdf/models.py:68
+msgid "Margins for title image, might be needed for some printers"
+msgstr "Odsazení obrázku na titulní stránce, může být nutné pro některé tiskárny"
+
+#: pdf/models.py:70
+msgid "Show title"
+msgstr "Ukázat název"
+
+#: pdf/models.py:71
+msgid "True, if the title should be shown on the first page"
+msgstr "Zaškrkněte, pokud se má zobrazit na první stránce PDF název"
+
+#: pdf/models.py:97
 msgid "Song number"
 msgstr "Číslo písničky"
 
@@ -137,57 +153,57 @@ msgstr "Hledat"
 msgid "Insert query"
 msgstr "Vložte text"
 
-#: pdf/templates/pdf/requests/list.html:25
+#: pdf/templates/pdf/requests/list.html:26
 msgid "Date Created"
 msgstr "Datum vytvoření"
 
-#: pdf/templates/pdf/requests/list.html:26
+#: pdf/templates/pdf/requests/list.html:27
 msgid "Last updated"
 msgstr "Naposledy změněno"
 
-#: pdf/templates/pdf/requests/list.html:27
+#: pdf/templates/pdf/requests/list.html:28
 msgid "Type"
 msgstr "Typ"
 
-#: pdf/templates/pdf/requests/list.html:28
+#: pdf/templates/pdf/requests/list.html:29
 msgid "Status"
 msgstr "Status"
 
-#: pdf/templates/pdf/requests/list.html:29
+#: pdf/templates/pdf/requests/list.html:30
 msgid "Link"
 msgstr "Odkaz"
 
-#: pdf/templates/pdf/requests/list.html:30
+#: pdf/templates/pdf/requests/list.html:31
 msgid "Time elapsed"
 msgstr "Trvání"
 
-#: pdf/templates/pdf/requests/list.html:31
+#: pdf/templates/pdf/requests/list.html:32
 msgid "Category"
 msgstr "Kategorie"
 
-#: pdf/templates/pdf/requests/list.html:32
+#: pdf/templates/pdf/requests/list.html:33
 msgid "Delete file"
 msgstr "Odstranit soubor"
 
-#: pdf/templates/pdf/requests/list.html:33
-#: pdf/templates/pdf/requests/list.html:75
+#: pdf/templates/pdf/requests/list.html:34
+#: pdf/templates/pdf/requests/list.html:76
 msgid "Regenerate"
 msgstr "Přegenerovat"
 
-#: pdf/templates/pdf/requests/list.html:55
-#: pdf/templates/pdf/requests/list.html:63
+#: pdf/templates/pdf/requests/list.html:56
+#: pdf/templates/pdf/requests/list.html:64
 msgid "None"
 msgstr "Nic"
 
-#: pdf/templates/pdf/requests/list.html:68
+#: pdf/templates/pdf/requests/list.html:69
 msgid "Delete"
 msgstr "Odstranit"
 
-#: pdf/templates/pdf/requests/list.html:70
+#: pdf/templates/pdf/requests/list.html:71
 msgid "No file present"
 msgstr "Nemá soubor"
 
-#: pdf/templates/pdf/requests/list.html:77
+#: pdf/templates/pdf/requests/list.html:78
 msgid "Already in queue"
 msgstr "Již ve frontě"
 
@@ -212,30 +228,31 @@ msgstr "zpevnik"
 msgid "Request %(id)s is already in queue"
 msgstr "Požadavek %(id)s je již ve frontě"
 
-#: pdf/views.py:45
-#, python-format
-msgid "Request %(name)s was marked for regeneration"
+#: pdf/views.py:46
+#, fuzzy, python-format
+#| msgid "Request %(name)s was marked for regeneration"
+msgid "Request %(id)s was marked for regeneration"
 msgstr "Požadavek %(name)s byl označen k přegenerování"
 
-#: pdf/views.py:59
+#: pdf/views.py:60
 #, python-format
 msgid "Unable to remove file from request %(id)s that doesn't have one"
 msgstr "Nepodařilo se odstranit soubor z požadavku %(id)s, protože žádný nemá"
 
-#: pdf/views.py:66
+#: pdf/views.py:67
 #, python-format
 msgid "File %(name)s was successfully deleted"
 msgstr "Soubor %(name)s byl úspěšně odstraněn"
 
-#: pdf/views.py:105
+#: pdf/views.py:106
 msgid "Required parameters not found"
 msgstr "Požadované parametry nenalezeny"
 
-#: pdf/views.py:110
+#: pdf/views.py:111
 msgid "You need to select at least one song"
 msgstr "Musíte vybrat alespoň jednu písničku"
 
-#: pdf/views.py:137
+#: pdf/views.py:138
 #, python-format
 msgid "PDF Request with id %(id)s was successfully created"
 msgstr "PDF požadavek se id %(id)s byl úspěšně vytvořen"

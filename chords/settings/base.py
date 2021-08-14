@@ -35,7 +35,6 @@ INSTALLED_APPS = [
     'backend',
     'pdf',
 
-    'compressor',
     'bootstrap4',
     'sass_processor',
     'markdownx',
