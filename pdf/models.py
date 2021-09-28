@@ -55,8 +55,7 @@ class PDFRequest(Model):
     category = ForeignKey(Category, null=True, on_delete=SET_NULL)
     name = CharField(max_length=100,
                      help_text=_("Name to be used on the title page of the PDF"),
-                     verbose_name=_("Name"),
-                     default=settings.SITE_NAME)
+                     verbose_name=_("Name"))
     show_date = BooleanField(default=True, verbose_name=_("Show date"),
                              help_text=_("True, if the date should be included in the final PDF"))
     image = ImageField(verbose_name=_("Title Image"),
