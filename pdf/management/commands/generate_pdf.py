@@ -20,7 +20,7 @@ from django_weasyprint.utils import django_url_fetcher
 from category.models import Category
 from pdf.locales import changed_locale, lang_to_locale
 from pdf.models import PDFRequest, Status
-from pdf.utils import Timer, generate_pdf_request
+from pdf.utils import Timer, generate_new_pdf_request
 
 TEMPLATE = "pdf/index.html"
 
@@ -66,7 +66,7 @@ class Command(BaseCommand):
         total_duration = 0
 
         if options["all"]:
-            objects = [generate_pdf_request(category) for category in Category.objects.filter(generate_pdf=True)]
+            objects = [generate_new_pdf_request(category) for category in Category.objects.filter(generate_pdf=True)]
         else:
             objects = PDFRequest.objects.filter(status=Status.QUEUED)
             if options["requests"] > 0:
