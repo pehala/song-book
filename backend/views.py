@@ -90,7 +90,7 @@ class SongUpdateView(SuccessMessageMixin, UpdateView):
 
     def form_valid(self, form):
         if len(form.changed_data) > 0:
-            regenerate_pdf(self.object)
+            regenerate_pdf(self.object, True)
             regenerate_prerender(self.object)
         return super().form_valid(form)
 
@@ -104,8 +104,8 @@ class SongDeleteView(DeleteView):
     success_message = _("Song %s was successfully deleted")
 
     def delete(self, request, *args, **kwargs):
+        regenerate_pdf(self.get_object())
         response = super().delete(request, *args, **kwargs)
-        regenerate_pdf(self.object)
         messages.success(self.request, self.success_message % self.object.name)
         return response
 

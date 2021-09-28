@@ -1,6 +1,7 @@
 """Utility functions"""
 from time import time
 
+from django.conf import settings
 from django.db import transaction
 from django.utils import translation
 from django.utils.translation import gettext
@@ -8,20 +9,37 @@ from django.utils.translation import gettext
 from pdf.models import PDFRequest, RequestType, Status, PDFSong
 
 
-def request_pdf_regeneration(category):
+def request_pdf_regeneration(category, update: bool = False):
     """Requests automatic PDF regeneration if none is pending"""
-    if not PDFRequest.objects.filter(type=RequestType.EVENT, status=Status.QUEUED, category=category).exists():
-        generate_pdf_request(category)
+    objects = PDFRequest.objects.filter(type=RequestType.EVENT, status=Status.QUEUED, category=category)
+    if not objects.exists():
+        generate_new_pdf_request(category)
+    elif not update:
+        regenerate_pdf_request(objects.first(), category)
 
 
-def generate_pdf_request(category):
+def regenerate_pdf_request(request, category):
+    """Regenerates the PDF request with newest info"""
+    with transaction.atomic():
+        PDFSong.objects.filter(request=request).delete()
+        PDFSong.objects.bulk_create([
+            PDFSong(request=request,
+                    song=song,
+                    song_number=song_number + 1)
+            for song_number, song in enumerate(category.song_set.all())
+        ])
+        return request
+
+
+def generate_new_pdf_request(category):
     """Returns PDFRequest for basic"""
     with transaction.atomic():
         request = PDFRequest(type=RequestType.EVENT,
                              status=Status.QUEUED,
                              category=category,
                              filename=get_filename(category),
-                             locale=category.locale)
+                             locale=category.locale,
+                             name=get_name(category))
         request.save()
         PDFSong.objects.bulk_create([
             PDFSong(request=request,
@@ -37,6 +55,12 @@ def get_filename(category):
     with translation.override(category.locale):
         text = gettext('songbook')
         return f"{text}-{category.name}"
+
+
+def get_name(category):
+    """Returns filename for category based on its locale"""
+    with translation.override(category.locale):
+        return gettext(settings.SITE_NAME)
 
 
 class Timer:

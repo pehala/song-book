@@ -4,11 +4,11 @@ from django.conf import settings
 from pdf.utils import request_pdf_regeneration
 
 
-def regenerate_pdf(song):
+def regenerate_pdf(song, update: bool = False):
     """Regenerates PDFs for each category song is in"""
     for category in song.categories.all():
         if category.generate_pdf:
-            request_pdf_regeneration(category)
+            request_pdf_regeneration(category, update)
 
 
 def regenerate_prerender(song):
