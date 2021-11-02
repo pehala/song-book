@@ -95,7 +95,8 @@ class Command(BaseCommand):
                             "songs": songs,
                             "sorted_songs": sorted_songs,
                             "name": request.name or translation.gettext(settings.SITE_NAME),
-                            "request": request
+                            "request": request,
+                            "link": settings.PDF_INCLUDE_LINK
                         })
                         weasyprint.HTML(
                             string=string,
