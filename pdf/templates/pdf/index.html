@@ -24,6 +24,19 @@
       .contents { break-after: avoid; page-break-before: always; }
 </style>
 {% endif %}
+{% if link %}
+<style>
+    @page {
+        @top-right {
+            content: "{{ link }}";
+            font-size: 9pt;
+            height: 1cm;
+            vertical-align: middle;
+            width: 100%;
+        }
+    }
+</style>
+{% endif %}
 <body>
     <article id="contents">
       <h1>{% if request.show_title %}{{ name }}{% endif %}</h1>
