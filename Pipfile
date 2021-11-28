@@ -6,6 +6,8 @@ verify_ssl = true
 [dev-packages]
 pylint = "*"
 pylint-django = "*"
+django-compressor = "*"
+libsass = "*"
 
 [packages]
 django = "==3.2.9"
@@ -21,7 +23,6 @@ weasyprint = ">=53.0"
 Pillow = "*"
 gunicorn = "*"
 gevent = "*"
-libsass = "*"
 markdown = "*"
 markdown3-newtab = "*"
 netifaces = "*"
