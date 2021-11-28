@@ -1,11 +1,13 @@
 """Views for backend app"""
 import json
+from typing import Dict
 
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.serializers.json import DjangoJSONEncoder
+from django.forms import model_to_dict
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
@@ -18,14 +20,15 @@ from backend.utils import regenerate_pdf, regenerate_prerender
 from category.models import Category
 
 
-def add_fields(song, authenticated: bool):
-    """Adds additional fields to the JSON"""
-
-    song['text'] = song["prerendered_web"]
+def transform_song(song: Song, number: int, authenticated: bool) -> Dict:
+    """Transforms song into a dict representation"""
+    transformed = model_to_dict(song, ["id", "name", "capo", "author", "link"])
+    transformed["number"] = number
     if authenticated:
-        song['edit_url'] = reverse("chords:edit", kwargs={"pk": song["id"]})
-        song['delete_url'] = reverse("chords:delete", kwargs={"pk": song["id"]})
-    del song["prerendered_web"]
+        transformed['edit_url'] = reverse("chords:edit", kwargs={"pk": song.id})
+        transformed['delete_url'] = reverse("chords:delete", kwargs={"pk": song.id})
+    transformed["text"] = song.rendered_web_markdown
+    return transformed
 
 
 class SongListView(ListView):
@@ -40,11 +43,10 @@ class SongListView(ListView):
         context_data = super().get_context_data(object_list=object_list, **kwargs)
         authenticated = self.request.user.is_authenticated
 
-        songs = list(context_data['songs'].values(*self.FIELDS))
+        songs = []
 
-        for i, _ in enumerate(songs):
-            songs[i]['number'] = i + 1
-            add_fields(songs[i], authenticated)
+        for i, song in enumerate(context_data["songs"]):
+            songs.append(transform_song(song, i + 1, authenticated))
 
         context_data['songs'] = json.dumps(songs, cls=DjangoJSONEncoder)
         return context_data
