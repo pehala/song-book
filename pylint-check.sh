@@ -1,1 +1,1 @@
-pipenv run pylint backend/ chords/ pdf/ frontend/ category/ --load-plugins pylint_django --django-settings-module=chords.settings.development
+pipenv run pylint backend/ chords/ pdf/ frontend/ category/ analytics/ --load-plugins pylint_django --django-settings-module=chords.settings.development
