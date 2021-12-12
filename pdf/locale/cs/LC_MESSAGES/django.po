@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-14 20:13+0000\n"
+"POT-Creation-Date: 2021-12-12 09:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -90,43 +90,43 @@ msgstr "Jazyk pro použití ve vygenerovaných PDF"
 msgid "Name to be used on the title page of the PDF"
 msgstr "Jméno pro titulní stranu pdf souboru"
 
-#: pdf/models.py:60
+#: pdf/models.py:59
 msgid "Show date"
 msgstr "Vložit datum"
 
-#: pdf/models.py:61
+#: pdf/models.py:60
 msgid "True, if the date should be included in the final PDF"
 msgstr "Zaškrknětě, pokud chcete aby v PDF souboru bylo datum"
 
-#: pdf/models.py:62
+#: pdf/models.py:61
 msgid "Title Image"
 msgstr "Úvodní obrázek"
 
-#: pdf/models.py:63
+#: pdf/models.py:62
 msgid "Optional title image of the songbook"
 msgstr "Volitelný obrázek na úvodní stránku "
 
-#: pdf/models.py:67
+#: pdf/models.py:66
 msgid "Title Image margins"
 msgstr "Odsazení úvodního obrázku"
 
-#: pdf/models.py:68
+#: pdf/models.py:67
 msgid "Margins for title image, might be needed for some printers"
 msgstr "Odsazení obrázku na titulní stránce, může být nutné pro některé tiskárny"
 
-#: pdf/models.py:70
+#: pdf/models.py:69
 msgid "Show title"
 msgstr "Ukázat název"
 
-#: pdf/models.py:71
+#: pdf/models.py:70
 msgid "True, if the title should be shown on the first page"
 msgstr "Zaškrkněte, pokud se má zobrazit na první stránce PDF název"
 
-#: pdf/models.py:97
+#: pdf/models.py:96
 msgid "Song number"
 msgstr "Číslo písničky"
 
-#: pdf/templates/pdf/index.html:33
+#: pdf/templates/pdf/index.html:46
 msgid "Table of Contents"
 msgstr "Obsah"
 
@@ -219,7 +219,7 @@ msgstr "Vybrat všechny"
 msgid "Finish selecting"
 msgstr "Dokončit výběr"
 
-#: pdf/utils.py:38
+#: pdf/utils.py:56
 msgid "songbook"
 msgstr "zpevnik"
 

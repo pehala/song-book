@@ -10,14 +10,18 @@ from django.utils.decorators import method_decorator
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django.utils.translation import gettext_lazy as _
 
-
+from analytics.views import AnalyticsMixin
 from backend.views import SongListView
 from category.forms import CategoryForm
 from category.models import Category
 
 
-class CategorySongsListView(SongListView):
+class CategorySongsListView(SongListView, AnalyticsMixin):
     """Shows all songs in a category"""
+
+    def get_key(self):
+        return self.kwargs['slug']
+
     def get_queryset(self):
         slug = self.kwargs['slug']
         if not Category.objects.filter(slug=slug).exists():

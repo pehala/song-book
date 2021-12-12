@@ -10,10 +10,11 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.forms import model_to_dict
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
-from django.utils.translation import gettext_lazy as _
+from django.utils.translation import gettext_lazy as _, gettext_noop
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
+from analytics.views import AnalyticsMixin
 from backend.forms import SongForm
 from backend.models import Song
 from backend.utils import regenerate_pdf, regenerate_prerender
@@ -52,8 +53,9 @@ class SongListView(ListView):
         return context_data
 
 
-class IndexSongListView(SongListView):
+class IndexSongListView(SongListView, AnalyticsMixin):
     """Shows first available category"""
+    KEY = gettext_noop("Index Page")
 
     def get_queryset(self):
         if Category.objects.count() > 0:

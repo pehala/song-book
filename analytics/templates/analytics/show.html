@@ -1,0 +1,134 @@
+{% extends "base/frame.html" %}
+{% load i18n %}
+
+{% block extra_head %}
+<script defer src="https://cdn.jsdelivr.net/npm/chart.js@3.6.2/dist/chart.min.js" integrity="sha256-D2tkh/3EROq+XuDEmgxOLW1oNxf0rLNlOwsPIUX+co4=" crossorigin="anonymous"></script>
+{% endblock %}
+
+{% block header %}{% trans "Analytics" %}{% endblock %}
+{% block title %}{% trans "Analytics" %}{% endblock %}
+
+{% block framed_body %}
+    <div class="d-flex .flex-row">
+       <div class="col-auto">
+         <label class="sr-only" for="inlineFormInputGroup">{% trans "Keys" %}</label>
+         <div class="input-group mb-2">
+           <div class="input-group-prepend">
+             <div class="input-group-text">{% trans "Keys" %}</div>
+           </div>
+           <select id="keys" class="custom-select">
+              <option value="" selected>{% trans "All" %}</option>
+              {% for key in keys %}
+              <option value="{{ key }}">{% trans key %}</option>
+              {% endfor %}
+            </select>
+         </div>
+       </div>
+       <div class="col-auto">
+         <label class="sr-only" for="inlineFormInputGroup">{% trans "Date Range" %}</label>
+         <div class="input-group mb-2">
+           <div class="input-group-prepend">
+             <div class="input-group-text">{% trans "Date Range" %}</div>
+           </div>
+           <select id="range" class="custom-select">
+{#              <option value="{{ day|date:"U" }}" selected>{% trans "Day" %}</option>#}
+              <option value="{{ week|date:"U" }}" selected>{% trans "Week" %}</option>
+              <option value="{{ month|date:"U" }}">{% trans "Month" %}</option>
+            </select>
+         </div>
+       </div>
+    </div>
+    <canvas id="graph" width="400" height="300" aria-label="Graph" role="img"></canvas>
+
+    <script type="module">
+        const URL = "{% url "analytics:data" %}"
+        let canvas = null;
+        Date.prototype.addDays = function(days) {
+            const date = new Date(this.valueOf());
+            date.setDate(date.getDate() + days);
+            return date;
+        }
+
+        function getDates(startDate, stopDate) {
+            const dateArray = [];
+            let currentDate = startDate;
+            while (currentDate <= stopDate) {
+                dateArray.push(new Date (currentDate).toISOString().substring(0,10));
+                currentDate = currentDate.addDays(1);
+            }
+            return dateArray;
+        }
+
+        function generate_data(dates, data) {
+            let values = []
+            for (let date of dates) {
+                values.push(date in data ? data[date] : 0)
+            }
+            return values
+        }
+
+        function createChart(dates, values) {
+            if (canvas) {
+                canvas.destroy();
+            }
+            const data = {
+              labels: dates,
+              datasets: [{
+                label: "{% trans "Analytics" %}",
+                data: values,
+                fill: false,
+                borderColor: 'rgb(75, 192, 192)',
+                tension: 0.1
+              }]
+            };
+            const config = {
+              type: 'line',
+              data: data,
+              options: {
+                  locale: "cs",
+                  scales: {
+                    y: {
+                        suggestedMax: Math.max.apply(this, values) + 5,
+                        ticks: {
+                            beginAtZero: true,
+                            stepSize: 1
+                        }
+                    }
+                }
+              }
+            };
+            canvas = new Chart(document.getElementById("graph"), config);
+        }
+
+        function redraw() {
+            const key = $('#keys').val()
+            const start_date = $('#range').val()
+            $.ajax(URL, {
+                data: {
+                    key: key,
+                    start_date: start_date
+                },
+                statusCode: {
+                    403: function() {
+                      alert( "No login" );
+                    },
+                    400: function() {
+                      alert( "Bad Data" );
+                    }
+                },
+                success: function (data, textStatus, jqXHR) {
+                    const dates = getDates(new Date(parseInt(start_date) * 1e3), new Date());
+                    const values = generate_data(dates, data);
+                    createChart(dates, values)
+                    console.log(dates);
+                    console.log(values);
+                }
+            })
+        }
+
+        $( "#keys" ).change(redraw);
+        $( "#range" ).change(redraw);
+        redraw();
+    </script>
+
+{% endblock %}

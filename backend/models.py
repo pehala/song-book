@@ -21,7 +21,7 @@ class Song(Model):
     """Song model"""
     name = CharField(verbose_name=_("Name"), max_length=100)
     date = DateField(auto_now_add=True, editable=False)
-    capo = PositiveSmallIntegerField(verbose_name="Capo", default=0)
+    capo = PositiveSmallIntegerField(verbose_name=_("Capo"), default=0)
     author = CharField(verbose_name=_("Author"), max_length=100, null=True, blank=True)
     link = URLField(verbose_name=_("Youtube Link"), null=True, blank=True)
     categories = ManyToManyField(Category, verbose_name=_("Songbooks"))

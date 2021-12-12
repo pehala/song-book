@@ -25,6 +25,7 @@ urlpatterns = [
     path('i18n/', include('django.conf.urls.i18n')),
     url('pdf/', include(('pdf.urls', "pdf"), namespace="pdf")),
     url('categories/', include(('category.urls', "category"), namespace="category")),
+    url('analytics/', include(('analytics.urls', "analytics"), namespace="analytics")),
     url(r'^', include(('backend.urls', "backend"), namespace="chords")),
     path('__debug__/', include(debug_toolbar.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

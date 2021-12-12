@@ -10,7 +10,9 @@ admin_children = (
     MenuItem(_("Add a song"),
              reverse("backend:add")),
     MenuItem(_("Add Songbook"),
-             reverse("category:add"))
+             reverse("category:add")),
+    MenuItem(_("Analytics"),
+             reverse("analytics:index"))
 )
 
 Menu.add_item("admin", MenuItem(_("Admin"),

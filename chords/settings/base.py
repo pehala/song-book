@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'category',
     'backend',
     'pdf',
+    'analytics',
 
     'bootstrap4',
     'sass_processor',
