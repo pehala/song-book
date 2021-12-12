@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-08-06 15:21+0000\n"
+"POT-Creation-Date: 2021-12-12 09:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -86,22 +86,22 @@ msgstr "Odstranit"
 msgid "Delete"
 msgstr "Smazat"
 
-#: category/views.py:24
+#: category/views.py:28
 #, python-format
 msgid "Songbook on url /%(slug)s does not exists"
 msgstr "Zpěvník s url /%(slug)s neexistuje"
 
-#: category/views.py:44
+#: category/views.py:48
 #, python-format
 msgid "Songbook %(name)s was successfully created"
 msgstr "Zpěvník %(name)s byla úspěšně vytvořena"
 
-#: category/views.py:58
+#: category/views.py:62
 #, python-format
 msgid "Songbook %(name)s was successfully updated"
 msgstr "Zpěvník %(name)s byla úspěšně upravena"
 
-#: category/views.py:71
+#: category/views.py:75
 #, python-format
 msgid "Songbook %(name)s was successfully deleted"
 msgstr "Zpěvník %(name)s byla úspěšně smazána"
