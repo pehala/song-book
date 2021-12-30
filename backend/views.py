@@ -1,6 +1,8 @@
 """Views for backend app"""
 import json
 from typing import Dict
+import zipfile
+import xml.etree.ElementTree as ET
 
 from django.conf import settings
 from django.contrib import messages
@@ -8,14 +10,15 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.serializers.json import DjangoJSONEncoder
 from django.forms import model_to_dict
+from django.http import HttpResponseRedirect
 from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _, gettext_noop
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, FormView
 from django_datatables_view.base_datatable_view import BaseDatatableView
 
 from analytics.views import AnalyticsMixin
-from backend.forms import SongForm
+from backend.forms import SongForm, UploadFileForm
 from backend.models import Song
 from backend.utils import regenerate_pdf, regenerate_prerender
 from category.models import Category
@@ -120,3 +123,59 @@ class SongsDatatableView(BaseDatatableView):
     model = Song
     max_display_length = 500
     columns = ["name", "author", "capo"]
+
+
+def quelea_song_import(cleaned_data):
+    """Read data from file in cleaned_data, and import all songs in qsp archive"""
+
+    with zipfile.ZipFile(cleaned_data['file']) as file:
+        songs = {name: file.read(name) for name in file.namelist()}
+
+    lyrics = []
+
+    for name in songs.keys():
+        song = ET.fromstring(songs[name])
+        lyrics_lines = []
+        for child in song.findall('.//lyrics'):
+            if child.text is not None:
+                lyrics_lines.append(child.text)
+
+        lyrics.append((name, '\n\n'.join(lyrics_lines)))
+
+    num_songs = 0
+
+    for (name, text) in lyrics:
+        clean_name = name.rstrip('.xml')
+
+        song_obj = Song(name=clean_name, text=text)
+        song_obj.save()
+
+        list_ids = [f.pk for f in cleaned_data['categories']]
+
+        song_obj.categories.set(list_ids)
+        regenerate_pdf(song_obj)
+        regenerate_prerender(song_obj)
+        num_songs += 1
+
+    return num_songs
+
+
+@method_decorator(login_required, name='dispatch')
+class UploadView(FormView):
+    """View to recieve qsp file and import all songs"""
+
+    form_class = UploadFileForm
+    template_name = 'songs/import.html'
+
+    success_url = reverse_lazy('backend:index')
+
+    # def get_success_url(self):
+    #     regenerate_pdf(self.object)
+    #     regenerate_prerender(self.object)
+    #     return super().get_success_url()
+
+    def form_valid(self, form):
+        num = quelea_song_import(form.cleaned_data)
+        messages.success(self.request, f"{num} songs imported.")
+        return super().form_valid(form)
+

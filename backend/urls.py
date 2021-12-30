@@ -2,7 +2,7 @@
 from django.urls import path
 
 from backend.views import SongCreateView, SongUpdateView, SongDeleteView, SongsDatatableView, \
-    IndexSongListView
+    IndexSongListView, UploadView
 
 urlpatterns = [
     path('', IndexSongListView.as_view(), name="index"),
@@ -10,4 +10,5 @@ urlpatterns = [
     path('edit/<int:pk>', SongUpdateView.as_view(), name="edit"),
     path('delete/<int:pk>', SongDeleteView.as_view(), name="delete"),
     path('api/songs', SongsDatatableView.as_view(), name="songs"),
+    path('import', UploadView.as_view(), name="import"),
 ]

@@ -3,7 +3,11 @@
 {% load bootstrap4 %}
 
 {% block framed_body %}
-  <form method="post">
+  {% if form.is_multipart %}
+    <form enctype="multipart/form-data" method="post">
+  {% else %}
+    <form method="post">
+  {% endif %}
     {% csrf_token %}
     {% bootstrap_form form %}
     {% buttons %}
