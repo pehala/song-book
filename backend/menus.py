@@ -9,6 +9,8 @@ admin_children = (
              reverse("category:list")),
     MenuItem(_("Add a song"),
              reverse("backend:add")),
+    MenuItem(_("Import Quelue archive"),
+             reverse("backend:import")),
     MenuItem(_("Add Songbook"),
              reverse("category:add")),
     MenuItem(_("Analytics"),
