@@ -10,7 +10,7 @@ django-compressor = "*"
 libsass = "*"
 
 [packages]
-django = "==3.2.9"
+django = "==3.2.12"
 django-bootstrap4 = "*"
 django-datatables-view = "*"
 django-debug-toolbar = "*"
