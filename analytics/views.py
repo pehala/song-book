@@ -52,6 +52,7 @@ class AnalyticsShowView(TemplateView):
         ctx["week"] = (datetime.now() - timedelta(days=6)).date()
         # ctx["day"] = (datetime.now() - timedelta(days=1)).date()
         ctx["month"] = (datetime.now() - timedelta(days=30)).date()
+        ctx["year"] = (datetime.now() - timedelta(days=360)).date()
         return ctx
 
 

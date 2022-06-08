@@ -34,6 +34,7 @@
 {#              <option value="{{ day|date:"U" }}" selected>{% trans "Day" %}</option>#}
               <option value="{{ week|date:"U" }}" selected>{% trans "Week" %}</option>
               <option value="{{ month|date:"U" }}">{% trans "Month" %}</option>
+              <option value="{{ year|date:"U" }}">{% trans "Year" %}</option>
             </select>
          </div>
        </div>
@@ -66,7 +67,7 @@
             }
             return values
         }
-
+        const nullDupes = data => data.map((x, i) => data[i - 1] === x && data[i + 1] === x ? null : x);
         function createChart(dates, values) {
             if (canvas) {
                 canvas.destroy();
@@ -74,11 +75,12 @@
             const data = {
               labels: dates,
               datasets: [{
+                spanGaps: true,
                 label: "{% trans "Analytics" %}",
-                data: values,
+                data: nullDupes(values),
                 fill: false,
                 borderColor: 'rgb(75, 192, 192)',
-                tension: 0.1
+                tension: 0.01
               }]
             };
             const config = {
