@@ -2,6 +2,7 @@
 import json
 from typing import Dict
 
+from dj_datatables_view.base_datatable_view import BaseDatatableView
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -12,7 +13,6 @@ from django.urls import reverse_lazy, reverse
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _, gettext_noop
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView
-from django_datatables_view.base_datatable_view import BaseDatatableView
 
 from analytics.views import AnalyticsMixin
 from backend.forms import SongForm
