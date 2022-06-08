@@ -57,31 +57,41 @@
                 {% include "menu/bootstrap4-menu.html" with menu=menus.admin %}
             </ul>
             {% block extra_nav %}{% endblock %}
+                    <ul class="my-lg-0 navbar-nav navbar-right languages">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button"
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        {% trans "Options" %}
+                    </a>
+                    <div class="dropdown-menu" aria-labelledby="languageDropdown" id="options">
+                        <div class="form-group d-flex ml-2 mr-2 ">
+                            <label for="language" class="mr-2">
+                                {% trans "Language" %}
+                            </label>
+                            <select class="form-control" id="language" onchange="document.getElementById(this.value).submit()">
+                              {% for locale in languages %}
+                                <option value="{{ locale.code }}" {% if locale.code == LANGUAGE_CODE %}selected{% endif %}>{{ locale.code }}</option>
+                              {% endfor %}
+                            </select>
+                        </div>
+                        {% for locale in languages %}
+                            <form id="{{ locale.code }}" action="{% url 'set_language' %}" method="post">
+                                {% csrf_token %}
+                                <input name="next" type="hidden" value="{{ redirect_to }}">
+                                <input name="language" type=hidden value={{ locale.code }}>
+                            </form>
+                        {% endfor %}
+                        {% block extra_options %}{% endblock %}
+                    </div>
+                </li>
+            </ul>
             {% if user.is_authenticated %}
                 <span class="navbar-text mr-2">{% trans "Logged as" %} <b>{{ user.username }}</b></span>
             {% endif %}
             <ul class="my-lg-0 navbar-nav navbar-right">
                 {% include "menu/bootstrap4-menu.html" with menu=menus.account %}
             </ul>
-            <ul class="my-lg-0 navbar-nav navbar-right languages">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button"
-                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                        {% trans "Site Language" %}
-                    </a>
-                    <div class="dropdown-menu" aria-labelledby="languageDropdown">
-                        {% for locale in languages %}
-                            <form id={{ locale.code }} action="{% url 'set_language' %}" method="post">
-                                {% csrf_token %}
-                                <input name="next" type="hidden" value="{{ redirect_to }}">
-                                <input name="language" type=hidden value={{ locale.code }}>
-                            </form>
-                            <a class="dropdown-item"
-                               onclick="document.getElementById('{{ locale.code }}').submit();">{% trans locale.name %}</a>
-                        {% endfor %}
-                    </div>
-                </li>
-            </ul>
+
         </div>
     </nav>
     {% bootstrap_messages %}
@@ -90,4 +100,11 @@
     {% endblock %}
 </div>
 </body>
+<script type="module">
+$('#options').on('click', function(event){
+    // The event won't be propagated up to the document NODE and
+    // therefore delegated events won't be fired
+    event.stopPropagation();
+});
+</script>
 </html>

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-12 09:18+0000\n"
+"POT-Creation-Date: 2022-06-12 07:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -29,7 +29,7 @@ msgstr "Kliknutí"
 
 #: analytics/templates/analytics/show.html:8
 #: analytics/templates/analytics/show.html:9
-#: analytics/templates/analytics/show.html:77
+#: analytics/templates/analytics/show.html:79
 msgid "Analytics"
 msgstr "Statistiky"
 
@@ -54,6 +54,10 @@ msgstr "Týden"
 #: analytics/templates/analytics/show.html:36
 msgid "Month"
 msgstr "Měsíc"
+
+#: analytics/templates/analytics/show.html:37
+msgid "Year"
+msgstr "Rok"
 
 #: analytics/views.py:31
 msgid "General"

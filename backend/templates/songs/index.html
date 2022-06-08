@@ -13,9 +13,18 @@
             referrerpolicy="no-referrer"
             defer>
     </script>
+    <script type="module" src="{% static 'js/js.cookie.js' %}"></script>
 
     <link rel="stylesheet" type="text/css" href="{% sass_src 'datatables.sass' %}">
 {%  endblock %}
+{% block extra_options %}
+<div class="form-check form-check-inline ml-2">
+  <label class="form-check-label" for="hideChords" id="defaultCheckLabel">
+    {% trans "Hide chords" %}
+  </label>
+  <input class="form-check-input ml-2" type="checkbox" value="" id="hideChords">
+</div>
+{% endblock %}
 {% block body %}
     <script id="songTemplate" type="text/x-jsrender">
         <div class="collapsible-controller w-100 pb-1 pl-2 pt-2 border-bottom rounded"  onclick="collapsible(this,'<%:number%>')">
@@ -71,6 +80,7 @@
         <span class="icon-down-open"></span>
     </button>
     <script type="module">
+    import Cookies from "{% static 'js/js.cookie.js' %}"
     $.views.settings.delimiters("<%", "%>");
     $.fn.DataTable.ext.pager.numbers_length = 5;
     $.templates("song", "#songTemplate")
@@ -147,6 +157,38 @@
                 scrollTop: `+=${0.8 * scrollAmount}`
              }, 800);
         });
+
+        let hidden = false
+        const checkbox = $("#hideChords")
+        checkbox.change(function() {
+            if ($(this).is(':checked') && !hidden) {
+                $(".chord").hide()
+                hidden = true
+                Cookies.set("hide_chords", true, {SameSite: "Strict"})
+            } else {
+                hidden = false
+                $(".chord").show()
+                Cookies.set("hide_chords", false, {SameSite: "Strict"})
+            }
+        })
+
+        let hide_chords = Cookies.get("hide_chords");
+        if (hide_chords === undefined) {
+            Cookies.set("hide_chords", false, {SameSite: "Strict"})
+            hide_chords = false
+        }
+        checkbox.prop('checked', hide_chords === 'true');
+        checkbox.change()
+
+        table.on( 'draw', function () {
+            if (hidden) {
+                $(".chord").hide()
+            } else {
+                $(".chord").show()
+            }
+
+        });
+
 
     });
 
