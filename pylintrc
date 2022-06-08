@@ -8,3 +8,6 @@ max-parents=12
 
 # Minimum number of public methods for a class (see R0903).
 min-public-methods=1
+
+[MAIN]
+ignore-patterns=\d{4}_.*?.py
