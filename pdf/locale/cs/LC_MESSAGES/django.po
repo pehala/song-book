@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-12 09:18+0000\n"
+"POT-Creation-Date: 2022-06-12 07:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -112,7 +112,8 @@ msgstr "Odsazení úvodního obrázku"
 
 #: pdf/models.py:67
 msgid "Margins for title image, might be needed for some printers"
-msgstr "Odsazení obrázku na titulní stránce, může být nutné pro některé tiskárny"
+msgstr ""
+"Odsazení obrázku na titulní stránce, může být nutné pro některé tiskárny"
 
 #: pdf/models.py:69
 msgid "Show title"

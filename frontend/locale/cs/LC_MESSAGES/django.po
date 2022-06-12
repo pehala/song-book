@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-12 09:18+0000\n"
+"POT-Creation-Date: 2022-06-12 07:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -62,8 +62,8 @@ msgstr ""
 #, python-format
 msgid ""
 "It seems you turned wrong somewhere, there is nothing here but small midget "
-"wizard with long beard telling you reason what you did wrong:<br> <b>"
-"%(exception)s</b>"
+"wizard with long beard telling you reason what you did wrong:<br> "
+"<b>%(exception)s</b>"
 msgstr ""
 "Vypadá to že si někde špatně uhl, není tu nic vyjma trpasličího čaroděje s "
 "dlouhými vousy který se ti snaží říct co pokazilo:<br> <b>%(exception)s</b>"
@@ -76,13 +76,13 @@ msgstr "Odeslat"
 msgid "Jerry's songs"
 msgstr "Jerryho zpěvníček"
 
-#: frontend/templates/base/index.html:62
+#: frontend/templates/base/index.html:64
+msgid "Options"
+msgstr "Možnosti"
+
+#: frontend/templates/base/index.html:89
 msgid "Logged as"
 msgstr "Přihlášen jako"
-
-#: frontend/templates/base/index.html:71
-msgid "Site Language"
-msgstr "Jazyk stránky"
 
 #: frontend/templates/markdownx/widget.html:6
 msgid "Editor"

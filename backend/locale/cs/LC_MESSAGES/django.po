@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-12 09:18+0000\n"
+"POT-Creation-Date: 2022-06-12 07:19+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -33,7 +33,7 @@ msgstr "Přidat zpěvník"
 
 #: backend/menus.py:14
 msgid "Analytics"
-msgstr ""
+msgstr "Statistiky"
 
 #: backend/menus.py:18
 msgid "Admin"
@@ -105,25 +105,29 @@ msgid "Confirm"
 msgstr "Potvrdit"
 
 #: backend/templates/songs/fragments/song.html:17
-#: backend/templates/songs/index.html:29 backend/templates/songs/song.html:15
+#: backend/templates/songs/index.html:37 backend/templates/songs/song.html:15
 msgid "Edit"
 msgstr "Editor"
 
 #: backend/templates/songs/fragments/song.html:20
-#: backend/templates/songs/index.html:32 backend/templates/songs/song.html:18
+#: backend/templates/songs/index.html:40 backend/templates/songs/song.html:18
 msgid "Delete"
 msgstr "Smazat"
 
 #: backend/templates/songs/fragments/song.html:34
-#: backend/templates/songs/index.html:45 backend/templates/songs/song.html:30
+#: backend/templates/songs/index.html:53 backend/templates/songs/song.html:30
 msgid "Transpose"
 msgstr "Transponovat"
 
-#: backend/templates/songs/index.html:58
+#: backend/templates/songs/index.html:22
+msgid "Hide chords"
+msgstr "Skrýt akordy"
+
+#: backend/templates/songs/index.html:66
 msgid "Search"
 msgstr "Hledat"
 
-#: backend/templates/songs/index.html:60
+#: backend/templates/songs/index.html:68
 msgid "Number, text or author"
 msgstr "Číslo, text nebo autor"
 
