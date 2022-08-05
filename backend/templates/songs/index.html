@@ -28,7 +28,7 @@
 {% block body %}
     <script id="songTemplate" type="text/x-jsrender">
         <div class="collapsible-controller w-100 pb-1 pl-2 pt-2 border-bottom rounded"  onclick="collapsible(this,'<%:number%>')">
-            <h2 class="d-inline"><span style="width: 50px;"><%:number%>.</span> <%:name%></h2>
+            <h2 class="d-inline <%if archived%>text-danger<%/if%>"><span style="width: 50px;"><%:number%>.</span> <%:name%></h2>
             <%if author%>
                 <h6 class="d-inline" ><%:author%></h6>
             <%/if%>
