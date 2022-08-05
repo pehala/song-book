@@ -108,11 +108,24 @@ class SongUpdateView(SuccessMessageMixin, UpdateView):
     success_url = reverse_lazy("backend:index")
     success_message = _("Song %(name)s was successfully updated")
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.regenerate = None
+
     def form_valid(self, form):
         if len(form.changed_data) > 0:
+            self.regenerate = True
+        else:
+            self.regenerate = False
+
+        return super().form_valid(form)
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        if self.regenerate:
             regenerate_pdf(self.object, True)
             regenerate_prerender(self.object)
-        return super().form_valid(form)
+        return response
 
 
 @method_decorator(login_required, name='dispatch')
@@ -123,9 +136,9 @@ class SongDeleteView(DeleteView):
     success_url = reverse_lazy("backend:index")
     success_message = _("Song %s was successfully deleted")
 
-    def delete(self, request, *args, **kwargs):
+    def post(self, request, *args, **kwargs):
         regenerate_pdf(self.get_object())
-        response = super().delete(request, *args, **kwargs)
+        response = super().post(request, *args, **kwargs)
         messages.success(self.request, self.success_message % self.object.name)
         return response
 
