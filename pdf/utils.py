@@ -26,7 +26,7 @@ def regenerate_pdf_request(request, category):
             PDFSong(request=request,
                     song=song,
                     song_number=song_number + 1)
-            for song_number, song in enumerate(category.song_set.all())
+            for song_number, song in enumerate(category.song_set.filter(archived=False).all())
         ])
         return request
 
@@ -45,7 +45,7 @@ def generate_new_pdf_request(category):
             PDFSong(request=request,
                     song=song,
                     song_number=song_number + 1)
-            for song_number, song in enumerate(category.song_set.all())
+            for song_number, song in enumerate(category.song_set.filter(archived=False).all())
         ])
         return request
 
