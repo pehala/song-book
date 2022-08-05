@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-12 07:19+0000\n"
+"POT-Creation-Date: 2022-08-05 17:49+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -76,14 +76,18 @@ msgid "Songbooks"
 msgstr "Seznam zpěvníků"
 
 #: backend/models.py:28
+msgid "Archived"
+msgstr "Archivovat"
+
+#: backend/models.py:29
 msgid "Lyrics"
 msgstr "Text"
 
-#: backend/models.py:80
+#: backend/models.py:81
 msgid "Song"
 msgstr "Písnička"
 
-#: backend/models.py:81
+#: backend/models.py:82
 msgid "Songs"
 msgstr "Písničky"
 
@@ -105,47 +109,47 @@ msgid "Confirm"
 msgstr "Potvrdit"
 
 #: backend/templates/songs/fragments/song.html:17
-#: backend/templates/songs/index.html:37 backend/templates/songs/song.html:15
+#: backend/templates/songs/index.html:38 backend/templates/songs/song.html:15
 msgid "Edit"
 msgstr "Editor"
 
 #: backend/templates/songs/fragments/song.html:20
-#: backend/templates/songs/index.html:40 backend/templates/songs/song.html:18
+#: backend/templates/songs/index.html:41 backend/templates/songs/song.html:18
 msgid "Delete"
 msgstr "Smazat"
 
 #: backend/templates/songs/fragments/song.html:34
-#: backend/templates/songs/index.html:53 backend/templates/songs/song.html:30
+#: backend/templates/songs/index.html:54 backend/templates/songs/song.html:30
 msgid "Transpose"
 msgstr "Transponovat"
 
-#: backend/templates/songs/index.html:22
+#: backend/templates/songs/index.html:23
 msgid "Hide chords"
 msgstr "Skrýt akordy"
 
-#: backend/templates/songs/index.html:66
+#: backend/templates/songs/index.html:67
 msgid "Search"
 msgstr "Hledat"
 
-#: backend/templates/songs/index.html:68
+#: backend/templates/songs/index.html:69
 msgid "Number, text or author"
 msgstr "Číslo, text nebo autor"
 
-#: backend/views.py:58
+#: backend/views.py:74
 msgid "Index Page"
 msgstr "Úvodní stránka"
 
-#: backend/views.py:77
+#: backend/views.py:93
 #, python-format
 msgid "Song %(name)s was successfully created"
 msgstr "Písnička %(name)s byla úspěšně přidána"
 
-#: backend/views.py:93
+#: backend/views.py:109
 #, python-format
 msgid "Song %(name)s was successfully updated"
 msgstr "Písnička %(name)s byla úspěšně upravena"
 
-#: backend/views.py:108
+#: backend/views.py:124
 #, python-format
 msgid "Song %s was successfully deleted"
 msgstr "Písnička %s byla úspěšně odstraněna"

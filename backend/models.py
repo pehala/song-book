@@ -3,7 +3,7 @@ from enum import Enum
 
 from django.conf import settings
 from django.db.models import Model, CharField, URLField, DateField, PositiveSmallIntegerField, ManyToManyField, \
-    TextField
+    TextField, BooleanField
 from django.utils.translation import gettext_lazy as _
 from markdownx.models import MarkdownxField
 
@@ -25,6 +25,7 @@ class Song(Model):
     author = CharField(verbose_name=_("Author"), max_length=100, null=True, blank=True)
     link = URLField(verbose_name=_("Youtube Link"), null=True, blank=True)
     categories = ManyToManyField(Category, verbose_name=_("Songbooks"))
+    archived = BooleanField(verbose_name=_("Archived"), default=False)
     text = MarkdownxField(verbose_name=_("Lyrics"))
     prerendered_web = TextField(null=True)
     prerendered_pdf = TextField(null=True)

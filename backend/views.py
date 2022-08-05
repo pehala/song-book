@@ -23,7 +23,7 @@ from category.models import Category
 
 def transform_song(song: Song, number: int, authenticated: bool) -> Dict:
     """Transforms song into a dict representation"""
-    transformed = model_to_dict(song, ["id", "name", "capo", "author", "link"])
+    transformed = model_to_dict(song, ["id", "name", "capo", "author", "link", "archived"])
     transformed["number"] = number
     if authenticated:
         transformed['edit_url'] = reverse("chords:edit", kwargs={"pk": song.id})
@@ -40,14 +40,30 @@ class SongListView(ListView):
 
     FIELDS = ["id", "name", "capo", "author", "link", "prerendered_web"]
 
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        if not self.request.user.is_superuser:
+            queryset = queryset.filter(archived=False)
+        return queryset
+
     def get_context_data(self, *, object_list=None, **kwargs):
         context_data = super().get_context_data(object_list=object_list, **kwargs)
         authenticated = self.request.user.is_authenticated
 
         songs = []
 
-        for i, song in enumerate(context_data["songs"]):
-            songs.append(transform_song(song, i + 1, authenticated))
+        archived = []
+        i = 1
+        for song in context_data["songs"]:
+            if song.archived:
+                archived.append(song)
+                continue
+            songs.append(transform_song(song, i, authenticated))
+            i += 1
+
+        for song in archived:
+            songs.append(transform_song(song, i, authenticated))
+            i += 1
 
         context_data['songs'] = json.dumps(songs, cls=DjangoJSONEncoder)
         return context_data
