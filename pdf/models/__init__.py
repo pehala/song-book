@@ -28,6 +28,11 @@ class PDFOptions(Model):
     show_title = BooleanField(verbose_name=_("Show title"),
                               help_text=_("True, if the title should be shown on the first page"),
                               default=True)
+    link = CharField(max_length=300,
+                     blank=True,
+                     help_text=_("Link to include in the PDF"),
+                     verbose_name=_("Link"),
+                     default=settings.PDF_INCLUDE_LINK)
 
     def copy_options(self, options: "PDFOptions"):
         self.filename = options.filename
@@ -37,6 +42,7 @@ class PDFOptions(Model):
         self.image = options.image
         self.margin = options.margin
         self.show_title = options.show_title
+        self.link = options.link
 
     class Meta:
         abstract = True

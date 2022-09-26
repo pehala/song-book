@@ -15,7 +15,7 @@ class RequestForm(ModelForm):
 
 class PDFSongForm(ModelForm):
     """Slimmed down model form for PDFSong"""
-    name = CharField(disabled=True, required=False, label=_("Name"))
+    name = CharField(disabled=True, required=False, label=_("Title"))
 
     class Meta:
         model = PDFSong
