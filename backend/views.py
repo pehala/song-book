@@ -69,6 +69,22 @@ class SongListView(ListView):
         return context_data
 
 
+class RegenerateViewMixin:
+    """Mixin which tell you if the object changed or not"""
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.regenerate = None
+
+    def form_valid(self, form):
+        """Check if there were any changes"""
+        if len(form.changed_data) > 0:
+            self.regenerate = True
+        else:
+            self.regenerate = False
+
+        return super().form_valid(form)
+
+
 class IndexSongListView(SongListView, AnalyticsMixin):
     """Shows first available category"""
     KEY = gettext_noop("Index Page")
@@ -100,25 +116,13 @@ class SongCreateView(SuccessMessageMixin, CreateView):
 
 
 @method_decorator(login_required, name='dispatch')
-class SongUpdateView(SuccessMessageMixin, UpdateView):
+class SongUpdateView(SuccessMessageMixin, RegenerateViewMixin, UpdateView):
     """Updates existing song"""
     form_class = SongForm
     model = Song
     template_name = 'songs/add.html'
     success_url = reverse_lazy("backend:index")
     success_message = _("Song %(name)s was successfully updated")
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.regenerate = None
-
-    def form_valid(self, form):
-        if len(form.changed_data) > 0:
-            self.regenerate = True
-        else:
-            self.regenerate = False
-
-        return super().form_valid(form)
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
