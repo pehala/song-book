@@ -10,7 +10,7 @@ class RequestForm(ModelForm):
     """Slimmed down model form for PDFRequest"""
     class Meta:
         model = PDFRequest
-        fields = ['title', 'filename', 'locale', 'show_date', 'image', 'margin', 'show_title']
+        fields = ['title', 'filename', 'locale', 'show_date', 'image', 'margin']
 
 
 class PDFSongForm(ModelForm):

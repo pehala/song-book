@@ -1,9 +1,11 @@
+"""Common classes for PDF"""
 from django.conf import settings
 from django.db.models import Model, BooleanField, CharField, ImageField, FloatField
 from django.utils.translation import gettext_lazy as _
 
 
 class PDFOptions(Model):
+    """All options for PDF Generation in a form of a abstract model"""
     filename = CharField(max_length=30,
                          blank=True,
                          help_text=_("Filename of the generated PDF, please do not include .pdf"),
@@ -25,9 +27,6 @@ class PDFOptions(Model):
     margin = FloatField(verbose_name=_("Title Image margins"),
                         help_text=_("Margins for title image, might be needed for some printers"),
                         default=0)
-    show_title = BooleanField(verbose_name=_("Show title"),
-                              help_text=_("True, if the title should be shown on the first page"),
-                              default=True)
     link = CharField(max_length=300,
                      blank=True,
                      help_text=_("Link to include in the PDF"),
@@ -35,13 +34,13 @@ class PDFOptions(Model):
                      default=settings.PDF_INCLUDE_LINK)
 
     def copy_options(self, options: "PDFOptions"):
+        """Copy all options from another PDFOptions object"""
         self.filename = options.filename
         self.locale = options.locale
         self.title = options.title
         self.show_date = options.show_date
         self.image = options.image
         self.margin = options.margin
-        self.show_title = options.show_title
         self.link = options.link
 
     class Meta:

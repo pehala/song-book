@@ -1,6 +1,5 @@
 """Models"""
-from django.conf import settings
-from django.db.models import Model, CharField, SlugField, BooleanField
+from django.db.models import CharField, SlugField, BooleanField
 from django.utils.translation import gettext_lazy as _
 
 from pdf.models import PDFOptions
