@@ -11,10 +11,21 @@ jobs:
 
     steps:
       - uses: actions/checkout@v1
-      - name: Set up Python 3.7
+      - name: Set up Python 3.9
         uses: actions/setup-python@v1
         with:
-          python-version: 3.7
+          python-version: 3.9
+      - name: Week number
+        id: weeknum
+        run: |
+          echo "::set-output name=weeknum::$(/bin/date -u "+%g.%V")"
+        shell: bash
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.local/share/virtualenvs
+            Pipfile.lock
+          key: ${{ runner.os }}-w${{ steps.weeknum.outputs.weeknum }}-python-${{ steps.setup-python.outputs.python-version }}-pipenv-${{ hashFiles('Pipfile') }}
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -22,4 +33,4 @@ jobs:
           pipenv update --dev
       - name: Lint with Pylint
         run: |
-          pipenv run pylint --load-plugins pylint_django pdf/ chords/ backend/ frontend/ category/ --django-settings-module=chords.settings.development
+          pipenv run pylint pdf/ chords/ backend/ frontend/ category/ --django-settings-module=chords.settings.development
