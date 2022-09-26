@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-12-12 09:18+0000\n"
+"POT-Creation-Date: 2022-09-26 13:07+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,30 +24,22 @@ msgstr ""
 msgid "Songbooks"
 msgstr "Zpěvníky"
 
-#: category/models.py:9 category/templates/category/list.html:11
+#: category/models.py:10 category/templates/category/list.html:11
 msgid "Name"
 msgstr "Jméno"
 
-#: category/models.py:10 category/templates/category/list.html:12
+#: category/models.py:11 category/templates/category/list.html:12
 msgid "URL pattern"
 msgstr "URL vzor"
 
-#: category/models.py:11 category/templates/category/list.html:13
+#: category/models.py:12 category/templates/category/list.html:13
 msgid "PDF generation"
 msgstr "Automatické Generování PDF"
 
-#: category/models.py:12
+#: category/models.py:13
 msgid "Should the PDF file be automatically generated when a song changes?"
 msgstr ""
 "Má být vygenerován pdf soubor když se nějaká písnička ze zpěvníku změní?"
-
-#: category/models.py:14 category/templates/category/list.html:14
-msgid "Language"
-msgstr "Jazyk"
-
-#: category/models.py:15
-msgid "Language for generated PDF files"
-msgstr "Jazyk vygenerovaných pdf souborů"
 
 #: category/templates/category/add.html:4
 #: category/templates/category/add.html:5
@@ -72,6 +64,10 @@ msgstr "Ne"
 #: category/templates/category/list.html:24
 msgid "Yes"
 msgstr "Ano"
+
+#: category/templates/category/list.html:14
+msgid "Language"
+msgstr "Jazyk"
 
 #: category/templates/category/list.html:15
 #: category/templates/category/list.html:27
@@ -105,3 +101,6 @@ msgstr "Zpěvník %(name)s byla úspěšně upravena"
 #, python-format
 msgid "Songbook %(name)s was successfully deleted"
 msgstr "Zpěvník %(name)s byla úspěšně smazána"
+
+#~ msgid "Language for generated PDF files"
+#~ msgstr "Jazyk vygenerovaných pdf souborů"

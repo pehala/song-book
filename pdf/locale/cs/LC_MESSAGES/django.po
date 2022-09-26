@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-06-12 07:19+0000\n"
+"POT-Creation-Date: 2022-09-26 13:07+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,8 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
-#: pdf/forms.py:18 pdf/models.py:58 pdf/templates/pdf/requests/list.html:24
+#: pdf/forms.py:18 pdf/models/__init__.py:19
+#: pdf/templates/pdf/requests/list.html:24
 msgid "Title"
 msgstr "Titulek"
 
@@ -46,84 +47,84 @@ msgstr ""
 msgid "Files"
 msgstr "Soubory"
 
-#: pdf/models.py:20
-msgid "Automated"
-msgstr "Automaticky"
-
-#: pdf/models.py:21
-msgid "Manual"
-msgstr "Manuální"
-
-#: pdf/models.py:26
-msgid "Queued"
-msgstr "Ve frontě"
-
-#: pdf/models.py:27
-msgid "In progress"
-msgstr "Generuje se"
-
-#: pdf/models.py:28
-msgid "Done"
-msgstr "Hotovo"
-
-#: pdf/models.py:29
-msgid "Failed"
-msgstr "Selhalo"
-
-#: pdf/models.py:49
+#: pdf/models/__init__.py:11
 msgid "Filename of the generated PDF, please do not include .pdf"
 msgstr "Název vygenerovaného PDF, prosím piště bez přípony .pdf"
 
-#: pdf/models.py:50
+#: pdf/models/__init__.py:12
 msgid "File name"
 msgstr "Název souboru"
 
-#: pdf/models.py:52
+#: pdf/models/__init__.py:13
 msgid "Language"
 msgstr "Jazyk"
 
-#: pdf/models.py:53
+#: pdf/models/__init__.py:14
 msgid "Language to be used in the generated PDF"
 msgstr "Jazyk pro použití ve vygenerovaných PDF"
 
-#: pdf/models.py:57
+#: pdf/models/__init__.py:18
 msgid "Name to be used on the title page of the PDF"
 msgstr "Jméno pro titulní stranu pdf souboru"
 
-#: pdf/models.py:59
+#: pdf/models/__init__.py:20
 msgid "Show date"
 msgstr "Vložit datum"
 
-#: pdf/models.py:60
+#: pdf/models/__init__.py:21
 msgid "True, if the date should be included in the final PDF"
 msgstr "Zaškrknětě, pokud chcete aby v PDF souboru bylo datum"
 
-#: pdf/models.py:61
+#: pdf/models/__init__.py:22
 msgid "Title Image"
 msgstr "Úvodní obrázek"
 
-#: pdf/models.py:62
+#: pdf/models/__init__.py:23
 msgid "Optional title image of the songbook"
 msgstr "Volitelný obrázek na úvodní stránku "
 
-#: pdf/models.py:66
+#: pdf/models/__init__.py:27
 msgid "Title Image margins"
 msgstr "Odsazení úvodního obrázku"
 
-#: pdf/models.py:67
+#: pdf/models/__init__.py:28
 msgid "Margins for title image, might be needed for some printers"
 msgstr ""
 "Odsazení obrázku na titulní stránce, může být nutné pro některé tiskárny"
 
-#: pdf/models.py:69
-msgid "Show title"
-msgstr "Ukázat název"
+#: pdf/models/__init__.py:32
+msgid "Link to include in the PDF"
+msgstr "Odkaz, který bude v PDF"
 
-#: pdf/models.py:70
-msgid "True, if the title should be shown on the first page"
-msgstr "Zaškrkněte, pokud se má zobrazit na první stránce PDF název"
+#: pdf/models/__init__.py:33 pdf/templates/pdf/requests/list.html:30
+msgid "Link"
+msgstr "Odkaz"
 
-#: pdf/models.py:96
+#: pdf/models/request.py:19
+msgid "Automated"
+msgstr "Automaticky"
+
+#: pdf/models/request.py:20
+msgid "Manual"
+msgstr "Manuální"
+
+#: pdf/models/request.py:25
+msgid "Queued"
+msgstr "Ve frontě"
+
+#: pdf/models/request.py:26
+msgid "In progress"
+msgstr "Generuje se"
+
+#: pdf/models/request.py:27
+msgid "Done"
+msgstr "Hotovo"
+
+#: pdf/models/request.py:28
+msgid "Failed"
+msgstr "Selhalo"
+
+#: pdf/models/request.py:73
 msgid "Song number"
 msgstr "Číslo písničky"
 
@@ -169,10 +170,6 @@ msgstr "Typ"
 #: pdf/templates/pdf/requests/list.html:29
 msgid "Status"
 msgstr "Status"
-
-#: pdf/templates/pdf/requests/list.html:30
-msgid "Link"
-msgstr "Odkaz"
 
 #: pdf/templates/pdf/requests/list.html:31
 msgid "Time elapsed"
@@ -220,7 +217,7 @@ msgstr "Vybrat všechny"
 msgid "Finish selecting"
 msgstr "Dokončit výběr"
 
-#: pdf/utils.py:56
+#: pdf/utils.py:55
 msgid "songbook"
 msgstr "zpevnik"
 
@@ -257,3 +254,9 @@ msgstr "Musíte vybrat alespoň jednu písničku"
 #, python-format
 msgid "PDF Request with id %(id)s was successfully created"
 msgstr "PDF požadavek se id %(id)s byl úspěšně vytvořen"
+
+#~ msgid "Show title"
+#~ msgstr "Ukázat název"
+
+#~ msgid "True, if the title should be shown on the first page"
+#~ msgstr "Zaškrkněte, pokud se má zobrazit na první stránce PDF název"
