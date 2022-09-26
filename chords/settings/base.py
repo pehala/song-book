@@ -48,7 +48,6 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
-    'debug_toolbar',
 ]
 
 MARKDOWNX_MARKDOWN_EXTENSIONS = [
@@ -77,8 +76,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'backend.middleware.settings.SiteNameMiddleware',
-    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
+
 
 ROOT_URLCONF = 'chords.urls'
 
@@ -204,7 +203,6 @@ LOGGING = {
 # Custom settings
 SITE_NAME = gettext_noop("Jerry's songs")
 PDF_FILE_DIR = 'pdfs'
-CACHE_TIMEOUT = 86400
 
 # Slug for category to be used on index page, if the category is not found it will return category with lowest id
 DEFAULT_CATEGORY = None

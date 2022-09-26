@@ -7,13 +7,14 @@ verify_ssl = true
 pylint = "<2.15"
 pylint-django = "*"
 django-compressor = "*"
+django-debug-toolbar = "*"
+
 libsass = "*"
 
 [packages]
 django = "==4.0.7"
 django-bootstrap4 = "*"
 dj-datatables-view = "*"
-django-debug-toolbar = "*"
 django-markdownx = ">=4.0.0b1"
 django-redis = "*"
 django-sass-processor = "*"
