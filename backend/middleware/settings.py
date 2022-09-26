@@ -1,24 +1,25 @@
 """Middleware containing forwarding variables from settings to templates"""
+import asyncio
+
 from django.conf import settings
+from django.utils.decorators import async_only_middleware, sync_and_async_middleware
 
 
-class SiteNameMiddleware:
+@sync_and_async_middleware
+def SiteNameMiddleware(get_response):
     """Adds SITE_NAME setting to the request"""
-    def __init__(self, get_response):
-        self.get_response = get_response
+    if asyncio.iscoroutinefunction(get_response):
+        async def middleware(request):
+            request.SITE_NAME = settings.SITE_NAME
+            # Do something here!
+            response = await get_response(request)
+            return response
 
-    def __call__(self, request):
-        request.SITE_NAME = settings.SITE_NAME
+    else:
+        def middleware(request):
+            request.SITE_NAME = settings.SITE_NAME
+            # Do something here!
+            response = get_response(request)
+            return response
 
-        return self.get_response(request)
-
-
-class CacheTimeoutMiddleware:
-    """Adds CACHE_TIMEOUT setting to the request"""
-    def __init__(self, get_response):
-        self.get_response = get_response
-
-    def __call__(self, request):
-        request.CACHE_TIMEOUT = settings.CACHE_TIMEOUT
-
-        return self.get_response(request)
+    return middleware
