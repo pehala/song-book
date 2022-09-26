@@ -33,4 +33,4 @@ jobs:
           pipenv update --dev
       - name: Lint with Pylint
         run: |
-          pipenv run pylint pdf/ chords/ backend/ frontend/ category/ --django-settings-module=chords.settings.development
+          ./pylint-check.sh
