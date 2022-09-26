@@ -11,3 +11,4 @@ min-public-methods=1
 
 [MAIN]
 ignore-patterns=\d{4}_.*?.py
+load-plugins = pylint_django
