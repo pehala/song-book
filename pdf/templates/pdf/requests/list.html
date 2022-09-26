@@ -21,7 +21,7 @@
         <table id="datatable" class="table table-bordered">
           <thead class="thead-light">
             <tr>
-              <th scope="col">{% trans "Name" %}</th>
+              <th scope="col">{% trans "Title" %}</th>
     {#          <th scope="col">{% trans "Filename" %}</th>#}
               <th scope="col">{% trans "Date Created" %}</th>
               <th scope="col">{% trans "Last updated" %}</th>
@@ -37,7 +37,7 @@
           <tbody>
             {% for request in requests %}
             <tr>
-              <td>{{ request.name }}</td>
+              <td>{{ request.title }}</td>
     {#          <td>#}
     {#              {% if request.filename %}#}
     {#                {{ request.filename }}#}

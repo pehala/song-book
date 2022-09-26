@@ -39,7 +39,7 @@
 {% endif %}
 <body>
     <article id="contents">
-      <h1>{% if request.show_title %}{{ name }}{% endif %}</h1>
+      <h1>{% if request.title %}{{ name }}{% endif %}</h1>
       {% if request.show_date %}
       <p class="date">{% now "m.d.Y" %}</p>
       {% endif %}

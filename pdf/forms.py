@@ -3,19 +3,19 @@ from django.core.exceptions import ValidationError
 from django.forms import ModelForm, CharField, BaseFormSet, HiddenInput
 from django.utils.translation import gettext_lazy as _
 
-from pdf.models import PDFRequest, PDFSong
+from pdf.models.request import PDFRequest, PDFSong
 
 
 class RequestForm(ModelForm):
     """Slimmed down model form for PDFRequest"""
     class Meta:
         model = PDFRequest
-        fields = ['name', 'filename', 'locale', 'show_date', 'image', 'margin', 'show_title']
+        fields = ['title', 'filename', 'locale', 'show_date', 'image', 'margin']
 
 
 class PDFSongForm(ModelForm):
     """Slimmed down model form for PDFSong"""
-    name = CharField(disabled=True, required=False, label=_("Name"))
+    name = CharField(disabled=True, required=False, label=_("Title"))
 
     class Meta:
         model = PDFSong

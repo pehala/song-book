@@ -3,7 +3,7 @@ import os
 
 from django import template
 
-from pdf.models import Status
+from pdf.models.request import Status
 
 register = template.Library()
 
