@@ -1,15 +1,14 @@
 """Models for PDF module"""
 from typing import List
 
-from django.conf import settings
 from django.core.validators import MinValueValidator
 from django.db.models import Model, DateField, DateTimeField, IntegerField, FileField, CharField, TextChoices, \
-    ManyToManyField, ForeignKey, CASCADE, SET_NULL, CheckConstraint, Q, PositiveIntegerField, BooleanField, \
-    ImageField, FloatField
+    ManyToManyField, ForeignKey, CASCADE, SET_NULL, CheckConstraint, Q, PositiveIntegerField
 from django.utils.translation import gettext_lazy as _
 
 from backend.models import Song
 from category.models import Category
+from pdf.models import PDFOptions
 from pdf.storage import DateOverwriteStorage
 
 fs = DateOverwriteStorage()
@@ -29,7 +28,7 @@ class Status(TextChoices):
     FAILED = "FA", _("Failed")
 
 
-class PDFRequest(Model):
+class PDFRequest(PDFOptions):
     """Request for PDF generation"""
     created_date = DateField(auto_now_add=True, editable=False)
     update_date = DateTimeField(auto_now=True)
@@ -45,30 +44,8 @@ class PDFRequest(Model):
     )
     time_elapsed = IntegerField(null=True)
     file = FileField(null=True, storage=fs)
-    filename = CharField(max_length=30, null=True,
-                         help_text=_("Filename of the generated PDF, please do not include .pdf"),
-                         verbose_name=_("File name"))
     songs = ManyToManyField(Song, through="PDFSong")
-    locale = CharField(choices=settings.LANGUAGES, verbose_name=_('Language'), max_length=5,
-                       help_text=_("Language to be used in the generated PDF")
-                       )
     category = ForeignKey(Category, null=True, on_delete=SET_NULL)
-    name = CharField(max_length=100,
-                     help_text=_("Name to be used on the title page of the PDF"),
-                     verbose_name=_("Name"))
-    show_date = BooleanField(default=True, verbose_name=_("Show date"),
-                             help_text=_("True, if the date should be included in the final PDF"))
-    image = ImageField(verbose_name=_("Title Image"),
-                       help_text=_("Optional title image of the songbook"),
-                       null=True,
-                       blank=True,
-                       upload_to='uploads/')
-    margin = FloatField(verbose_name=_("Title Image margins"),
-                        help_text=_("Margins for title image, might be needed for some printers"),
-                        default=0)
-    show_title = BooleanField(verbose_name=_("Show title"),
-                              help_text=_("True, if the title should be shown on the first page"),
-                              default=True)
 
     def get_songs(self) -> List[Song]:
         """Returns all songs for request"""

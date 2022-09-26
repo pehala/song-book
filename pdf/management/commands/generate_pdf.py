@@ -19,7 +19,7 @@ from django_weasyprint.utils import django_url_fetcher
 
 from category.models import Category
 from pdf.locales import changed_locale, lang_to_locale
-from pdf.models import PDFRequest, Status
+from pdf.models.request import PDFRequest, Status
 from pdf.utils import Timer, generate_new_pdf_request
 
 TEMPLATE = "pdf/index.html"
@@ -94,7 +94,7 @@ class Command(BaseCommand):
                         string = render_to_string(template_name=TEMPLATE, context={
                             "songs": songs,
                             "sorted_songs": sorted_songs,
-                            "name": request.name or translation.gettext(settings.SITE_NAME),
+                            "name": request.title or translation.gettext(settings.SITE_NAME),
                             "request": request,
                             "link": settings.PDF_INCLUDE_LINK
                         })

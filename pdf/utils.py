@@ -6,7 +6,7 @@ from django.db import transaction
 from django.utils import translation
 from django.utils.translation import gettext
 
-from pdf.models import PDFRequest, RequestType, Status, PDFSong
+from pdf.models.request import PDFRequest, RequestType, Status, PDFSong
 
 
 def request_pdf_regeneration(category, update: bool = False):
@@ -36,10 +36,9 @@ def generate_new_pdf_request(category):
     with transaction.atomic():
         request = PDFRequest(type=RequestType.EVENT,
                              status=Status.QUEUED,
-                             category=category,
-                             filename=get_filename(category),
-                             locale=category.locale,
-                             name=get_name(category))
+                             category=category)
+        request.copy_options(category)
+        request.filename = request.title or get_filename(category)
         request.save()
         PDFSong.objects.bulk_create([
             PDFSong(request=request,

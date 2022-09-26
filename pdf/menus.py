@@ -4,7 +4,7 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from menu import Menu, MenuItem
 
-from pdf.models import PDFRequest, Status
+from pdf.models.request import PDFRequest, Status
 from pdf.cachemenuitem import CacheMenuItem
 
 

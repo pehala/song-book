@@ -17,7 +17,7 @@ from django.views.generic.detail import SingleObjectMixin
 from backend.models import Song
 from category.models import Category
 from pdf.forms import RequestForm, PDFSongForm, BasePDFSongFormset
-from pdf.models import PDFRequest, RequestType, Status
+from pdf.models.request import PDFRequest, RequestType, Status
 
 
 @method_decorator(login_required, name='dispatch')

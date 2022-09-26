@@ -20,8 +20,8 @@ msgstr ""
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
 #: pdf/forms.py:18 pdf/models.py:58 pdf/templates/pdf/requests/list.html:24
-msgid "Name"
-msgstr "Jméno"
+msgid "Title"
+msgstr "Titulek"
 
 #: pdf/forms.py:35
 msgid "Each song has to have distinct song number"
