@@ -1,0 +1,99 @@
+{% extends "base/frame.html" %}
+{% load i18n %}
+
+{% load types %}
+
+{% block title %} {% blocktrans with filename=pdf.filename %}Waiting for render of {{ filename }}.pdf{% endblocktrans %} {% endblock %}
+{% block header %} {% blocktrans with filename=pdf.filename %}Waiting for render of {{ filename }}.pdf{% endblocktrans %} {% endblock %}
+
+{% block extra_head %}
+<script type="module">
+    const statuses = [
+        '{% trans "HTML Generation" %}',
+        '{% trans "Parsing HTML" %}',
+        '{% trans "Parsing CSS" %}',
+        '{% trans "Applying CSS" %}',
+        '{% trans "Creating formatting structure" %}',
+        '{% trans "Generating layout" %}',
+        '{% trans "Creating PDF" %}',
+        '{% trans "Adding PDF metadata" %}',
+    ]
+    let stop = false
+    const status = $("#status")
+    const progress = $("#progress")
+    function setStatusCode(code) {
+        const value = Math.ceil(code / 7 * 100)
+        progress.text(code + "/7")
+        progress.attr("aria-valuenow", value)
+        progress.attr("style", "width: " + value + "%")
+    }
+    function process_response(data) {
+        console.log(data);
+        setStatusCode(data["progress"])
+        if (data["ready"]) {
+            status.text("Completed")
+            console.log("Ready for download");
+            progress.removeClass("progress-bar-striped")
+            progress.addClass("bg-success")
+            const link = $("#link")
+            link.text(data["link"])
+            link.attr("href", data["link"])
+            link.click()
+            return true
+        }
+        status.text(statuses[data["progress"]])
+        return false
+    }
+    const sleep = duration => new Promise(resolve => setTimeout(resolve, duration));
+    const poll = (promiseFn, duration) => promiseFn().then(
+        (stop) => !stop ? sleep(duration).then(() => poll(promiseFn, duration)): false);
+
+    poll(() => fetch('{% url "pdf:info" pk=pdf.id %}')
+        .then(response => response.json())
+        .then(process_response)
+        .catch(err => {
+          console.log(err);
+          return true
+        }), 1000);
+</script>
+{% endblock %}
+
+{% block framed_body %}
+
+<div class="table-responsive">
+    <table class="table table-bordered">
+        <thead class="thead-light">
+            <tr>
+                <th scope="col"></th>
+                <th scope="col"></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                {% trans "No title" as no_title %}
+                <th scope="row" class="w-25">{% trans "Title" %}</th>
+                <td>{{ pdf.title|default:no_title }}</td>
+            </tr>
+            <tr>
+                <th scope="row" class="w-25">{% trans "Progress" %}</th>
+                <td>
+                    <div class="progress">
+                      <div id="progress" class="progress-bar progress-bar-striped" role="progressbar" style="width: 0" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+
+                </td>
+            </tr>
+            <tr>
+                <th scope="row" class="w-25">{% trans "Status" %}</th>
+                <td><span id="status"></span></td>
+            </tr>
+            <tr>
+                <th scope="row" class="w-25">{% trans "Link" %}</th>
+                <td><a id="link" href="" target="_blank"></a></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+
+{% endblock %}

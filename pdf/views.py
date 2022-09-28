@@ -5,18 +5,18 @@ from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.db import transaction
 from django.forms import formset_factory
-from django.http import HttpResponseBadRequest, HttpResponseRedirect
+from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import redirect
-from django.urls import reverse_lazy
 from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 from django.views.generic.base import TemplateResponseMixin, View
-from django.views.generic.detail import SingleObjectMixin
+from django.views.generic.detail import SingleObjectMixin, DetailView
 
 from backend.models import Song
 from category.models import Category
 from pdf.forms import RequestForm, PDFSongForm, BasePDFSongFormset
+from pdf.generate import generate_pdf_job
 from pdf.models.request import PDFRequest, RequestType, Status
 
 
@@ -88,7 +88,6 @@ class RequestSongSelectorView(ListView):
 class RequestNumberSelectView(TemplateResponseMixin, View):
     """Assign song numbers for PDF request"""
     template_name = "pdf/requests/assign.html"
-    success_url = reverse_lazy("pdf:list")
     PDFSongFormset = formset_factory(PDFSongForm,
                                      formset=BasePDFSongFormset,
                                      min_num=1,
@@ -136,13 +135,32 @@ class RequestNumberSelectView(TemplateResponseMixin, View):
                     form.instance.save()
             messages.success(self.request,
                              _("PDF Request with id %(id)s was successfully created") % {'id': request.id})
-            return self.form_valid()
+            generate_pdf_job.delay(request)
+            return redirect("pdf:wait", request.id)
         return self.form_invalid(form, formset)
-
-    def form_valid(self):
-        """If the form is valid, redirect to the supplied URL."""
-        return HttpResponseRedirect(str(self.success_url))
 
     def form_invalid(self, form, formset):
         """If the form is invalid, render the invalid form."""
         return self.render_to_response({"form": form, "formset": formset})
+
+
+class WaitForPDFView(DetailView):
+    """Shows wait page for PDF generation"""
+    model = PDFRequest
+    context_object_name = "pdf"
+    template_name = "pdf/requests/wait.html"
+
+
+class RenderInfoView(View, SingleObjectMixin):
+    """Returns JSON response containing info about PDFRequest"""
+    model = PDFRequest
+
+    def get(self, request, *args, **kwargs):
+        """Process GET request"""
+        request = self.get_object()
+        ready = request.status == Status.DONE
+        return JsonResponse({
+            "ready": request.status == Status.DONE,
+            "progress": request.progress,
+            "link": request.file.url if ready else None}
+        )
