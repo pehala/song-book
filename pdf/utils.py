@@ -1,4 +1,5 @@
 """Utility functions"""
+import logging
 from time import time
 
 from django.conf import settings
@@ -7,6 +8,18 @@ from django.utils import translation
 from django.utils.translation import gettext
 
 from pdf.models.request import PDFRequest, RequestType, Status, PDFSong
+
+
+class ProgressFilter(logging.Filter):
+
+    def __init__(self, request):
+        super().__init__()
+        self.request = request
+
+    def filter(self, record):
+        self.request.progress = self.request.progress + 1
+        self.request.save()
+        return True
 
 
 def request_pdf_regeneration(category, update: bool = False):
