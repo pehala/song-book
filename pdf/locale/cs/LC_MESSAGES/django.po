@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-26 13:07+0000\n"
+"POT-Creation-Date: 2022-09-29 20:07+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,11 +17,6 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
-
-#: pdf/forms.py:18 pdf/models/__init__.py:19
-#: pdf/templates/pdf/requests/list.html:24
-msgid "Title"
-msgstr "Titulek"
 
 #: pdf/forms.py:35
 msgid "Each song has to have distinct song number"
@@ -67,6 +61,11 @@ msgstr "Jazyk pro použití ve vygenerovaných PDF"
 msgid "Name to be used on the title page of the PDF"
 msgstr "Jméno pro titulní stranu pdf souboru"
 
+#: pdf/models/__init__.py:19 pdf/templates/pdf/requests/list.html:24
+#: pdf/templates/pdf/requests/wait.html:74
+msgid "Title"
+msgstr "Titulek"
+
 #: pdf/models/__init__.py:20
 msgid "Show date"
 msgstr "Vložit datum"
@@ -97,6 +96,7 @@ msgid "Link to include in the PDF"
 msgstr "Odkaz, který bude v PDF"
 
 #: pdf/models/__init__.py:33 pdf/templates/pdf/requests/list.html:30
+#: pdf/templates/pdf/requests/wait.html:91
 msgid "Link"
 msgstr "Odkaz"
 
@@ -124,24 +124,33 @@ msgstr "Hotovo"
 msgid "Failed"
 msgstr "Selhalo"
 
-#: pdf/models/request.py:73
-msgid "Song number"
-msgstr "Číslo písničky"
+#: pdf/models/request.py:74
+msgid "Song numbers"
+msgstr "Čísla písniček"
 
 #: pdf/templates/pdf/index.html:46
 msgid "Table of Contents"
 msgstr "Obsah"
 
-#: pdf/templates/pdf/requests/assign.html:5
 #: pdf/templates/pdf/requests/assign.html:6
-msgid "Number assignment"
-msgstr "Přiřazení čísel"
+#: pdf/templates/pdf/requests/assign.html:7
+msgid "PDF details"
+msgstr "Informace o PDF souboru"
 
-#: pdf/templates/pdf/requests/assign.html:9
-msgid "Please, now assign each song a number that will be used in the PDF"
-msgstr "Teď prosím přiřaďte každé písničce její číslo v PDF souboru"
+#: pdf/templates/pdf/requests/assign.html:15
+msgid ""
+"Please, now please fill all the details for the PDF and choose song ordering"
+msgstr "Prosím vyplňte informace o PDF souboru a vyberte pořadí písniček"
 
-#: pdf/templates/pdf/requests/assign.html:41
+#: pdf/templates/pdf/requests/assign.html:21
+msgid "Song order"
+msgstr "Číslo písničky"
+
+#: pdf/templates/pdf/requests/assign.html:38
+msgid "Sort by name"
+msgstr "Seřadit podle jména"
+
+#: pdf/templates/pdf/requests/assign.html:39
 msgid "Finish"
 msgstr "Dokončit"
 
@@ -168,6 +177,7 @@ msgid "Type"
 msgstr "Typ"
 
 #: pdf/templates/pdf/requests/list.html:29
+#: pdf/templates/pdf/requests/wait.html:87
 msgid "Status"
 msgstr "Status"
 
@@ -213,11 +223,61 @@ msgstr "Prosím vyberte písničky které byste chtěli mít v PDF souboru"
 msgid "Select All"
 msgstr "Vybrat všechny"
 
-#: pdf/templates/pdf/requests/select.html:80
+#: pdf/templates/pdf/requests/select.html:79
+msgid "Deselect all"
+msgstr "Zrušit výběr"
+
+#: pdf/templates/pdf/requests/select.html:84
 msgid "Finish selecting"
 msgstr "Dokončit výběr"
 
-#: pdf/utils.py:55
+#: pdf/templates/pdf/requests/wait.html:6
+#: pdf/templates/pdf/requests/wait.html:7
+#, python-format
+msgid "Waiting for render of %(filename)s.pdf"
+msgstr "Čekání na vygenerování %(filename)s.pdf"
+
+#: pdf/templates/pdf/requests/wait.html:12
+msgid "HTML Generation"
+msgstr "Tvorba HTML"
+
+#: pdf/templates/pdf/requests/wait.html:13
+msgid "Parsing HTML"
+msgstr "Zpracovávání HTML"
+
+#: pdf/templates/pdf/requests/wait.html:14
+msgid "Parsing CSS"
+msgstr "Zpracovávání CSS"
+
+#: pdf/templates/pdf/requests/wait.html:15
+msgid "Applying CSS"
+msgstr "Aplikace CSS pravidel"
+
+#: pdf/templates/pdf/requests/wait.html:16
+msgid "Creating formatting structure"
+msgstr "Vytváření formátovací struktury"
+
+#: pdf/templates/pdf/requests/wait.html:17
+msgid "Generating layout"
+msgstr "Generování rozložení"
+
+#: pdf/templates/pdf/requests/wait.html:18
+msgid "Creating PDF"
+msgstr "Vytvořit PDF"
+
+#: pdf/templates/pdf/requests/wait.html:19
+msgid "Adding PDF metadata"
+msgstr "Přidávání metadat do PDF"
+
+#: pdf/templates/pdf/requests/wait.html:73
+msgid "No title"
+msgstr "Bez nadpisu"
+
+#: pdf/templates/pdf/requests/wait.html:78
+msgid "Progress"
+msgstr "Postup"
+
+#: pdf/utils.py:73
 msgid "songbook"
 msgstr "zpevnik"
 
@@ -227,10 +287,9 @@ msgid "Request %(id)s is already in queue"
 msgstr "Požadavek %(id)s je již ve frontě"
 
 #: pdf/views.py:46
-#, fuzzy, python-format
-#| msgid "Request %(name)s was marked for regeneration"
+#, python-format
 msgid "Request %(id)s was marked for regeneration"
-msgstr "Požadavek %(name)s byl označen k přegenerování"
+msgstr "Požadavek %(id)s byl označen k přegenerování"
 
 #: pdf/views.py:60
 #, python-format
@@ -242,21 +301,15 @@ msgstr "Nepodařilo se odstranit soubor z požadavku %(id)s, protože žádný n
 msgid "File %(name)s was successfully deleted"
 msgstr "Soubor %(name)s byl úspěšně odstraněn"
 
-#: pdf/views.py:106
+#: pdf/views.py:105
 msgid "Required parameters not found"
 msgstr "Požadované parametry nenalezeny"
 
-#: pdf/views.py:111
+#: pdf/views.py:110
 msgid "You need to select at least one song"
 msgstr "Musíte vybrat alespoň jednu písničku"
 
-#: pdf/views.py:138
+#: pdf/views.py:137
 #, python-format
 msgid "PDF Request with id %(id)s was successfully created"
 msgstr "PDF požadavek se id %(id)s byl úspěšně vytvořen"
-
-#~ msgid "Show title"
-#~ msgstr "Ukázat název"
-
-#~ msgid "True, if the title should be shown on the first page"
-#~ msgstr "Zaškrkněte, pokud se má zobrazit na první stránce PDF název"

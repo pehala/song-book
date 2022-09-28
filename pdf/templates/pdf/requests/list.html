@@ -48,7 +48,7 @@
               <td data-order="{{ request.created_date|date:"c" }}">{{ request.created_date}}</td>
               <td data-order="{{ request.update_date|date:"c" }}">{{ request.update_date }}</td>
               <td>{{ request.get_type_display }}</td>
-              <td style="background-color: {{ request.status|get_status_color }}">{{ request.get_status_display }} {% if request.status == "PR" %}{{ request.progress }}/8 {% endif %}</td>
+              <td style="background-color: {{ request.status|get_status_color }}">{{ request.get_status_display }} {% if request.status == "PR" %}{{ request.progress }}/7 {% endif %}</td>
               <td>
                   {% if request.file %}
                     <a href="{{ request.file.url }}">{{ request.file|filename }}</a>
@@ -90,7 +90,7 @@
         dom: 'rtip',
         {% if request.LANGUAGE_CODE == "cs"  %}
             language: {
-                url: "//cdn.datatables.net/plug-ins/1.10.25/i18n/Czech.json"
+                url: "//cdn.datatables.net/plug-ins/1.12.1/i18n/Czech.json"
             },
         {% endif %}
     });

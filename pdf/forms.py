@@ -15,7 +15,7 @@ class RequestForm(ModelForm):
 
 class PDFSongForm(ModelForm):
     """Slimmed down model form for PDFSong"""
-    name = CharField(disabled=True, required=False, label=_("Title"))
+    name = CharField(disabled=True, required=False)
 
     class Meta:
         model = PDFSong
@@ -28,8 +28,9 @@ class BasePDFSongFormset(BaseFormSet):
     def clean(self):
         if any(self.errors):
             return
-        numbers = []
+        numbers = set()
         for form in self.forms:
             number = form.instance.song_number
             if number in numbers:
                 raise ValidationError(_("Each song has to have distinct song number"))
+            numbers.add(number)

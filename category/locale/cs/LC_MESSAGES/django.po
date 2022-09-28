@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-26 13:07+0000\n"
+"POT-Creation-Date: 2022-09-29 20:07+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -56,12 +56,12 @@ msgid "Are you sure you wanna delete Songbook"
 msgstr "Jste si jisti že chcete smazat Zpěvník"
 
 #: category/templates/category/confirm_delete.html:11
-#: category/templates/category/list.html:24
+#: category/templates/category/list.html:25
 msgid "No"
 msgstr "Ne"
 
 #: category/templates/category/confirm_delete.html:12
-#: category/templates/category/list.html:24
+#: category/templates/category/list.html:25
 msgid "Yes"
 msgstr "Ano"
 
@@ -70,7 +70,7 @@ msgid "Language"
 msgstr "Jazyk"
 
 #: category/templates/category/list.html:15
-#: category/templates/category/list.html:27
+#: category/templates/category/list.html:28
 msgid "Edit"
 msgstr "Upravit"
 
@@ -78,29 +78,41 @@ msgstr "Upravit"
 msgid "Remove"
 msgstr "Odstranit"
 
-#: category/templates/category/list.html:30
+#: category/templates/category/list.html:17
+#: category/templates/category/list.html:39
+msgid "Regenerate"
+msgstr ""
+
+#: category/templates/category/list.html:31
 msgid "Delete"
 msgstr "Smazat"
 
-#: category/views.py:28
+#: category/templates/category/list.html:35
+msgid "Already in queue"
+msgstr "Již ve frontě"
+
+#: category/views.py:33
 #, python-format
 msgid "Songbook on url /%(slug)s does not exists"
 msgstr "Zpěvník s url /%(slug)s neexistuje"
 
-#: category/views.py:48
+#: category/views.py:59
 #, python-format
 msgid "Songbook %(name)s was successfully created"
 msgstr "Zpěvník %(name)s byla úspěšně vytvořena"
 
-#: category/views.py:62
+#: category/views.py:73
 #, python-format
 msgid "Songbook %(name)s was successfully updated"
 msgstr "Zpěvník %(name)s byla úspěšně upravena"
 
-#: category/views.py:75
+#: category/views.py:92
+#, python-format
+msgid "Category %s was successfully staged for PDF generation"
+msgstr "PDF pro zpěvník %s bylo přidané do fronty"
+
+#: category/views.py:102
 #, python-format
 msgid "Songbook %(name)s was successfully deleted"
 msgstr "Zpěvník %(name)s byla úspěšně smazána"
 
-#~ msgid "Language for generated PDF files"
-#~ msgstr "Jazyk vygenerovaných pdf souborů"

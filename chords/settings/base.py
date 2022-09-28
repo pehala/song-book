@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'debug_toolbar',
+    'django_rq'
 ]
 
 MARKDOWNX_MARKDOWN_EXTENSIONS = [
@@ -221,3 +222,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.AutoField'
 PDF_CACHE_KEY = "PDFS"
 CATEGORY_CACHE_KEY = "CATEGORIES"
 PDF_INCLUDE_LINK = ""
+
+RQ_QUEUES = {
+    'default': {
+        'USE_REDIS_CACHE': 'default',
+    },
+}
