@@ -1,45 +1,77 @@
 {% extends "base/frame.html" %}
 {% load i18n %}
 {% load bootstrap4 %}
+{% load static %}
 
-{% block header %} {% trans "Number assignment" %} {% endblock %}
-{% block title %} {% trans "Number assignment" %} {% endblock %}
+{% block header %} {% trans "PDF details" %} {% endblock %}
+{% block title %} {% trans "PDF details" %} {% endblock %}
+
+{% block extra_head %}
+<script defer type="text/javascript" src="{% static "jquery-ui.min.js" %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static "jquery-ui.min.css" %}"/>
+{% endblock %}
 
 {% block framed_body %}
-  <p class="text-center font-weight-bold">{% trans "Please, now assign each song a number that will be used in the PDF" %}</p>
+  <p class="text-center font-weight-bold">{% trans "Please, now please fill all the details for the PDF and choose song ordering" %}</p>
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {% bootstrap_form form %}
     {{ formset.management_form }}
     {{ formset.non_form_errors.as_ul }}
-    <table id="formset" class="table table-bordered form">
+    <h4>{% trans "Song numbers" %}</h4>
+    <div id="sortable" class="mb-3">
     {% for form in formset.forms %}
-      {% if forloop.first %}
-      <thead><tr>
-        {% for field in form.visible_fields %}
-        <th>{{ field.label|capfirst }}</th>
-        {% endfor %}
-      </tr></thead>
-      {% endif %}
-      <tr class="{% cycle row1 row2 %}">
-      {% for field in form.visible_fields %}
-        <td>
-        {# Include the hidden fields in the form #}
-        {% if forloop.first %}
-          {% for hidden in form.hidden_fields %}
-          {{ hidden }}
-          {% endfor %}
-        {% endif %}
-          {{ field.errors.as_ul }}
-          {{ field }}
-        </td>
-      {% endfor %}
-      </tr>
+        <div class="d-flex flex-row border border-secondary pt-2 pl-2 mt-2 pr-2 rounded">
+            {% for hidden in form.hidden_fields %}
+                {{ hidden }}
+            {% endfor %}
+            {% for field in form.visible_fields %}
+                {% bootstrap_field field show_label=False size="small" form_group_class='form-group flex-grow-1" style="pointer-events: none;"' %}
+            {% endfor %}
+        </div>
     {% endfor %}
-    </table>
+    </div>
     {% buttons %}
+        <button id="sort" type="button" class="btn btn-secondary">{% trans "Sort by name" %}</button>
         <button type="submit" class="btn btn-primary">{% trans "Finish" %}</button>
     {% endbuttons %}
   </form>
   {{ form.media }}
+<script type="module">
+    const sortable = $('#sortable')
+    function reassign_numbers() {
+        let i = 1;
+        for (let element of sortable.find("input[type='number']")) {
+            element = $(element)
+            element.val((i++).toString())
+        }
+    }
+    function sort_by_name() {
+        const list = []
+        for (let element of sortable.find("input[type='text']")) {
+            element = $(element)
+            list.push([element.val(), element.parent().parent()])
+        }
+        list.sort((a, b) => a[0].localeCompare(b[0]))
+
+        sortable.empty().html(list.map((a) => a[1]));
+        reassign_numbers()
+    }
+    $("#sort").click(sort_by_name)
+    sortable.sortable({
+      update: reassign_numbers
+    });
+    for (let element of sortable.find("input[type='number']")) {
+            element = $(element)
+            const parent = element.parent()
+            parent.removeClass("flex-grow-1");
+            parent.addClass("mr-3");
+            {#parent.attr("style", "")#}
+            element.attr("style", "max-width: 70px;");
+            {#element.attr("disabled", "");#}
+    }
+    window.addEventListener("load", function(){
+
+    });
+</script>
 {% endblock %}
