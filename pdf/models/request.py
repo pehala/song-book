@@ -43,6 +43,7 @@ class PDFRequest(PDFOptions):
         default=Status.QUEUED
     )
     time_elapsed = IntegerField(null=True)
+    progress = IntegerField(default=0)
     file = FileField(null=True, storage=fs)
     songs = ManyToManyField(Song, through="PDFSong")
     category = ForeignKey(Category, null=True, on_delete=SET_NULL)
