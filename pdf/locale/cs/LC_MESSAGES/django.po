@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-29 20:07+0000\n"
+"POT-Creation-Date: 2022-09-29 20:17+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -55,53 +55,62 @@ msgstr "Název vygenerovaného PDF, prosím piště bez přípony .pdf"
 msgid "File name"
 msgstr "Název souboru"
 
-#: pdf/models/__init__.py:13
+#: pdf/models/__init__.py:14
+msgid "True, if the file should be public"
+msgstr "Zaškrkněte, pokud chcete aby byl PDF soubor veřejně viditelný"
+
+#: pdf/models/__init__.py:15
+msgid "Public file"
+msgstr "Veřejný soubor"
+
+#: pdf/models/__init__.py:16
 msgid "Language"
 msgstr "Jazyk"
 
-#: pdf/models/__init__.py:14
+#: pdf/models/__init__.py:17
 msgid "Language to be used in the generated PDF"
 msgstr "Jazyk pro použití ve vygenerovaných PDF"
 
-#: pdf/models/__init__.py:18
+#: pdf/models/__init__.py:21
 msgid "Name to be used on the title page of the PDF"
 msgstr "Jméno pro titulní stranu pdf souboru"
 
-#: pdf/models/__init__.py:19 pdf/templates/pdf/requests/list.html:24
+#: pdf/models/__init__.py:22 pdf/templates/pdf/requests/list.html:24
 #: pdf/templates/pdf/requests/wait.html:74
 msgid "Title"
 msgstr "Titulek"
 
-#: pdf/models/__init__.py:20
+#: pdf/models/__init__.py:23
 msgid "Show date"
 msgstr "Vložit datum"
 
-#: pdf/models/__init__.py:21
+#: pdf/models/__init__.py:24
 msgid "True, if the date should be included in the final PDF"
-msgstr "Zaškrknětě, pokud chcete aby v PDF souboru bylo datum"
+msgstr "Zaškrkněte, pokud chcete aby v PDF souboru bylo datum"
 
-#: pdf/models/__init__.py:22
+#: pdf/models/__init__.py:25
 msgid "Title Image"
 msgstr "Úvodní obrázek"
 
-#: pdf/models/__init__.py:23
+#: pdf/models/__init__.py:26
 msgid "Optional title image of the songbook"
 msgstr "Volitelný obrázek na úvodní stránku "
 
-#: pdf/models/__init__.py:27
+#: pdf/models/__init__.py:30
 msgid "Title Image margins"
 msgstr "Odsazení úvodního obrázku"
 
-#: pdf/models/__init__.py:28
+#: pdf/models/__init__.py:31
 msgid "Margins for title image, might be needed for some printers"
 msgstr ""
 "Odsazení obrázku na titulní stránce, může být nutné pro některé tiskárny"
 
-#: pdf/models/__init__.py:32
+#: pdf/models/__init__.py:35
 msgid "Link to include in the PDF"
 msgstr "Odkaz, který bude v PDF"
 
-#: pdf/models/__init__.py:33 pdf/templates/pdf/requests/list.html:30
+#: pdf/models/__init__.py:36 pdf/templates/pdf/requests/list.html:30
+#: pdf/templates/pdf/requests/wait.html:91
 msgid "Link"
 msgstr "Odkaz"
 
@@ -148,14 +157,14 @@ msgid ""
 msgstr "Prosím vyplňte informace o PDF souboru a vyberte pořadí písniček"
 
 #: pdf/templates/pdf/requests/assign.html:21
-msgid "Song order"
-msgstr "Číslo písničky"
+msgid "Song numbers"
+msgstr "Čísla písniček"
 
-#: pdf/templates/pdf/requests/assign.html:38
+#: pdf/templates/pdf/requests/assign.html:35
 msgid "Sort by name"
 msgstr "Seřadit podle jména"
 
-#: pdf/templates/pdf/requests/assign.html:39
+#: pdf/templates/pdf/requests/assign.html:36
 msgid "Finish"
 msgstr "Dokončit"
 
@@ -182,6 +191,7 @@ msgid "Type"
 msgstr "Typ"
 
 #: pdf/templates/pdf/requests/list.html:29
+#: pdf/templates/pdf/requests/wait.html:87
 msgid "Status"
 msgstr "Status"
 
