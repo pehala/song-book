@@ -10,6 +10,9 @@ class PDFOptions(Model):
                          blank=True,
                          help_text=_("Filename of the generated PDF, please do not include .pdf"),
                          verbose_name=_("File name"))
+    public = BooleanField(default=True,
+                          help_text=_("True, if the file should be public"),
+                          verbose_name=_("Public file"))
     locale = CharField(choices=settings.LANGUAGES, verbose_name=_('Language'), max_length=5,
                        help_text=_("Language to be used in the generated PDF")
                        )
