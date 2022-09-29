@@ -73,7 +73,11 @@
                 action: function (e, dt, node, config) {
                     dt.rows( {search:'applied'} ).select()
                 }
-            }, "selectNone",
+            },
+            {
+                 extend: "selectNone",
+                 text: '{% trans "Deselect all" %}'
+            },
             {
                 extend: "selected",
                 className: "btn btn-success",

@@ -18,7 +18,7 @@ def distinct_requests():
     data = []
     for entry in PDFRequest.objects.filter(file__isnull=False, status=Status.DONE).exclude(file__exact=''):
         # pylint: disable=protected-access
-        if entry.filename not in files:
+        if entry.filename not in files and entry.public:
             data.append(MenuItem(entry.filename, entry.file.url))
             files.add(entry.filename)
     return data
