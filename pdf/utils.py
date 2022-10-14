@@ -56,7 +56,7 @@ def generate_new_pdf_request(category):
                              status=Status.QUEUED,
                              category=category)
         request.copy_options(category)
-        request.filename = request.title or get_filename(category)
+        request.filename = request.filename or get_filename(category)
         request.save()
         PDFSong.objects.bulk_create([
             PDFSong(request=request,
