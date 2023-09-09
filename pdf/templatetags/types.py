@@ -11,7 +11,7 @@ register = template.Library()
 @register.filter(is_safe=True)
 def get_status_color(status):
     """Converts status to color"""
-    if status == str(Status.QUEUED):
+    if status == str(Status.QUEUED) or status == str(Status.SCHEDULED):
         return "yellow"
     if status == str(Status.IN_PROGRESS):
         return "blue"

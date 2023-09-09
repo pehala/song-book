@@ -3,7 +3,7 @@ from typing import List
 
 from django.core.validators import MinValueValidator
 from django.db.models import Model, DateField, DateTimeField, IntegerField, FileField, CharField, TextChoices, \
-    ManyToManyField, ForeignKey, CASCADE, SET_NULL, CheckConstraint, Q, PositiveIntegerField
+    ManyToManyField, ForeignKey, CASCADE, SET_NULL, CheckConstraint, Q, PositiveIntegerField, TextField
 from django.utils.translation import gettext_lazy as _
 
 from backend.models import Song
@@ -23,6 +23,7 @@ class RequestType(TextChoices):
 class Status(TextChoices):
     """Status of PDF Request"""
     QUEUED = "QU", _('Queued')
+    SCHEDULED = "SC", _('Scheduled')
     IN_PROGRESS = "PR", _('In progress')
     DONE = "DO", _("Done")
     FAILED = "FA", _("Failed")
@@ -30,7 +31,7 @@ class Status(TextChoices):
 
 class PDFRequest(PDFOptions):
     """Request for PDF generation"""
-    created_date = DateField(auto_now_add=True, editable=False)
+#    created_date = DateField(auto_now_add=True, editable=False)
     update_date = DateTimeField(auto_now=True)
     type = CharField(
         max_length=2,
@@ -47,6 +48,7 @@ class PDFRequest(PDFOptions):
     file = FileField(null=True, storage=fs)
     songs = ManyToManyField(Song, through="PDFSong")
     category = ForeignKey(Category, null=True, on_delete=SET_NULL)
+    scheduled_at = DateTimeField(null=True)
 
     def get_songs(self) -> List[Song]:
         """Returns all songs for request"""

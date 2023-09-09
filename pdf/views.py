@@ -42,8 +42,9 @@ class RequestRegenerateView(View, SingleObjectMixin):
             return redirect("pdf:list")
         obj.status = Status.QUEUED
         obj.save()
+        generate_pdf_job.delay(obj)
 
-        messages.success(request, _("Request %(id)s was marked for regeneration") % {"id": obj.id})
+        messages.success(request, _("Request %(id)s was scheduled for regeneration") % {"id": obj.id})
         return redirect("pdf:list")
 
 
