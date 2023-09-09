@@ -42,7 +42,7 @@ class Command(BaseCommand):
         if all_requests:
             objects = [generate_new_pdf_request(category) for category in Category.objects.filter(generate_pdf=True)]
         else:
-            objects = PDFRequest.objects.filter(status=Status.QUEUED)
+            objects = PDFRequest.objects.filter(status__in={Status.QUEUED, Status.SCHEDULED})
             if requests:
                 objects = objects[:requests]
 
