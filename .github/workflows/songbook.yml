@@ -23,6 +23,6 @@ jobs:
       - name: Install dependencies
         run: |
           poetry install
-      - name: Lint with Pylint
+      - name: Acceptance check
         run: |
-          ./pylint-check.sh
+          make commit-acceptance
