@@ -4,6 +4,7 @@ from django.utils.cache import add_never_cache_headers
 
 class DisableClientSideCachingMiddleware:
     """Disables client side caching"""
+
     def __init__(self, get_response):
         self.get_response = get_response
 

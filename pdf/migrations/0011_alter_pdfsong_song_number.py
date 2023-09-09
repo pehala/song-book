@@ -5,15 +5,17 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pdf', '0010_alter_pdfrequest_image'),
+        ("pdf", "0010_alter_pdfrequest_image"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='pdfsong',
-            name='song_number',
-            field=models.PositiveIntegerField(validators=[django.core.validators.MinValueValidator(1)], verbose_name='Song number'),
+            model_name="pdfsong",
+            name="song_number",
+            field=models.PositiveIntegerField(
+                validators=[django.core.validators.MinValueValidator(1)],
+                verbose_name="Song number",
+            ),
         ),
     ]

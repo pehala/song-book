@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-29 20:07+0000\n"
+"POT-Creation-Date: 2023-09-09 19:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,24 +19,24 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
-#: category/menus.py:18 category/templates/category/list.html:4
+#: category/menus.py:26 category/templates/category/list.html:4
 #: category/templates/category/list.html:5
 msgid "Songbooks"
 msgstr "Zpěvníky"
 
-#: category/models.py:10 category/templates/category/list.html:11
+#: category/models.py:11 category/templates/category/list.html:11
 msgid "Name"
 msgstr "Jméno"
 
-#: category/models.py:11 category/templates/category/list.html:12
+#: category/models.py:12 category/templates/category/list.html:12
 msgid "URL pattern"
 msgstr "URL vzor"
 
-#: category/models.py:12 category/templates/category/list.html:13
+#: category/models.py:14 category/templates/category/list.html:13
 msgid "PDF generation"
 msgstr "Automatické Generování PDF"
 
-#: category/models.py:13
+#: category/models.py:15
 msgid "Should the PDF file be automatically generated when a song changes?"
 msgstr ""
 "Má být vygenerován pdf soubor když se nějaká písnička ze zpěvníku změní?"
@@ -96,23 +96,22 @@ msgstr "Již ve frontě"
 msgid "Songbook on url /%(slug)s does not exists"
 msgstr "Zpěvník s url /%(slug)s neexistuje"
 
-#: category/views.py:59
+#: category/views.py:61
 #, python-format
 msgid "Songbook %(name)s was successfully created"
 msgstr "Zpěvník %(name)s byla úspěšně vytvořena"
 
-#: category/views.py:73
+#: category/views.py:76
 #, python-format
 msgid "Songbook %(name)s was successfully updated"
 msgstr "Zpěvník %(name)s byla úspěšně upravena"
 
-#: category/views.py:92
+#: category/views.py:98
 #, python-format
 msgid "Category %s was successfully staged for PDF generation"
 msgstr "PDF pro zpěvník %s bylo přidané do fronty"
 
-#: category/views.py:102
+#: category/views.py:110
 #, python-format
 msgid "Songbook %(name)s was successfully deleted"
 msgstr "Zpěvník %(name)s byla úspěšně smazána"
-

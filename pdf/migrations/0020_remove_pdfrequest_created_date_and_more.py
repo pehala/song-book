@@ -4,24 +4,33 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pdf', '0019_pdfrequest_public'),
+        ("pdf", "0019_pdfrequest_public"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='pdfrequest',
-            name='created_date',
+            model_name="pdfrequest",
+            name="created_date",
         ),
         migrations.AddField(
-            model_name='pdfrequest',
-            name='scheduled_at',
+            model_name="pdfrequest",
+            name="scheduled_at",
             field=models.DateTimeField(null=True),
         ),
         migrations.AlterField(
-            model_name='pdfrequest',
-            name='status',
-            field=models.CharField(choices=[('QU', 'Queued'), ('SC', 'Scheduled'), ('PR', 'In progress'), ('DO', 'Done'), ('FA', 'Failed')], default='QU', max_length=2),
+            model_name="pdfrequest",
+            name="status",
+            field=models.CharField(
+                choices=[
+                    ("QU", "Queued"),
+                    ("SC", "Scheduled"),
+                    ("PR", "In progress"),
+                    ("DO", "Done"),
+                    ("FA", "Failed"),
+                ],
+                default="QU",
+                max_length=2,
+            ),
         ),
     ]

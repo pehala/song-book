@@ -4,9 +4,9 @@ from django.db import migrations, models
 
 
 def migrate_locales(apps, schema_editor):
-    Song = apps.get_model('backend', 'Song')
-    Category = apps.get_model('category', 'Category')
-    locales = map(lambda x: x['locale'], Song.objects.values('locale').distinct())
+    Song = apps.get_model("backend", "Song")
+    Category = apps.get_model("category", "Category")
+    locales = map(lambda x: x["locale"], Song.objects.values("locale").distinct())
     for locale in locales:
         category = Category(name=locale, generate_pdf=True, slug=locale, locale=locale)
         category.save()
@@ -25,21 +25,20 @@ def migrate_locales(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('category', '0001_initial'),
-        ('backend', '0005_auto_20191124_1327'),
+        ("category", "0001_initial"),
+        ("backend", "0005_auto_20191124_1327"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='song',
-            name='categories',
-            field=models.ManyToManyField(to='category.Category'),
+            model_name="song",
+            name="categories",
+            field=models.ManyToManyField(to="category.Category"),
         ),
         migrations.RunPython(migrate_locales),
         migrations.RemoveField(
-            model_name='song',
-            name='locale',
+            model_name="song",
+            name="locale",
         ),
     ]

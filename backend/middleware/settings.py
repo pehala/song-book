@@ -4,6 +4,7 @@ from django.conf import settings
 
 class SiteNameMiddleware:
     """Adds SITE_NAME setting to the request"""
+
     def __init__(self, get_response):
         self.get_response = get_response
 
@@ -15,6 +16,7 @@ class SiteNameMiddleware:
 
 class CacheTimeoutMiddleware:
     """Adds CACHE_TIMEOUT setting to the request"""
+
     def __init__(self, get_response):
         self.get_response = get_response
 

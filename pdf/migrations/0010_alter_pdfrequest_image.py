@@ -4,15 +4,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pdf', '0009_auto_20210805_1842'),
+        ("pdf", "0009_auto_20210805_1842"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='pdfrequest',
-            name='image',
-            field=models.ImageField(blank=True, help_text='Optional title image of the songbook', null=True, upload_to='uploads/', verbose_name='Title Image'),
+            model_name="pdfrequest",
+            name="image",
+            field=models.ImageField(
+                blank=True,
+                help_text="Optional title image of the songbook",
+                null=True,
+                upload_to="uploads/",
+                verbose_name="Title Image",
+            ),
         ),
     ]

@@ -1,4 +1,4 @@
-name: Song Book
+name: Acceptance
 
 on:
   pull_request:
@@ -10,27 +10,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v1
-      - name: Set up Python 3.9
-        uses: actions/setup-python@v1
+      - uses: actions/checkout@v3
+      - name: Install poetry
+        run: pip install poetry
+      - name: Setup Python
+        id: setup-python
+        uses: actions/setup-python@v4
         with:
-          python-version: 3.9
-      - name: Week number
-        id: weeknum
-        run: |
-          echo "::set-output name=weeknum::$(/bin/date -u "+%g.%V")"
-        shell: bash
-      - uses: actions/cache@v2
-        with:
-          path: |
-            ~/.local/share/virtualenvs
-            Pipfile.lock
-          key: ${{ runner.os }}-w${{ steps.weeknum.outputs.weeknum }}-python-${{ steps.setup-python.outputs.python-version }}-pipenv-${{ hashFiles('Pipfile') }}
+          python-version: '3.11'
+          cache: "poetry"
+          cache-dependency-path: "pyproject.toml"
       - name: Install dependencies
         run: |
-          python -m pip install --upgrade pip
-          pip install pipenv # Install all dependencies.
-          pipenv update --dev
-      - name: Lint with Pylint
+          poetry install
+      - name: Acceptance check
         run: |
-          ./pylint-check.sh
+          make commit-acceptance

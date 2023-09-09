@@ -2,11 +2,12 @@
 from markdown.extensions import Extension
 from markdown.inlinepatterns import SimpleTagInlineProcessor
 
-CHORD_RE = r'({)(.*?)}'
+CHORD_RE = r"({)(.*?)}"
 
 
 class ChordsPDFExtension(Extension):
     """Extension for Chords in PDF"""
+
     def extendMarkdown(self, md):
         """Chords markdown extension for usage in PDF files"""
         # Insert del pattern into markdown parser
@@ -15,6 +16,7 @@ class ChordsPDFExtension(Extension):
 
 class ChordPDFPattern(SimpleTagInlineProcessor):
     """Pattern for ChordsPDFExtension"""
+
     def __init__(self, pattern):
         super().__init__(pattern, "sup")
 

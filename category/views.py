@@ -25,36 +25,38 @@ class CategorySongsListView(SongListView, AnalyticsMixin):
     """Shows all songs in a category"""
 
     def get_key(self):
-        return self.kwargs['slug']
+        return self.kwargs["slug"]
 
     def get_queryset(self):
-        slug = self.kwargs['slug']
+        slug = self.kwargs["slug"]
         if not Category.objects.filter(slug=slug).exists():
-            raise Http404(_("Songbook on url /%(slug)s does not exists") % {'slug': slug})
-        return super().get_queryset() \
-            .filter(categories__slug=slug)
+            raise Http404(_("Songbook on url /%(slug)s does not exists") % {"slug": slug})
+        return super().get_queryset().filter(categories__slug=slug)
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(login_required, name="dispatch")
 class CategoryListView(ListView):
     """Lists all categories"""
+
     model = Category
     template_name = "category/list.html"
     context_object_name = "categories"
 
     def get_context_data(self, *, object_list=None, **kwargs):
         ctx = super().get_context_data(object_list=object_list, **kwargs)
-        ctx["already_staged"] = PDFRequest.objects.filter(type=RequestType.EVENT,
-                                                          status=Status.QUEUED).values_list("category_id", flat=True)
+        ctx["already_staged"] = PDFRequest.objects.filter(type=RequestType.EVENT, status=Status.QUEUED).values_list(
+            "category_id", flat=True
+        )
         return ctx
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(login_required, name="dispatch")
 class CategoryCreateView(SuccessMessageMixin, CreateView):
     """Create new category"""
+
     form_class = CategoryForm
     model = Category
-    template_name = 'category/add.html'
+    template_name = "category/add.html"
     success_url = reverse_lazy("category:list")
     success_message = _("Songbook %(name)s was successfully created")
 
@@ -63,12 +65,13 @@ class CategoryCreateView(SuccessMessageMixin, CreateView):
         return super().get_success_message(cleaned_data)
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(login_required, name="dispatch")
 class CategoryUpdateView(SuccessMessageMixin, RegenerateViewMixin, UpdateView):
     """Updates category"""
+
     form_class = CategoryForm
     model = Category
-    template_name = 'category/add.html'
+    template_name = "category/add.html"
     success_url = reverse_lazy("category:list")
     success_message = _("Songbook %(name)s was successfully updated")
 
@@ -80,22 +83,27 @@ class CategoryUpdateView(SuccessMessageMixin, RegenerateViewMixin, UpdateView):
         return response
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(login_required, name="dispatch")
 class CategoryRegeneratePDFView(View, SingleObjectMixin):
-    """Creates PDF regeneration request for Category, if it doesn't already exist """
+    """Creates PDF regeneration request for Category, if it doesn't already exist"""
+
     model = Category
 
     def get(self, request, *args, **kwargs):
         """GET Request"""
         category = self.get_object()
         request_pdf_regeneration(category)
-        messages.success(request, _("Category %s was successfully staged for PDF generation") % category.name)
+        messages.success(
+            request,
+            _("Category %s was successfully staged for PDF generation") % category.name,
+        )
         return redirect("category:list")
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(login_required, name="dispatch")
 class CategoryDeleteView(DeleteView):
     """Removes category"""
+
     model = Category
     template_name = "category/confirm_delete.html"
     success_url = reverse_lazy("category:list")

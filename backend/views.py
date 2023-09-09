@@ -26,17 +26,18 @@ def transform_song(song: Song, number: int, authenticated: bool) -> Dict:
     transformed = model_to_dict(song, ["id", "name", "capo", "author", "link", "archived"])
     transformed["number"] = number
     if authenticated:
-        transformed['edit_url'] = reverse("chords:edit", kwargs={"pk": song.id})
-        transformed['delete_url'] = reverse("chords:delete", kwargs={"pk": song.id})
+        transformed["edit_url"] = reverse("chords:edit", kwargs={"pk": song.id})
+        transformed["delete_url"] = reverse("chords:delete", kwargs={"pk": song.id})
     transformed["text"] = song.rendered_web_markdown
     return transformed
 
 
 class SongListView(ListView):
     """Lists songs in the one page application"""
+
     model = Song
-    template_name = 'songs/index.html'
-    context_object_name = 'songs'
+    template_name = "songs/index.html"
+    context_object_name = "songs"
 
     FIELDS = ["id", "name", "capo", "author", "link", "prerendered_web"]
 
@@ -65,12 +66,13 @@ class SongListView(ListView):
             songs.append(transform_song(song, i, authenticated))
             i += 1
 
-        context_data['songs'] = json.dumps(songs, cls=DjangoJSONEncoder)
+        context_data["songs"] = json.dumps(songs, cls=DjangoJSONEncoder)
         return context_data
 
 
 class RegenerateViewMixin:
     """Mixin which tell you if the object changed or not"""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.regenerate = None
@@ -87,6 +89,7 @@ class RegenerateViewMixin:
 
 class IndexSongListView(SongListView, AnalyticsMixin):
     """Shows first available category"""
+
     KEY = gettext_noop("Index Page")
 
     def get_queryset(self):
@@ -100,12 +103,13 @@ class IndexSongListView(SongListView, AnalyticsMixin):
         return super().get_queryset()
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(login_required, name="dispatch")
 class SongCreateView(SuccessMessageMixin, CreateView):
     """Creates new song"""
+
     form_class = SongForm
     model = Song
-    template_name = 'songs/add.html'
+    template_name = "songs/add.html"
     success_message = _("Song %(name)s was successfully created")
     success_url = reverse_lazy("backend:index")
 
@@ -115,12 +119,13 @@ class SongCreateView(SuccessMessageMixin, CreateView):
         return super().get_success_url()
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(login_required, name="dispatch")
 class SongUpdateView(SuccessMessageMixin, RegenerateViewMixin, UpdateView):
     """Updates existing song"""
+
     form_class = SongForm
     model = Song
-    template_name = 'songs/add.html'
+    template_name = "songs/add.html"
     success_url = reverse_lazy("backend:index")
     success_message = _("Song %(name)s was successfully updated")
 
@@ -132,9 +137,10 @@ class SongUpdateView(SuccessMessageMixin, RegenerateViewMixin, UpdateView):
         return response
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(login_required, name="dispatch")
 class SongDeleteView(DeleteView):
     """Removes song"""
+
     model = Song
     template_name = "songs/confirm_delete.html"
     success_url = reverse_lazy("backend:index")
@@ -147,9 +153,10 @@ class SongDeleteView(DeleteView):
         return response
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(login_required, name="dispatch")
 class SongsDatatableView(BaseDatatableView):
     """API for datatables that returns all songs"""
+
     model = Song
     max_display_length = 500
     columns = ["name", "author", "capo"]

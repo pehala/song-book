@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.db.models import Sum
 from django.http import HttpResponseBadRequest, HttpRequest, JsonResponse
+
 # Create your views here.
 from django.utils.decorators import method_decorator
 from django.utils.timezone import now
@@ -18,16 +19,14 @@ from analytics.models import DayStatistic
 def analytics(key):
     """Adds hit"""
     with transaction.atomic():
-        statistic, _ = DayStatistic.objects.get_or_create(
-            key=key,
-            date=now()
-        )
+        statistic, _ = DayStatistic.objects.get_or_create(key=key, date=now())
         statistic.hits += 1
         statistic.save()
 
 
 class AnalyticsMixin(View):
     """Mixin for gathering number of hits per day analytics"""
+
     KEY = gettext_noop("General")
 
     def get_key(self):
@@ -40,14 +39,15 @@ class AnalyticsMixin(View):
         return result
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(login_required, name="dispatch")
 class AnalyticsShowView(TemplateView):
     """Shows analytics graphs"""
+
     template_name = "analytics/show.html"
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx["keys"] = DayStatistic.objects.order_by('key').values_list('key', flat=True).distinct()
+        ctx["keys"] = DayStatistic.objects.order_by("key").values_list("key", flat=True).distinct()
         ctx["now"] = datetime.now().date()
         ctx["week"] = (datetime.now() - timedelta(days=6)).date()
         # ctx["day"] = (datetime.now() - timedelta(days=1)).date()
@@ -56,7 +56,7 @@ class AnalyticsShowView(TemplateView):
         return ctx
 
 
-@method_decorator(login_required, name='dispatch')
+@method_decorator(login_required, name="dispatch")
 class AnalyticsRestView(View):
     """Returns analytics data for given dates and key"""
 
@@ -74,5 +74,5 @@ class AnalyticsRestView(View):
             days = DayStatistic.objects.filter(date__gte=start_date, date__lte=end_date, key=key)
         else:
             days = DayStatistic.objects.filter(date__gte=start_date, date__lte=end_date)
-        days = days.values("date").annotate(total=Sum('hits')).values("date", "total").order_by("date")
+        days = days.values("date").annotate(total=Sum("hits")).values("date", "total").order_by("date")
         return JsonResponse({entry["date"].isoformat(): entry["total"] for entry in days})

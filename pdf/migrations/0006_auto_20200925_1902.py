@@ -5,20 +5,19 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pdf', '0005_auto_20200919_2130'),
+        ("pdf", "0005_auto_20200919_2130"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='pdfrequest',
-            name='name',
+            model_name="pdfrequest",
+            name="name",
             field=models.CharField(max_length=100, null=True),
         ),
         migrations.AlterField(
-            model_name='pdfsong',
-            name='song_number',
+            model_name="pdfsong",
+            name="song_number",
             field=models.PositiveIntegerField(validators=[django.core.validators.MinValueValidator(1)]),
         ),
     ]

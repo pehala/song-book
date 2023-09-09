@@ -4,25 +4,58 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
     dependencies = [
-        ('backend', '0005_auto_20191124_1327'),
+        ("backend", "0005_auto_20191124_1327"),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='PDFRequest',
+            name="PDFRequest",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created_date', models.DateField(auto_now_add=True)),
-                ('update_date', models.DateTimeField(auto_now=True)),
-                ('locale', models.CharField(choices=[('en', 'English'), ('cs', 'Czech')], max_length=5, verbose_name='Language')),
-                ('type', models.CharField(choices=[('EV', 'Automated'), ('MA', 'Manual')], default='EV', max_length=2)),
-                ('status', models.CharField(choices=[('QU', 'Queued'), ('PR', 'In progress'), ('DO', 'Done'), ('ER', 'Failed')], default='QU', max_length=2)),
-                ('filename', models.CharField(max_length=30, null=True)),
-                ('songs', models.ManyToManyField(to='backend.Song')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("created_date", models.DateField(auto_now_add=True)),
+                ("update_date", models.DateTimeField(auto_now=True)),
+                (
+                    "locale",
+                    models.CharField(
+                        choices=[("en", "English"), ("cs", "Czech")],
+                        max_length=5,
+                        verbose_name="Language",
+                    ),
+                ),
+                (
+                    "type",
+                    models.CharField(
+                        choices=[("EV", "Automated"), ("MA", "Manual")],
+                        default="EV",
+                        max_length=2,
+                    ),
+                ),
+                (
+                    "status",
+                    models.CharField(
+                        choices=[
+                            ("QU", "Queued"),
+                            ("PR", "In progress"),
+                            ("DO", "Done"),
+                            ("ER", "Failed"),
+                        ],
+                        default="QU",
+                        max_length=2,
+                    ),
+                ),
+                ("filename", models.CharField(max_length=30, null=True)),
+                ("songs", models.ManyToManyField(to="backend.Song")),
             ],
         ),
     ]

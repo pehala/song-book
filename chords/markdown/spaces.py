@@ -2,17 +2,19 @@
 from markdown.extensions import Extension
 from markdown.inlinepatterns import SimpleTagInlineProcessor
 
-SPACES_RE = r'(\/)(\d+)\/'
+SPACES_RE = r"(\/)(\d+)\/"
 
 
 class SpacesExtension(Extension):
     """Markdown extension that transforms /{number}/ into actual spaces"""
+
     def extendMarkdown(self, md):
         md.inlinePatterns.register(SpacesPattern(SPACES_RE), "spaces", 200)
 
 
 class SpacesPattern(SimpleTagInlineProcessor):
     """Pattern for SpacesExtension"""
+
     def __init__(self, pattern):
         super().__init__(pattern, "span")
 

@@ -3,8 +3,8 @@ import locale
 from contextlib import contextmanager
 
 LANG_TO_LOCALE = {
-    'en': 'en_US.UTF8',
-    'cs': 'cs_CZ.UTF8',
+    "en": "en_US.UTF8",
+    "cs": "cs_CZ.UTF8",
 }
 
 

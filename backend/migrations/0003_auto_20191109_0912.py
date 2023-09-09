@@ -5,19 +5,18 @@ import django.utils.timezone
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('backend', '0002_auto_20191109_0858'),
+        ("backend", "0002_auto_20191109_0858"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='song',
-            name='song_number',
+            model_name="song",
+            name="song_number",
         ),
         migrations.AddField(
-            model_name='song',
-            name='date',
+            model_name="song",
+            name="date",
             field=models.DateField(auto_now_add=True, default=django.utils.timezone.now),
             preserve_default=False,
         ),

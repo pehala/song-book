@@ -9,4 +9,4 @@ class CategoryForm(ModelForm):
 
     class Meta:
         model = Category
-        fields = '__all__'
+        fields = "__all__"

@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pdf', '0016_pdfrequest_link'),
+        ("pdf", "0016_pdfrequest_link"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='pdfrequest',
-            name='show_title',
+            model_name="pdfrequest",
+            name="show_title",
         ),
     ]

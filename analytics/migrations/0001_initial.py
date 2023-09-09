@@ -4,20 +4,26 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='DayStatistic',
+            name="DayStatistic",
             fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('key', models.CharField(max_length=25, verbose_name='Key')),
-                ('amount', models.IntegerField(default=0, verbose_name='Amount')),
-                ('date', models.DateField(auto_now_add=True)),
+                (
+                    "id",
+                    models.BigAutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("key", models.CharField(max_length=25, verbose_name="Key")),
+                ("amount", models.IntegerField(default=0, verbose_name="Amount")),
+                ("date", models.DateField(auto_now_add=True)),
             ],
         ),
     ]

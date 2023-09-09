@@ -5,15 +5,14 @@ import pdf.storage
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pdf', '0004_request_20200918_1217'),
+        ("pdf", "0004_request_20200918_1217"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='pdfrequest',
-            name='file',
-            field=models.FileField(null=True, storage=pdf.storage.DateOverwriteStorage(), upload_to=''),
+            model_name="pdfrequest",
+            name="file",
+            field=models.FileField(null=True, storage=pdf.storage.DateOverwriteStorage(), upload_to=""),
         ),
     ]

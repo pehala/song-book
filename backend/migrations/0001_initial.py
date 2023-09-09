@@ -6,27 +6,51 @@ import markdownx.models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Song',
+            name="Song",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, verbose_name='Song Name')),
-                ('song_number', models.PositiveIntegerField(unique=True, verbose_name='Song Number')),
-                ('author', models.CharField(max_length=100, null=True, verbose_name='Author')),
-                ('link', models.URLField(null=True, verbose_name='Youtube Link')),
-                ('locale', models.CharField(max_length=5, validators=[django.core.validators.RegexValidator('[a-z]{2}|[a-z]{2}_[a-z]{2})', 'Your language code should in format ab_cd')], verbose_name='Language')),
-                ('text', markdownx.models.MarkdownxField(verbose_name='Lyrics')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                ("name", models.CharField(max_length=100, verbose_name="Song Name")),
+                (
+                    "song_number",
+                    models.PositiveIntegerField(unique=True, verbose_name="Song Number"),
+                ),
+                (
+                    "author",
+                    models.CharField(max_length=100, null=True, verbose_name="Author"),
+                ),
+                ("link", models.URLField(null=True, verbose_name="Youtube Link")),
+                (
+                    "locale",
+                    models.CharField(
+                        max_length=5,
+                        validators=[
+                            django.core.validators.RegexValidator(
+                                "[a-z]{2}|[a-z]{2}_[a-z]{2})",
+                                "Your language code should in format ab_cd",
+                            )
+                        ],
+                        verbose_name="Language",
+                    ),
+                ),
+                ("text", markdownx.models.MarkdownxField(verbose_name="Lyrics")),
             ],
             options={
-                'verbose_name': 'Song',
-                'verbose_name_plural': 'Songs',
+                "verbose_name": "Song",
+                "verbose_name_plural": "Songs",
             },
         ),
     ]

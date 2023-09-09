@@ -4,19 +4,22 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('backend', '0006_category_20200809_0529'),
+        ("backend", "0006_category_20200809_0529"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='song',
-            options={'ordering': ['date'], 'verbose_name': 'Song', 'verbose_name_plural': 'Songs'},
+            name="song",
+            options={
+                "ordering": ["date"],
+                "verbose_name": "Song",
+                "verbose_name_plural": "Songs",
+            },
         ),
         migrations.AlterField(
-            model_name='song',
-            name='name',
-            field=models.CharField(max_length=100, verbose_name='Name'),
+            model_name="song",
+            name="name",
+            field=models.CharField(max_length=100, verbose_name="Name"),
         ),
     ]
