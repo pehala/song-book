@@ -5,10 +5,10 @@
 
 {% block extra_head %}
     <script async src="{% static 'js/chords.js' %}"></script>
-    <script defer type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.12.1/datatables.min.js"></script>
-    <script defer src="//cdn.jsdelivr.net/npm/bootstrap-input-spinner@1.16.5/src/bootstrap-input-spinner.js"></script>
-    <script defer type="text/javascript" src="//cdn.datatables.net/plug-ins/1.12.1/filtering/type-based/accent-neutralise.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsrender/1.0.11/jsrender.min.js" integrity="sha512-bKlNlbTH3duwZ28zoqEhXui/yuaPuQVci6OAVu0zh2WfYbEKD39HszVR8byP4/L4YyBo3b5CGIY+4ldVN93uCg=="
+    <script defer type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.13.6/datatables.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap-input-spinner@2.2.0/src/bootstrap-input-spinner.js"></script>
+    <script defer type="text/javascript" src="https://cdn.datatables.net/plug-ins/1.13.6/filtering/type-based/accent-neutralise.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jsrender/1.0.13/jsrender.min.js" integrity="sha512-T93uOawQ+FrEdyCPaWrQtppurbLm8SISu2QnHyddM0fGXKX9Amyirwibe1wGYbsW2F8lLzhOM/2+d3Zo94ljRQ=="
             crossorigin="anonymous"
             referrerpolicy="no-referrer"
             defer>
@@ -53,7 +53,7 @@
                 <div class="input-group-prepend">
                   <span class="input-group-text">{% trans "Transpose" %}</span>
                 </div>
-                <input class="form-control-sm raw" type="number" value="0" min="-11" max="11" step="1" previous_value=0 onchange="transpose(event, this, <%:number%> )"/>
+                <input class="form-control raw" type="number" value="0" min="-11" max="11" step="1" previous_value=0 onchange="transpose(event, this, <%:number%> )"/>
             </div>
             <%if capo > 0%><h5>Capo <%:capo%> </h5> <%/if%>
             <div class="text-wrap song-text">
@@ -91,6 +91,8 @@
         drawCallback: function () {
             const selector = $(".raw[type='number']")
             selector.inputSpinner({
+                {#decrementButton: "<strong>&minus;</strong>", // button text#}
+                {#incrementButton: "<strong>&plus;</strong>",#}
                 decrementButton: "<i class=\"icon-minus\"></i>", // button text
                 incrementButton: "<i class=\"icon-plus\"></i>",
                 groupClass: "transposer",
@@ -126,7 +128,7 @@
         pageLength: 50,
         {% if request.LANGUAGE_CODE == "cs"  %}
             language: {
-                url: "//cdn.datatables.net/plug-ins/1.10.21/i18n/Czech.json"
+                url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/cs.json"
             },
         {% endif %}
     });
