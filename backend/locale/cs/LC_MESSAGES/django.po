@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2022-09-26 12:40+0000\n"
+"POT-Creation-Date: 2023-09-09 19:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,71 +23,71 @@ msgstr ""
 msgid "Songbook List"
 msgstr "Seznam zpěvníků"
 
-#: backend/menus.py:10
+#: backend/menus.py:9
 msgid "Add a song"
 msgstr "Přidat písničku"
 
-#: backend/menus.py:12
+#: backend/menus.py:10
 msgid "Add Songbook"
 msgstr "Přidat zpěvník"
 
-#: backend/menus.py:14
+#: backend/menus.py:11
 msgid "Analytics"
 msgstr "Statistiky"
 
-#: backend/menus.py:18
+#: backend/menus.py:17
 msgid "Admin"
 msgstr "Administrace"
 
-#: backend/menus.py:24
+#: backend/menus.py:26
 msgid "Log in"
 msgstr "Přihlásit se"
 
-#: backend/menus.py:27
+#: backend/menus.py:31
 msgid "Logout"
 msgstr "Odhlásit se"
 
-#: backend/menus.py:30
+#: backend/menus.py:36
 msgid "Change password"
 msgstr "Změna hesla"
 
-#: backend/menus.py:35
+#: backend/menus.py:42
 msgid "Account"
 msgstr "Účet"
 
-#: backend/models.py:22
+#: backend/models.py:32
 msgid "Name"
 msgstr "Název písničky"
 
-#: backend/models.py:24
+#: backend/models.py:34
 msgid "Capo"
 msgstr ""
 
-#: backend/models.py:25
+#: backend/models.py:35
 msgid "Author"
 msgstr "Autor"
 
-#: backend/models.py:26
+#: backend/models.py:36
 msgid "Youtube Link"
 msgstr "Odkaz na Youtube"
 
-#: backend/models.py:27
+#: backend/models.py:37
 msgid "Songbooks"
 msgstr "Seznam zpěvníků"
 
-#: backend/models.py:28
+#: backend/models.py:38
 msgid "Archived"
 msgstr "Archivovat"
 
-#: backend/models.py:29
+#: backend/models.py:39
 msgid "Lyrics"
 msgstr "Text"
 
-#: backend/models.py:81
+#: backend/models.py:91
 msgid "Song"
 msgstr "Písnička"
 
-#: backend/models.py:82
+#: backend/models.py:92
 msgid "Songs"
 msgstr "Písničky"
 
@@ -135,21 +135,21 @@ msgstr "Hledat"
 msgid "Number, text or author"
 msgstr "Číslo, text nebo autor"
 
-#: backend/views.py:74
+#: backend/views.py:93
 msgid "Index Page"
 msgstr "Úvodní stránka"
 
-#: backend/views.py:93
+#: backend/views.py:113
 #, python-format
 msgid "Song %(name)s was successfully created"
 msgstr "Písnička %(name)s byla úspěšně přidána"
 
-#: backend/views.py:109
+#: backend/views.py:130
 #, python-format
 msgid "Song %(name)s was successfully updated"
 msgstr "Písnička %(name)s byla úspěšně upravena"
 
-#: backend/views.py:137
+#: backend/views.py:147
 #, python-format
 msgid "Song %s was successfully deleted"
 msgstr "Písnička %s byla úspěšně odstraněna"

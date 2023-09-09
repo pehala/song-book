@@ -12,7 +12,7 @@ class Category(PDFOptions):
     slug = SlugField(verbose_name=_("URL pattern"), max_length=25, unique=True)
     generate_pdf = BooleanField(
         verbose_name=_("PDF generation"),
-        help_text=_("Should the PDF file be automatically generated when a song " "changes?"),
+        help_text=_("Should the PDF file be automatically generated when a song changes?"),
     )
 
     def __str__(self):
