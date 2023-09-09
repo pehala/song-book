@@ -19,12 +19,12 @@ from django.conf.urls.static import static
 from django.urls import path, include, re_path
 
 urlpatterns = [
-    path('accounts/', include('django.contrib.auth.urls')),
-    re_path(r'^markdownx/', include('markdownx.urls')),
-    path('i18n/', include('django.conf.urls.i18n')),
-    path('pdf/', include(('pdf.urls', "pdf"), namespace="pdf")),
-    path('categories/', include(('category.urls', "category"), namespace="category")),
-    path('analytics/', include(('analytics.urls', "analytics"), namespace="analytics")),
-    re_path(r'^', include(('backend.urls', "backend"), namespace="chords")),
-    path('__debug__/', include(debug_toolbar.urls)),
+    path("accounts/", include("django.contrib.auth.urls")),
+    re_path(r"^markdownx/", include("markdownx.urls")),
+    path("i18n/", include("django.conf.urls.i18n")),
+    path("pdf/", include(("pdf.urls", "pdf"), namespace="pdf")),
+    path("categories/", include(("category.urls", "category"), namespace="category")),
+    path("analytics/", include(("analytics.urls", "analytics"), namespace="analytics")),
+    re_path(r"^", include(("backend.urls", "backend"), namespace="chords")),
+    path("__debug__/", include(debug_toolbar.urls)),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

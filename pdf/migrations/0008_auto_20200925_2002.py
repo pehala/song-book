@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pdf', '0007_auto_20200925_1946'),
+        ("pdf", "0007_auto_20200925_1946"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='pdfrequest',
-            name='name',
-            field=models.CharField(default="Jerry's songs", help_text='Name to be used on the title page of the PDF', max_length=100),
+            model_name="pdfrequest",
+            name="name",
+            field=models.CharField(
+                default="Jerry's songs",
+                help_text="Name to be used on the title page of the PDF",
+                max_length=100,
+            ),
         ),
     ]

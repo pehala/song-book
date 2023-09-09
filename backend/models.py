@@ -2,8 +2,16 @@
 from enum import Enum
 
 from django.conf import settings
-from django.db.models import Model, CharField, URLField, DateField, PositiveSmallIntegerField, ManyToManyField, \
-    TextField, BooleanField
+from django.db.models import (
+    Model,
+    CharField,
+    URLField,
+    DateField,
+    PositiveSmallIntegerField,
+    ManyToManyField,
+    TextField,
+    BooleanField,
+)
 from django.utils.translation import gettext_lazy as _
 from markdownx.models import MarkdownxField
 
@@ -13,12 +21,14 @@ from category.models import Category
 
 class MarkdownTypes(Enum):
     """Type of markdown (WEB or PDF)"""
+
     WEB = 0
     PDF = 1
 
 
 class Song(Model):
     """Song model"""
+
     name = CharField(verbose_name=_("Name"), max_length=100)
     date = DateField(auto_now_add=True, editable=False)
     capo = PositiveSmallIntegerField(verbose_name=_("Capo"), default=0)
@@ -78,13 +88,20 @@ class Song(Model):
         return self._get_rendered_markdown(pdf_markdown, MarkdownTypes.PDF)
 
     class Meta:
-        verbose_name = _('Song')
-        verbose_name_plural = _('Songs')
-        ordering = ['date', 'id']
+        verbose_name = _("Song")
+        verbose_name_plural = _("Songs")
+        ordering = ["date", "id"]
 
     def __hash__(self):
-        values = [self.name, self.date, self.capo, self.author,
-                  self.link, self.categories, self.text]
+        values = [
+            self.name,
+            self.date,
+            self.capo,
+            self.author,
+            self.link,
+            self.categories,
+            self.text,
+        ]
         if hasattr(self, "song_number"):
             # pylint: disable=no-member
             values.append(self.song_number)

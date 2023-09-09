@@ -19,18 +19,19 @@ logger.setLevel(logging.INFO)
 
 class Command(BaseCommand):
     """Generates PDF according to the PDF requests"""
-    help = 'Generates PDFs that were requested'
+
+    help = "Generates PDFs that were requested"
 
     def add_arguments(self, parser: ArgumentParser):
-        parser.add_argument('requests',
-                            metavar='Requests',
-                            type=int,
-                            nargs='?',
-                            default="0",
-                            help="Number of requests to process, will process all requests if not value is specified")
-        parser.add_argument('--all',
-                            action='store_true',
-                            help="Regenerates PDF for all categories")
+        parser.add_argument(
+            "requests",
+            metavar="Requests",
+            type=int,
+            nargs="?",
+            default="0",
+            help="Number of requests to process, will process all requests if not value is specified",
+        )
+        parser.add_argument("--all", action="store_true", help="Regenerates PDF for all categories")
 
     # pylint: disable=too-many-locals
     def handle(self, *args, **options):

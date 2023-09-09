@@ -4,26 +4,25 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('category', '0003_auto_20200925_1902'),
-        ('backend', '0008_auto_20201018_0833'),
+        ("category", "0003_auto_20200925_1902"),
+        ("backend", "0008_auto_20201018_0833"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='song',
-            name='prerendered_pdf',
+            model_name="song",
+            name="prerendered_pdf",
             field=models.TextField(null=True),
         ),
         migrations.AddField(
-            model_name='song',
-            name='prerendered_web',
+            model_name="song",
+            name="prerendered_web",
             field=models.TextField(null=True),
         ),
         migrations.AlterField(
-            model_name='song',
-            name='categories',
-            field=models.ManyToManyField(to='category.Category', verbose_name='Categories'),
+            model_name="song",
+            name="categories",
+            field=models.ManyToManyField(to="category.Category", verbose_name="Categories"),
         ),
     ]

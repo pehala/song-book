@@ -4,26 +4,36 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pdf', '0014_auto_20210928_1029'),
+        ("pdf", "0014_auto_20210928_1029"),
     ]
 
     operations = [
         migrations.RenameField(
-            model_name='pdfrequest',
-            old_name='name',
-            new_name='title',
+            model_name="pdfrequest",
+            old_name="name",
+            new_name="title",
         ),
         migrations.AlterField(
-            model_name='pdfrequest',
-            name='title',
-            field=models.CharField(blank=True, help_text='Name to be used on the title page of the PDF', max_length=100, verbose_name='Title'),
+            model_name="pdfrequest",
+            name="title",
+            field=models.CharField(
+                blank=True,
+                help_text="Name to be used on the title page of the PDF",
+                max_length=100,
+                verbose_name="Title",
+            ),
         ),
         migrations.AlterField(
-            model_name='pdfrequest',
-            name='filename',
-            field=models.CharField(blank=True, default='', help_text='Filename of the generated PDF, please do not include .pdf', max_length=30, verbose_name='File name'),
+            model_name="pdfrequest",
+            name="filename",
+            field=models.CharField(
+                blank=True,
+                default="",
+                help_text="Filename of the generated PDF, please do not include .pdf",
+                max_length=30,
+                verbose_name="File name",
+            ),
             preserve_default=False,
         ),
     ]

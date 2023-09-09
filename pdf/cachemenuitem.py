@@ -5,6 +5,7 @@ from menu import MenuItem
 
 class CacheMenuItem(MenuItem):
     """MenuItem that has dynamic children stored in cache"""
+
     def __init__(self, generate_function, key, timeout, **kwargs):
         self.generate_function = generate_function
         self.key = key

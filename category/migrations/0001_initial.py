@@ -3,21 +3,48 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     initial = True
 
-    dependencies = [
-    ]
+    dependencies = []
 
     operations = [
         migrations.CreateModel(
-            name='Category',
+            name="Category",
             fields=[
-                ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('name', models.CharField(max_length=100, unique=True, verbose_name='Category Name')),
-                ('slug', models.SlugField(max_length=25, unique=True, verbose_name='URL pattern')),
-                ('generate_pdf', models.BooleanField(help_text='Should the PDF file be generated when something changes?', verbose_name='PDF generation')),
-                ('locale', models.CharField(choices=[('en', 'English'), ('cs', 'Česky')], default='Czech', help_text='Language for generated PDF files', max_length=5, verbose_name='Language')),
+                (
+                    "id",
+                    models.AutoField(
+                        auto_created=True,
+                        primary_key=True,
+                        serialize=False,
+                        verbose_name="ID",
+                    ),
+                ),
+                (
+                    "name",
+                    models.CharField(max_length=100, unique=True, verbose_name="Category Name"),
+                ),
+                (
+                    "slug",
+                    models.SlugField(max_length=25, unique=True, verbose_name="URL pattern"),
+                ),
+                (
+                    "generate_pdf",
+                    models.BooleanField(
+                        help_text="Should the PDF file be generated when something changes?",
+                        verbose_name="PDF generation",
+                    ),
+                ),
+                (
+                    "locale",
+                    models.CharField(
+                        choices=[("en", "English"), ("cs", "Česky")],
+                        default="Czech",
+                        help_text="Language for generated PDF files",
+                        max_length=5,
+                        verbose_name="Language",
+                    ),
+                ),
             ],
         ),
     ]

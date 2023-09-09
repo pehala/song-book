@@ -4,14 +4,13 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('category', '0003_auto_20200925_1902'),
+        ("category", "0003_auto_20200925_1902"),
     ]
 
     operations = [
         migrations.AlterModelOptions(
-            name='category',
-            options={'verbose_name': 'Songbook', 'verbose_name_plural': 'Songbooks'},
+            name="category",
+            options={"verbose_name": "Songbook", "verbose_name_plural": "Songbooks"},
         ),
     ]

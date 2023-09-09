@@ -23,12 +23,12 @@ def regenerate_pdf_request(request, category):
     """Regenerates the PDF request with the newest info"""
     with transaction.atomic():
         PDFSong.objects.filter(request=request).delete()
-        PDFSong.objects.bulk_create([
-            PDFSong(request=request,
-                    song=song,
-                    song_number=song_number + 1)
-            for song_number, song in enumerate(category.song_set.filter(archived=False).all())
-        ])
+        PDFSong.objects.bulk_create(
+            [
+                PDFSong(request=request, song=song, song_number=song_number + 1)
+                for song_number, song in enumerate(category.song_set.filter(archived=False).all())
+            ]
+        )
         return request
 
 
@@ -36,19 +36,18 @@ def generate_new_pdf_request(category):
     """Returns PDFRequest for a category"""
     with transaction.atomic():
         scheduled_times = PDFRequest.objects.filter(status=Status.SCHEDULED, type=RequestType.EVENT).values_list(
-            'scheduled_at', flat=True)
-        request = PDFRequest(type=RequestType.EVENT,
-                             status=Status.SCHEDULED,
-                             category=category)
+            "scheduled_at", flat=True
+        )
+        request = PDFRequest(type=RequestType.EVENT, status=Status.SCHEDULED, category=category)
         request.copy_options(category)
         request.filename = request.filename or get_filename(category)
         request.save()
-        PDFSong.objects.bulk_create([
-            PDFSong(request=request,
-                    song=song,
-                    song_number=song_number + 1)
-            for song_number, song in enumerate(category.song_set.filter(archived=False).all())
-        ])
+        PDFSong.objects.bulk_create(
+            [
+                PDFSong(request=request, song=song, song_number=song_number + 1)
+                for song_number, song in enumerate(category.song_set.filter(archived=False).all())
+            ]
+        )
 
         time = generate_unique_time(scheduled_times, timedelta(minutes=30))
 
@@ -58,11 +57,11 @@ def generate_new_pdf_request(category):
 
         return request
 
+
 def generate_unique_time(times, delta: timedelta):
     """Generate unique time, so jobs will not clash on scheduler"""
     time = timezone.now() + delta
     for _ in range(len(times) + 1):
-
         valid = True
         for existing_time in times:
             if not existing_time:
@@ -75,8 +74,9 @@ def generate_unique_time(times, delta: timedelta):
         time = time + delta
     raise AttributeError("Unable to assign unique generation time")
 
+
 def get_filename(category):
     """Returns filename for category based on its locale"""
     with translation.override(category.locale):
-        text = gettext('songbook')
+        text = gettext("songbook")
         return f"{text}-{category.name}"

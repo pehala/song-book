@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pdf', '0002_pdfrequest_time_elapsed'),
+        ("pdf", "0002_pdfrequest_time_elapsed"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='pdfrequest',
-            name='locale',
-            field=models.CharField(choices=[('en', 'English'), ('cs', 'Česky')], max_length=5, verbose_name='Language'),
+            model_name="pdfrequest",
+            name="locale",
+            field=models.CharField(
+                choices=[("en", "English"), ("cs", "Česky")],
+                max_length=5,
+                verbose_name="Language",
+            ),
         ),
     ]

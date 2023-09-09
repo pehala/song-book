@@ -4,15 +4,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('category', '0005_category_filename_category_image_category_margin_and_more'),
+        ("category", "0005_category_filename_category_image_category_margin_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='category',
-            name='link',
-            field=models.CharField(blank=True, default='', help_text='Link to include in the PDF', max_length=300, verbose_name='Link'),
+            model_name="category",
+            name="link",
+            field=models.CharField(
+                blank=True,
+                default="",
+                help_text="Link to include in the PDF",
+                max_length=300,
+                verbose_name="Link",
+            ),
         ),
     ]

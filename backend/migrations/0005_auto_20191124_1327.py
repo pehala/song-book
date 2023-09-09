@@ -4,20 +4,24 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('backend', '0004_auto_20191109_1019'),
+        ("backend", "0004_auto_20191109_1019"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='song',
-            name='capo',
-            field=models.PositiveSmallIntegerField(default=0, verbose_name='Capo'),
+            model_name="song",
+            name="capo",
+            field=models.PositiveSmallIntegerField(default=0, verbose_name="Capo"),
         ),
         migrations.AlterField(
-            model_name='song',
-            name='locale',
-            field=models.CharField(choices=[('en', 'English'), ('cs', 'Czech')], default='Czech', max_length=5, verbose_name='Language'),
+            model_name="song",
+            name="locale",
+            field=models.CharField(
+                choices=[("en", "English"), ("cs", "Czech")],
+                default="Czech",
+                max_length=5,
+                verbose_name="Language",
+            ),
         ),
     ]

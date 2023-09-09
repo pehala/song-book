@@ -31,6 +31,10 @@ libsass = "*"
 [tool.poetry.group.dev.dependencies]
 pylint = "*"
 pylint-django = "*"
+black = "*"
+
+[tool.black]
+line-length = 120
 
 # pylint
 [tool.pylint.FORMAT]

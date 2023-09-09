@@ -37,10 +37,7 @@ def get_base_url():
     Determine base URL to fetch CSS files from `WEASYPRINT_BASEURL` or
     fall back to using the root path of the URL used in the request.
     """
-    return getattr(
-        settings, 'WEASYPRINT_BASEURL',
-        reverse("chords:index")
-    )
+    return getattr(settings, "WEASYPRINT_BASEURL", reverse("chords:index"))
 
 
 def generate_pdf(request: PDFRequest):
@@ -59,21 +56,24 @@ def generate_pdf(request: PDFRequest):
                 name = os.path.basename(rel_path)
                 logger.info("Generating %s", name)
                 logger.debug("from request %s", request)
-                string = render_to_string(template_name="pdf/index.html", context={
-                    "songs": songs,
-                    "sorted_songs": sorted_songs,
-                    "name": request.title or translation.gettext(settings.SITE_NAME),
-                    "request": request,
-                    "link": request.link
-                })
+                string = render_to_string(
+                    template_name="pdf/index.html",
+                    context={
+                        "songs": songs,
+                        "sorted_songs": sorted_songs,
+                        "name": request.title or translation.gettext(settings.SITE_NAME),
+                        "request": request,
+                        "link": request.link,
+                    },
+                )
                 PROGRESS_LOGGER.setLevel(logging.INFO)
                 log_filter = ProgressFilter(request)
                 PROGRESS_LOGGER.addFilter(log_filter)
                 weasyprint.HTML(
                     string=string,
                     url_fetcher=django_url_fetcher,
-                    base_url=get_base_url()
-                ).write_pdf(file, optimize_size=('fonts', 'images'))
+                    base_url=get_base_url(),
+                ).write_pdf(file, optimize_size=("fonts", "images"))
                 PROGRESS_LOGGER.removeFilter(log_filter)
             request.file.save(rel_path, File(file, name=rel_path))
             request.time_elapsed = ceil(timer.duration)
@@ -95,19 +95,15 @@ def generate_pdf_job(request: PDFRequest):
 
 def schedule_generation(request: PDFRequest, schedule_time: datetime):
     """Schedules generation of a request at a specific time"""
-    queue = get_queue('default')
-    created_job = queue.enqueue_at(
-        schedule_time,
-        generate_pdf,
-        request,
-        retry = Retry(max=5, interval=120)
-    )
+    queue = get_queue("default")
+    created_job = queue.enqueue_at(schedule_time, generate_pdf, request, retry=Retry(max=5, interval=120))
     logger.info("Schedule PDF generation of request %s at %s", request.id, schedule_time)
     return created_job
 
 
 class ProgressFilter(logging.Filter):
     """Filters Weasyprint progress messages, highly dependent on implementation!"""
+
     STEP_NUMBER = re.compile(r"(?<=Step\s)\d")
 
     def __init__(self, request):
@@ -124,6 +120,7 @@ class ProgressFilter(logging.Filter):
 
 class Timer:
     """Context manager for measuring time"""
+
     def __init__(self):
         self.duration = 0
         self.start = 0

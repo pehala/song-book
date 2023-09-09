@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('category', '0007_remove_category_show_title'),
+        ("category", "0007_remove_category_show_title"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='category',
-            name='public',
-            field=models.BooleanField(default=True, help_text='True, if the file should be public', verbose_name='Public file'),
+            model_name="category",
+            name="public",
+            field=models.BooleanField(
+                default=True,
+                help_text="True, if the file should be public",
+                verbose_name="Public file",
+            ),
         ),
     ]

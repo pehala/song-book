@@ -4,16 +4,15 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('category', '0004_alter_category_options'),
-        ('backend', '0009_auto_20210131_1025'),
+        ("category", "0004_alter_category_options"),
+        ("backend", "0009_auto_20210131_1025"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='song',
-            name='categories',
-            field=models.ManyToManyField(to='category.Category', verbose_name='Songbooks'),
+            model_name="song",
+            name="categories",
+            field=models.ManyToManyField(to="category.Category", verbose_name="Songbooks"),
         ),
     ]

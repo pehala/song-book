@@ -6,6 +6,7 @@ from backend.models import Song
 
 class Command(BaseCommand):
     """Generates prerendered html from markdown for all songs"""
+
     def handle(self, *args, **options):
         bulk = []
         for song in Song.objects.all():

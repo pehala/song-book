@@ -4,15 +4,14 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pdf', '0017_remove_pdfrequest_show_title'),
+        ("pdf", "0017_remove_pdfrequest_show_title"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='pdfrequest',
-            name='progress',
+            model_name="pdfrequest",
+            name="progress",
             field=models.IntegerField(default=0),
         ),
     ]

@@ -4,20 +4,27 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pdf', '0013_pdfrequest_show_title'),
+        ("pdf", "0013_pdfrequest_show_title"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='pdfrequest',
-            name='name',
-            field=models.CharField(help_text='Name to be used on the title page of the PDF', max_length=100, verbose_name='Name'),
+            model_name="pdfrequest",
+            name="name",
+            field=models.CharField(
+                help_text="Name to be used on the title page of the PDF",
+                max_length=100,
+                verbose_name="Name",
+            ),
         ),
         migrations.AlterField(
-            model_name='pdfrequest',
-            name='show_title',
-            field=models.BooleanField(default=True, help_text='True, if the title should be shown on the first page', verbose_name='Show title'),
+            model_name="pdfrequest",
+            name="show_title",
+            field=models.BooleanField(
+                default=True,
+                help_text="True, if the title should be shown on the first page",
+                verbose_name="Show title",
+            ),
         ),
     ]

@@ -4,19 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('analytics', '0001_initial'),
+        ("analytics", "0001_initial"),
     ]
 
     operations = [
         migrations.RemoveField(
-            model_name='daystatistic',
-            name='amount',
+            model_name="daystatistic",
+            name="amount",
         ),
         migrations.AddField(
-            model_name='daystatistic',
-            name='hits',
-            field=models.IntegerField(default=0, verbose_name='Hits'),
+            model_name="daystatistic",
+            name="hits",
+            field=models.IntegerField(default=0, verbose_name="Hits"),
         ),
     ]

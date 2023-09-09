@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pdf', '0011_alter_pdfsong_song_number'),
+        ("pdf", "0011_alter_pdfsong_song_number"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='pdfrequest',
-            name='margin',
-            field=models.FloatField(default=0, help_text='Margins for title image, might be needed for some printers', verbose_name='Title Image margins'),
+            model_name="pdfrequest",
+            name="margin",
+            field=models.FloatField(
+                default=0,
+                help_text="Margins for title image, might be needed for some printers",
+                verbose_name="Title Image margins",
+            ),
         ),
     ]

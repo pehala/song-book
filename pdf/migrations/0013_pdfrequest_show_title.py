@@ -4,15 +4,18 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pdf', '0012_pdfrequest_margin'),
+        ("pdf", "0012_pdfrequest_margin"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='pdfrequest',
-            name='show_title',
-            field=models.BooleanField(default=True, help_text='If the title should be shown ', verbose_name='Show title'),
+            model_name="pdfrequest",
+            name="show_title",
+            field=models.BooleanField(
+                default=True,
+                help_text="If the title should be shown ",
+                verbose_name="Show title",
+            ),
         ),
     ]

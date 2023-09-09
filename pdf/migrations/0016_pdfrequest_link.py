@@ -4,15 +4,20 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
-        ('pdf', '0015_remove_pdfrequest_name_pdfrequest_title_and_more'),
+        ("pdf", "0015_remove_pdfrequest_name_pdfrequest_title_and_more"),
     ]
 
     operations = [
         migrations.AddField(
-            model_name='pdfrequest',
-            name='link',
-            field=models.CharField(blank=True, default='', help_text='Link to include in the PDF', max_length=300, verbose_name='Link'),
+            model_name="pdfrequest",
+            name="link",
+            field=models.CharField(
+                blank=True,
+                default="",
+                help_text="Link to include in the PDF",
+                max_length=300,
+                verbose_name="Link",
+            ),
         ),
     ]

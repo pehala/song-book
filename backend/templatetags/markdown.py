@@ -3,7 +3,10 @@ from django import template
 from django.conf import settings
 from django.template.defaultfilters import stringfilter
 from markdown import markdown, Markdown
-from markdownx.settings import MARKDOWNX_MARKDOWN_EXTENSIONS, MARKDOWNX_MARKDOWN_EXTENSION_CONFIGS
+from markdownx.settings import (
+    MARKDOWNX_MARKDOWN_EXTENSIONS,
+    MARKDOWNX_MARKDOWN_EXTENSION_CONFIGS,
+)
 
 
 def create_markdown(extensions):
@@ -11,10 +14,7 @@ def create_markdown(extensions):
     if extensions is None:
         extensions = MARKDOWNX_MARKDOWN_EXTENSIONS
 
-    return Markdown(
-        extensions=extensions,
-        extension_configs=MARKDOWNX_MARKDOWN_EXTENSION_CONFIGS
-    )
+    return Markdown(extensions=extensions, extension_configs=MARKDOWNX_MARKDOWN_EXTENSION_CONFIGS)
 
 
 register = template.Library()
@@ -42,5 +42,5 @@ def markdownify(content, extensions=None):
     return markdown(
         text=content,
         extensions=extensions,
-        extension_configs=MARKDOWNX_MARKDOWN_EXTENSION_CONFIGS
+        extension_configs=MARKDOWNX_MARKDOWN_EXTENSION_CONFIGS,
     )
