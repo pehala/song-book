@@ -91,6 +91,7 @@ immortalfighters/static/
 .env
 db.sqlite3
 /chords/static/
+/chords/settings/production.py
 
 #Python virtual environment
 venv/

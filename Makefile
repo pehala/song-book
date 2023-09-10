@@ -3,27 +3,39 @@
 commit-acceptance: black pylint
 pre-commit: locale migrations
 
+RUN = poetry run
+MANAGE = $(RUN) python manage.py
+
+SETTINGS ?= chords.settings.production
+
 pylint:
-	poetry run pylint backend/ chords/ pdf/ frontend/ category/ analytics/ --django-settings-module=chords.settings.development
+	$(RUN) pylint backend/ chords/ pdf/ frontend/ category/ analytics/ --django-settings-module=$(SETTINGS)
 
 black:
-	poetry run black --check . --diff
+	$(RUN) black --check . --diff
 
 reformat:
-	poetry run black .
+	$(RUN) black .
 
 locale:
-	poetry run python manage.py makemessages -l cs
+	$(MANAGE) makemessages -l cs
 
 migrations:
-	poetry run python manage.py makemigrations
+	$(MANAGE) makemigrations
 
-deploy:
-	poetry run python manage.py migrate
-	poetry run python manage.py compilescss
-	poetry run python manage.py prerender
-	poetry run python manage.py compilemessages
-	poetry run python manage.py collectstatic --noinput
+deploy: ## Deploys to production
+	$(MANAGE) migrate
+	$(MANAGE) compilescss
+	$(MANAGE) prerender
+	$(MANAGE) compilemessages
+	$(MANAGE) collectstatic --noinput
+
+init: ## Initializes project for development
+	cp chords/settings/production.py.tpl chords/settings/production.py
+	$(MANAGE) migrate
+
+run: ## Runs the development server
+	$(MANAGE) runserver --settings $(SETTINGS)
 
 # Check http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 help: ## Print this help
