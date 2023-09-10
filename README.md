@@ -1,4 +1,5 @@
-
+ [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+ 
 # About
 This project aims to create simple songbook for storing, managing and viewing songs with their respective chords. The songs are loaded once and then all filtering/searching happens on the client which means it is usable even in conditions with low or almost no internet access as it can be preloaded. The site can also generate PDF files from selected songs for offline viewing or printing.
 
