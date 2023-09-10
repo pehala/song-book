@@ -11,16 +11,16 @@ First clone the repository from Github and switch to the new directory:
     
 Install pipenv and dependencies
 
-    $ pip install pipenv
-    $ pipenv install 
+    $ python -m pip install poetry
+    $ poetry install 
     
-Then simply apply the migrations:
+Then simply initialize the website:
 
-    $ pipenv run python manage.py migrate
+    $ make init
 
 You can now run the development server:
 
-    $ pipenv run python manage.py runserver
+    $ make run
 
 ## FAQ
 
