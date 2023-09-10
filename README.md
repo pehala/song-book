@@ -4,7 +4,7 @@ This project aims to create simple songbook for storing, managing and viewing so
 
 # Getting Started
 
-First clone the repository from Github and switch to the new directory:
+First clone the repository from GitHub and switch to the new directory:
 
     git clone https://github.com/pehala/song-book.git
     cd song-book
@@ -24,10 +24,10 @@ You can now run the development server:
 
 ## FAQ
 
-1. pipenv install throws 
+1. `poetry install` throws 
 
        ERROR: Couldn't install package: rcssmin
        Package installation failed...
 
-    Install apt-get install python3-dev (or yum install python3-devel etc.)
+    Install `python3-dev` for Debian-based distro or `python3-devel` for RHEL-based
 
