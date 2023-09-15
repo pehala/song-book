@@ -49,7 +49,7 @@
             {%  endif %}
             </span>
         </div>
-        <div id="<%:number%>" style="display: none;">
+        <div id="<%:number%>" class="song" style="display: none;">
             <div class="input-group mb-3">
                 <%if link%>
                     <a href="<%:link%>" class="btn btn-primary" role="button" aria-pressed="true">
@@ -161,11 +161,7 @@
         });
 
         $( "#scroll-down" ).click(function() {
-            const scrollAmount = (typeof window.outerHeight != 'undefined') ? Math.max(window.outerHeight, $(window).height()):$(window).height()
-            console.log(scrollAmount)
-            $('html, body').animate({
-                scrollTop: `+=${0.8 * scrollAmount}`
-             }, 800);
+            betterScrollDown()
         });
 
         let hidden = false
