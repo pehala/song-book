@@ -18,11 +18,17 @@
     <link rel="stylesheet" type="text/css" href="{% sass_src 'datatables.sass' %}">
 {%  endblock %}
 {% block extra_options %}
-<div class="form-check form-check-inline ml-2">
-  <label class="form-check-label" for="hideChords" id="defaultCheckLabel">
+<div class="form-check form-check-inline mt-2 ml-2 text-left">
+  <input class="form-check-input ml-2" type="checkbox" value="" id="hideChords">
+  <label class="form-check-label" for="hideChords">
     {% trans "Hide chords" %}
   </label>
-  <input class="form-check-input ml-2" type="checkbox" value="" id="hideChords">
+</div>
+<div class="form-check form-check-inline mt-2 ml-2 text-left">
+  <input class="form-check-input ml-2" type="checkbox" value="" id="preventSleep">
+  <label class="form-check-label" for="preventSleep">
+    {% trans "Prevent sleep" %}
+  </label>
 </div>
 {% endblock %}
 {% block body %}
@@ -80,27 +86,8 @@
         <span class="icon-down-open"></span>
     </button>
     <script type="module">
-    import Cookies from "{% static 'js/js.cookie.js' %}"
     import {Options, BooleanOption} from "{% static 'js/Options.js' %}"
     const canWakeLock = () => 'wakeLock' in navigator;
-    let wakelock;
-    async function lockWakeState() {
-      if(!canWakeLock()) return;
-      try {
-        wakelock = await navigator.wakeLock.request();
-        wakelock.addEventListener('release', () => {
-          console.log('Screen Wake State Locked:', !wakelock.released);
-        });
-        console.log('Screen Wake State Locked:', !wakelock.released);
-      } catch(e) {
-        console.error('Failed to lock wake state with reason:', e.message);
-      }
-    }
-
-    function releaseWakeState() {
-      if(wakelock) wakelock.release();
-      wakelock = null;
-    }
 
     $.views.settings.delimiters("<%", "%>");
     $.fn.DataTable.ext.pager.numbers_length = 5;
@@ -192,10 +179,37 @@
             }
         }
 
+        let wakelock;
+        async function preventSleep(value) {
+            if(!canWakeLock()) return;
+            if (value) {
+              try {
+                wakelock = await navigator.wakeLock.request();
+                wakelock.addEventListener('release', () => {
+                  console.log('Screen Wake State Locked:', !wakelock.released);
+                });
+                console.log('Screen Wake State Locked:', !wakelock.released);
+              } catch(e) {
+                console.error('Failed to lock wake state with reason:', e.message);
+              }
+            } else {
+                if(wakelock) wakelock.release();
+                wakelock = null;
+            }
+        }
+
         const config = new Map([
-            ["hide_chords", new BooleanOption($("#hideChords"), hideChords, false)]
+            ["hide_chords", new BooleanOption($("#hideChords"), hideChords, false)],
+            ["prevent_sleep", new BooleanOption($("#preventSleep"), function(value) {
+                preventSleep(value).then()
+            }, false)]
         ])
         const options = new Options(config)
+
+        if (!canWakeLock()) {
+            options.set("prevent_sleep", false)
+            options.selector("prevent_sleep").attr('disabled', 'disabled');
+        }
 
 
         table.on( 'draw', function () {

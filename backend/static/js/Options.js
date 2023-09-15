@@ -12,6 +12,7 @@ export class BooleanOption {
   }
 
   set(value) {
+      this.checkbox.attr('checked', value);
       this.checkbox.prop('checked', value);
   }
 
@@ -48,16 +49,17 @@ export class Options {
   }
 
   get(name) {
-      options[name].get()
+      return this.options.get(name).get()
   }
   set(name, value) {
-      options[name].set(value)
+      this.options.get(name).set(value)
   }
 
   call(name, value) {
-      options[name].call(value)
+      this.options.get(name).call(value)
+  }
+
+  selector(name) {
+      return this.options.get(name).selector()
   }
 }
-//
-// export class Options;
-// export class  BooleanOption;
