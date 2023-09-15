@@ -23,13 +23,48 @@ function transpose(event, object, id) {
 }
 
 function collapsible(element, id) {
-    const collapsible = $('#' + id);
+    $(".song:visible").slideUp()
+    $('#' + id).slideToggle()
+}
 
-    if (collapsible.hasClass('unrolled') === true) {
-        collapsible.slideUp();
-    } else {
-        collapsible.slideDown();
+function isElementInViewPort(element) {
+    let rect = element.getBoundingClientRect();
+    // get the height of the window
+    let viewPortBottom = window.innerHeight || document.documentElement.clientHeight;
+    // get the width of the window
+    let viewPortRight = window.innerWidth || document.documentElement.clientWidth;
+
+    let isTopInViewPort = rect.top >= 0,
+     isLeftInViewPort = rect.left >= 0,
+     isBottomInViewPort = rect.bottom <= viewPortBottom,
+     isRightInViewPort = rect.right <= viewPortRight;
+
+    // check if element is completely visible inside the viewport
+     return (isTopInViewPort && isLeftInViewPort && isBottomInViewPort && isRightInViewPort);
+
+}
+
+function betterScrollDown() {
+    let children = $(".song:visible p ")
+    if (children.length === 0)
+        return
+
+    let scrollTo = null;
+    for (let i = 0; i < children.length - 1; i++) {
+        if (isElementInViewPort(children[i])) {
+            scrollTo = children[i+1]
+            console.log(i+1)
+            break
+        }
     }
-    collapsible.toggleClass("unrolled");
-    element.classList.toggle("unrolled");
+
+    let last_visible = isElementInViewPort(children[children.length - 1])
+
+    if (scrollTo !== null && !last_visible) {
+        console.log(scrollTo.getBoundingClientRect().top)
+        $('body,html').animate({
+            scrollTop: `+=${0.8 * scrollTo.getBoundingClientRect().top}`,
+        }, 800);
+    }
+
 }
