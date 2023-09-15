@@ -63,7 +63,7 @@
                         {% trans "Options" %}
                     </a>
                     <div class="dropdown-menu" aria-labelledby="languageDropdown" id="options">
-                        <div class="form-group d-flex ml-2 mr-2 ">
+                        <div class="form-group d-flex ml-2 mr-2 mb-0">
                             <label for="language" class="mr-2">
                                 {% trans "Language" %}
                             </label>
@@ -80,7 +80,10 @@
                                 <input name="language" type=hidden value={{ locale.code }}>
                             </form>
                         {% endfor %}
-                        {% block extra_options %}{% endblock %}
+                        <hr class="mt-2 mb-1">
+                        <div class="d-flex flex-column">
+                            {% block extra_options %}{% endblock %}
+                        </div>
                     </div>
                 </li>
             </ul>
