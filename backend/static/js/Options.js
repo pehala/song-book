@@ -12,8 +12,7 @@ export class BooleanOption {
   }
 
   set(value) {
-      this.checkbox.attr('checked', value);
-      this.checkbox.prop('checked', value);
+      this.checkbox.prop('checked', value === "true");
   }
 
   call(value) {
