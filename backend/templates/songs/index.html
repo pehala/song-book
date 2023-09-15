@@ -14,7 +14,7 @@
             defer>
     </script>
     <script type="module" src="{% static 'js/js.cookie.js' %}"></script>
-
+    <script type="module" src="{% static 'js/Options.js' %}"></script>
     <link rel="stylesheet" type="text/css" href="{% sass_src 'datatables.sass' %}">
 {%  endblock %}
 {% block extra_options %}
@@ -81,6 +81,27 @@
     </button>
     <script type="module">
     import Cookies from "{% static 'js/js.cookie.js' %}"
+    import {Options, BooleanOption} from "{% static 'js/Options.js' %}"
+    const canWakeLock = () => 'wakeLock' in navigator;
+    let wakelock;
+    async function lockWakeState() {
+      if(!canWakeLock()) return;
+      try {
+        wakelock = await navigator.wakeLock.request();
+        wakelock.addEventListener('release', () => {
+          console.log('Screen Wake State Locked:', !wakelock.released);
+        });
+        console.log('Screen Wake State Locked:', !wakelock.released);
+      } catch(e) {
+        console.error('Failed to lock wake state with reason:', e.message);
+      }
+    }
+
+    function releaseWakeState() {
+      if(wakelock) wakelock.release();
+      wakelock = null;
+    }
+
     $.views.settings.delimiters("<%", "%>");
     $.fn.DataTable.ext.pager.numbers_length = 5;
     $.templates("song", "#songTemplate")
@@ -161,26 +182,21 @@
         });
 
         let hidden = false
-        const checkbox = $("#hideChords")
-        checkbox.change(function() {
-            if ($(this).is(':checked') && !hidden) {
+        function hideChords(value) {
+             if (value && !hidden) {
                 $(".chord").hide()
                 hidden = true
-                Cookies.set("hide_chords", true, {SameSite: "Strict"})
             } else {
                 hidden = false
                 $(".chord").show()
-                Cookies.set("hide_chords", false, {SameSite: "Strict"})
             }
-        })
-
-        let hide_chords = Cookies.get("hide_chords");
-        if (hide_chords === undefined) {
-            Cookies.set("hide_chords", false, {SameSite: "Strict"})
-            hide_chords = false
         }
-        checkbox.prop('checked', hide_chords === 'true');
-        checkbox.change()
+
+        const config = new Map([
+            ["hide_chords", new BooleanOption($("#hideChords"), hideChords, false)]
+        ])
+        const options = new Options(config)
+
 
         table.on( 'draw', function () {
             if (hidden) {
