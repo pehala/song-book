@@ -87,12 +87,14 @@
                     </div>
                 </li>
             </ul>
-            {% if user.is_authenticated %}
-                <span class="navbar-text mr-2">{% trans "Logged as" %} <b>{{ user.username }}</b></span>
-            {% endif %}
             <ul class="my-lg-0 navbar-nav navbar-right">
                 {% include "menu/bootstrap4-menu.html" with menu=menus.account %}
             </ul>
+            {% if user.is_authenticated %}
+                <span class="navbar-text mr-2">{% trans "Logged as" %} <b>{{ user.username }}</b></span>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn btn-link custom-link" role="button">{% trans "Log in" %}</a>
+            {% endif %}
 
         </div>
     </nav>
