@@ -16,7 +16,7 @@ export class BooleanOption {
   }
 
   call(value) {
-      this.callable(value)
+      this.callable(value === "true" || value === true)
   }
 
   selector() {
