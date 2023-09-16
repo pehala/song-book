@@ -170,11 +170,10 @@
 
         let hidden = false
         function hideChords(value) {
-             if (value && !hidden) {
+            hidden = value
+            if (value) {
                 $(".chord").hide()
-                hidden = true
             } else {
-                hidden = false
                 $(".chord").show()
             }
         }
