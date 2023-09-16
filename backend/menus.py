@@ -23,20 +23,18 @@ Menu.add_item(
 
 account_children = (
     MenuItem(
-        _("Log in"),
-        reverse("login"),
-        check=lambda request: not request.user.is_authenticated,
-    ),
-    MenuItem(
         _("Logout"),
         reverse("logout"),
-        check=lambda request: request.user.is_authenticated,
     ),
     MenuItem(
         _("Change password"),
         reverse("password_change"),
-        check=lambda request: request.user.is_authenticated,
     ),
 )
 
-Menu.add_item("account", MenuItem(_("Account"), reverse("login"), children=account_children))
+Menu.add_item(
+    "account",
+    MenuItem(
+        _("Account"), reverse("login"), children=account_children, check=lambda request: request.user.is_authenticated
+    ),
+)
