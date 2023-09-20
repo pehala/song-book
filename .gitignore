@@ -57,11 +57,6 @@ var/
 *.manifest
 *.spec
 
-# Installer logs
-pip-log.txt
-pip-delete-this-directory.txt
-Pipfile.lock
-
 # Unit test / coverage reports
 htmlcov/
 .tox/
@@ -86,12 +81,12 @@ target/
 *.pot
 *.pyc
 __pycache__/
-immortalfighters/static/
 
 .env
 db.sqlite3
 /chords/static/
 /chords/settings/production.py
+/chords/media
 
 #Python virtual environment
 venv/
