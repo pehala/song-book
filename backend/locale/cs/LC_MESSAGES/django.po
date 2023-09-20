@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-16 07:45+0000\n"
+"POT-Creation-Date: 2023-09-20 19:18+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -40,18 +40,14 @@ msgid "Admin"
 msgstr "Administrace"
 
 #: backend/menus.py:26
-msgid "Log in"
-msgstr "Přihlásit se"
-
-#: backend/menus.py:31
 msgid "Logout"
 msgstr "Odhlásit se"
 
-#: backend/menus.py:36
+#: backend/menus.py:30
 msgid "Change password"
 msgstr "Změna hesla"
 
-#: backend/menus.py:42
+#: backend/menus.py:38
 msgid "Account"
 msgstr "Účet"
 
