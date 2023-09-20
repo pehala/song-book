@@ -1,36 +1,37 @@
 """Views for PDF app"""
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.core.cache import cache
 from django.db import transaction
 from django.forms import formset_factory
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import redirect
-from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 from django.views.generic.base import TemplateResponseMixin, View
 from django.views.generic.detail import SingleObjectMixin, DetailView
 
+from backend.auth.mixins import LocalAdminRequired
 from backend.models import Song
 from category.models import Category
-from pdf.forms import RequestForm, PDFSongForm, BasePDFSongFormset
+from category.views import CategoryMoveView
+from pdf.forms import RequestForm, PDFSongForm, BasePDFSongFormset, FileForm
 from pdf.generate import generate_pdf_job
 from pdf.models.request import PDFRequest, RequestType, Status
 
 
-@method_decorator(login_required, name="dispatch")
-class RequestListView(ListView):
+class RequestListView(LocalAdminRequired, ListView):
     """Lists all the requests"""
 
     model = PDFRequest
     template_name = "pdf/requests/list.html"
     context_object_name = "requests"
 
+    def get_queryset(self):
+        return super().get_queryset().filter(tenant=self.request.tenant)
 
-@method_decorator(login_required, name="dispatch")
-class RequestRegenerateView(View, SingleObjectMixin):
+
+class RequestRegenerateView(LocalAdminRequired, View, SingleObjectMixin):
     """Regenerates the PDF request"""
 
     model = PDFRequest
@@ -50,8 +51,7 @@ class RequestRegenerateView(View, SingleObjectMixin):
         return redirect("pdf:list")
 
 
-@method_decorator(login_required, name="dispatch")
-class RequestRemoveFileView(View, SingleObjectMixin):
+class RequestRemoveFileView(LocalAdminRequired, View, SingleObjectMixin):
     """Removes file from request"""
 
     model = PDFRequest
@@ -75,24 +75,25 @@ class RequestRemoveFileView(View, SingleObjectMixin):
         return redirect("pdf:list")
 
 
-@method_decorator(login_required, name="dispatch")
-class RequestSongSelectorView(ListView):
+class RequestSongSelectorView(LocalAdminRequired, ListView):
     """Starts process of creating new PDFRequest by selecting songs for the request"""
 
     model = Song
     context_object_name = "songs"
     template_name = "pdf/requests/select.html"
 
+    def get_queryset(self):
+        return super().get_queryset().filter(categories__tenant=self.request.tenant)
+
     def get_context_data(self, *, object_list=None, **kwargs):
         ctx = super().get_context_data(object_list=object_list, **kwargs)
-        categories = list(Category.objects.all())
+        categories = list(Category.objects.filter(tenant=self.request.tenant).all())
         ctx["categories"] = categories
         ctx["slugs"] = list(map(lambda c: c.slug, categories))
         return ctx
 
 
-@method_decorator(login_required, name="dispatch")
-class RequestNumberSelectView(TemplateResponseMixin, View):
+class RequestNumberSelectView(LocalAdminRequired, TemplateResponseMixin, View):
     """Assign song numbers for PDF request"""
 
     template_name = "pdf/requests/assign.html"
@@ -113,7 +114,7 @@ class RequestNumberSelectView(TemplateResponseMixin, View):
         if songs.count() == 0:
             return HttpResponseBadRequest(_("You need to select at least one song"))
 
-        form = RequestForm(instance=PDFRequest(type=RequestType.MANUAL), prefix="request")
+        form = RequestForm(instance=PDFRequest(type=RequestType.MANUAL, tenant=self.request.tenant), prefix="request")
         formset = self.PDFSongFormset(
             prefix="songs",
             initial=[{"name": song.name, "song_number": number + 1, "song": song} for number, song in enumerate(songs)],
@@ -128,6 +129,7 @@ class RequestNumberSelectView(TemplateResponseMixin, View):
         if form.is_valid() and formset.is_valid():
             request = form.instance
             request.type = RequestType.MANUAL
+            request.tenant = self.request.tenant
             with transaction.atomic():
                 request.save()
                 for form in formset:
@@ -170,3 +172,28 @@ class RenderInfoView(View, SingleObjectMixin):
                 "link": request.file.url if ready else None,
             }
         )
+
+
+class RequestMoveView(CategoryMoveView):
+    """Moves Requests to a different Tenant"""
+
+    template_name = "admin/pdf/migrate.html"
+    formset_class = formset_factory(FileForm, extra=0)
+
+    def initial(self, pks):
+        query = PDFRequest.objects.filter(id__in=pks)
+
+        form = self.form_class()
+        initial = []
+        for category in query.values_list("id", "file", "title"):
+            initial.append({"pk": category[0], "file": category[1], "title": category[2]})
+
+        formset = self.formset_class(initial=initial)
+        return form, formset
+
+    def action(self, tenant, ids):
+        requests = PDFRequest.objects.filter(id__in=ids).distinct()
+        with transaction.atomic():
+            for request in requests:
+                request.tenant = tenant
+            PDFRequest.objects.bulk_update(requests, ["tenant"])

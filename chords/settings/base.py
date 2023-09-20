@@ -15,8 +15,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from pathlib import Path
 
-from django.conf.global_settings import gettext_noop
-
 from chords.markdown.chords import ChordsExtension
 from chords.markdown.chords_pdf import ChordsPDFExtension
 from chords.markdown.spaces import SpacesExtension
@@ -35,6 +33,7 @@ INSTALLED_APPS = [
     "backend",
     "pdf",
     "analytics",
+    "tenants",
     "bootstrap4",
     "sass_processor",
     "markdownx",
@@ -75,6 +74,7 @@ MIDDLEWARE = [
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "backend.middleware.settings.SiteNameMiddleware",
+    "tenants.middleware.RecognizeTenantMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
 ]
 
@@ -200,16 +200,14 @@ LOGGING = {
 }
 
 # Custom settings
-SITE_NAME = gettext_noop("Jerry's songs")
+SITE_NAME = "Songbook"
 PDF_FILE_DIR = "pdfs"
 CACHE_TIMEOUT = 86400
 
-# Slug for category to be used on index page, if the category is not found it will return category with lowest id
-DEFAULT_CATEGORY = None
 
 # If true, it will prerender all markdowns on create/update and then use them in fetch requests
 USE_PRERENDERED_MARKDOWN = False
-# This settings will prerender markdown on fetch request and save it for future use, if it is empty
+# This setting will prerender markdown on fetch request and save it for future use, if it is empty
 # might incur performance penalties on production, for production deployment use
 USE_DYNAMIC_PRERENDER = False
 
@@ -225,3 +223,7 @@ RQ_QUEUES = {
         "USE_REDIS_CACHE": "default",
     },
 }
+
+# Default Tenant, only used on migration
+TENANT_NAME = "Default"
+TENANT_HOSTNAME = "localhost"

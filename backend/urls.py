@@ -5,7 +5,6 @@ from backend.views import (
     SongCreateView,
     SongUpdateView,
     SongDeleteView,
-    SongsDatatableView,
     IndexSongListView,
 )
 
@@ -14,5 +13,5 @@ urlpatterns = [
     path("add", SongCreateView.as_view(), name="add"),
     path("edit/<int:pk>", SongUpdateView.as_view(), name="edit"),
     path("delete/<int:pk>", SongDeleteView.as_view(), name="delete"),
-    path("api/songs", SongsDatatableView.as_view(), name="songs"),
+    # path("api/songs", SongsDatatableView.as_view(), name="songs"),
 ]

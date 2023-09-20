@@ -1,14 +1,14 @@
 """Menus for backend app"""
 from django.urls import reverse
 from django.utils.translation import gettext_noop as _
-
 from menu import MenuItem, Menu
 
+from backend.auth import is_authenticated, is_localadmin, is_superadmin
+
 admin_children = (
-    MenuItem(_("Songbook List"), reverse("category:list")),
-    MenuItem(_("Add a song"), reverse("backend:add")),
-    MenuItem(_("Add Songbook"), reverse("category:add")),
     MenuItem(_("Analytics"), reverse("analytics:index")),
+    MenuItem(_("Edit Songbook"), reverse("tenants:edit"), check=is_localadmin),
+    MenuItem(_("Django Admin"), reverse("admin:index"), check=is_superadmin),
 )
 
 Menu.add_item(
@@ -17,7 +17,23 @@ Menu.add_item(
         _("Admin"),
         reverse("backend:index"),
         children=admin_children,
-        check=lambda request: request.user.is_authenticated,
+        check=is_localadmin,
+    ),
+)
+
+songbook_children = (
+    MenuItem(_("Category list"), reverse("category:list")),
+    MenuItem(_("Add Category"), reverse("category:add")),
+    MenuItem(_("Add Song"), reverse("backend:add")),
+)
+
+Menu.add_item(
+    "songbook-admin",
+    MenuItem(
+        _("Songs"),
+        reverse("backend:index"),
+        children=songbook_children,
+        check=is_localadmin,
     ),
 )
 
@@ -34,7 +50,5 @@ account_children = (
 
 Menu.add_item(
     "account",
-    MenuItem(
-        _("Account"), reverse("login"), children=account_children, check=lambda request: request.user.is_authenticated
-    ),
+    MenuItem(_("Account"), reverse("login"), children=account_children, check=is_authenticated),
 )

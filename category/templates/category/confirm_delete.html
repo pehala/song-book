@@ -6,7 +6,7 @@
 {% block header %} {% trans 'Please confirm removal' %} {% endblock %}
 {% block framed_body %}
     <form method="post">{% csrf_token %}
-        <p class="text-center">{% blocktrans %}Are you sure you wanna delete Songbook{% endblocktrans %} <b>{{ object.name }}</b>?</p>
+        <p class="text-center">{% blocktrans %}Are you sure, you want to delete Category{% endblocktrans %} <b>{{ object.name }}</b>?</p>
         <div class="mb-2">
             <a class="btn btn-secondary mx-auto pl-3 pr-3 " href="{% url "category:list" %}">{% trans 'No' %}</a>
             <input type="submit" class="btn btn-danger mx-auto" value="{% trans 'Yes' %}">

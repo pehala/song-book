@@ -34,7 +34,7 @@ class Song(Model):
     capo = PositiveSmallIntegerField(verbose_name=_("Capo"), default=0)
     author = CharField(verbose_name=_("Author"), max_length=100, null=True, blank=True)
     link = URLField(verbose_name=_("Youtube Link"), null=True, blank=True)
-    categories = ManyToManyField(Category, verbose_name=_("Songbooks"))
+    categories = ManyToManyField(Category, verbose_name=_("Categories"))
     archived = BooleanField(verbose_name=_("Archived"), default=False)
     text = MarkdownxField(verbose_name=_("Lyrics"))
     prerendered_web = TextField(null=True)
@@ -86,6 +86,9 @@ class Song(Model):
     def rendered_pdf_markdown(self):
         """Returns rendered markdown for pdf"""
         return self._get_rendered_markdown(pdf_markdown, MarkdownTypes.PDF)
+
+    def __str__(self):
+        return f"{self.name} ({self.id})"
 
     class Meta:
         verbose_name = _("Song")

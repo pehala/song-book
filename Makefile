@@ -9,7 +9,7 @@ MANAGE = $(RUN) python manage.py
 SETTINGS ?= chords.settings.production
 
 pylint:
-	$(RUN) pylint backend/ chords/ pdf/ frontend/ category/ analytics/ pdf/ --django-settings-module=$(SETTINGS)
+	$(RUN) pylint backend/ chords/ pdf/ frontend/ category/ analytics/ tenants/ --django-settings-module=$(SETTINGS)
 
 black:
 	$(RUN) black --check . --diff
@@ -18,7 +18,7 @@ reformat:
 	$(RUN) black .
 
 check-fuzzy:
-	@ for app in "backend" "chords" "pdf" "frontend" "category" "analytics" ; do \
+	@ for app in "backend" "chords" "pdf" "frontend" "category" "analytics" "tenants" ; do \
   		if [ ! -z "$$(msgattrib $${app}/locale/cs/LC_MESSAGES/django.po --only-fuzzy)" ]; then echo "$${app} app contains fuzzy strings" && exit 1; fi \
 	done;
 

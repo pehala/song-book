@@ -38,7 +38,7 @@ def generate_new_pdf_request(category):
         scheduled_times = PDFRequest.objects.filter(status=Status.SCHEDULED, type=RequestType.EVENT).values_list(
             "scheduled_at", flat=True
         )
-        request = PDFRequest(type=RequestType.EVENT, status=Status.SCHEDULED, category=category)
+        request = PDFRequest(type=RequestType.EVENT, status=Status.SCHEDULED, category=category, tenant=category.tenant)
         request.copy_options(category)
         request.filename = request.filename or get_filename(category)
         request.save()

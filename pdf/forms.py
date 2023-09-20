@@ -1,6 +1,6 @@
 """Forms for PDF application"""
 from django.core.exceptions import ValidationError
-from django.forms import ModelForm, CharField, BaseFormSet, HiddenInput
+from django.forms import ModelForm, CharField, BaseFormSet, HiddenInput, Form, IntegerField
 from django.utils.translation import gettext_lazy as _
 
 from pdf.models.request import PDFRequest, PDFSong
@@ -37,3 +37,11 @@ class BasePDFSongFormset(BaseFormSet):
             if number in numbers:
                 raise ValidationError(_("Each song has to have distinct song number"))
             numbers.add(number)
+
+
+class FileForm(Form):
+    """Form that shows Title and filename of a request being moved"""
+
+    pk = IntegerField(widget=HiddenInput())
+    title = CharField(disabled=True, required=False)
+    filename = CharField(disabled=True, required=False)
