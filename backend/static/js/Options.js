@@ -28,6 +28,33 @@ export class BooleanOption {
   }
 }
 
+export class CheckboxOption {
+    constructor(checkbox, callable, defaultValue) {
+    this.checkbox = checkbox;
+    this.callable = callable;
+    this.defaultValue = defaultValue || false;
+  }
+
+  get() {
+      return this.checkbox.filter(":checked").val()
+  }
+
+  set(value) {
+      this.checkbox.filter("[value=" + value + "]").prop("checked", true)
+  }
+
+  call(value) {
+      this.callable(value)
+  }
+
+  selector() {
+      return this.checkbox
+  }
+
+  default() {
+      return this.defaultValue
+  }
+}
 export class Options {
   constructor(options) {
     this.options = options
