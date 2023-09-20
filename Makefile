@@ -1,7 +1,7 @@
-.PHONY: commit-acceptance pylint black reformat pre-commit locale migrations deploy
+.PHONY: commit-acceptance pylint black reformat pre-commit locale migrations deploy check-fuzzy run
 
 commit-acceptance: black pylint
-pre-commit: locale migrations
+pre-commit: messages migrations reformat
 
 RUN = poetry run
 MANAGE = $(RUN) python manage.py
@@ -9,7 +9,7 @@ MANAGE = $(RUN) python manage.py
 SETTINGS ?= chords.settings.production
 
 pylint:
-	$(RUN) pylint backend/ chords/ pdf/ frontend/ category/ analytics/ --django-settings-module=$(SETTINGS)
+	$(RUN) pylint backend/ chords/ pdf/ frontend/ category/ analytics/ pdf/ --django-settings-module=$(SETTINGS)
 
 black:
 	$(RUN) black --check . --diff
@@ -17,7 +17,12 @@ black:
 reformat:
 	$(RUN) black .
 
-locale:
+check-fuzzy:
+	@ for app in "backend" "chords" "pdf" "frontend" "category" "analytics" ; do \
+  		if [ ! -z "$$(msgattrib $${app}/locale/cs/LC_MESSAGES/django.po --only-fuzzy)" ]; then echo "$${app} app contains fuzzy strings" && exit 1; fi \
+	done;
+
+messages:
 	$(MANAGE) makemessages -l cs
 
 migrations:
