@@ -137,10 +137,9 @@ msgid "Failed"
 msgstr "Selhalo"
 
 #: pdf/models/request.py:93
-#, fuzzy
 #| msgid "Song numbers"
 msgid "Song number"
-msgstr "Čísla písniček"
+msgstr "Číslo písničky"
 
 #: pdf/templates/pdf/index.html:46
 msgid "Table of Contents"
@@ -297,7 +296,7 @@ msgid "Request %(id)s is already in queue"
 msgstr "Požadavek %(id)s je již ve frontě"
 
 #: pdf/views.py:49
-#, fuzzy, python-format
+#, python-format
 #| msgid "Request %(id)s was marked for regeneration"
 msgid "Request %(id)s was scheduled for regeneration"
 msgstr "Požadavek %(id)s byl označen k přegenerování"
@@ -324,6 +323,3 @@ msgstr "Musíte vybrat alespoň jednu písničku"
 #, python-format
 msgid "PDF Request with id %(id)s was successfully created"
 msgstr "PDF požadavek se id %(id)s byl úspěšně vytvořen"
-
-#~ msgid "Date Created"
-#~ msgstr "Datum vytvoření"
