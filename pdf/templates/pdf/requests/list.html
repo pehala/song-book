@@ -1,6 +1,7 @@
 {% extends "base/frame.html" %}
 {% load i18n %}
 {% load types %}
+{% load static %}
 
 {% block title %} {% trans "PDF Requests" %} {% endblock %}
 {% block header %} {% trans "PDF Requests" %}  {% endblock %}
@@ -8,12 +9,14 @@
 {% block extra_head %}
 <script defer type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.13.6/datatables.min.js"></script>
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.13.6/datatables.min.css"/>
+<script type="module" src="{% static 'js/js.cookie.js' %}"></script>
+<script type="module" src="{% static 'js/Options.js' %}"></script>
 {% endblock %}
 
 {% block framed_body %}
     <div class="btn-group btn-group-toggle mb-2 float-left" data-toggle="buttons">
       <label class="btn btn-outline-info">
-        <input type="radio" name="options" value="{% trans "Manual" %}" checked> {% trans "Manual" %}
+        <input type="radio" name="options" value="{% trans "Manual" %}"> {% trans "Manual" %}
       </label>
 
       <label class="btn btn-outline-info active">
@@ -84,8 +87,19 @@
         </table>
     </div>
     <script type="module">
-    const initial_value = $("input[type=radio][name=options]").val()
-    const table = $('#datatable').DataTable({
+    import {Options, CheckboxOption} from "{% static 'js/Options.js' %}"
+
+    let table = null
+    function switch_tab(value) {
+        if (table) table.column(2).search(value).draw()
+    }
+
+    const config = new Map([
+        ["tab", new CheckboxOption($("input[type=radio][name=options]"), switch_tab, "{% trans "Manual" %}")],
+    ])
+    const options = new Options(config)
+    const initial_value = options.get("tab")
+    table = $('#datatable').DataTable({
         processing: true,
         order: [[ 1, "desc" ]],
         dom: 'rtip',
@@ -102,9 +116,6 @@
     });
     $("#searchInput").on("input", function (event) {
         table.search($(this).val()).draw();
-    });
-    $("input[type=radio][name=options]").change(function() {
-        table.column(2).search(this.value).draw()
     });
     </script>
 {% endblock %}
