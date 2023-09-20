@@ -9,6 +9,7 @@ from pdf.views import (
     RequestRegenerateView,
     WaitForPDFView,
     RenderInfoView,
+    RequestMoveView,
 )
 
 urlpatterns = [
@@ -19,4 +20,5 @@ urlpatterns = [
     path("info/<int:pk>", RenderInfoView.as_view(), name="info"),
     path("remove_file/<int:pk>", RequestRemoveFileView.as_view(), name="remove_file"),
     path("regenerate/<int:pk>", RequestRegenerateView.as_view(), name="regenerate"),
+    path("move", RequestMoveView.as_view(), name="move"),
 ]

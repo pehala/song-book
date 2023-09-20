@@ -1,10 +1,10 @@
 """Models for PDF module"""
+from datetime import datetime
 from typing import List
 
 from django.core.validators import MinValueValidator
 from django.db.models import (
     Model,
-    DateField,
     DateTimeField,
     IntegerField,
     FileField,
@@ -17,7 +17,6 @@ from django.db.models import (
     CheckConstraint,
     Q,
     PositiveIntegerField,
-    TextField,
 )
 from django.utils.translation import gettext_lazy as _
 
@@ -25,6 +24,7 @@ from backend.models import Song
 from category.models import Category
 from pdf.models import PDFOptions
 from pdf.storage import DateOverwriteStorage
+from tenants.models import Tenant
 
 fs = DateOverwriteStorage()
 
@@ -46,10 +46,15 @@ class Status(TextChoices):
     FAILED = "FA", _("Failed")
 
 
+def upload_path(instance, filename):
+    """Returns upload path for this request"""
+    return datetime.now().strftime(f"pdfs/{instance.tenant_id}/%y%m%d/{filename}")
+
+
 class PDFRequest(PDFOptions):
     """Request for PDF generation"""
 
-    #    created_date = DateField(auto_now_add=True, editable=False)
+    tenant = ForeignKey(Tenant, on_delete=CASCADE)
     update_date = DateTimeField(auto_now=True)
     type = CharField(
         max_length=2,
@@ -59,7 +64,7 @@ class PDFRequest(PDFOptions):
     status = CharField(max_length=2, choices=Status.choices, default=Status.QUEUED)
     time_elapsed = IntegerField(null=True)
     progress = IntegerField(default=0)
-    file = FileField(null=True, storage=fs)
+    file = FileField(null=True, storage=fs, upload_to=upload_path)
     songs = ManyToManyField(Song, through="PDFSong")
     category = ForeignKey(Category, null=True, on_delete=SET_NULL)
     scheduled_at = DateTimeField(null=True)
@@ -69,6 +74,8 @@ class PDFRequest(PDFOptions):
         return [transform_song(pdf_song) for pdf_song in PDFSong.objects.filter(request=self)]
 
     class Meta:
+        verbose_name = _("PDFRequest")
+        verbose_name_plural = _("PDFRequests")
         constraints = [
             CheckConstraint(
                 check=Q(type=RequestType.MANUAL) | Q(category__isnull=False),

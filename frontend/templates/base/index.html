@@ -3,6 +3,7 @@
 {% load sass_tags %}
 {% load i18n %}
 {% load menu %}
+{% load menu_utils %}
 
 {% get_current_language as LANGUAGE_CODE %}
 {% get_available_languages as LANGUAGES %}
@@ -11,7 +12,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <title>{% block title %} {% trans "Jerry's songs" %} {% endblock %}</title>
+    <title>{% block title %} {{ request.tenant.display_name }} {% endblock %}</title>
     <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"/>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,7 +37,7 @@
 <body>
 <div class="wrap">
     <nav class="navbar navbar-expand-lg navbar-light">
-        <a class="navbar-brand" href="#">{% trans request.SITE_NAME %}</a>
+        <a class="navbar-brand" href="#">{{ request.tenant.display_name }}</a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
@@ -44,16 +45,19 @@
         {% generate_menu %}
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav nav-left">
-                {% include "menu/bootstrap4-menu.html" with menu=menus.songbook %}
+                {% draw_menu "songbook" use_tenant=True %}
             </ul>
             <ul class="navbar-nav nav-left">
-                {% include "menu/bootstrap4-menu.html" with menu=menus.files %}
+                {% draw_menu "files" use_tenant=True %}
             </ul>
             <ul class="navbar-nav nav-right ml-auto">
-                {% include "menu/bootstrap4-menu.html" with menu=menus.pdf %}
+                {% draw_menu "pdf" %}
             </ul>
             <ul class="navbar-nav nav-right">
-                {% include "menu/bootstrap4-menu.html" with menu=menus.admin %}
+                {% draw_menu "admin" %}
+            </ul>
+            <ul class="navbar-nav nav-right">
+                {% draw_menu "songbook-admin" %}
             </ul>
             {% block extra_nav %}{% endblock %}
                     <ul class="my-lg-0 navbar-nav navbar-right languages">
@@ -88,7 +92,7 @@
                 </li>
             </ul>
             <ul class="my-lg-0 navbar-nav navbar-right">
-                {% include "menu/bootstrap4-menu.html" with menu=menus.account %}
+                {% draw_menu "account" %}
             </ul>
             {% if user.is_authenticated %}
                 <span class="navbar-text mr-2">{% trans "Logged as" %} <b>{{ user.username }}</b></span>

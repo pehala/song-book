@@ -12,10 +12,10 @@ class CacheMenuItem(MenuItem):
         self.timeout = timeout
         super().__init__(children=self._callable, **kwargs)
 
-    def _callable(self, _):
+    def _callable(self, request):
         """Returns children from cache or generate new one"""
         if self.key in cache:
             return cache.get(self.key)
-        children = self.generate_function()
-        cache.set(self.key, children, timeout=self.timeout)
+        children = self.generate_function(request)
+        cache.set(f"{request.tenant.id}-{self.key}", children, timeout=self.timeout)
         return children

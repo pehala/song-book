@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-20 19:18+0000\n"
+"POT-Creation-Date: 2023-09-20 18:45+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,35 +19,48 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
-#: backend/menus.py:8
-msgid "Songbook List"
-msgstr "Seznam zpěvníků"
-
 #: backend/menus.py:9
-msgid "Add a song"
-msgstr "Přidat písničku"
-
-#: backend/menus.py:10
-msgid "Add Songbook"
-msgstr "Přidat zpěvník"
-
-#: backend/menus.py:11
 msgid "Analytics"
 msgstr "Statistiky"
+
+#: backend/menus.py:10
+#| msgid "Add Songbook"
+msgid "Edit Songbook"
+msgstr "Upravit zpěvník"
+
+#: backend/menus.py:11
+msgid "Django Admin"
+msgstr ""
 
 #: backend/menus.py:17
 msgid "Admin"
 msgstr "Administrace"
 
+#: backend/menus.py:25
+msgid "Category list"
+msgstr "Seznam Kategorii"
+
 #: backend/menus.py:26
+msgid "Add Category"
+msgstr "Přidat Kategorii"
+
+#: backend/menus.py:27
+msgid "Add Song"
+msgstr "Přidat písničku"
+
+#: backend/menus.py:33 backend/models.py:95
+msgid "Songs"
+msgstr "Písničky"
+
+#: backend/menus.py:42
 msgid "Logout"
 msgstr "Odhlásit se"
 
-#: backend/menus.py:30
+#: backend/menus.py:46
 msgid "Change password"
 msgstr "Změna hesla"
 
-#: backend/menus.py:38
+#: backend/menus.py:53
 msgid "Account"
 msgstr "Účet"
 
@@ -68,8 +81,8 @@ msgid "Youtube Link"
 msgstr "Odkaz na Youtube"
 
 #: backend/models.py:37
-msgid "Songbooks"
-msgstr "Seznam zpěvníků"
+msgid "Categories"
+msgstr "Kategorie"
 
 #: backend/models.py:38
 msgid "Archived"
@@ -79,13 +92,9 @@ msgstr "Archivovat"
 msgid "Lyrics"
 msgstr "Text"
 
-#: backend/models.py:91
+#: backend/models.py:94
 msgid "Song"
 msgstr "Písnička"
-
-#: backend/models.py:92
-msgid "Songs"
-msgstr "Písničky"
 
 #: backend/templates/songs/add.html:4 backend/templates/songs/add.html:5
 msgid "Song Editor"
@@ -135,21 +144,17 @@ msgstr "Hledat"
 msgid "Number, text or author"
 msgstr "Číslo, text nebo autor"
 
-#: backend/views.py:93
-msgid "Index Page"
-msgstr "Úvodní stránka"
-
-#: backend/views.py:113
+#: backend/views.py:88
 #, python-format
 msgid "Song %(name)s was successfully created"
 msgstr "Písnička %(name)s byla úspěšně přidána"
 
-#: backend/views.py:130
+#: backend/views.py:104
 #, python-format
 msgid "Song %(name)s was successfully updated"
 msgstr "Písnička %(name)s byla úspěšně upravena"
 
-#: backend/views.py:147
+#: backend/views.py:120
 #, python-format
 msgid "Song %s was successfully deleted"
 msgstr "Písnička %s byla úspěšně odstraněna"

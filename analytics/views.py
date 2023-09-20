@@ -16,10 +16,10 @@ from django.views.generic import TemplateView
 from analytics.models import DayStatistic
 
 
-def analytics(key):
+def analytics(request, key):
     """Adds hit"""
     with transaction.atomic():
-        statistic, _ = DayStatistic.objects.get_or_create(key=key, date=now())
+        statistic, _ = DayStatistic.objects.get_or_create(key=key, date=now(), tenant=request.tenant)
         statistic.hits += 1
         statistic.save()
 
@@ -35,7 +35,7 @@ class AnalyticsMixin(View):
 
     def dispatch(self, request, *args, **kwargs):
         result = super().dispatch(request, *args, **kwargs)
-        analytics(self.get_key())
+        analytics(request, self.get_key())
         return result
 
 
@@ -71,8 +71,10 @@ class AnalyticsRestView(View):
             end_date = datetime.now().date()
         key = request.GET["key"]
         if len(key) > 0:
-            days = DayStatistic.objects.filter(date__gte=start_date, date__lte=end_date, key=key)
+            days = DayStatistic.objects.filter(
+                date__gte=start_date, date__lte=end_date, key=key, tenant=self.request.tenant
+            )
         else:
-            days = DayStatistic.objects.filter(date__gte=start_date, date__lte=end_date)
+            days = DayStatistic.objects.filter(date__gte=start_date, date__lte=end_date, tenant=self.request.tenant)
         days = days.values("date").annotate(total=Sum("hits")).values("date", "total").order_by("date")
         return JsonResponse({entry["date"].isoformat(): entry["total"] for entry in days})

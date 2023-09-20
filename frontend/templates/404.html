@@ -1,19 +1,62 @@
-{% extends "base/frame.html" %}
+{% load static %}
+{% load bootstrap4 %}
+{% load sass_tags %}
 {% load i18n %}
+{% load menu %}
 
-{% block title %} {% trans "Not found" %} {%  endblock %}
-{% block header %} {% trans "Not found" %} {% endblock %}
+{% get_current_language as LANGUAGE_CODE %}
+{% get_available_languages as LANGUAGES %}
+{% get_language_info_list for LANGUAGES as languages %}
 
-{% block framed_body %}
-    <p>
-    {% if exception == "Resolver404" %}
-        {% blocktranslate with request=request_path trimmed%}
-Welp, nothing is at {{ request }}. Like, literally nothing. Not even cockroaches or russians. How did you get here? Are you sure this is the right URL?
-        {% endblocktranslate %}
-    {% else %}
-        {% blocktranslate with exception=exception trimmed%}
-It seems you turned wrong somewhere, there is nothing here but small midget wizard with long beard telling you reason what you did wrong:<br> <b>{{ exception }}</b>
-        {% endblocktranslate %}
-    {% endif %}
-    </p>
-{% endblock %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>{% trans "Not found" %}</title>
+    <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"/>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% bootstrap_css %}
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css"
+          integrity="sha384-zCbKRCUGaJDkqS1kPbPd7TveP5iyJE0EjAuZQTgFLD2ylzuqKfdKlfG/eSrtxUkn"
+          crossorigin="anonymous">
+    <script   src="https://code.jquery.com/jquery-3.7.1.min.js"
+			  crossorigin="anonymous"
+              type="text/javascript"
+              defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-fQybjgWLrvvRgtW6bFlB7jaZrFsaBXjsOMm/tB9LTS58ONXgqbR9W8oWht/amnpF"
+            crossorigin="anonymous"
+            defer></script>
+    <link rel="stylesheet" type="text/css" href="{% static 'icons/css/songs.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% sass_src 'styles.sass' %}">
+    <link rel="stylesheet" type="text/css" href="{% sass_src 'navbar4.sass' %}">
+    {% block extra_head %} {% endblock %}
+</head>
+<body>
+<div class="wrap">
+    <div class="main-div container mt-3 mb-3 pb-3">
+        <h1 class="mt-2">{% trans "Not found" %}</h1>
+        <hr>
+        <p>
+        {% if exception == "Resolver404" %}
+            {% blocktranslate with request=request_path trimmed%}
+    Welp, nothing is at {{ request }}. Like, literally nothing. Not even cockroaches or russians. How did you get here? Are you sure this is the right URL?
+            {% endblocktranslate %}
+        {% else %}
+            {% blocktranslate with exception=exception trimmed%}
+    It seems you turned wrong somewhere, there is nothing here but small midget wizard with long beard telling you reason what you did wrong:<br> <b>{{ exception }}</b>
+            {% endblocktranslate %}
+        {% endif %}
+        </p>
+    </div>
+</div>
+</body>
+<script type="module">
+$('#options').on('click', function(event){
+    // The event won't be propagated up to the document NODE and
+    // therefore delegated events won't be fired
+    event.stopPropagation();
+});
+</script>
+</html>

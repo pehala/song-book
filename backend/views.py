@@ -2,23 +2,18 @@
 import json
 from typing import Dict
 
-from dj_datatables_view.base_datatable_view import BaseDatatableView
-from django.conf import settings
 from django.contrib import messages
-from django.contrib.auth.decorators import login_required
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.serializers.json import DjangoJSONEncoder
 from django.forms import model_to_dict
 from django.urls import reverse_lazy, reverse
-from django.utils.decorators import method_decorator
-from django.utils.translation import gettext_lazy as _, gettext_noop
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView
+from django.utils.translation import gettext_lazy as _
+from django.views.generic import ListView, CreateView, UpdateView, DeleteView, RedirectView
 
-from analytics.views import AnalyticsMixin
+from backend.auth.mixins import RegenerateViewMixin, LocalAdminRequired, PassRequestToFormMixin
 from backend.forms import SongForm
 from backend.models import Song
 from backend.utils import regenerate_pdf, regenerate_prerender
-from category.models import Category
 
 
 def transform_song(song: Song, number: int, authenticated: bool) -> Dict:
@@ -70,41 +65,21 @@ class SongListView(ListView):
         return context_data
 
 
-class RegenerateViewMixin:
-    """Mixin which tell you if the object changed or not"""
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        self.regenerate = None
-
-    def form_valid(self, form):
-        """Check if there were any changes"""
-        if len(form.changed_data) > 0:
-            self.regenerate = True
-        else:
-            self.regenerate = False
-
-        return super().form_valid(form)
-
-
-class IndexSongListView(SongListView, AnalyticsMixin):
+class IndexSongListView(RedirectView):
     """Shows first available category"""
 
-    KEY = gettext_noop("Index Page")
+    # KEY = gettext_noop("Index Page")
 
-    def get_queryset(self):
-        if Category.objects.count() > 0:
-            slug = settings.DEFAULT_CATEGORY
-            if slug and Category.objects.filter(slug=slug).exists():
-                category = Category.objects.get(slug=slug)
-            else:
-                category = Category.objects.all()[0]
-            return super().get_queryset().filter(categories__slug=category.slug)
-        return super().get_queryset()
+    def get_redirect_url(self, *args, **kwargs):
+        """
+        Return the URL redirect to. Keyword arguments from the URL pattern
+        match generating the redirect request are provided as kwargs to this
+        method.
+        """
+        return self.request.tenant.index_redirect
 
 
-@method_decorator(login_required, name="dispatch")
-class SongCreateView(SuccessMessageMixin, CreateView):
+class SongCreateView(LocalAdminRequired, PassRequestToFormMixin, SuccessMessageMixin, CreateView):
     """Creates new song"""
 
     form_class = SongForm
@@ -119,8 +94,7 @@ class SongCreateView(SuccessMessageMixin, CreateView):
         return super().get_success_url()
 
 
-@method_decorator(login_required, name="dispatch")
-class SongUpdateView(SuccessMessageMixin, RegenerateViewMixin, UpdateView):
+class SongUpdateView(LocalAdminRequired, PassRequestToFormMixin, SuccessMessageMixin, RegenerateViewMixin, UpdateView):
     """Updates existing song"""
 
     form_class = SongForm
@@ -137,8 +111,7 @@ class SongUpdateView(SuccessMessageMixin, RegenerateViewMixin, UpdateView):
         return response
 
 
-@method_decorator(login_required, name="dispatch")
-class SongDeleteView(DeleteView):
+class SongDeleteView(LocalAdminRequired, DeleteView):
     """Removes song"""
 
     model = Song
@@ -153,10 +126,11 @@ class SongDeleteView(DeleteView):
         return response
 
 
-@method_decorator(login_required, name="dispatch")
-class SongsDatatableView(BaseDatatableView):
-    """API for datatables that returns all songs"""
-
-    model = Song
-    max_display_length = 500
-    columns = ["name", "author", "capo"]
+#
+# @method_decorator(login_required, name="dispatch")
+# class SongsDatatableView(BaseDatatableView):
+#     """API for datatables that returns all songs"""
+#
+#     model = Song
+#     max_display_length = 500
+#     columns = ["name", "author", "capo"]

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-20 19:18+0000\n"
+"POT-Creation-Date: 2023-09-20 18:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -43,11 +43,11 @@ msgstr ""
 "Maminka ti neříkala že nemáš lozit na zakázané stránky? Vypadni! Tohle je "
 "jen pro přihlášené!"
 
-#: frontend/templates/404.html:4 frontend/templates/404.html:5
+#: frontend/templates/404.html:33 frontend/templates/404.html:58
 msgid "Not found"
 msgstr "Nenalezeno"
 
-#: frontend/templates/404.html:10
+#: frontend/templates/404.html:62
 #, python-format
 msgid ""
 "Welp, nothing is at %(request)s. Like, literally nothing. Not even "
@@ -58,7 +58,7 @@ msgstr ""
 "švábi a rusáci. Jak ses sem sakra dostal? Jsi si jistý že je tohle správná "
 "adresa?"
 
-#: frontend/templates/404.html:14
+#: frontend/templates/404.html:66
 #, python-format
 msgid ""
 "It seems you turned wrong somewhere, there is nothing here but small midget "
@@ -68,27 +68,24 @@ msgstr ""
 "Vypadá to že si někde špatně uhl, není tu nic vyjma trpasličího čaroděje s "
 "dlouhými vousy který se ti snaží říct co pokazilo:<br> <b>%(exception)s</b>"
 
+#: frontend/templates/admin/base/migrate.html:30
 #: frontend/templates/base/form.html:10
 msgid "Submit"
 msgstr "Odeslat"
 
-#: frontend/templates/base/index.html:14
-msgid "Jerry's songs"
-msgstr "Jerryho zpěvníček"
-
-#: frontend/templates/base/index.html:63
+#: frontend/templates/base/index.html:67
 msgid "Options"
 msgstr "Možnosti"
 
-#: frontend/templates/base/index.html:68
+#: frontend/templates/base/index.html:72
 msgid "Language"
 msgstr "Jazyk"
 
-#: frontend/templates/base/index.html:94
+#: frontend/templates/base/index.html:98
 msgid "Logged as"
 msgstr "Přihlášen jako"
 
-#: frontend/templates/base/index.html:96
+#: frontend/templates/base/index.html:100
 msgid "Log in"
 msgstr "Přihlásit se"
 

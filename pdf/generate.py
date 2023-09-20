@@ -61,7 +61,7 @@ def generate_pdf(request: PDFRequest):
                     context={
                         "songs": songs,
                         "sorted_songs": sorted_songs,
-                        "name": request.title or translation.gettext(settings.SITE_NAME),
+                        "name": request.title or request.tenant.display_name,
                         "request": request,
                         "link": request.link,
                     },
