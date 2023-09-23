@@ -87,6 +87,7 @@ db.sqlite3
 /chords/static/
 /chords/settings/production.py
 /chords/media
+poetry.lock
 
 #Python virtual environment
 venv/
