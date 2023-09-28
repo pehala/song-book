@@ -23,7 +23,7 @@ function transpose(event, object, id) {
 }
 
 function collapsible(element, id) {
-    $(".song:visible").slideUp()
+    $(".song:visible").not("#" + id).slideUp()
     $('#' + id).slideToggle()
 }
 
