@@ -47,7 +47,12 @@ class AnalyticsShowView(TemplateView):
 
     def get_context_data(self, **kwargs):
         ctx = super().get_context_data(**kwargs)
-        ctx["keys"] = DayStatistic.objects.order_by("key").values_list("key", flat=True).distinct()
+        ctx["keys"] = (
+            DayStatistic.objects.filter(tenant=self.request.tenant)
+            .order_by("key")
+            .values_list("key", flat=True)
+            .distinct()
+        )
         ctx["now"] = datetime.now().date()
         ctx["week"] = (datetime.now() - timedelta(days=6)).date()
         # ctx["day"] = (datetime.now() - timedelta(days=1)).date()
