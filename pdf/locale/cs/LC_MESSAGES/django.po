@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-20 18:41+0000\n"
+"POT-Creation-Date: 2023-11-26 16:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -320,7 +320,6 @@ msgstr "Požadavek %(id)s je již ve frontě"
 
 #: pdf/views.py:50
 #, python-format
-#| msgid "Request %(id)s was marked for regeneration"
 msgid "Request %(id)s was scheduled for regeneration"
 msgstr "Požadavek %(id)s byl označen k přegenerování"
 

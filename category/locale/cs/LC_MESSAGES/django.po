@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-20 19:00+0000\n"
+"POT-Creation-Date: 2023-11-26 16:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -74,7 +74,6 @@ msgid "Please confirm removal"
 msgstr "Prosím potrvďte odstranění"
 
 #: category/templates/category/confirm_delete.html:9
-#| msgid "Are you sure you wanna delete Songbook"
 msgid "Are you sure, you want to delete Category"
 msgstr "Jste si jisti že chcete smazat Kategorii"
 
@@ -116,19 +115,16 @@ msgstr "Již ve frontě"
 
 #: category/views.py:35
 #, python-format
-#| msgid "Songbook on url /%(slug)s does not exists"
 msgid "Category with url /%(slug)s does not exist"
 msgstr "Kategorie s url /%(slug)s neexistuje"
 
 #: category/views.py:64
 #, python-format
-#| msgid "Songbook %(name)s was successfully created"
 msgid "Category %(name)s was successfully created"
 msgstr "Kategorie %(name)s byla úspěšně vytvořena"
 
 #: category/views.py:78
 #, python-format
-#| msgid "Songbook %(name)s was successfully updated"
 msgid "Category %(name)s was successfully updated"
 msgstr "Kategorie %(name)s byla úspěšně upravena"
 
@@ -139,6 +135,5 @@ msgstr "PDF pro kategoeii %s bylo přidané do fronty"
 
 #: category/views.py:110
 #, python-format
-#| msgid "Songbook %(name)s was successfully deleted"
 msgid "Category %(name)s was successfully deleted"
 msgstr "Kategorie %(name)s byla úspěšně smazána"
