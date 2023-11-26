@@ -67,7 +67,7 @@
                         {% trans "Options" %}
                     </a>
                     <div class="dropdown-menu" aria-labelledby="languageDropdown" id="options">
-                        <div class="form-group d-flex ml-2 mr-2 mb-0">
+                        <div class="form-group d-flex ml-2 mr-2 mb-1">
                             <label for="language" class="mr-2">
                                 {% trans "Language" %}
                             </label>
@@ -87,6 +87,9 @@
                         <div class="d-flex flex-column">
                             {% filter prefix:"<div><hr class='mt-2 mb-1 small-hr'></div>" %}{% block extra_options %}{% endblock %}{% endfilter %}
                         </div>
+                        <hr class='mt-2 mb-1 small-hr'>
+                        <div class="ml-2 mr-2 d-flex text-secondary"><div>{% trans "Version" %}: </div><div class="ml-auto">{% version %}</div></div>
+                        <div class="ml-2 mr-2 d-flex text-secondary"><div>{% trans "Git" %}: </div><div class="ml-auto">{% git_revision %}</div></div>
                     </div>
                 </li>
             </ul>
