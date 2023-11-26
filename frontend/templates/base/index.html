@@ -3,7 +3,7 @@
 {% load sass_tags %}
 {% load i18n %}
 {% load menu %}
-{% load menu_utils %}
+{% load utils %}
 
 {% get_current_language as LANGUAGE_CODE %}
 {% get_available_languages as LANGUAGES %}
@@ -84,9 +84,8 @@
                                 <input name="language" type=hidden value={{ locale.code }}>
                             </form>
                         {% endfor %}
-                        <hr class="mt-2 mb-1">
                         <div class="d-flex flex-column">
-                            {% block extra_options %}{% endblock %}
+                            {% filter prefix:"<div><hr class='mt-2 mb-1 small-hr'></div>" %}{% block extra_options %}{% endblock %}{% endfilter %}
                         </div>
                     </div>
                 </li>
