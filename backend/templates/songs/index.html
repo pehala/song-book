@@ -18,17 +18,17 @@
     <link rel="stylesheet" type="text/css" href="{% sass_src 'datatables.sass' %}">
 {%  endblock %}
 {% block extra_options %}
-<div class="form-check form-check-inline mt-2 ml-2 text-left">
-  <input class="form-check-input ml-2" type="checkbox" value="" id="hideChords">
-  <label class="form-check-label" for="hideChords">
+<div class="mr-2 mt-1 d-flex">
+    <div>  <input class="form-check-input ml-2" type="checkbox" value="" id="hideChords"></div>
+    <div class="ml-auto"><label class="form-check-label custom" for="hideChords">
     {% trans "Hide chords" %}
-  </label>
+  </label></div>
 </div>
-<div class="form-check form-check-inline mt-2 ml-2 text-left">
-  <input class="form-check-input ml-2" type="checkbox" value="" id="preventSleep">
-  <label class="form-check-label" for="preventSleep">
-    {% trans "Prevent sleep" %}
-  </label>
+<div class="mr-2 mt-1 d-flex">
+    <div><input class="form-check-input ml-2" type="checkbox" value="" id="preventSleep"></div>
+    <div class="ml-auto"><label class="form-check-label custom" for="preventSleep">
+        {% trans "Prevent sleep" %}
+    </label></div>
 </div>
 {% endblock %}
 {% block body %}
