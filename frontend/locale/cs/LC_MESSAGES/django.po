@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-20 18:41+0000\n"
+"POT-Creation-Date: 2023-11-26 16:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -43,11 +43,11 @@ msgstr ""
 "Maminka ti neříkala že nemáš lozit na zakázané stránky? Vypadni! Tohle je "
 "jen pro přihlášené!"
 
-#: frontend/templates/404.html:33 frontend/templates/404.html:58
+#: frontend/templates/404.html:14 frontend/templates/404.html:39
 msgid "Not found"
 msgstr "Nenalezeno"
 
-#: frontend/templates/404.html:62
+#: frontend/templates/404.html:43
 #, python-format
 msgid ""
 "Welp, nothing is at %(request)s. Like, literally nothing. Not even "
@@ -58,7 +58,7 @@ msgstr ""
 "švábi a rusáci. Jak ses sem sakra dostal? Jsi si jistý že je tohle správná "
 "adresa?"
 
-#: frontend/templates/404.html:66
+#: frontend/templates/404.html:47
 #, python-format
 msgid ""
 "It seems you turned wrong somewhere, there is nothing here but small midget "
@@ -96,6 +96,18 @@ msgstr ""
 #: frontend/templates/markdownx/widget.html:9
 msgid "Preview"
 msgstr "Náhled"
+
+#: frontend/templates/markdownx/widget.html:18
+msgid "Help"
+msgstr "Nápověda"
+
+#: frontend/templates/markdownx/widget.html:20
+msgid "Displays chord"
+msgstr "Zobrazí akord"
+
+#: frontend/templates/markdownx/widget.html:21
+msgid "Adds N empty spaces"
+msgstr "Přidá N mezer"
 
 #: frontend/templates/registration/login.html:4
 #: frontend/templates/registration/login.html:5
