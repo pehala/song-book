@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-26 16:41+0000\n"
+"POT-Creation-Date: 2023-11-26 17:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -81,11 +81,19 @@ msgstr "Možnosti"
 msgid "Language"
 msgstr "Jazyk"
 
-#: frontend/templates/base/index.html:98
+#: frontend/templates/base/index.html:91
+msgid "Version"
+msgstr "Verze"
+
+#: frontend/templates/base/index.html:92
+msgid "Git"
+msgstr ""
+
+#: frontend/templates/base/index.html:100
 msgid "Logged as"
 msgstr "Přihlášen jako"
 
-#: frontend/templates/base/index.html:100
+#: frontend/templates/base/index.html:102
 msgid "Log in"
 msgstr "Přihlásit se"
 
