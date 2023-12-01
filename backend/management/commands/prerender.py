@@ -11,8 +11,8 @@ class Command(BaseCommand):
         bulk = []
         for song in Song.objects.all():
             print(f"Prerendering song {song.name}")
-            song.prerender_all(save=False)
+            song.prerender(save=False)
             bulk.append(song)
         print("Updating database fields")
-        Song.objects.bulk_update(bulk, ["prerendered_web", "prerendered_pdf"])
+        Song.objects.bulk_update(bulk, ["prerendered"])
         print("Prerendered all songs")
