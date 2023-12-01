@@ -1,6 +1,6 @@
 """Tenant models"""
 from django.contrib.auth import get_user_model
-from django.db.models import Model, CharField, ManyToManyField
+from django.db.models import Model, CharField, ManyToManyField, BooleanField
 from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
@@ -18,6 +18,11 @@ class Tenant(Model):
         verbose_name=_("Index redirect path"),
         help_text=_("Where should new tenant redirect from index page, usually a category slug"),
         max_length=32,
+    )
+    all_songs_category = BooleanField(
+        default=True,
+        verbose_name=_("All Songs"),
+        help_text=_("True, if all songs category should be added to navigation"),
     )
     admins = ManyToManyField(get_user_model())
 

@@ -15,7 +15,7 @@ from tenants.utils import create_tenant_string
 
 def categories(request):
     """Returns MenuItems for all Categories"""
-    return [
+    items = [
         MenuItem(
             category["name"],
             reverse("category:index", kwargs={"slug": category["slug"]}),
@@ -23,6 +23,9 @@ def categories(request):
         )
         for category in Category.objects.filter(tenant=request.tenant).values("name", "slug")
     ]
+    if request.tenant.all_songs_category:
+        items.append(MenuItem(title=_("All songs"), url=reverse("backend:all"), separator=True))
+    return items
 
 
 def distinct_requests(request):
