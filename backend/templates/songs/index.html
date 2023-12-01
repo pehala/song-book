@@ -18,34 +18,34 @@
     <link rel="stylesheet" type="text/css" href="{% sass_src 'datatables.sass' %}">
 {%  endblock %}
 {% block extra_options %}
-<div class="mr-2 mt-1 d-flex">
-    <div>  <input class="form-check-input ml-2" type="checkbox" value="" id="hideChords"></div>
-    <div class="ml-auto"><label class="form-check-label custom" for="hideChords">
+<div class="me-2 mt-1 d-flex">
+    <div>  <input class="form-check-input ms-2" type="checkbox" value="" id="hideChords"></div>
+    <div class="ms-auto"><label class="form-check-label custom" for="hideChords">
     {% trans "Hide chords" %}
   </label></div>
 </div>
-<div class="mr-2 mt-1 d-flex">
-    <div><input class="form-check-input ml-2" type="checkbox" value="" id="preventSleep"></div>
-    <div class="ml-auto"><label class="form-check-label custom" for="preventSleep">
+<div class="me-2 mt-1 d-flex">
+    <div><input class="form-check-input ms-2" type="checkbox" value="" id="preventSleep"></div>
+    <div class="ms-auto"><label class="form-check-label custom" for="preventSleep">
         {% trans "Prevent sleep" %}
     </label></div>
 </div>
 {% endblock %}
 {% block body %}
     <script id="songTemplate" type="text/x-jsrender">
-        <div class="collapsible-controller w-100 pb-1 pl-2 pt-2 border-bottom rounded"  onclick="collapsible(this,'<%:number%>')">
+        <div class="collapsible-controller w-100 pb-1 ps-2 pt-2 border-bottom rounded"  onclick="collapsible(this,'<%:number%>')">
             <h2 class="d-inline <%if archived%>text-danger<%/if%>"><span style="width: 50px;"><%:number%>.</span> <%:name%></h2>
             <%if author%>
                 <h6 class="d-inline" ><%:author%></h6>
             <%/if%>
-            <span class="float-right tag mr-3 d-none d-md-block">
+            <span class="float-end tag me-3 d-none d-md-block">
             {% if user.is_authenticated %}
-               <form class="d-inline ml-3" action="<%:edit_url%>" method="get">
+               <form class="d-inline ms-3" action="<%:edit_url%>" method="get">
                    <button type="submit" class="btn btn-outline-secondary" title="{%  trans "Edit" %}">
                           <i class="icon-edit"></i>
                    </button>
                </form>
-              <form class="d-inline ml-1 mr-2" action="<%:delete_url%>" method="get">
+              <form class="d-inline ms-1 me-2" action="<%:delete_url%>" method="get">
                    <button type="submit" class="btn btn-outline-danger" title="{%  trans "Delete" %}">
                           <i class="icon-trash-empty"></i>
                    </button>
@@ -65,14 +65,14 @@
                 </div>
                 <input class="form-control raw" type="number" value="0" min="-11" max="11" step="1" previous_value=0 onchange="transpose(event, this, <%:number%> )"/>
             </div>
-            <%if capo > 0%><h5 class="ml-2">Capo <%:capo%> </h5> <%/if%>
+            <%if capo > 0%><h5 class="ms-2">Capo <%:capo%> </h5> <%/if%>
             <div class="text-wrap song-text">
                 <%:text%>
             </div>
         </div>
     </script>
     <div>
-      <div class="input-group mb-2 pr-sm-1">
+      <div class="input-group mb-2 pe-sm-1">
         <div class="input-group-prepend">
           <div class="input-group-text">{% trans "Search" %}</div>
         </div>
@@ -83,10 +83,10 @@
         <thead class="d-none"></thead>
         <tbody class="w-100 m-0"></tbody>
     </table>
-    <button id="back-to-top" class="btn btn-info btn-lg back-to-top" role="button" title="Click to return on the top page" data-toggle="tooltip" data-placement="left">
+    <button id="back-to-top" class="btn btn-info btn-lg back-to-top" role="button" title="Click to return on the top page" data-bs-toggle="tooltip" data-bs-placement="left">
         <span class="icon-up-open"></span>
     </button>
-    <button id="scroll-down" class="btn btn-info btn-lg scroll_button" role="button" title="Click to scroll down" data-placement="left">
+    <button id="scroll-down" class="btn btn-info btn-lg scroll_button" role="button" title="Click to scroll down" data-bs-placement="left">
         <span class="icon-down-open"></span>
     </button>
     <script type="module">
@@ -116,7 +116,7 @@
             });
             selector.toggleClass("raw")
         },
-        dom: 'rt<"mt-2 ml-1"p>',
+        dom: 'rt<"mt-2 ms-1"p>',
         columns: [
             {
                 data: 'number',

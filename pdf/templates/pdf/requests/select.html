@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block framed_body %}
-    <p class="text-center font-weight-bold">{% trans "Please select which songs would you like to include in the pdf" %}</p>
+    <p class="text-center fw-bold">{% trans "Please select which songs would you like to include in the pdf" %}</p>
     <div class="input-group">
       <div class="input-group-prepend">
         <div class="input-group-text">{% trans "Search" %}</div>
@@ -21,9 +21,9 @@
     </div>
     <div class="d-flex flex-row justify-content-center">
     {% for category in categories %}
-      <div class="custom-control custom-switch align-middle mr-3">
-          <input type="checkbox" class="custom-control-input category-checkbox" name="online" id="{{ category.slug }}-checkbox" cat_name="{{ category.name }}"  checked>
-          <label class="custom-control-label" for="{{ category.slug }}-checkbox">{{ category.name }}</label>
+      <div class="form-check form-switch align-middle me-3">
+          <input type="checkbox" class="form-check-input category-checkbox" name="online" id="{{ category.slug }}-checkbox" cat_name="{{ category.name }}"  checked>
+          <label class="form-check-label" for="{{ category.slug }}-checkbox">{{ category.name }}</label>
       </div>
     {% endfor %}
     </div>

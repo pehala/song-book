@@ -3,10 +3,10 @@
     <!-- Nav tabs -->
     <ul class="nav nav-tabs" id="myTab" role="tablist">
       <li class="nav-item">
-        <a class="nav-link active" id="editor-tab" data-toggle="tab" href="#editor" role="tab" aria-controls="home" aria-selected="true">{% trans "Editor" %}</a>
+        <a class="nav-link active" id="editor-tab" data-bs-toggle="tab" href="#editor" role="tab" aria-controls="home" aria-selected="true">{% trans "Editor" %}</a>
       </li>
       <li class="nav-item">
-        <a class="nav-link" id="preview-tab" data-toggle="tab" href="#preview" role="tab" aria-controls="profile" aria-selected="false">{% trans "Preview" %}</a>
+        <a class="nav-link" id="preview-tab" data-bs-toggle="tab" href="#preview" role="tab" aria-controls="profile" aria-selected="false">{% trans "Preview" %}</a>
       </li>
     </ul>
 
@@ -15,10 +15,10 @@
       <div class="tab-pane active" id="editor" role="tabpanel" aria-labelledby="editor-tab">
           {% include 'django/forms/widgets/textarea.html' %}
           <div class="d-flex align-items-start flex-column mt-2">
-              <h4 class="pl-3">{% trans "Help" %}:</h4>
+              <h4 class="ps-3">{% trans "Help" %}:</h4>
               <ul class="list-group list-group-flush">
-                  <li class="list-group-item text-left"><code>{Ami}</code> - {% trans "Displays chord" %}</li>
-                  <li class="list-group-item text-left"><code>/N/</code> - {% trans "Adds N empty spaces" %}</li>
+                  <li class="list-group-item text-start"><code>{Ami}</code> - {% trans "Displays chord" %}</li>
+                  <li class="list-group-item text-start"><code>/N/</code> - {% trans "Adds N empty spaces" %}</li>
               </ul>
           </div>
       </div>

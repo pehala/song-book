@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block framed_body %}
-  <p class="text-center font-weight-bold">{% trans "Please, now please fill all the details for the PDF and choose song ordering" %}</p>
+  <p class="text-center fw-bold">{% trans "Please, now please fill all the details for the PDF and choose song ordering" %}</p>
   <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {% bootstrap_form form %}
@@ -21,7 +21,7 @@
     <h4>{% trans "Song numbers" %}</h4>
     <div id="sortable" class="mb-3">
     {% for form in formset.forms %}
-        <div class="d-flex flex-row border border-secondary pt-2 pl-2 mt-2 pr-2 rounded">
+        <div class="d-flex flex-row border border-secondary pt-2 ps-2 mt-2 pe-2 rounded">
             {% for hidden in form.hidden_fields %}
                 {{ hidden }}
             {% endfor %}
@@ -65,7 +65,7 @@
             element = $(element)
             const parent = element.parent()
             parent.removeClass("flex-grow-1");
-            parent.addClass("mr-3");
+            parent.addClass("me-3");
             {#parent.attr("style", "")#}
             element.attr("style", "max-width: 70px;");
             {#element.attr("disabled", "");#}

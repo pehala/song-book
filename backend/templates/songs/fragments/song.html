@@ -11,12 +11,12 @@
         {%  if song.author %}
             <h6 class="d-inline" >{{ song.author }}</h6>
         {%  endif %}
-        <span class="float-right tag mr-1">
+        <span class="float-end tag me-1">
         {% if user.is_authenticated %}
-               <form class="d-inline ml-3" action="{% url 'chords:edit' pk=song.id %}" method="get">
+               <form class="d-inline ms-3" action="{% url 'chords:edit' pk=song.id %}" method="get">
                    <input class="btn btn-secondary" type="submit" value="{%  trans "Edit" %}"/>
                </form>
-               <form class="d-inline ml-1 mr-2" action="{% url 'chords:delete' pk=song.id %}" method="get">
+               <form class="d-inline ms-1 me-2" action="{% url 'chords:delete' pk=song.id %}" method="get">
                    <input class="btn btn-danger" type="submit" value="{% trans "Delete" %}"/>
                </form>
         {%  endif %}

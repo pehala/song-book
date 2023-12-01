@@ -11,12 +11,12 @@
 {% block framed_body %}
     <div class="d-flex .flex-row">
        <div class="col-auto">
-         <label class="sr-only" for="inlineFormInputGroup">{% trans "Keys" %}</label>
+         <label class="visually-hidden" for="inlineFormInputGroup">{% trans "Keys" %}</label>
          <div class="input-group mb-2">
            <div class="input-group-prepend">
              <div class="input-group-text">{% trans "Keys" %}</div>
            </div>
-           <select id="keys" class="custom-select">
+           <select id="keys" class="form-select">
               <option value="" selected>{% trans "All" %}</option>
               {% for key in keys %}
               <option value="{{ key }}">{% trans key %}</option>
@@ -25,12 +25,12 @@
          </div>
        </div>
        <div class="col-auto">
-         <label class="sr-only" for="inlineFormInputGroup">{% trans "Date Range" %}</label>
+         <label class="visually-hidden" for="inlineFormInputGroup">{% trans "Date Range" %}</label>
          <div class="input-group mb-2">
            <div class="input-group-prepend">
              <div class="input-group-text">{% trans "Date Range" %}</div>
            </div>
-           <select id="range" class="custom-select">
+           <select id="range" class="form-select">
 {#              <option value="{{ day|date:"U" }}" selected>{% trans "Day" %}</option>#}
               <option value="{{ week|date:"U" }}" selected>{% trans "Week" %}</option>
               <option value="{{ month|date:"U" }}">{% trans "Month" %}</option>
