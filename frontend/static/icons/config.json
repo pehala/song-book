@@ -53,6 +53,12 @@
       "css": "edit",
       "code": 59399,
       "src": "fontawesome"
+    },
+    {
+      "uid": "f48ae54adfb27d8ada53d0fd9e34ee10",
+      "css": "trash-empty",
+      "code": 59394,
+      "src": "fontawesome"
     }
   ]
 }

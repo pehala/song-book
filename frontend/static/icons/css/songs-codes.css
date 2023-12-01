@@ -1,6 +1,7 @@
 
 .icon-zoom-in:before { content: '\e800'; } /* '' */
 .icon-zoom-out:before { content: '\e801'; } /* '' */
+.icon-trash-empty:before { content: '\e802'; } /* '' */
 .icon-plus:before { content: '\e804'; } /* '' */
 .icon-minus:before { content: '\e805'; } /* '' */
 .icon-up-open:before { content: '\e806'; } /* '' */
