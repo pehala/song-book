@@ -8,7 +8,7 @@
         <li class="nav-item{% if item.children %} dropdown{% endif %}"
             id="top-menu-{{ item.slug }}">
             {% if item.children %}
-            <a href="{{ item.url }}" class="nav-link dropdown-toggle" id="{{ item.title }}" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            <a href="{{ item.url }}" class="nav-link dropdown-toggle" id="{{ item.title }}" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             {% else %}
             <a href="{{ item.url }}" class="nav-link">
             {% endif %}
