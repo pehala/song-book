@@ -40,7 +40,7 @@
     <article id="contents">
       <h1>{% if request.title %}{{ name }}{% endif %}</h1>
       {% if request.show_date %}
-      <p class="date">{% now "m.d.Y" %}</p>
+      <p class="date">{% now "d.m.Y" %}</p>
       {% endif %}
       <h3 class="contents name">{% trans "Table of Contents" %}</h3>
       <ul>
