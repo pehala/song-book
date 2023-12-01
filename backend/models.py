@@ -51,6 +51,7 @@ class Song(Model):
     def prerender(self, save: bool = True):
         """Generates prerendered html for specific type with a specific rendered"""
         html = RENDERER(self.text)
+        self.prerendered = html
 
         if save:
             self.save()
