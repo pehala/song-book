@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-26 16:41+0000\n"
+"POT-Creation-Date: 2023-12-01 13:21+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -164,7 +164,7 @@ msgstr "Přesouvání PDF požadavků do Tenant"
 msgid "To Tenant"
 msgstr "Do Tenanta"
 
-#: pdf/templates/pdf/index.html:46
+#: pdf/templates/pdf/index.html:45
 msgid "Table of Contents"
 msgstr "Obsah"
 
