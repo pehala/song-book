@@ -50,7 +50,6 @@ INSTALLED_APPS = [
 
 MARKDOWNX_MARKDOWN_EXTENSIONS = [
     "markdown.extensions.nl2br",
-    "markdown3_newtab",
     ChordsExtension(),
     SpacesExtension(),
 ]
