@@ -38,15 +38,14 @@
             <%if author%>
                 <h6 class="d-inline" ><%:author%></h6>
             <%/if%>
-            <span class="float-right tag mr-1">
+            <span class="float-right tag mr-3 d-none d-md-block">
             {% if user.is_authenticated %}
-                   <form class="d-inline ml-3" action="<%:edit_url%>" method="get">
-                       <input class="btn btn-secondary" type="submit" value="{%  trans "Edit" %}"/>
-                   </form>
-                   <form class="d-inline ml-1 mr-2" action="<%:delete_url%>" method="get">
-                       <input class="btn btn-danger" type="submit" value="{% trans "Delete" %}"/>
-                   </form>
-            {%  endif %}
+               <form class="d-inline ml-3 mr-2" action="<%:edit_url%>" method="get">
+               <button type="submit" class="btn btn-outline-secondary" title="{%  trans "Edit" %}">
+                      <i class="icon-edit"></i>
+               </button>
+               </form>
+            {% endif %}
             </span>
         </div>
         <div id="<%:number%>" class="song" style="display: none;">
