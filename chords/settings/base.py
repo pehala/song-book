@@ -96,6 +96,15 @@ STATICFILES_FINDERS = [
     "sass_processor.finders.CssFinder",
 ]
 
+STORAGES = {
+    "default": {
+        "BACKEND": "django.core.files.storage.FileSystemStorage",
+    },
+    "staticfiles": {
+        "BACKEND": "django.contrib.staticfiles.storage.ManifestStaticFilesStorage",
+    },
+}
+
 COMPRESS_ENABLED = True
 SASS_PRECISION = 8
 SASS_OUTPUT_STYLE = "compact"
