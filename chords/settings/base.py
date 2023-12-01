@@ -15,11 +15,6 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from pathlib import Path
 
-from markdown.extensions.nl2br import Nl2BrExtension
-
-from chords.plugins.chords import ChordsExtension
-from chords.plugins.spaces import SpacesExtension
-
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
@@ -49,12 +44,7 @@ INSTALLED_APPS = [
     "django_rq",
 ]
 
-MARKDOWNX_MARKDOWN_EXTENSIONS = [
-    Nl2BrExtension(),
-    ChordsExtension(),
-    SpacesExtension(),
-]
-
+MARKDOWNX_MARKDOWNIFY_FUNCTION = "chords.markdown.RENDERER"
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

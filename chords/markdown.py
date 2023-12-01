@@ -1,14 +1,18 @@
 """Module containing Rendering function for converting Markdown to HTML"""
-from django.conf import settings
-from markdown import Markdown
+import mistune
+
+from chords.plugins.chords import chords
+from chords.plugins.paragraph import paragraph
+from chords.plugins.spaces import spaces
 
 
-def create_markdown(extensions=None):
-    """Creates new Markdown instance"""
-    if extensions is None:
-        extensions = settings.MARKDOWNX_MARKDOWN_EXTENSIONS
+class CustomHTMLRenderer(mistune.HTMLRenderer):
+    """Soft breaks are also breaks"""
 
-    return Markdown(extensions=extensions, extension_configs={})
+    def softbreak(self) -> str:
+        return r"<br />"
 
 
-RENDERER = create_markdown().convert
+RENDERER = mistune.create_markdown(
+    escape=False, plugins=[paragraph, chords, spaces], renderer=CustomHTMLRenderer(escape=False)
+)
