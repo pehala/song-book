@@ -34,7 +34,7 @@ class SongListView(ListView):
     template_name = "songs/index.html"
     context_object_name = "songs"
 
-    FIELDS = ["id", "name", "capo", "author", "link", "prerendered_web"]
+    FIELDS = ["id", "name", "capo", "author", "link", "prerendered"]
 
     def get_queryset(self):
         queryset = super().get_queryset()
