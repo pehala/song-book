@@ -93,6 +93,11 @@
     import {Options, BooleanOption} from "{% static 'js/Options.js' %}"
     const canWakeLock = () => 'wakeLock' in navigator;
 
+    {% if user.is_authenticated %}
+    const baseEditUrl = "{% url "chords:edit" pk="0" %}"
+    const baseDeleteUrl = "{% url "chords:delete" pk="0" %}"
+    {% endif %}
+
     $.views.settings.delimiters("<%", "%>");
     $.fn.DataTable.ext.pager.numbers_length = 5;
     $.templates("song", "#songTemplate")
@@ -121,6 +126,10 @@
             {
                 data: 'text',
                 render: function ( data, type, row ) {
+                    {% if user.is_authenticated %}
+                    row["edit_url"] = baseEditUrl.replace("0", row.id)
+                    row["delete_url"] = baseDeleteUrl.replace("0", row.id)
+                    {% endif %}
                     return $.render.song(row);
                 },
                 searchable: true,

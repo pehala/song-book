@@ -6,7 +6,7 @@ from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.core.serializers.json import DjangoJSONEncoder
 from django.forms import model_to_dict
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, RedirectView
 
@@ -16,13 +16,10 @@ from backend.models import Song
 from backend.utils import regenerate_pdf, regenerate_prerender
 
 
-def transform_song(song: Song, number: int, authenticated: bool) -> Dict:
+def transform_song(song: Song, number: int) -> Dict:
     """Transforms song into a dict representation"""
     transformed = model_to_dict(song, ["id", "name", "capo", "author", "link", "archived"])
     transformed["number"] = number
-    if authenticated:
-        transformed["edit_url"] = reverse("chords:edit", kwargs={"pk": song.id})
-        transformed["delete_url"] = reverse("chords:delete", kwargs={"pk": song.id})
     transformed["text"] = song.rendered_markdown
     return transformed
 
@@ -44,21 +41,20 @@ class SongListView(ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context_data = super().get_context_data(object_list=object_list, **kwargs)
-        authenticated = self.request.user.is_authenticated
 
         songs = []
-
         archived = []
+
         i = 1
         for song in context_data["songs"]:
             if song.archived:
                 archived.append(song)
                 continue
-            songs.append(transform_song(song, i, authenticated))
+            songs.append(transform_song(song, i))
             i += 1
 
         for song in archived:
-            songs.append(transform_song(song, i, authenticated))
+            songs.append(transform_song(song, i))
             i += 1
 
         context_data["songs"] = json.dumps(songs, cls=DjangoJSONEncoder)
