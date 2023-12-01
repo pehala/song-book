@@ -1,4 +1,3 @@
-{% load markdown %}
 {% load i18n %}
 {% load sass_tags %}
 {% load cache %}
@@ -56,7 +55,7 @@
           <h3>{{ song.author }} {% if song.capo > 0 %}<span class="right">Capo {{ song.capo }}</span> {% endif %}</h3>
 
           <section>
-            {{ song.rendered_pdf_markdown|safe }}
+            {{ song.rendered_markdown|safe }}
           </section>
         </article>
     {% endfor %}

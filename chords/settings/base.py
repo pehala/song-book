@@ -15,9 +15,10 @@ import os
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 from pathlib import Path
 
-from chords.markdown.chords import ChordsExtension
-from chords.markdown.chords_pdf import ChordsPDFExtension
-from chords.markdown.spaces import SpacesExtension
+from markdown.extensions.nl2br import Nl2BrExtension
+
+from chords.plugins.chords import ChordsExtension
+from chords.plugins.spaces import SpacesExtension
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -49,17 +50,11 @@ INSTALLED_APPS = [
 ]
 
 MARKDOWNX_MARKDOWN_EXTENSIONS = [
-    "markdown.extensions.nl2br",
+    Nl2BrExtension(),
     ChordsExtension(),
     SpacesExtension(),
 ]
 
-MARKDOWNX_PDF_MARKDOWN_EXTENSIONS = [
-    "markdown.extensions.nl2br",
-    "markdown3_newtab",
-    ChordsPDFExtension(),
-    SpacesExtension(),
-]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

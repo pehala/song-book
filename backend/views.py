@@ -23,7 +23,7 @@ def transform_song(song: Song, number: int, authenticated: bool) -> Dict:
     if authenticated:
         transformed["edit_url"] = reverse("chords:edit", kwargs={"pk": song.id})
         transformed["delete_url"] = reverse("chords:delete", kwargs={"pk": song.id})
-    transformed["text"] = song.rendered_web_markdown
+    transformed["text"] = song.rendered_markdown
     return transformed
 
 

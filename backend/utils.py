@@ -18,7 +18,7 @@ def regenerate_pdf(song, update: bool = False):
 def regenerate_prerender(song):
     """Regenerates prerendered html for song"""
     if settings.USE_PRERENDERED_MARKDOWN:
-        song.prerender_all()
+        song.prerender()
 
 
 @cache
