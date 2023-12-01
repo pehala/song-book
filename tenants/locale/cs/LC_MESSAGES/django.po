@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-01 13:21+0000\n"
+"POT-Creation-Date: 2023-12-01 13:46+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,9 +23,9 @@ msgstr ""
 msgid "Tenant"
 msgstr "Zpěvník"
 
-#: tenants/menus.py:27
-msgid "All songs"
-msgstr ""
+#: tenants/menus.py:27 tenants/models.py:24
+msgid "All Songs"
+msgstr "Všechno"
 
 #: tenants/menus.py:53
 msgid "Files"
@@ -68,10 +68,6 @@ msgid ""
 "Where should new tenant redirect from index page, usually a category slug"
 msgstr ""
 "Kam by měla úvodní stránka přesměrovat uživatele, většinou URL kategorie"
-
-#: tenants/models.py:24
-msgid "All Songs"
-msgstr "Všechny Písničky"
 
 #: tenants/models.py:25
 msgid "True, if all songs category should be added to navigation"

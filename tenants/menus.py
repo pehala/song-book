@@ -24,7 +24,7 @@ def categories(request):
         for category in Category.objects.filter(tenant=request.tenant).values("name", "slug")
     ]
     if request.tenant.all_songs_category:
-        items.append(MenuItem(title=_("All songs"), url=reverse("backend:all"), separator=True))
+        items.append(MenuItem(title=_("All Songs"), url=reverse("backend:all"), separator=True, skip_translate=False))
     return items
 
 
