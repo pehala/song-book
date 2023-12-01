@@ -16,14 +16,14 @@ from django.views.generic.detail import SingleObjectMixin
 from analytics.views import AnalyticsMixin
 from backend.auth.mixins import LocalAdminRequired, SuperAdminRequired
 from backend.models import Song
-from backend.views import SongListView, RegenerateViewMixin
+from backend.views import BaseSongListView, RegenerateViewMixin
 from category.forms import CategoryForm, NameForm, ChooseTenantForm
 from category.models import Category
 from pdf.models.request import PDFRequest, RequestType, Status
 from pdf.utils import request_pdf_regeneration
 
 
-class CategorySongsListView(SongListView, AnalyticsMixin):
+class CategorySongsListView(BaseSongListView, AnalyticsMixin):
     """Shows all songs in a category"""
 
     def get_key(self):
