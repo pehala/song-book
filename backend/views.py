@@ -24,7 +24,7 @@ def transform_song(song: Song, number: int) -> Dict:
     return transformed
 
 
-class SongListView(ListView):
+class BaseSongListView(ListView):
     """Lists songs in the one page application"""
 
     model = Song
@@ -34,7 +34,7 @@ class SongListView(ListView):
     FIELDS = ["id", "name", "capo", "author", "link", "prerendered"]
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        queryset = super().get_queryset().filter(categories__tenant=self.request.tenant)
         if not self.request.user.is_superuser:
             queryset = queryset.filter(archived=False)
         return queryset
@@ -59,6 +59,13 @@ class SongListView(ListView):
 
         context_data["songs"] = json.dumps(songs, cls=DjangoJSONEncoder)
         return context_data
+
+
+class AllSongListView(BaseSongListView):
+    """Returns all songs for this specific tenant"""
+
+    def get_queryset(self):
+        return super().get_queryset().filter(categories__tenant=self.request.tenant)
 
 
 class IndexSongListView(RedirectView):

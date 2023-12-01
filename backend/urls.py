@@ -6,7 +6,7 @@ from backend.views import (
     SongUpdateView,
     SongDeleteView,
     IndexSongListView,
-    SongListView,
+    AllSongListView,
 )
 
 urlpatterns = [
@@ -14,5 +14,5 @@ urlpatterns = [
     path("add", SongCreateView.as_view(), name="add"),
     path("edit/<int:pk>", SongUpdateView.as_view(), name="edit"),
     path("delete/<int:pk>", SongDeleteView.as_view(), name="delete"),
-    path("all", SongListView.as_view(), name="all"),
+    path("all", AllSongListView.as_view(), name="all"),
 ]
