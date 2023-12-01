@@ -1,5 +1,4 @@
 """Models for backend app"""
-
 from django.conf import settings
 from django.db.models import (
     Model,

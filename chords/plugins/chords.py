@@ -1,26 +1,28 @@
 """Markdown extension for chords"""
-from markdown.extensions import Extension
-from markdown.inlinepatterns import SimpleTagInlineProcessor
+from mistune import InlineState
 
-CHORD_RE = r"({)(.*?)}"
-
-
-class ChordsExtension(Extension):
-    """Markdown extension for convert {chord} into chords"""
-
-    def extendMarkdown(self, md):
-        # Insert del pattern into markdown parser
-        md.inlinePatterns.register(ChordPattern(CHORD_RE), "chord", 175)
+CHORD_RE = r"\{(?!\s)(?P<chords>.+?)(?!\s)\}"
 
 
-class ChordPattern(SimpleTagInlineProcessor):
-    """Pattern for ChordsExtension"""
+# pylint: disable=unused-argument
+def parse_chords(inline, m, state: InlineState):
+    """Parses tag"""
+    text = m.group("chords")
+    state.append_token({"type": "inline_chords", "raw": text})
+    return m.end()
 
-    def __init__(self, pattern):
-        super().__init__(pattern, "span")
 
-    def handleMatch(self, m, data):
-        tag, start, end = super().handleMatch(m, data)
-        tag.set("class", "chord")
-        tag.text += "&nbsp;"
-        return tag, start, end
+def render_chords(renderer, text):
+    """Renders tag into HTML"""
+    return r'<span class="chord">' + text + r"</span>&nbsp;"
+
+
+def chords(md):
+    """A mistune plugin to support chords.
+    Inline chords are surrounded by `{}`, such as {Ami}
+
+    :param md: Markdown instance
+    """
+    md.inline.register("inline_chords", CHORD_RE, parse_chords, before="link")
+    if md.renderer and md.renderer.NAME == "html":
+        md.renderer.register("inline_chords", render_chords)

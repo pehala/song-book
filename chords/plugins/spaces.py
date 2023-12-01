@@ -1,29 +1,28 @@
-"""Spaces markdown extension"""
-from markdown.extensions import Extension
-from markdown.inlinepatterns import SimpleTagInlineProcessor
+"""Markdown extension for spaces"""
+from mistune import InlineState
 
-SPACES_RE = r"(\/)(\d+)\/"
-
-
-class SpacesExtension(Extension):
-    """Markdown extension that transforms /{number}/ into actual spaces"""
-
-    def extendMarkdown(self, md):
-        md.inlinePatterns.register(SpacesPattern(SPACES_RE), "spaces", 200)
+SPACES_RE = r"\/(?P<spacers>\d+)\/"
 
 
-class SpacesPattern(SimpleTagInlineProcessor):
-    """Pattern for SpacesExtension"""
+# pylint: disable=unused-argument
+def parse_chords(inline, m, state: InlineState):
+    """Parses tag"""
+    text = m.group("spacers")
+    state.append_token({"type": "spaces", "raw": text})
+    return m.end()
 
-    def __init__(self, pattern):
-        super().__init__(pattern, "span")
 
-    def handleMatch(self, m, data):
-        tag, start, end = super().handleMatch(m, data)
-        tag.set("class", "spaces")
-        count = int(tag.text)
-        txt = ""
-        for _ in range(count):
-            txt += "&nbsp;"
-        tag.text = txt
-        return tag, start, end
+def render_chords(renderer, text):
+    """Renders tag into HTML"""
+    return r" " * int(text)
+
+
+def spaces(md):
+    """A mistune plugin to insert amount of spaces.
+    Inline chords are surrounded by `/`, such as /5/
+
+    :param md: Markdown instance
+    """
+    md.inline.register("spaces", SPACES_RE, parse_chords, before="link")
+    if md.renderer and md.renderer.NAME == "html":
+        md.renderer.register("spaces", render_chords)
