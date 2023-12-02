@@ -18,7 +18,7 @@ reformat:
 	$(RUN) black .
 
 check-fuzzy:
-	@ for app in "backend" "chords" "pdf" "frontend" "category" "analytics" "tenants" ; do \
+	@ for app in "backend" "pdf" "frontend" "category" "analytics" "tenants" ; do \
   		if [ ! -z "$$(msgattrib $${app}/locale/cs/LC_MESSAGES/django.po --only-fuzzy)" ]; then echo "$${app} app contains fuzzy strings" && exit 1; fi \
 	done;
 
@@ -41,6 +41,9 @@ init: ## Initializes project for development
 
 run: ## Runs the development server
 	$(MANAGE) runserver --settings $(SETTINGS)
+
+worker: ## Runs the Huey PDF worker
+	$(MANAGE) run_huey --settings $(SETTINGS) --worker-type process
 
 # Check http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
 help: ## Print this help

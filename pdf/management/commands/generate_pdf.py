@@ -1,7 +1,6 @@
 """Management command for generating PDF files from requests"""
 import logging
 from argparse import ArgumentParser
-from math import ceil
 from pathlib import Path
 
 from django.conf import settings
@@ -9,7 +8,6 @@ from django.core.cache import cache
 from django.core.management import BaseCommand
 
 from category.models import Category
-from pdf.generate import generate_pdf
 from pdf.models.request import PDFRequest, Status
 from pdf.utils import generate_new_pdf_request
 

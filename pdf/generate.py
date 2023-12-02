@@ -5,7 +5,6 @@ import mimetypes
 import os
 import re
 import tempfile
-from datetime import datetime
 from math import ceil
 from pathlib import Path
 from time import time
@@ -22,7 +21,6 @@ from django.urls import get_script_prefix
 from django.urls import reverse
 from django.utils import translation
 from huey.contrib.djhuey import task
-
 from weasyprint.logger import PROGRESS_LOGGER
 
 from pdf.locales import changed_locale, lang_to_locale
