@@ -8,11 +8,11 @@ export class BooleanOption {
   }
 
   get() {
-      return this.checkbox.is(':checked')
+      return this.checkbox.checked
   }
 
   set(value) {
-      this.checkbox.prop('checked', value === "true");
+      this.checkbox.checked = (value === "true")
   }
 
   call(value) {
@@ -59,7 +59,7 @@ export class Options {
   constructor(options) {
     this.options = options
     for (let [name, option] of options) {
-        option.selector().change(function () {
+        option.selector().addEventListener('change', function () {
             const value = option.get();
             Cookies.set(name, value, {SameSite: "Strict"})
             option.call(value)
