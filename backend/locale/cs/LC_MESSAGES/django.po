@@ -45,7 +45,7 @@ msgstr "Přidat Kategorii"
 
 #: backend/menus.py:27
 msgid "Add Song"
-msgstr "Přidat písničku"
+msgstr "Přidat Písničku"
 
 #: backend/menus.py:33 backend/models.py:70
 msgid "Songs"
