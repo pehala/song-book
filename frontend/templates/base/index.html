@@ -91,7 +91,7 @@
             {% if user.is_authenticated %}
                 <span class="navbar-text ms-2 me-4">{% trans "Logged as" %} <b>{{ user.username }}</b></span>
             {% else %}
-                <a class="me-4 ms-1" href="{% url 'login' %}" class="btn btn-link custom-link text-decoration-none" role="button">{% trans "Log in" %}</a>
+                <a class="me-4 ms-1 custom-link link-underline link-underline-opacity-0 link-underline-opacity-75-hover" href="{% url 'login' %}" role="button">{% trans "Log in" %}</a>
             {% endif %}
 
         </div>
