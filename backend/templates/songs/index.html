@@ -154,7 +154,7 @@
         {% endif %}
     });
 
-    $(document).ready(function(){
+    document.addEventListener('DOMContentLoaded', function () {
          const back_to_top = $('#back-to-top')
          $(window).scroll(function () {
                 if ($(this).scrollTop() > 50) {
@@ -207,8 +207,8 @@
         }
 
         const config = new Map([
-            ["hide_chords", new BooleanOption($("#hideChords"), hideChords, false)],
-            ["prevent_sleep", new BooleanOption($("#preventSleep"), function(value) {
+            ["hide_chords", new BooleanOption(document.getElementById("hideChords"), hideChords, false)],
+            ["prevent_sleep", new BooleanOption(document.getElementById("preventSleep"), function(value) {
                 preventSleep(value).then()
             }, false)]
         ])
@@ -216,7 +216,7 @@
 
         if (!canWakeLock()) {
             options.set("prevent_sleep", false)
-            options.selector("prevent_sleep").attr('disabled', 'disabled');
+            options.selector("prevent_sleep").disabled = true
         }
 
 
@@ -232,9 +232,9 @@
 
     });
 
-    $("#searchInput").on("input", function (event) {
-        table.search($(this).val());
+    document.getElementById("searchInput").addEventListener("input", function (event) {
+        table.search(event.target.value);
         table.draw();
-    });
+    })
     </script>
 {% endblock %}
