@@ -5,7 +5,7 @@
 {% block framed_body %}
   <form method="post">
     {% csrf_token %}
-    {% bootstrap_form form %}
+    {% bootstrap_form form layout='horizontal' %}
     {% bootstrap_button _("Submit") button_type="submit" %}
   </form>
   {{ form.media }}
