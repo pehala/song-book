@@ -215,7 +215,9 @@
 
         if (!canWakeLock()) {
             options.set("prevent_sleep", false)
-            options.selector("prevent_sleep").disabled = true
+            options.elements("prevent_sleep").forEach(function (element) {
+                element.disabled = true
+            })
         }
 
 

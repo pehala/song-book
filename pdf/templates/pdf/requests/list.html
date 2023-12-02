@@ -14,14 +14,12 @@
 {% endblock %}
 
 {% block framed_body %}
-    <div class="btn-group btn-group-toggle mb-2 float-start" data-bs-toggle="buttons">
-      <label class="btn btn-outline-info">
-        <input type="radio" name="options" value="{% trans "Manual" %}"> {% trans "Manual" %}
-      </label>
+    <div class="btn-group mb-2 float-start" data-bs-toggle="buttons">
+      <input type="radio" id="manual" class="btn-check" name="options" value="Manual">
+      <label class="btn btn-outline-info" for="manual">{% trans "Manual" %}</label>
 
-      <label class="btn btn-outline-info active">
-        <input type="radio" name="options" value="{% trans "Automated" %}"> {% trans "Automated" %}
-      </label>
+      <input type="radio" id="automatic" class="btn-check" name="options" value="Automated">
+      <label class="btn btn-outline-info" for="automatic">{% trans "Automated" %}</label>
     </div>
 
     <div class="input-group">
@@ -95,7 +93,7 @@
     }
 
     const config = new Map([
-        ["tab", new CheckboxOption($("input[type=radio][name=options]"), switch_tab, "{% trans "Manual" %}")],
+        ["tab", new CheckboxOption("input[type=radio][name=options]", switch_tab, "Manual")],
     ])
     const options = new Options(config)
     const initial_value = options.get("tab")
@@ -114,8 +112,9 @@
             },
         {% endif %}
     });
-    $("#searchInput").on("input", function (event) {
-        table.search($(this).val()).draw();
-    });
+    document.getElementById("searchInput").addEventListener("input", function (event) {
+        table.search(event.target.value);
+        table.draw();
+    })
     </script>
 {% endblock %}

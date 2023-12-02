@@ -19,8 +19,8 @@ export class BooleanOption {
       this.callable(value === "true" || value === true)
   }
 
-  selector() {
-      return this.checkbox
+  elements() {
+      return [this.checkbox]
   }
 
   default() {
@@ -29,26 +29,26 @@ export class BooleanOption {
 }
 
 export class CheckboxOption {
-    constructor(checkbox, callable, defaultValue) {
-    this.checkbox = checkbox;
+    constructor(selector, callable, defaultValue) {
+    this.selector = selector
     this.callable = callable;
     this.defaultValue = defaultValue || false;
   }
 
   get() {
-      return this.checkbox.filter(":checked").val()
+      return Array.from(this.elements()).filter((element) => element.checked)[0].value
   }
 
   set(value) {
-      this.checkbox.filter("[value=" + value + "]").prop("checked", true)
+      Array.from(this.elements()).filter((element) => element.value === value)[0].checked = true
   }
 
   call(value) {
       this.callable(value)
   }
 
-  selector() {
-      return this.checkbox
+  elements() {
+      return document.querySelectorAll(this.selector)
   }
 
   default() {
@@ -59,13 +59,15 @@ export class Options {
   constructor(options) {
     this.options = options
     for (let [name, option] of options) {
-        option.selector().addEventListener('change', function () {
-            const value = option.get();
-            Cookies.set(name, value, {SameSite: "Strict"})
-            option.call(value)
+        option.elements().forEach(function (element) {
+            element.addEventListener('change', function () {
+                const value = option.get();
+                Cookies.set(name, value, {SameSite: "Strict"})
+                option.call(value)
+            })
         })
         let value = Cookies.get(name)
-        if (value === undefined) {
+        if (value === undefined || value === "undefined") {
             value = option.default()
             Cookies.set(name, value, {SameSite: "Strict"})
         }
@@ -85,7 +87,7 @@ export class Options {
       this.options.get(name).call(value)
   }
 
-  selector(name) {
-      return this.options.get(name).selector()
+  elements(name) {
+      return this.options.get(name).elements()
   }
 }
