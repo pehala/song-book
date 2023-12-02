@@ -54,6 +54,33 @@ You can now run the development server:
 
     make run
 
+
+## PDF generation
+
+Song book can generate PDF for entire categories automatically when changed or on demand for any number of songs. Scheduling is done via [Huey](https://github.com/coleifer/huey) and generation itself uses [Weasyprint](https://github.com/Kozea/WeasyPrint).
+
+### Local development
+
+For enabling PDF generation for local development without having a separate worker, I recommend adding this line to `settings.py`:
+
+```yaml
+HUEY = {"immediate": True}
+```
+
+### Production development
+
+For production, using separate worker is recommended as it does not block the main thread and subsequent request. You can configure it using Redis like this:
+
+```yaml
+pool = ConnectionPool(host="localhost", port=6379, max_connections=20, db=2)
+HUEY = RedisHuey("default", connection_pool=pool)
+```
+
+You can run worker through `run_huey` manage command
+```bash
+make worker
+```
+
 ### FAQ
 
 1. `poetry install` throws 

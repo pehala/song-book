@@ -18,3 +18,8 @@ CACHES = {
         },
     }
 }
+
+HUEY = {"immediate": True}
+
+# pool = ConnectionPool(host="localhost", port=6379, max_connections=20, db=2)
+# HUEY = RedisHuey("default", connection_pool=pool)
