@@ -19,16 +19,16 @@
 {%  endblock %}
 {% block extra_options %}
 <div class="me-2 mt-1 d-flex">
-    <div>  <input class="form-check-input ms-2" type="checkbox" value="" id="hideChords"></div>
-    <div class="ms-auto"><label class="form-check-label custom" for="hideChords">
-    {% trans "Hide chords" %}
-  </label></div>
+    <div><input class="form-check-input ms-2" type="checkbox" value="" id="hideChords"></div>
+    <div class="ms-auto">
+        <label class="form-check-label custom" for="hideChords">{% trans "Hide chords" %}</label>
+    </div>
 </div>
 <div class="me-2 mt-1 d-flex">
     <div><input class="form-check-input ms-2" type="checkbox" value="" id="preventSleep"></div>
-    <div class="ms-auto"><label class="form-check-label custom" for="preventSleep">
-        {% trans "Prevent sleep" %}
-    </label></div>
+    <div class="ms-auto">
+        <label class="form-check-label custom" for="preventSleep">{% trans "Prevent sleep" %}</label>
+    </div>
 </div>
 {% endblock %}
 {% block body %}
