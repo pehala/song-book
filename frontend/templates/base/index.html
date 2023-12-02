@@ -62,7 +62,7 @@
                         <div class="mb-1 ms-2 me-2">
                             <select class="form-select" id="language" onchange="document.getElementById(this.value).submit()">
                               {% for locale in languages %}
-                                <option value="{{ locale.code }}" {% if locale.code == LANGUAGE_CODE %}selected{% endif %}>{{ locale.name_local }}</option>
+                                <option value="{{ locale.code }}" {% if locale.code == LANGUAGE_CODE %}selected{% endif %}>{{ locale.name_local|capfirst }}</option>
                               {% endfor %}
                             </select>
                             <label for="language" class="visually-hidden">
