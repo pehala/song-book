@@ -1,13 +1,16 @@
 """Utility functions"""
+import logging
 from datetime import timedelta
-from django.utils import timezone
 
 from django.db import transaction
+from django.utils import timezone
 from django.utils import translation
 from django.utils.translation import gettext
 
 from pdf.generate import schedule_generation
 from pdf.models.request import PDFRequest, RequestType, Status, PDFSong
+
+log = logging.getLogger(__name__)
 
 
 def request_pdf_regeneration(category, update: bool = False):
