@@ -36,38 +36,38 @@
         </button>
         {% generate_menu %}
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <ul class="navbar-nav nav-left">
+            <ul class="navbar-nav nav-left ms-1">
                 {% draw_menu "songbook" use_tenant=True %}
             </ul>
-            <ul class="navbar-nav nav-left">
+            <ul class="navbar-nav nav-left ms-1">
                 {% draw_menu "files" use_tenant=True %}
             </ul>
-            <ul class="navbar-nav nav-right ms-auto">
+            <ul class="navbar-nav nav-right ms-auto ps-1">
                 {% draw_menu "pdf" %}
             </ul>
-            <ul class="navbar-nav nav-right">
+            <ul class="navbar-nav nav-right ms-1">
                 {% draw_menu "admin" %}
             </ul>
-            <ul class="navbar-nav nav-right">
+            <ul class="navbar-nav nav-right ms-1">
                 {% draw_menu "songbook-admin" %}
             </ul>
             {% block extra_nav %}{% endblock %}
-                    <ul class="my-lg-0 navbar-nav navbar-right languages">
+                <ul class="my-lg-0 navbar-nav navbar-right languages">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="languageDropdown" role="button"
                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         {% trans "Options" %}
                     </a>
                     <div class="dropdown-menu" aria-labelledby="languageDropdown" id="options">
-                        <div class="mb-3 d-flex ms-2 me-2 mb-1">
-                            <label for="language" class="me-2">
-                                {% trans "Language" %}
-                            </label>
+                        <div class="mb-1 ms-2 me-2">
                             <select class="form-select" id="language" onchange="document.getElementById(this.value).submit()">
                               {% for locale in languages %}
-                                <option value="{{ locale.code }}" {% if locale.code == LANGUAGE_CODE %}selected{% endif %}>{{ locale.code }}</option>
+                                <option value="{{ locale.code }}" {% if locale.code == LANGUAGE_CODE %}selected{% endif %}>{{ locale.name_local }}</option>
                               {% endfor %}
                             </select>
+                            <label for="language" class="visually-hidden">
+                                {% trans "Language" %}
+                            </label>
                         </div>
                         {% for locale in languages %}
                             <form id="{{ locale.code }}" action="{% url 'set_language' %}" method="post">
@@ -85,13 +85,13 @@
                     </div>
                 </li>
             </ul>
-            <ul class="my-lg-0 navbar-nav navbar-right">
+            <ul class="my-lg-0 navbar-nav navbar-right ms-1">
                 {% draw_menu "account" %}
             </ul>
             {% if user.is_authenticated %}
-                <span class="navbar-text me-2">{% trans "Logged as" %} <b>{{ user.username }}</b></span>
+                <span class="navbar-text ms-2 me-4">{% trans "Logged as" %} <b>{{ user.username }}</b></span>
             {% else %}
-                <a href="{% url 'login' %}" class="btn btn-link custom-link text-decoration-none" role="button">{% trans "Log in" %}</a>
+                <a class="me-4 ms-1" href="{% url 'login' %}" class="btn btn-link custom-link text-decoration-none" role="button">{% trans "Log in" %}</a>
             {% endif %}
 
         </div>
