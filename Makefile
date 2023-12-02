@@ -1,6 +1,6 @@
 .PHONY: commit-acceptance pylint black reformat pre-commit locale migrations deploy check-fuzzy run
 
-commit-acceptance: black pylint
+commit-acceptance: black pylint check-fuzzy
 pre-commit: messages migrations reformat
 
 RUN = poetry run

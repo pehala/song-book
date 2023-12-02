@@ -150,10 +150,9 @@ msgid "PDFRequests"
 msgstr "PDF požadavky"
 
 #: pdf/models/request.py:100
-#, fuzzy
 #| msgid "Song numbers"
 msgid "Song number"
-msgstr "Čísla písniček"
+msgstr "Číslo písničky"
 
 #: pdf/templates/admin/pdf/migrate.html:5
 #: pdf/templates/admin/pdf/migrate.html:6
