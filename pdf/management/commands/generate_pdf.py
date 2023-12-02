@@ -38,10 +38,12 @@ class Command(BaseCommand):
         Path(f"{settings.MEDIA_ROOT}/{settings.PDF_FILE_DIR}").mkdir(parents=True, exist_ok=True)
         all_requests = options["all"]
         requests = options["requests"]
-        total_duration = 0
 
         if all_requests:
-            objects = [generate_new_pdf_request(category) for category in Category.objects.filter(generate_pdf=True)]
+            objects = [
+                generate_new_pdf_request(category, force_now=True)
+                for category in Category.objects.filter(generate_pdf=True)
+            ]
         else:
             objects = PDFRequest.objects.filter(status__in={Status.QUEUED, Status.SCHEDULED})
             if requests:
@@ -52,10 +54,6 @@ class Command(BaseCommand):
             logger.info("No requests, skipping")
             return
 
-        for request in objects:
-            _, time = generate_pdf(request)
-            total_duration += time
-
         cache.delete(settings.PDF_CACHE_KEY)
-        logger.info("Processed %i requests in %i seconds", num, ceil(total_duration))
+        logger.info("Scheduled %i requests", num)
         return

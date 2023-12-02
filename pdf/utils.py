@@ -3,8 +3,8 @@ import logging
 from datetime import timedelta
 
 from django.db import transaction
-from django.utils import timezone
 from django.utils import translation
+from django.utils.timezone import now
 from django.utils.translation import gettext
 
 from pdf.generate import schedule_generation
@@ -35,12 +35,9 @@ def regenerate_pdf_request(request, category):
         return request
 
 
-def generate_new_pdf_request(category):
+def generate_new_pdf_request(category, force_now=False):
     """Returns PDFRequest for a category"""
     with transaction.atomic():
-        scheduled_times = PDFRequest.objects.filter(status=Status.SCHEDULED, type=RequestType.EVENT).values_list(
-            "scheduled_at", flat=True
-        )
         request = PDFRequest(type=RequestType.EVENT, status=Status.SCHEDULED, category=category, tenant=category.tenant)
         request.copy_options(category)
         request.filename = request.filename or get_filename(category)
@@ -52,30 +49,15 @@ def generate_new_pdf_request(category):
             ]
         )
 
-        time = generate_unique_time(scheduled_times, timedelta(minutes=30))
-
-        schedule_generation(request, time)
-        request.scheduled_at = time
+        if force_now:
+            job = schedule_generation(request, 0)
+            request.scheduled_at = now()
+        else:
+            job = schedule_generation(request, 30 * 60)
+            request.scheduled_at = now() + timedelta(minutes=30)
         request.save()
 
-        return request
-
-
-def generate_unique_time(times, delta: timedelta):
-    """Generate unique time, so jobs will not clash on scheduler"""
-    time = timezone.now() + delta
-    for _ in range(len(times) + 1):
-        valid = True
-        for existing_time in times:
-            if not existing_time:
-                continue
-            if time - existing_time < delta:
-                valid = False
-
-        if valid:
-            return time
-        time = time + delta
-    raise AttributeError("Unable to assign unique generation time")
+        return request, job
 
 
 def get_filename(category):

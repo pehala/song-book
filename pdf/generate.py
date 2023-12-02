@@ -21,8 +21,8 @@ from django.template.loader import render_to_string
 from django.urls import get_script_prefix
 from django.urls import reverse
 from django.utils import translation
-from django_rq import job, get_queue
-from rq import Retry
+from huey.contrib.djhuey import task
+
 from weasyprint.logger import PROGRESS_LOGGER
 
 from pdf.locales import changed_locale, lang_to_locale
@@ -147,18 +147,19 @@ def generate_pdf(request: PDFRequest):
         return False, timer.duration
 
 
-@job
+@task()
 def generate_pdf_job(request: PDFRequest):
     """Generates PDF from request in the background"""
     generate_pdf(request)
 
 
-def schedule_generation(request: PDFRequest, schedule_time: datetime):
+def schedule_generation(request: PDFRequest, delay: int):
     """Schedules generation of a request at a specific time"""
-    queue = get_queue("default")
-    created_job = queue.enqueue_at(schedule_time, generate_pdf, request, retry=Retry(max=5, interval=120))
-    logger.info("Schedule PDF generation of request %s at %s", request.id, schedule_time)
-    return created_job
+    job = generate_pdf_job.schedule(kwargs={"request": request}, delay=delay)
+    # queue = get_queue("default")
+    # created_job = queue.enqueue_at(schedule_time, generate_pdf, request, retry=Retry(max=5, interval=120))
+    logger.info("Scheduled PDF generation of request %s in %s seconds", request.id, delay)
+    return job
 
 
 class ProgressFilter(logging.Filter):
