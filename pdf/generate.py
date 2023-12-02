@@ -1,29 +1,89 @@
 """Module containing all things related to generating PDF"""
 import locale
 import logging
+import mimetypes
 import os
 import re
 import tempfile
 from datetime import datetime
 from math import ceil
+from pathlib import Path
 from time import time
+from urllib.parse import urlparse
 
 import weasyprint
-from rq import Retry
-from weasyprint.logger import PROGRESS_LOGGER
 from django.conf import settings
+from django.contrib.staticfiles.finders import find
+from django.contrib.staticfiles.storage import staticfiles_storage
 from django.core.files import File
+from django.core.files.storage import default_storage
 from django.template.loader import render_to_string
+from django.urls import get_script_prefix
 from django.urls import reverse
 from django.utils import translation
 from django_rq import job, get_queue
-from django_weasyprint.utils import django_url_fetcher
+from rq import Retry
+from weasyprint.logger import PROGRESS_LOGGER
 
 from pdf.locales import changed_locale, lang_to_locale
 from pdf.models.request import PDFRequest, Status
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
+
+
+# pylint: disable=no-else-return, consider-using-with
+def custom_django_url_fetcher(url, *args, **kwargs):
+    """Fix for django_url_fetcher not working correctly with Manifest storage"""
+    # attempt to load file:// paths to Django MEDIA or STATIC files directly from disk
+    if url.startswith("file:"):
+        logger.debug("Attempt to fetch from %s", url)
+        mime_type, encoding = mimetypes.guess_type(url)
+        url_path = urlparse(url).path
+        data = {
+            "mime_type": mime_type,
+            "encoding": encoding,
+            "filename": Path(url_path).name,
+        }
+
+        default_media_url = settings.MEDIA_URL in ("", get_script_prefix())
+        if not default_media_url and url_path.startswith(settings.MEDIA_URL):
+            logger.debug("URL contains MEDIA_URL (%s)", settings.MEDIA_URL)
+            cleaned_media_root = str(settings.MEDIA_ROOT)
+            if not cleaned_media_root.endswith("/"):
+                cleaned_media_root += "/"
+            path = url_path.replace(settings.MEDIA_URL, cleaned_media_root, 1)
+            logger.debug("Cleaned path: %s", path)
+            data["file_obj"] = default_storage.open(path, "rb")
+            return data
+
+        # path looks like a static file based on configured STATIC_URL
+        elif settings.STATIC_URL and url_path.startswith(settings.STATIC_URL):
+            logger.debug("URL contains STATIC_URL (%s)", settings.STATIC_URL)
+            # strip the STATIC_URL prefix to get the relative filesystem path
+            relative_path = url_path.replace(settings.STATIC_URL, "", 1)
+            # detect hashed files storage and get path with un-hashed filename
+            if hasattr(staticfiles_storage, "hashed_files"):
+                logger.debug("Hashed static files storage detected")
+                if settings.DEBUG:
+                    name = staticfiles_storage.stored_name(relative_path)
+                else:
+                    name = relative_path
+                # relative_path = get_reversed_hashed_files()[relative_path]
+                data["filename"] = Path(name).name
+            logger.debug("Cleaned path: %s", relative_path)
+            # find the absolute path using the static file finders
+            absolute_path = find(relative_path)
+            logger.debug("Static file finder returned: %s", absolute_path)
+            if absolute_path:
+                logger.debug("Loading static file: %s", absolute_path)
+                data["file_obj"] = open(absolute_path, "rb")
+                return data
+
+    # Fall back to weasyprint default fetcher for http/s: and file: paths
+    # that did not match MEDIA_URL or STATIC_URL.
+    logger.debug("Forwarding to weasyprint.default_url_fetcher: %s", url)
+    return weasyprint.default_url_fetcher(url, *args, **kwargs)
 
 
 def update_status(request: PDFRequest, status: Status):
@@ -71,7 +131,7 @@ def generate_pdf(request: PDFRequest):
                 PROGRESS_LOGGER.addFilter(log_filter)
                 weasyprint.HTML(
                     string=string,
-                    url_fetcher=django_url_fetcher,
+                    url_fetcher=custom_django_url_fetcher,
                     base_url=get_base_url(),
                 ).write_pdf(file, optimize_size=("fonts", "images"))
                 PROGRESS_LOGGER.removeFilter(log_filter)
