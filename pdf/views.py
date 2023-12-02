@@ -45,7 +45,7 @@ class RequestRegenerateView(LocalAdminRequired, View, SingleObjectMixin):
             return redirect("pdf:list")
         obj.status = Status.QUEUED
         obj.save()
-        generate_pdf_job.delay(obj)
+        generate_pdf_job(obj)
 
         messages.success(request, _("Request %(id)s was scheduled for regeneration") % {"id": obj.id})
         return redirect("pdf:list")
@@ -139,7 +139,7 @@ class RequestNumberSelectView(LocalAdminRequired, TemplateResponseMixin, View):
                 self.request,
                 _("PDF Request with id %(id)s was successfully created") % {"id": request.id},
             )
-            generate_pdf_job.delay(request)
+            generate_pdf_job(request)
             return redirect("pdf:wait", request.id)
         return self.form_invalid(form, formset)
 

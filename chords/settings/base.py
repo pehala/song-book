@@ -41,7 +41,7 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "debug_toolbar",
-    "django_rq",
+    "huey.contrib.djhuey",
 ]
 
 MARKDOWNX_MARKDOWNIFY_FUNCTION = "chords.markdown.RENDERER"
