@@ -30,7 +30,7 @@ INSTALLED_APPS = [
     "pdf",
     "analytics",
     "tenants",
-    "bootstrap4",
+    "django_bootstrap5",
     "sass_processor",
     "markdownx",
     "menu",
