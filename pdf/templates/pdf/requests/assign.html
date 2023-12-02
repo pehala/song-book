@@ -1,6 +1,6 @@
 {% extends "base/frame.html" %}
 {% load i18n %}
-{% load bootstrap4 %}
+{% load django_bootstrap5 %}
 {% load static %}
 
 {% block header %} {% trans "PDF details" %} {% endblock %}
@@ -26,15 +26,14 @@
                 {{ hidden }}
             {% endfor %}
             {% for field in form.visible_fields %}
-                {% bootstrap_field field show_label=False size="small" form_group_class='form-group flex-grow-1" style="pointer-events: none;"' %}
+                {% bootstrap_field field show_label=False size="sm" form_group_class='form-group flex-grow-1" style="pointer-events: none;"' %}
             {% endfor %}
         </div>
     {% endfor %}
     </div>
-    {% buttons %}
-        <button id="sort" type="button" class="btn btn-secondary">{% trans "Sort by name" %}</button>
-        <button type="submit" class="btn btn-primary">{% trans "Finish" %}</button>
-    {% endbuttons %}
+
+    {% bootstrap_button _("Sort by name") button_type="button" button_class="btn-secondary" id="sort"%}
+    {% bootstrap_button _("Finish") button_type="submit"%}
   </form>
   {{ form.media }}
 <script type="module">

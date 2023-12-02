@@ -1,6 +1,6 @@
 {% extends "admin/base.html" %}
 {% load i18n %}
-{% load bootstrap4 %}
+{% load django-bootstrap5 %}
 
 {% block title %}{% endblock %}
 {% block content_title %}{% endblock %}
@@ -17,7 +17,7 @@
                 {{ hidden }}
             {% endfor %}
             {% for field in form.visible_fields %}
-                {% bootstrap_field field layout="horizontal" show_label=False size="small"%}
+                {% bootstrap_field field layout="horizontal" show_label=False size="sm"%}
             {% endfor %}
             <hr>
         </div>
@@ -26,9 +26,7 @@
     <hr>
     <h4>{% block target %}{% endblock %}</h4>
     {% bootstrap_form form %}
-    {% buttons %}
-        <button type="submit">{% trans "Submit" %}</button>
-    {% endbuttons %}
+    {% bootstrap_button _("Submit") button_type="submit" %}
   </form>
   {{ form.media }}
 {% endblock %}

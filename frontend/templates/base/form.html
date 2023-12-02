@@ -1,14 +1,12 @@
 {% extends "base/frame.html" %}
 {% load i18n %}
-{% load bootstrap4 %}
+{% load django_bootstrap5 %}
 
 {% block framed_body %}
   <form method="post">
     {% csrf_token %}
     {% bootstrap_form form %}
-    {% buttons %}
-        <button type="submit" class="btn btn-primary">{% trans "Submit" %}</button>
-    {% endbuttons %}
+    {% bootstrap_button _("Submit") button_type="submit" %}
   </form>
   {{ form.media }}
 {% endblock %}
