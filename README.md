@@ -44,7 +44,7 @@ First clone the repository from GitHub and switch to the new directory:
 Install pipenv and dependencies
 
     python -m pip install poetry
-    poetry install 
+    poetry install --with dev
     
 Then simply initialize the website:
 
