@@ -11,7 +11,7 @@ class CategoryForm(ModelForm):
 
     class Meta:
         model = Category
-        fields = "__all__"
+        exclude = ["tenant"]  # pylint: disable=modelform-uses-exclude
 
 
 class NameForm(Form):
