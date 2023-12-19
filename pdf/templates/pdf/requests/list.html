@@ -15,10 +15,10 @@
 
 {% block framed_body %}
     <div class="btn-group mb-2 float-start" data-bs-toggle="buttons">
-      <input type="radio" id="manual" class="btn-check" name="options" value="Manual">
+      <input type="radio" id="manual" class="btn-check" name="options" value="MA">
       <label class="btn btn-outline-info" for="manual">{% trans "Manual" %}</label>
 
-      <input type="radio" id="automatic" class="btn-check" name="options" value="Automated">
+      <input type="radio" id="automatic" class="btn-check" name="options" value="EV">
       <label class="btn btn-outline-info" for="automatic">{% trans "Automated" %}</label>
     </div>
 
@@ -34,6 +34,7 @@
             <tr>
               <th scope="col">{% trans "Title" %}</th>
               <th scope="col">{% trans "Last updated" %}</th>
+              <th scope="col" data-visible="false" data-searchable="true">HIDDEN</th>
               <th scope="col">{% trans "Type" %}</th>
               <th scope="col">{% trans "Status" %}</th>
               <th scope="col" data-orderable="false">{% trans "Link" %}</th>
@@ -48,6 +49,7 @@
             <tr>
               <td>{{ request.title }}</td>
               <td data-order="{{ request.update_date|date:"c" }}">{{ request.update_date }}</td>
+              <td>{{ request.type }}</td>
               <td>{{ request.get_type_display }}</td>
               <td style="background-color: {{ request.status|get_status_color }}">{{ request.get_status_display }} {% if request.status == "PR" %}{{ request.progress }}/7 {% endif %} {% if request.status == "SC" %} {{ request.scheduled_at }} {% endif %}</td>
               <td>
@@ -93,7 +95,7 @@
     }
 
     const config = new Map([
-        ["tab", new CheckboxOption("input[type=radio][name=options]", switch_tab, "Manual")],
+        ["tab", new CheckboxOption("input[type=radio][name=options]", switch_tab, "MA")],
     ])
     const options = new Options(config)
     const initial_value = options.get("tab")

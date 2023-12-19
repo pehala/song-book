@@ -26,6 +26,10 @@ export class BooleanOption {
   default() {
       return this.defaultValue
   }
+
+  allowedValues() {
+      return null
+  }
 }
 
 export class CheckboxOption {
@@ -36,11 +40,11 @@ export class CheckboxOption {
   }
 
   get() {
-      return Array.from(this.elements()).filter((element) => element.checked)[0].value
+      return Array.from(this.elements()).filter(element => element.checked)[0].value
   }
 
   set(value) {
-      Array.from(this.elements()).filter((element) => element.value === value)[0].checked = true
+      Array.from(this.elements()).filter(element => element.value === value)[0].checked = true
   }
 
   call(value) {
@@ -53,6 +57,10 @@ export class CheckboxOption {
 
   default() {
       return this.defaultValue
+  }
+
+  allowedValues() {
+        return Array.from(this.elements()).map(element => element.value)
   }
 }
 export class Options {
@@ -67,7 +75,7 @@ export class Options {
             })
         })
         let value = Cookies.get(name)
-        if (value === undefined || value === "undefined") {
+        if ((value === undefined || value === "undefined") || (option.allowedValues() !== null && !(value in option.allowedValues()))) {
             value = option.default()
             Cookies.set(name, value, {SameSite: "Strict"})
         }
