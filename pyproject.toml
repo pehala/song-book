@@ -6,8 +6,8 @@ authors = ["Petr Hála <phala@sprtovo.eu>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
-python = "^3.9"
-django = "==4.2.7"
+python = "^3.11"
+django = ">=5"
 django_bootstrap5 = "*"
 dj-datatables-view = "*"
 django-debug-toolbar = "*"
