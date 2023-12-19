@@ -131,7 +131,7 @@ msgstr "Kategorie %(name)s byla úspěšně upravena"
 #: category/views.py:99
 #, python-format
 msgid "Category %s was successfully staged for PDF generation"
-msgstr "PDF pro kategoeii %s bylo přidané do fronty"
+msgstr "PDF pro Kategorii %s bylo přidáno do fronty"
 
 #: category/views.py:110
 #, python-format
