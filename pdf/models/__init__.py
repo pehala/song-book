@@ -52,7 +52,6 @@ class PDFOptions(Model):
         blank=True,
         help_text=_("Link to include in the PDF"),
         verbose_name=_("Link"),
-        default=settings.PDF_INCLUDE_LINK,
     )
 
     def copy_options(self, options: "PDFOptions"):
