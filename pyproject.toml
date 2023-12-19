@@ -19,13 +19,21 @@ django-simple-menu = "*"
 django-weasyprint = "*"
 weasyprint = ">=53.0"
 Pillow = "*"
-gunicorn = "*"
-gevent = "*"
 mistune = ">3"
 netifaces = "*"
 django-compressor = "*"
 libsass = "*"
+
+[tool.poetry.group.production]
+optional = true
+
+[tool.poetry.group.production.dependencies]
 psycopg = {extras = ["binary", "pool"], version = "^3.1.10"}
+gunicorn = "*"
+gevent = "*"
+
+[tool.poetry.group.dev]
+optional = true
 
 [tool.poetry.group.dev.dependencies]
 pylint = "*"
