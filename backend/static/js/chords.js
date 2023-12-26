@@ -22,11 +22,6 @@ function transpose(event, object, id) {
     input.attr("previous_value", new_value);
 }
 
-function collapsible(element, id) {
-    $(".song:visible").not("#" + id).slideUp()
-    $('#' + id).slideToggle()
-}
-
 function isElementInViewPort(element) {
     let rect = element.getBoundingClientRect();
     // get the height of the window
