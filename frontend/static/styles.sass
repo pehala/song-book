@@ -32,12 +32,15 @@ html, body
     top: 20px
     right: 20px
     display: none
+    z-index: 10
 
 .scroll_button
     cursor: pointer
     position: fixed
+    display: none
     bottom: 20px
     right: 20px
+    z-index: 10
 
 hr
   background-color: $border-color
@@ -67,3 +70,13 @@ hr
 
 .small-hr
   height: 1px
+
+.accordion-button:not(.collapsed)
+  background-color: white
+  color: black
+  &:focus
+    box-shadow: var(--bs-accordion-btn-focus-box-shadow)
+
+.accordion-button:focus
+  box-shadow: none
+

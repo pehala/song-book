@@ -32,9 +32,19 @@
 </div>
 {% endblock %}
 {% block body %}
+    <script async>
+        function show_scroll_button(event) {
+            const button = $("#scroll-down")
+            if (document.querySelector(".accordion-button:not(.collapsed)") !== null) {
+                button.show()
+                return
+            }
+            button.hide()
+        }
+    </script>
     <script id="songTemplate" type="text/x-jsrender">
-        <div class="collapsible-controller w-100 pb-1 ps-2 pt-2 border-bottom rounded"  onclick="collapsible(this,'<%:number%>')">
-            <h2 class="d-inline <%if archived%>text-danger<%/if%>"><span style="width: 50px;"><%:number%>.</span> <%:name%></h2>
+        <a class="accordion-button text-decoration-none w-100 border-bottom collapsed pt-2 pb-1" data-bs-toggle="collapse" href="#id<%:number%>" role="button" aria-controls="<%:number%>" aria-expanded="false" onclick="show_scroll_button(event)">
+            <h2 class="d-inline me-2 <%if archived%>text-danger<%/if%>"><span style="width: 50px;"><%:number%>.</span> <%:name%></h2>
             <%if author%>
                 <h6 class="d-inline" ><%:author%></h6>
             <%/if%>
@@ -52,8 +62,8 @@
                </form>
             {% endif %}
             </span>
-        </div>
-        <div id="<%:number%>" class="song" style="display: none;">
+        </a>
+        <div id="id<%:number%>" class="accordion-collapse collapse" data-bs-parent="#datatable">
             <div class="input-group mb-3">
                 <%if link%>
                     <a href="<%:link%>" class="btn btn-primary" role="button" aria-pressed="true">
@@ -79,14 +89,14 @@
         <input type="text" class="form-control" id="searchInput" placeholder="{% trans "Number, text or author" %}">
       </div>
     </div>
-    <table id="datatable" class="dataTable w-100 song-list table-borderless table-hover">
+    <table id="datatable" class="accordion accordion-flush w-100 table table-borderless">
         <thead class="d-none"></thead>
         <tbody class="w-100 m-0"></tbody>
     </table>
-    <button id="back-to-top" class="btn btn-info btn-lg back-to-top" role="button" title="Click to return on the top page" data-bs-toggle="tooltip" data-bs-placement="left">
+    <button id="back-to-top" class="btn btn-primary btn-lg back-to-top" role="button" title="Click to return on the top page" data-bs-toggle="tooltip" data-bs-placement="left">
         <span class="icon-up-open"></span>
     </button>
-    <button id="scroll-down" class="btn btn-info btn-lg scroll_button" role="button" title="Click to scroll down" data-bs-placement="left">
+    <button id="scroll-down" class="btn btn-primary btn-lg scroll_button" role="button" title="Click to scroll down" data-bs-placement="left">
         <span class="icon-down-open"></span>
     </button>
     <script type="module">
@@ -132,6 +142,7 @@
                     {% endif %}
                     return $.render.song(row);
                 },
+                className: "accordion-item mt-1 ms-1 p-0",
                 searchable: true,
             },
             {
