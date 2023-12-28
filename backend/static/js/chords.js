@@ -16,7 +16,7 @@ function transpose(event, object, id) {
     const old_value = input.attr("previous_value");
     const new_value = input.val();
     const diff = new_value - old_value;
-    $("#" + id).find(".chord").each(function(element) {
+    $("#id" + id).find(".chord").each(function(element) {
         $( this ).html(transposeChord($( this ).html(), diff))
     });
     input.attr("previous_value", new_value);
