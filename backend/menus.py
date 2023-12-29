@@ -38,10 +38,7 @@ Menu.add_item(
 )
 
 account_children = (
-    MenuItem(
-        _("Logout"),
-        reverse("logout"),
-    ),
+    MenuItem(_("Logout"), reverse("logout"), post=True),
     MenuItem(
         _("Change password"),
         reverse("password_change"),
