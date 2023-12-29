@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-26 17:43+0000\n"
+"POT-Creation-Date: 2023-12-29 14:14+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -43,11 +43,11 @@ msgstr ""
 "Maminka ti neříkala že nemáš lozit na zakázané stránky? Vypadni! Tohle je "
 "jen pro přihlášené!"
 
-#: frontend/templates/404.html:14 frontend/templates/404.html:39
+#: frontend/templates/404.html:13 frontend/templates/404.html:30
 msgid "Not found"
 msgstr "Nenalezeno"
 
-#: frontend/templates/404.html:43
+#: frontend/templates/404.html:34
 #, python-format
 msgid ""
 "Welp, nothing is at %(request)s. Like, literally nothing. Not even "
@@ -58,7 +58,7 @@ msgstr ""
 "švábi a rusáci. Jak ses sem sakra dostal? Jsi si jistý že je tohle správná "
 "adresa?"
 
-#: frontend/templates/404.html:47
+#: frontend/templates/404.html:38
 #, python-format
 msgid ""
 "It seems you turned wrong somewhere, there is nothing here but small midget "
@@ -68,52 +68,44 @@ msgstr ""
 "Vypadá to že si někde špatně uhl, není tu nic vyjma trpasličího čaroděje s "
 "dlouhými vousy který se ti snaží říct co pokazilo:<br> <b>%(exception)s</b>"
 
-#: frontend/templates/admin/base/migrate.html:30
-#: frontend/templates/base/form.html:10
+#: frontend/templates/admin/base/migrate.html:29
+#: frontend/templates/base/form.html:9
 msgid "Submit"
 msgstr "Odeslat"
 
-#: frontend/templates/base/index.html:67
+#: frontend/templates/base/index.html:58
 msgid "Options"
 msgstr "Možnosti"
 
-#: frontend/templates/base/index.html:72
+#: frontend/templates/base/index.html:68
 msgid "Language"
 msgstr "Jazyk"
 
-#: frontend/templates/base/index.html:91
+#: frontend/templates/base/index.html:82
 msgid "Version"
 msgstr "Verze"
 
-#: frontend/templates/base/index.html:92
+#: frontend/templates/base/index.html:83
 msgid "Git"
 msgstr ""
 
-#: frontend/templates/base/index.html:100
+#: frontend/templates/base/index.html:91
 msgid "Logged as"
 msgstr "Přihlášen jako"
 
-#: frontend/templates/base/index.html:102
+#: frontend/templates/base/index.html:93
 msgid "Log in"
 msgstr "Přihlásit se"
 
-#: frontend/templates/markdownx/widget.html:6
-msgid "Editor"
-msgstr ""
-
-#: frontend/templates/markdownx/widget.html:9
-msgid "Preview"
-msgstr "Náhled"
-
-#: frontend/templates/markdownx/widget.html:18
+#: frontend/templates/markdownx/widget.html:8
 msgid "Help"
 msgstr "Nápověda"
 
-#: frontend/templates/markdownx/widget.html:20
+#: frontend/templates/markdownx/widget.html:10
 msgid "Displays chord"
 msgstr "Zobrazí akord"
 
-#: frontend/templates/markdownx/widget.html:21
+#: frontend/templates/markdownx/widget.html:11
 msgid "Adds N empty spaces"
 msgstr "Přidá N mezer"
 
