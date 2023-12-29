@@ -5,7 +5,14 @@
             {% if item.separator %}
                 <div class="dropdown-divider"></div>
             {% endif %}
-            <a class="dropdown-item" href="{{ item.url }}">{% if item.skip_translate %}{{ item.title }}{% else %}{% trans item.title %}{% endif %}</a>
+            {% if item.post %}
+            <form id="logout-form" method="post" action="{{ item.url }}">
+              {% csrf_token %}
+              <button type="submit" class="btn-link dropdown-item">{% if item.skip_translate %}{{ item.title }}{% else %}{% trans item.title %}{% endif %}</button>
+            </form>
+            {% else %}
+                <a class="dropdown-item" href="{{ item.url }}">{% if item.skip_translate %}{{ item.title }}{% else %}{% trans item.title %}{% endif %}</a>
+            {% endif %}
         {% endif %}
     {% endfor %}
 </div>
