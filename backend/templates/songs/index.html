@@ -65,7 +65,7 @@
             </span>
         </a>
         <div id="id<%:number%>" class="accordion-collapse collapse" data-bs-parent="#datatable">
-            <div class="input-group mb-3">
+            <div class="input-group mb-3 mt-1">
                 <%if link%>
                     <a href="<%:link%>" class="btn btn-primary" role="button" aria-pressed="true">
                         <i class="icon-youtube-play"></i>
@@ -83,7 +83,7 @@
         </div>
     </script>
     <div>
-      <div class="input-group mb-2 pe-sm-1">
+      <div class="input-group pe-sm-1">
         <div class="input-group-prepend">
           <div class="input-group-text">{% trans "Search" %}</div>
         </div>
@@ -156,14 +156,7 @@
             }
         ],
         data: JSON.parse("{{ songs|escapejs }}"),
-        //pageLength: 50,
-        //scrollResize: true,
-        scrollX: false,
-        scrollY: "90vh",
-        scrollCollapse: true,
-        paging: true,
-        scroller: true,
-        lengthChange: true,
+        pageLength: 50,
         {% datatables_language %}
     });
 
