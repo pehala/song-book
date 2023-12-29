@@ -1,4 +1,6 @@
 {% extends "base/frame.html" %}
+{% load static %}
+{% load utils %}
 {% load i18n %}
 {% load types %}
 {% load sass_tags %}
@@ -6,9 +8,10 @@
 {% block title %} {% trans "PDF Requests" %} {% endblock %}
 {% block header %} {% trans "PDF Requests" %}  {% endblock %}
 {% block extra_head %}
-<script defer type="text/javascript" src="https://cdn.datatables.net/v/bs4/dt-1.13.6/b-2.4.2/sl-1.7.0/datatables.min.js"></script>
+<script defer type="text/javascript" src="{% static "datatables/datatables.min.js" %}"></script>
+<script defer type="text/javascript" src="{% static "datatables/accent-neutralize.min.js" %}"></script>
 <link rel="stylesheet" type="text/css" href="{% sass_src 'datatables.sass' %}">
-<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/v/bs4/dt-1.13.6/b-2.4.2/sl-1.7.0/datatables.min.css"/>
+<link rel="stylesheet" type="text/css" href="{% static "datatables/datatables.min.css" %}"/>
 {% endblock %}
 
 {% block framed_body %}
@@ -67,6 +70,7 @@
         processing: true,
         select: 'multi+shift',
         dom: 'rtipB',
+        {% datatables_language %}
         buttons: [
             {
                 text: '{% trans "Select All" %}',
@@ -93,12 +97,8 @@
                 }
             },
         ],
-        {% if request.LANGUAGE_CODE == "cs"  %}
-        language: {
-                url: "//cdn.datatables.net/plug-ins/1.13.6/i18n/cs.json"
-        },
-        {% endif %}
-    } );
+
+    });
     $("#searchInput").on("input", function (event) {
         table.search($(this).val()).draw();
     });
