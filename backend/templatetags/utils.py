@@ -1,6 +1,8 @@
 """Tags for drawing the menu"""
 from django import template
 from django.template.defaultfilters import stringfilter
+from django.templatetags.static import static
+from django.utils.safestring import mark_safe
 
 from backend import utils
 from tenants.utils import create_tenant_string
@@ -33,3 +35,12 @@ def version():
 def git_revision():
     """Returns sha of the latest revision"""
     return utils.get_git_revision()
+
+
+@register.simple_tag(takes_context=True)
+def datatables_language(context):
+    """Returns language option for currently specified language"""
+    if context.request.LANGUAGE_CODE == "cs":
+        url = static("datatables/cs.json")
+        return mark_safe("language: {url: '%s'}," % url)
+    return mark_safe("")
