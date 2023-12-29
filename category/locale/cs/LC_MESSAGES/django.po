@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-11-26 16:41+0000\n"
+"POT-Creation-Date: 2023-12-29 14:14+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -48,18 +48,18 @@ msgstr ""
 msgid "Category"
 msgstr "Kategorie"
 
-#: category/models.py:25 category/templates/admin/category/migrate.html:7
+#: category/models.py:25 category/templates/admin/category/migrate.html:6
 #: category/templates/category/list.html:4
 #: category/templates/category/list.html:5
 msgid "Categories"
 msgstr "Kategorie"
 
+#: category/templates/admin/category/migrate.html:4
 #: category/templates/admin/category/migrate.html:5
-#: category/templates/admin/category/migrate.html:6
 msgid "Migrating categories to Tenant"
 msgstr "Přesun kategorii do jiného Zpěvníku"
 
-#: category/templates/admin/category/migrate.html:8
+#: category/templates/admin/category/migrate.html:7
 msgid "To Tenant"
 msgstr "Do Tenanta"
 
@@ -92,26 +92,28 @@ msgid "Language"
 msgstr "Jazyk"
 
 #: category/templates/category/list.html:15
-#: category/templates/category/list.html:28
+msgid "Actions"
+msgstr ""
+
+#: category/templates/category/list.html:29
 msgid "Edit"
 msgstr "Upravit"
 
-#: category/templates/category/list.html:16
-msgid "Remove"
-msgstr "Odstranit"
+#: category/templates/category/list.html:31
+msgid "Toggle Dropdown"
+msgstr ""
 
-#: category/templates/category/list.html:17
-#: category/templates/category/list.html:39
+#: category/templates/category/list.html:36
+msgid "Already in queue"
+msgstr "Již ve frontě"
+
+#: category/templates/category/list.html:38
 msgid "Regenerate"
 msgstr "Přegenerovat"
 
-#: category/templates/category/list.html:31
+#: category/templates/category/list.html:41
 msgid "Delete"
 msgstr "Smazat"
-
-#: category/templates/category/list.html:35
-msgid "Already in queue"
-msgstr "Již ve frontě"
 
 #: category/views.py:35
 #, python-format
@@ -137,3 +139,6 @@ msgstr "PDF pro Kategorii %s bylo přidáno do fronty"
 #, python-format
 msgid "Category %(name)s was successfully deleted"
 msgstr "Kategorie %(name)s byla úspěšně smazána"
+
+#~ msgid "Remove"
+#~ msgstr "Odstranit"
