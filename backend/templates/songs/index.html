@@ -90,7 +90,7 @@
         <input type="text" class="form-control" id="searchInput" placeholder="{% trans "Number, text or author" %}">
       </div>
     </div>
-    <table id="datatable" class="accordion accordion-flush w-100 table table-borderless">
+    <table id="datatable" class="accordion accordion-flush w-100 h-100 table table-borderless">
         <thead class="d-none"></thead>
         <tbody class="w-100 m-0"></tbody>
     </table>
@@ -156,7 +156,14 @@
             }
         ],
         data: JSON.parse("{{ songs|escapejs }}"),
-        pageLength: 50,
+        //pageLength: 50,
+        //scrollResize: true,
+        scrollX: false,
+        scrollY: "90vh",
+        scrollCollapse: true,
+        paging: true,
+        scroller: true,
+        lengthChange: true,
         {% datatables_language %}
     });
 

@@ -23,13 +23,12 @@
               defer></script>
     <link rel="stylesheet" type="text/css" href="{% static 'icons/css/songs.css' %}">
     <link rel="stylesheet" type="text/css" href="{% sass_src 'styles.sass' %}">
-    <link rel="stylesheet" type="text/css" href="{% sass_src 'navbar4.sass' %}">
     {% block extra_head %} {% endblock %}
 </head>
 <body>
 <div>
-    <nav class="navbar navbar-expand-lg navbar-light">
-        <a class="navbar-brand ms-3" href="#">{{ request.tenant.display_name }}</a>
+    <nav class="navbar navbar-expand-lg">
+        <a class="navbar-brand ms-3" href="{{ reqeust.tenant.index_redirect }}">{{ request.tenant.display_name }}</a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
                 aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
