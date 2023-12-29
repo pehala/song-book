@@ -44,26 +44,29 @@
         }
     </script>
     <script id="songTemplate" type="text/x-jsrender">
-        <a class="accordion-button text-decoration-none w-100 border-bottom collapsed pt-2 pb-1" data-bs-toggle="collapse" href="#id<%:number%>" role="button" aria-controls="<%:number%>" aria-expanded="false" onclick="show_scroll_button(event)">
+        <div class="d-flex border-bottom">
+        <a class="accordion-button text-decoration-none collapsed pt-2 pb-1" data-bs-toggle="collapse" href="#id<%:number%>" role="button" aria-controls="<%:number%>" aria-expanded="false" onclick="show_scroll_button(event)">
             <h2 class="d-inline me-2 <%if archived%>text-danger<%/if%>"><span style="width: 50px;"><%:number%>.</span> <%:name%></h2>
             <%if author%>
                 <h6 class="d-inline" ><%:author%></h6>
             <%/if%>
-            <span class="float-end tag me-3 d-none d-md-block">
-            {% if user.is_authenticated %}
-               <form class="d-inline ms-3" action="<%:edit_url%>" method="get">
-                   <button type="submit" class="btn btn-outline-secondary" title="{%  trans "Edit" %}">
-                          <i class="icon-edit"></i>
-                   </button>
-               </form>
-              <form class="d-inline ms-1 me-2" action="<%:delete_url%>" method="get">
-                   <button type="submit" class="btn btn-outline-danger" title="{%  trans "Delete" %}">
-                          <i class="icon-trash-empty"></i>
-                   </button>
-               </form>
-            {% endif %}
-            </span>
         </a>
+        {% if user.is_authenticated %}
+            <span class="btn-group me-1">
+              <button type="button" class="btn" data-bs-toggle="dropdown" aria-expanded="false">
+                <i class="icon-menu"></i>
+              </button>
+              <ul class="dropdown-menu">
+                <li><a href="<%:edit_url%>" class="btn color-danger dropdown-item">
+                    <i class="icon-edit"></i>{% trans "Edit" %}
+                </a></li
+                <li><a type="button" href="<%:delete_url%>" class="btn text-danger dropdown-item">
+                    <i class="icon-trash-empty"></i>{% trans "Delete" %}
+                </a></li>
+              </ul>
+            </span>
+        {% endif %}
+        </div>
         <div id="id<%:number%>" class="accordion-collapse collapse" data-bs-parent="#datatable">
             <div class="input-group mb-3 mt-1">
                 <%if link%>
