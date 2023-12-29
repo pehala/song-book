@@ -137,7 +137,7 @@ msgstr "Zabránit uspání"
 
 #: backend/templates/songs/index.html:77
 msgid "Search"
-msgstr "Hledat"
+msgstr "Vyhledávání"
 
 #: backend/templates/songs/index.html:79
 msgid "Number, text or author"
