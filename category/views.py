@@ -48,9 +48,9 @@ class CategoryListView(LocalAdminRequired, ListView):
 
     def get_context_data(self, *, object_list=None, **kwargs):
         ctx = super().get_context_data(object_list=object_list, **kwargs)
-        ctx["already_staged"] = PDFRequest.objects.filter(type=RequestType.EVENT, status=Status.QUEUED).values_list(
-            "category_id", flat=True
-        )
+        ctx["already_staged"] = PDFRequest.objects.filter(
+            type=RequestType.EVENT, status__in=[Status.QUEUED, Status.SCHEDULED], tenant=self.request.tenant
+        ).values_list("category_id", flat=True)
         return ctx
 
 

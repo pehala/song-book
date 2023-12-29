@@ -12,9 +12,9 @@
           <th scope="col">{% trans "URL pattern" %}</th>
           <th scope="col">{% trans "PDF generation" %}</th>
           <th scope="col">{% trans "Language" %}</th>
-          <th scope="col">{% trans "Edit" %}</th>
-          <th scope="col">{% trans "Remove" %}</th>
-          <th scope="col">{% trans "Regenerate" %}</th>
+          <th scope="col">{% trans "Actions" %}</th>
+{#          <th scope="col">{% trans "Remove" %}</th>#}
+{#          <th scope="col">{% trans "Regenerate" %}</th>#}
         </tr>
       </thead>
       <tbody>
@@ -25,22 +25,44 @@
           <td>{% if category.generate_pdf %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td>
           <td>{{ category.locale }}</td>
           <td>
-              <a href="{% url "category:edit" pk=category.id %}" class="btn btn-primary">{% trans "Edit" %}</a>
+              <div class="btn-group me-1">
+                  <a href="{% url "category:edit" pk=category.id %}" class="btn btn-primary">{% trans "Edit" %}</a>
+                  <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                    <span class="visually-hidden">{% trans "Toggle Dropdown" %}</span>
+                  </button>
+                  <ul class="dropdown-menu dropdown-menu-end">
+                      <li>
+                          {% if category.id in already_staged %}
+                            <a href="{% url "category:regenerate" pk=category.id %}" class="dropdown-item text-secondary pe-none">{% trans "Already in queue" %}</a>
+                          {% else %}
+                            <span class="dropdown-item text-primary">{% trans "Regenerate" %}</span>
+                          {% endif %}
+                      </li>
+                      <li><a href="{% url "category:delete" pk=category.id %}" class="dropdown-item text-danger">{% trans "Delete" %}</a></li>
+                  </ul>
+              </div>
           </td>
-          <td>
-              <a href="{% url "category:delete" pk=category.id %}" class="btn btn-danger">{% trans "Delete" %}</a>
-          </td>
-          {% if category.id in already_staged %}
-          <td>
-              <span class="text">{% trans "Already in queue" %}</span>
-          </td>
-          {% else %}
-          <td>
-              <a href="{% url "category:regenerate" pk=category.id %}" class="btn btn-primary">{% trans "Regenerate" %}</a>
-          </td>
-          {% endif %}
+{#          <td>#}
+{#              <a href="{% url "category:edit" pk=category.id %}" class="btn btn-primary">{% trans "Edit" %}</a>#}
+{#          </td>#}
+{#          <td>#}
+{#              <a href="{% url "category:delete" pk=category.id %}" class="btn btn-danger">{% trans "Delete" %}</a>#}
+{#          </td>#}
+{#          {% if category.id in already_staged %}#}
+{#          <td>#}
+{#              <span class="text">{% trans "Already in queue" %}</span>#}
+{#          </td>#}
+{#          {% else %}#}
+{#          <td>#}
+{#              <a href="{% url "category:regenerate" pk=category.id %}" class="btn btn-primary"></a>#}
+{#          </td>#}
+{#          {% endif %}#}
         </tr>
         {% endfor %}
       </tbody>
     </table>
+    <script defer>
+    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
+    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
+    </script>
 {% endblock %}

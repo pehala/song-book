@@ -52,19 +52,19 @@
             <%/if%>
         </a>
         {% if user.is_authenticated %}
-            <span class="btn-group me-1">
-              <button type="button" class="btn" data-bs-toggle="dropdown" aria-expanded="false">
+            <div class="btn-group me-1">
+              <button type="button" class="btn" data-bs-toggle="dropdown" aria-expanded="false" title="{% trans "Actions" %}">
                 <i class="icon-menu"></i>
               </button>
               <ul class="dropdown-menu">
-                <li><a href="<%:edit_url%>" class="btn color-danger dropdown-item">
+                <li><a href="<%:edit_url%>" class="color-danger dropdown-item">
                     <i class="icon-edit"></i>{% trans "Edit" %}
-                </a></li
-                <li><a type="button" href="<%:delete_url%>" class="btn text-danger dropdown-item">
+                </a></li>
+                <li><a type="button" href="<%:delete_url%>" class="text-danger dropdown-item">
                     <i class="icon-trash-empty"></i>{% trans "Delete" %}
                 </a></li>
               </ul>
-            </span>
+            </div>
         {% endif %}
         </div>
         <div id="id<%:number%>" class="accordion-collapse collapse" data-bs-parent="#datatable">
