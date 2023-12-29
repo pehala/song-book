@@ -11,6 +11,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
+      - name: Install gettext
+        run: sudo apt-get install -y gettext
       - name: Install poetry
         run: pip install poetry
       - name: Setup Python
