@@ -85,24 +85,31 @@
             </div>
         </div>
     </script>
-    <div>
-      <div class="input-group pe-sm-1">
-        <div class="input-group-prepend">
-          <div class="input-group-text">{% trans "Search" %}</div>
+    <div class="d-flex justify-content-center">
+        <div class="spinner-border m-auto" role="status" id="spinner">
+          <span class="visually-hidden">Loading...</span>
         </div>
-        <input type="text" class="form-control" id="searchInput" placeholder="{% trans "Number, text or author" %}">
-      </div>
     </div>
-    <table id="datatable" class="accordion accordion-flush w-100 h-100 table table-borderless">
-        <thead class="d-none"></thead>
-        <tbody class="w-100 m-0"></tbody>
-    </table>
-    <button id="back-to-top" class="btn btn-primary btn-lg back-to-top" role="button" title="Click to return on the top page" data-bs-toggle="tooltip" data-bs-placement="left">
-        <span class="icon-up-open"></span>
-    </button>
-    <button id="scroll-down" class="btn btn-primary btn-lg scroll_button" role="button" title="Click to scroll down" data-bs-placement="left">
-        <span class="icon-down-open"></span>
-    </button>
+    <div class="d-none" id="content">
+        <div>
+          <div class="input-group pe-sm-1">
+            <div class="input-group-prepend">
+              <div class="input-group-text">{% trans "Search" %}</div>
+            </div>
+            <input type="text" class="form-control" id="searchInput" placeholder="{% trans "Number, text or author" %}">
+          </div>
+        </div>
+        <table id="datatable" class="accordion accordion-flush w-100 h-100 table table-borderless">
+            <thead class="d-none"></thead>
+            <tbody class="w-100 m-0"></tbody>
+        </table>
+        <button id="back-to-top" class="btn btn-primary btn-lg back-to-top" role="button" title="Click to return on the top page" data-bs-toggle="tooltip" data-bs-placement="left">
+            <span class="icon-up-open"></span>
+        </button>
+        <button id="scroll-down" class="btn btn-primary btn-lg scroll_button" role="button" title="Click to scroll down" data-bs-placement="left">
+            <span class="icon-down-open"></span>
+        </button>
+    </div>
     <script type="module">
     import {Options, BooleanOption} from "{% static 'js/Options.js' %}"
     const canWakeLock = () => 'wakeLock' in navigator;
@@ -127,6 +134,10 @@
                 groupClass: "transposer",
             });
             selector.toggleClass("raw")
+        },
+        initComplete: function() {
+            document.getElementById("content").classList.remove("d-none");
+            document.getElementById("spinner").classList.add("d-none");
         },
         dom: 'rt<"mt-2 ms-1"p>',
         columns: [
