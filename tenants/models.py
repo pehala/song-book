@@ -1,9 +1,16 @@
 """Tenant models"""
 from django.contrib.auth import get_user_model
-from django.db.models import Model, CharField, ManyToManyField, BooleanField
+from django.core.exceptions import ValidationError
+from django.db.models import Model, CharField, ManyToManyField, BooleanField, ImageField
 from django.utils.translation import gettext_lazy as _
 
 # Create your models here.
+
+
+def only_png(value):
+    """Raises validation error if the file is not a PNG image"""
+    if not value.url and value.file.content_type != "image/png":
+        raise ValidationError(_("Only PNG images are allowed"))
 
 
 class Tenant(Model):
@@ -24,6 +31,15 @@ class Tenant(Model):
         verbose_name=_("All Songs"),
         help_text=_("True, if all songs category should be added to navigation"),
     )
+    icon = ImageField(
+        verbose_name=_("Logo"),
+        help_text=_("Optional Site logo, should be around 50x50 and in PNG format"),
+        null=True,
+        blank=True,
+        upload_to="uploads/",
+        validators=[only_png],
+    )
+
     admins = ManyToManyField(get_user_model())
 
     def __str__(self):

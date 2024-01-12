@@ -3,7 +3,7 @@
 {% load django_bootstrap5 %}
 
 {% block framed_body %}
-  <form method="post">
+  <form method="post" enctype="multipart/form-data">
     {% csrf_token %}
     {% bootstrap_form form layout='horizontal' %}
     {% bootstrap_button _("Submit") button_type="submit" %}
