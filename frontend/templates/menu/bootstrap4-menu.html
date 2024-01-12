@@ -5,7 +5,7 @@
             <li class="divider-vertical"></li>
         {% endif %}
 
-        <li class="nav-item{% if item.children %} dropdown{% endif %}"
+        <li class="nav-item{% if item.children %} dropdown{% endif %} nav-underline"
             id="top-menu-{{ item.slug }}">
             {% if item.children %}
             <a href="{{ item.url }}" class="nav-link dropdown-toggle" id="{{ item.title }}" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
