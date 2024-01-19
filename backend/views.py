@@ -10,7 +10,7 @@ from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, RedirectView
 
-from backend.auth.mixins import RegenerateViewMixin, LocalAdminRequired, PassRequestToFormMixin
+from backend.mixins import RegenerateViewMixin, PassRequestToFormMixin, LocalAdminRequired
 from backend.forms import SongForm
 from backend.models import Song
 from backend.utils import regenerate_pdf, regenerate_prerender
@@ -127,13 +127,3 @@ class SongDeleteView(LocalAdminRequired, DeleteView):
         response = super().post(request, *args, **kwargs)
         messages.success(self.request, self.success_message % self.object.name)
         return response
-
-
-#
-# @method_decorator(login_required, name="dispatch")
-# class SongsDatatableView(BaseDatatableView):
-#     """API for datatables that returns all songs"""
-#
-#     model = Song
-#     max_display_length = 500
-#     columns = ["name", "author", "capo"]

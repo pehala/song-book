@@ -1,23 +1,6 @@
-"""Mixins for AuthZ"""
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from backend.auth import is_localadmin, is_superadmin
-
-# pylint: disable=no-member
-
-
-class LocalAdminRequired(LoginRequiredMixin, UserPassesTestMixin):
-    """Mixin for checking if the user can administer current Tenant"""
-
-    def test_func(self):
-        return is_localadmin(self.request)
-
-
-class SuperAdminRequired(LoginRequiredMixin, UserPassesTestMixin):
-    """Mixin for checking if the user can administer the entire site, including Django admin"""
-
-    def test_func(self):
-        return is_superadmin(self.request)
 
 
 class RegenerateViewMixin:
@@ -45,3 +28,17 @@ class PassRequestToFormMixin:
         kwargs = super().get_form_kwargs()
         kwargs["request"] = self.request
         return kwargs
+
+
+class LocalAdminRequired(LoginRequiredMixin, UserPassesTestMixin):
+    """Mixin for checking if the user can administer current Tenant"""
+
+    def test_func(self):
+        return is_localadmin(self.request)
+
+
+class SuperAdminRequired(LoginRequiredMixin, UserPassesTestMixin):
+    """Mixin for checking if the user can administer the entire site, including Django admin"""
+
+    def test_func(self):
+        return is_superadmin(self.request)
