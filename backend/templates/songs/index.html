@@ -184,6 +184,54 @@
     $.fn.DataTable.ext.pager.numbers_length = 5;
     $.templates("song", "#songTemplate")
 
+    let wakelock;
+    async function preventSleep(value) {
+            if(!canWakeLock()) return;
+            if (value) {
+              try {
+                wakelock = await navigator.wakeLock.request();
+                wakelock.addEventListener('release', () => {
+                  console.log('Screen Wake State Locked:', !wakelock.released);
+                });
+                console.log('Screen Wake State Locked:', !wakelock.released);
+              } catch(e) {
+                console.error('Failed to lock wake state with reason:', e.message);
+              }
+            } else {
+                if(wakelock) wakelock.release();
+                wakelock = null;
+            }
+    }
+    let hidden = false
+    function hideChords(value) {
+        hidden = value
+        if (value) {
+            $(".chord").hide()
+        } else {
+            $(".chord").show()
+        }
+    }
+    const config = new Map([
+            ["hide_chords", new BooleanOption(document.getElementById("hideChords"), hideChords, false)],
+            ["prevent_sleep", new BooleanOption(document.getElementById("preventSleep"), function(value) {
+                preventSleep(value).then()
+            }, false)],
+            ["one_page", new BooleanOption(document.getElementById("onePage"), function(value) {
+                if (table) {
+                    table.destroy()
+                    document.getElementById("content").classList.add("d-none");
+                    document.getElementById("spinner").classList.remove("d-none");
+                }
+                table = createDatatable(!value)
+            }, false)],
+        ])
+    const options = new Options(config)
+    if (!canWakeLock()) {
+        options.set("prevent_sleep", false)
+        options.elements("prevent_sleep").forEach(function (element) {
+            element.disabled = true
+        })
+    }
     document.addEventListener('DOMContentLoaded', function () {
          const back_to_top = $('#back-to-top')
          $(window).scroll(function () {
@@ -205,55 +253,6 @@
         $( "#scroll-down" ).click(function() {
             betterScrollDown()
         });
-
-        let hidden = false
-        function hideChords(value) {
-            hidden = value
-            if (value) {
-                $(".chord").hide()
-            } else {
-                $(".chord").show()
-            }
-        }
-
-        let wakelock;
-        async function preventSleep(value) {
-            if(!canWakeLock()) return;
-            if (value) {
-              try {
-                wakelock = await navigator.wakeLock.request();
-                wakelock.addEventListener('release', () => {
-                  console.log('Screen Wake State Locked:', !wakelock.released);
-                });
-                console.log('Screen Wake State Locked:', !wakelock.released);
-              } catch(e) {
-                console.error('Failed to lock wake state with reason:', e.message);
-              }
-            } else {
-                if(wakelock) wakelock.release();
-                wakelock = null;
-            }
-        }
-
-        const config = new Map([
-            ["hide_chords", new BooleanOption(document.getElementById("hideChords"), hideChords, false)],
-            ["prevent_sleep", new BooleanOption(document.getElementById("preventSleep"), function(value) {
-                preventSleep(value).then()
-            }, false)],
-            ["one_page", new BooleanOption(document.getElementById("onePage"), function(value) {
-                if (table)
-                    table.destroy()
-                table = createDatatable(!value)
-            }, false)],
-        ])
-        const options = new Options(config)
-
-        if (!canWakeLock()) {
-            options.set("prevent_sleep", false)
-            options.elements("prevent_sleep").forEach(function (element) {
-                element.disabled = true
-            })
-        }
 
         table.on( 'draw', function () {
             if (hidden) {
