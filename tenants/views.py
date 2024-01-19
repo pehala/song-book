@@ -4,7 +4,7 @@ from django.urls import reverse_lazy
 from django.views.generic import UpdateView
 from django.utils.translation import gettext_lazy as _
 
-from backend.auth.mixins import LocalAdminRequired
+from backend.mixins import LocalAdminRequired
 from tenants.forms import UserTenantForm
 from tenants.models import Tenant
 

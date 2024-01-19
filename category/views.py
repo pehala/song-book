@@ -14,9 +14,9 @@ from django.views.generic import ListView, CreateView, UpdateView, DeleteView, T
 from django.views.generic.detail import SingleObjectMixin
 
 from analytics.views import AnalyticsMixin
-from backend.auth.mixins import LocalAdminRequired, SuperAdminRequired
 from backend.models import Song
-from backend.views import BaseSongListView, RegenerateViewMixin
+from backend.views import BaseSongListView
+from backend.mixins import RegenerateViewMixin, LocalAdminRequired, SuperAdminRequired
 from category.forms import CategoryForm, NameForm, ChooseTenantForm
 from category.models import Category
 from pdf.models.request import PDFRequest, RequestType, Status

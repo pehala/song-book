@@ -11,7 +11,7 @@ from django.views.generic import ListView
 from django.views.generic.base import TemplateResponseMixin, View
 from django.views.generic.detail import SingleObjectMixin, DetailView
 
-from backend.auth.mixins import LocalAdminRequired
+from backend.mixins import LocalAdminRequired
 from backend.models import Song
 from category.models import Category
 from category.views import CategoryMoveView
