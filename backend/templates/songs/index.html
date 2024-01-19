@@ -115,8 +115,8 @@
     const canWakeLock = () => 'wakeLock' in navigator;
 
     {% if user.is_authenticated %}
-    const baseEditUrl = "{% url "chords:edit" pk="0" %}"
-    const baseDeleteUrl = "{% url "chords:delete" pk="0" %}"
+    const baseEditUrl = "{% url "chords:edit" pk="0" %}?next={{ request.path }}"
+    const baseDeleteUrl = "{% url "chords:delete" pk="0" %}?next={{ request.path }}"
     {% endif %}
 
     $.views.settings.delimiters("<%", "%>");
