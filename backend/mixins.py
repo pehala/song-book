@@ -1,6 +1,9 @@
+"""General mixins"""
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from backend.auth import is_localadmin, is_superadmin
+
+# pylint: disable=no-member
 
 
 class RegenerateViewMixin:
@@ -42,3 +45,17 @@ class SuperAdminRequired(LoginRequiredMixin, UserPassesTestMixin):
 
     def test_func(self):
         return is_superadmin(self.request)
+
+
+class RedirectToNextMixin:
+    """Mixin for redirecting to the page specified in next parameter"""
+
+    default_next_page = None
+
+    def get_success_url(self):
+        """Returns success_url to redirect to"""
+        if "next" in self.request.GET:
+            return self.request.GET["next"]
+        if "next" in self.request.POST:
+            return self.request.POST["next"]
+        return self.default_next_page

@@ -10,8 +10,8 @@ from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView, CreateView, UpdateView, DeleteView, RedirectView
 
-from backend.mixins import RegenerateViewMixin, PassRequestToFormMixin, LocalAdminRequired
 from backend.forms import SongForm
+from backend.mixins import RegenerateViewMixin, PassRequestToFormMixin, LocalAdminRequired, RedirectToNextMixin
 from backend.models import Song
 from backend.utils import regenerate_pdf, regenerate_prerender
 
@@ -97,13 +97,20 @@ class SongCreateView(LocalAdminRequired, PassRequestToFormMixin, SuccessMessageM
         return super().get_success_url()
 
 
-class SongUpdateView(LocalAdminRequired, PassRequestToFormMixin, SuccessMessageMixin, RegenerateViewMixin, UpdateView):
+class SongUpdateView(
+    LocalAdminRequired,
+    PassRequestToFormMixin,
+    SuccessMessageMixin,
+    RegenerateViewMixin,
+    RedirectToNextMixin,
+    UpdateView,
+):
     """Updates existing song"""
 
     form_class = SongForm
     model = Song
     template_name = "songs/add.html"
-    success_url = reverse_lazy("backend:index")
+    default_next_page = reverse_lazy("backend:index")
     success_message = _("Song %(name)s was successfully updated")
 
     def post(self, request, *args, **kwargs):
@@ -114,12 +121,12 @@ class SongUpdateView(LocalAdminRequired, PassRequestToFormMixin, SuccessMessageM
         return response
 
 
-class SongDeleteView(LocalAdminRequired, DeleteView):
+class SongDeleteView(LocalAdminRequired, RedirectToNextMixin, DeleteView):
     """Removes song"""
 
     model = Song
     template_name = "songs/confirm_delete.html"
-    success_url = reverse_lazy("backend:index")
+    default_next_page = reverse_lazy("backend:index")
     success_message = _("Song %s was successfully deleted")
 
     def post(self, request, *args, **kwargs):
