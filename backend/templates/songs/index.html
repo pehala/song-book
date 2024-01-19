@@ -31,6 +31,12 @@
         <label class="form-check-label custom" for="preventSleep">{% trans "Prevent sleep" %}</label>
     </div>
 </div>
+<div class="me-2 mt-1 d-flex">
+    <div><input class="form-check-input ms-2" type="checkbox" value="" id="onePage"></div>
+    <div class="ms-auto">
+        <label class="form-check-label custom" for="onePage">{% trans "Single page" %}</label>
+    </div>
+</div>
 {% endblock %}
 {% block body %}
     <script async>
@@ -114,17 +120,12 @@
     import {Options, BooleanOption} from "{% static 'js/Options.js' %}"
     const canWakeLock = () => 'wakeLock' in navigator;
 
-    {% if user.is_authenticated %}
-    const baseEditUrl = "{% url "chords:edit" pk="0" %}?next={{ request.path }}"
-    const baseDeleteUrl = "{% url "chords:delete" pk="0" %}?next={{ request.path }}"
-    {% endif %}
-
-    $.views.settings.delimiters("<%", "%>");
-    $.fn.DataTable.ext.pager.numbers_length = 5;
-    $.templates("song", "#songTemplate")
-    const table = $('#datatable').DataTable({
+    let table = null
+    function createDatatable(paging) {
+        return $('#datatable').DataTable({
         processing: true,
         select: false,
+        paging: paging,
         deferRender: true,
         drawCallback: function () {
             const selector = $(".raw[type='number']")
@@ -173,6 +174,15 @@
         pageLength: 50,
         {% datatables_language %}
     });
+    }
+    {% if user.is_authenticated %}
+    const baseEditUrl = "{% url "chords:edit" pk="0" %}?next={{ request.path }}"
+    const baseDeleteUrl = "{% url "chords:delete" pk="0" %}?next={{ request.path }}"
+    {% endif %}
+
+    $.views.settings.delimiters("<%", "%>");
+    $.fn.DataTable.ext.pager.numbers_length = 5;
+    $.templates("song", "#songTemplate")
 
     document.addEventListener('DOMContentLoaded', function () {
          const back_to_top = $('#back-to-top')
@@ -229,7 +239,12 @@
             ["hide_chords", new BooleanOption(document.getElementById("hideChords"), hideChords, false)],
             ["prevent_sleep", new BooleanOption(document.getElementById("preventSleep"), function(value) {
                 preventSleep(value).then()
-            }, false)]
+            }, false)],
+            ["one_page", new BooleanOption(document.getElementById("onePage"), function(value) {
+                if (table)
+                    table.destroy()
+                table = createDatatable(!value)
+            }, false)],
         ])
         const options = new Options(config)
 
@@ -240,7 +255,6 @@
             })
         }
 
-
         table.on( 'draw', function () {
             if (hidden) {
                 $(".chord").hide()
@@ -249,7 +263,6 @@
             }
 
         });
-
 
     });
 
