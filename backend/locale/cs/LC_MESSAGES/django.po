@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-12 15:11+0000\n"
+"POT-Creation-Date: 2024-01-19 18:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -120,27 +120,31 @@ msgstr "Skrýt akordy"
 msgid "Prevent sleep"
 msgstr "Zabránit uspání"
 
-#: backend/templates/songs/index.html:56
+#: backend/templates/songs/index.html:37
+msgid "Single page"
+msgstr "Bez stránek"
+
+#: backend/templates/songs/index.html:62
 msgid "Actions"
 msgstr "Akce"
 
-#: backend/templates/songs/index.html:61
+#: backend/templates/songs/index.html:67
 msgid "Edit"
 msgstr "Editor"
 
-#: backend/templates/songs/index.html:64
+#: backend/templates/songs/index.html:70
 msgid "Delete"
 msgstr "Smazat"
 
-#: backend/templates/songs/index.html:78
+#: backend/templates/songs/index.html:84
 msgid "Transpose"
 msgstr "Transponovat"
 
-#: backend/templates/songs/index.html:97
+#: backend/templates/songs/index.html:103
 msgid "Search"
 msgstr "Vyhledávání"
 
-#: backend/templates/songs/index.html:99
+#: backend/templates/songs/index.html:105
 msgid "Number, text or author"
 msgstr "Číslo, text nebo autor"
 

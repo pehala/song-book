@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-12 15:18+0000\n"
+"POT-Creation-Date: 2024-01-19 18:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,7 +23,7 @@ msgstr ""
 msgid "Tenant"
 msgstr "Zpěvník"
 
-#: tenants/menus.py:27 tenants/models.py:30
+#: tenants/menus.py:27 tenants/models.py:31
 msgid "All Songs"
 msgstr "Všechno"
 
@@ -35,53 +35,53 @@ msgstr "Soubory"
 msgid "Categories"
 msgstr "Kategorie"
 
-#: tenants/models.py:12
+#: tenants/models.py:13
 msgid "Only PNG images are allowed"
 msgstr "Jen PNG obrázky jsou podporovány"
 
-#: tenants/models.py:19
+#: tenants/models.py:20
 msgid "Hostname"
 msgstr "Doménové jméno"
 
-#: tenants/models.py:19
+#: tenants/models.py:20
 msgid "The exact hostname for this Tenant"
 msgstr "Přesné doménové jméno pod kterým bude Zpěvník dostupný"
 
-#: tenants/models.py:21
+#: tenants/models.py:22
 msgid "Name"
 msgstr "Jméno"
 
-#: tenants/models.py:21
+#: tenants/models.py:22
 msgid "Internal name for this Tenant"
 msgstr "Interní název tohoto Zpevníku"
 
-#: tenants/models.py:22
+#: tenants/models.py:23
 msgid "Title"
 msgstr "Titulek"
 
-#: tenants/models.py:22
+#: tenants/models.py:23
 msgid "Title on the Main site"
 msgstr "Titulek na hlavní stránce"
 
-#: tenants/models.py:24
+#: tenants/models.py:25
 msgid "Index redirect path"
 msgstr "Cíl přesměrování úvodní stránky"
 
-#: tenants/models.py:25
+#: tenants/models.py:26
 msgid ""
 "Where should new tenant redirect from index page, usually a category slug"
 msgstr ""
 "Kam by měla úvodní stránka přesměrovat uživatele, většinou URL kategorie"
 
-#: tenants/models.py:31
+#: tenants/models.py:32
 msgid "True, if all songs category should be added to navigation"
 msgstr "Pokud je zaškrknuto tak se do navigace přidá odkaz na všechny písničky"
 
-#: tenants/models.py:34
+#: tenants/models.py:35
 msgid "Logo"
 msgstr ""
 
-#: tenants/models.py:35
+#: tenants/models.py:36
 msgid "Optional Site logo, should be around 50x50 and in PNG format"
 msgstr ""
 "Logo zpěvníčku, nepovinné, mělo by mít rozměry kolem 50x50 a být v PNG "
