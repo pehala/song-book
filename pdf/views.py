@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib import messages
 from django.core.cache import cache
 from django.db import transaction
+from django.db.models import Subquery, OuterRef
 from django.forms import formset_factory
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import redirect
@@ -30,6 +31,11 @@ class RequestListView(LocalAdminRequired, ListView):
 
     def get_queryset(self):
         return super().get_queryset().filter(tenant=self.request.tenant)
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data(object_list=object_list, **kwargs)
+        context["automated"] = PDFRequest.objects.filter(category__tenant=self.request.tenant)
+        return context
 
 
 class RequestRegenerateView(LocalAdminRequired, View, SingleObjectMixin):

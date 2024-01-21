@@ -12,7 +12,7 @@ from simple_menu import MenuItem, Menu
 
 from category.models import Category
 from pdf.cachemenuitem import CacheMenuItem
-from pdf.models.request import PDFRequest, Status
+from pdf.models import PDFFile
 
 from tenants.models import Tenant
 from tenants.utils import create_tenant_string
@@ -66,13 +66,12 @@ def distinct_requests(request):
     """
     files = set()
     data = []
-    for entry in PDFRequest.objects.filter(file__isnull=False, status=Status.DONE, tenant=request.tenant).exclude(
-        file__exact=""
+    for entry in (
+        PDFFile.objects.filter(tenant=request.tenant, public=True).exclude(file__exact="").order_by("-generated")
     ):
-        # pylint: disable=protected-access
-        if entry.filename not in files and entry.public:
-            data.append(MenuItem(os.path.basename(entry.file.name), entry.file.url))
-            files.add(entry.filename)
+        if entry.file.name not in files:
+            data.append(MenuItem(entry.filename, entry.file.url))
+            files.add(entry.file.name)
     return data
 
 

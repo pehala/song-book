@@ -15,111 +15,160 @@
 {% endblock %}
 
 {% block framed_body %}
-    <div class="btn-group mb-2 float-start" data-bs-toggle="buttons">
-      <input type="radio" id="manual" class="btn-check" name="options" value="MA">
-      <label class="btn btn-outline-info" for="manual">{% trans "Manual" %}</label>
-
-      <input type="radio" id="automatic" class="btn-check" name="options" value="EV">
-      <label class="btn btn-outline-info" for="automatic">{% trans "Automated" %}</label>
-    </div>
-
-    <div class="input-group">
+    <div class="input-group mb-2">
       <div class="input-group-prepend">
         <div class="input-group-text">{% trans "Search" %}</div>
       </div>
       <input type="text" class="form-control" id="searchInput" placeholder="{% trans "Insert query" %}">
     </div>
-    <div class="table-responsive">
-        <table id="datatable" class="table table-bordered">
-          <thead class="thead-light">
-            <tr>
-              <th scope="col">{% trans "Title" %}</th>
-              <th scope="col">{% trans "Last updated" %}</th>
-              <th scope="col" data-visible="false" data-searchable="true">HIDDEN</th>
-              <th scope="col">{% trans "Type" %}</th>
-              <th scope="col">{% trans "Status" %}</th>
-              <th scope="col" data-orderable="false">{% trans "Link" %}</th>
-              <th scope="col">{% trans "Time elapsed" %}</th>
-              <th scope="col">{% trans "Category" %}</th>
-              <th scope="col" data-searchable="false" data-orderable="false">{% trans "Actions" %}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for request in requests %}
-            <tr>
-              <td>{{ request.title }}</td>
-              <td data-order="{{ request.update_date|date:"c" }}">{{ request.update_date }}</td>
-              <td>{{ request.type }}</td>
-              <td>{{ request.get_type_display }}</td>
-              <td style="background-color: {{ request.status|get_status_color }}">{{ request.get_status_display }} {% if request.status == "PR" %}{{ request.progress }}/7 {% endif %} {% if request.status == "SC" %} {{ request.scheduled_at }} {% endif %}</td>
-              <td>
-                  {% if request.file %}
-                    <a href="{{ request.file.url }}">{{ request.file|filename }}</a>
-                  {% else %}
-                    {% trans "None" %}
-                  {% endif %}
-              </td>
-              <td>{{ request.time_elapsed|default_if_none:0 }} s</td>
-              <td>
-                  {% if request.category %}
-                    <a href="{% url "category:index" slug=request.category.slug %}">{{ request.category.name }}</a>
-                  {% else %}
-                    {% trans "None" %}
-                  {% endif %}
-              </td>
-              <td>
-                  <div class="btn-group me-1">
-                      {% if request.status != "QU" and requests.status != "SC" %}
-                        <a href="{% url "pdf:regenerate" pk=request.id %}" class="btn btn-primary">{% trans "Regenerate" %}</a>
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="manual-tab" data-bs-toggle="tab" data-bs-target="#manual-tab-pane" type="button" role="tab" aria-controls="manual-tab-pane" aria-selected="true">{% trans "Manual" %}</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="automated-tab" data-bs-toggle="tab" data-bs-target="#automated-tab-pane" type="button" role="tab" aria-controls="automated-tab-pane" aria-selected="false">{% trans "Automated" %}</button>
+      </li>
+    </ul>
+
+    <div class="tab-content">
+        <div class="table-responsive tab-pane" id="automated-tab-pane">
+            <table id="automated" class="table table-bordered w-100">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col">{% trans "Title" %}</th>
+                  <th scope="col">{% trans "Last updated" %}</th>
+                  <th scope="col">{% trans "Status" %}</th>
+                  <th scope="col" data-orderable="false">{% trans "Last File" %}</th>
+                  <th scope="col">{% trans "Time elapsed" %}</th>
+                  <th scope="col">{% trans "Category" %}</th>
+                  <th scope="col" data-searchable="false" data-orderable="false">{% trans "Actions" %}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for request in automated %}
+                <tr>
+                  <td>{{ request.get_title }}</td>
+                  <td data-order="{{ request.get_latest.generated|default:0|date:"c" }}"> 
+                      {% if request.get_latest %}
+                        {{ request.get_latest.generated }}
                       {% else %}
-                        <button class="btn btn-outline-secondary" disabled>{% trans "Already in queue" %}</button>
+                        {% trans "None" %}
                       {% endif %}
-                      <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                        <span class="visually-hidden">{% trans "Toggle Dropdown" %}</span>
-                      </button>
-                      <ul class="dropdown-menu dropdown-menu-end">
-                          <li>
-                              {% if request.file %}
-                                <a href="{% url "pdf:remove_file" pk=request.id %}" class="dropdown-item text-danger">{% trans "Delete File" %}</a>
-                              {% else %}
-                                <span class="dropdown-item text-secondary">{% trans "No file present" %}</span>
-                              {% endif %}
-                          </li>
-                      </ul>
-                  </div>
-              </td>
-            </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+                  </td>
+                  <td style="background-color: {{ request.status|get_status_color }}">{{ request.get_status_display }} {% if request.status == "PR" %}{{ request.progress }}/7 {% endif %} {% if request.status == "SC" %} {{ request.scheduled_at }} {% endif %}</td>
+                  <td>
+                      {% if request.get_latest %}
+                        <a href="{{ request.last_file.file.url }}">{{ request.get_latest.file|filename }}</a>
+                      {% else %}
+                        {% trans "None" %}
+                      {% endif %}
+                  </td>
+                  <td>{{ request.get_latest.time_elapsed|default_if_none:0 }} s</td>
+                  <td>
+                        <a href="{% url "category:index" slug=request.category.slug %}">{{ request.category.name }}</a>
+                  </td>
+                  <td>
+                      <div class="btn-group me-1">
+                          {% if request.status != "QU" and requests.status != "SC" %}
+                            <a href="{% url "pdf:regenerate" pk=request.id %}" class="btn btn-primary">{% trans "Regenerate" %}</a>
+                          {% else %}
+                            <button class="btn btn-outline-secondary" disabled>{% trans "Already in queue" %}</button>
+                          {% endif %}
+                          <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="visually-hidden">{% trans "Toggle Dropdown" %}</span>
+                          </button>
+                          <ul class="dropdown-menu dropdown-menu-end">
+                              <li>
+                                  {% if request.file %}
+                                    <a href="{% url "pdf:remove_file" pk=request.id %}" class="dropdown-item text-danger">{% trans "Delete File" %}</a>
+                                  {% else %}
+                                    <span class="dropdown-item text-secondary">{% trans "No file present" %}</span>
+                                  {% endif %}
+                              </li>
+                          </ul>
+                      </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        </div>
+        <div class="table-responsive tab-pane active" id="manual-tab-pane">
+            <table id="manual" class="table table-bordered w-100">
+              <thead class="thead-light">
+                <tr>
+                  <th scope="col">{% trans "Title" %}</th>
+                  <th scope="col">{% trans "Last updated" %}</th>
+                  <th scope="col">{% trans "Status" %}</th>
+                  <th scope="col" data-orderable="false">{% trans "Link" %}</th>
+                  <th scope="col">{% trans "Time elapsed" %}</th>
+                  <th scope="col" data-searchable="false" data-orderable="false">{% trans "Actions" %}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for request in requests %}
+                <tr>
+                  <td>{{ request.get_title }}</td>
+                  <td data-order="{{ request.get_latest.generated|default:0|date:"c" }}"> 
+                      {% if request.get_latest %}
+                        {{ request.get_latest.generated }}
+                      {% else %}
+                        {% trans "None" %}
+                      {% endif %}</td>
+                  <td style="background-color: {{ request.status|get_status_color }}">{{ request.get_status_display }} {% if request.status == "PR" %}{{ request.progress }}/7 {% endif %} {% if request.status == "SC" %} {{ request.scheduled_at }} {% endif %}</td>
+                  <td>
+                      {% if request.get_latest %}
+                        <a href="{{ request.last_file.file.url }}">{{ request.get_latest.file|filename }}</a>
+                      {% else %}
+                        {% trans "None" %}
+                      {% endif %}
+                  </td>
+                  <td>{{ request.get_latest.time_elapsed|default_if_none:0 }} s</td>
+                  <td>
+                      <div class="btn-group me-1">
+                          {% if request.status != "QU" and requests.status != "SC" %}
+                            <a href="{% url "pdf:regenerate" pk=request.id %}" class="btn btn-primary">{% trans "Regenerate" %}</a>
+                          {% else %}
+                            <button class="btn btn-outline-secondary" disabled>{% trans "Already in queue" %}</button>
+                          {% endif %}
+                          <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+                            <span class="visually-hidden">{% trans "Toggle Dropdown" %}</span>
+                          </button>
+                          <ul class="dropdown-menu dropdown-menu-end">
+                              <li>
+                                  {% if request.file %}
+                                    <a href="{% url "pdf:remove_file" pk=request.id %}" class="dropdown-item text-danger">{% trans "Delete File" %}</a>
+                                  {% else %}
+                                    <span class="dropdown-item text-secondary">{% trans "No file present" %}</span>
+                                  {% endif %}
+                              </li>
+                          </ul>
+                      </div>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+        </div>
     </div>
     <script type="module">
-    import {Options, CheckboxOption} from "{% static 'js/Options.js' %}"
-
-    let table = null
-    function switch_tab(value) {
-        if (table) table.column(2).search(value).draw()
-    }
-
-    const config = new Map([
-        ["tab", new CheckboxOption("input[type=radio][name=options]", switch_tab, "MA")],
-    ])
-    const options = new Options(config)
-    const initial_value = options.get("tab")
-    table = $('#datatable').DataTable({
+    const manualTable = $('#manual').DataTable({
         processing: true,
         order: [[ 1, "desc" ]],
         dom: 'rtip',
-        searchCols: [
-          null,
-          null,
-          { "search": initial_value},
-        ],
+        {% datatables_language %}
+    });
+    const automatedTable = $('#automated').DataTable({
+        processing: true,
+        order: [[ 1, "desc" ]],
+        dom: 'rtip',
         {% datatables_language %}
     });
     document.getElementById("searchInput").addEventListener("input", function (event) {
-        table.search(event.target.value);
-        table.draw();
+        manualTable.search(event.target.value);
+        manualTable.draw();
+        automatedTable.search(event.target.value);
+        automatedTable.draw();
     })
     </script>
 {% endblock %}

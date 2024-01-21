@@ -21,10 +21,12 @@ from django.template.loader import render_to_string
 from django.urls import get_script_prefix
 from django.urls import reverse
 from django.utils import translation
+from django.utils.timezone import now
 from huey.contrib.djhuey import task
 from weasyprint.logger import PROGRESS_LOGGER
 
 from pdf.locales import changed_locale, lang_to_locale
+from pdf.models import PDFFile
 from pdf.models.request import PDFRequest, Status
 
 logger = logging.getLogger(__name__)
@@ -101,26 +103,26 @@ def get_base_url():
 
 def generate_pdf(request: PDFRequest):
     """Generates PDF"""
-    songs = sorted(request.get_songs(), key=lambda song: song.song_number)
+    songs_by_number = sorted(request.get_song_pairs(), key=lambda pair: pair[1])
     with changed_locale(lang_to_locale(request.locale)):
-        sorted_songs = sorted(songs, key=lambda song: locale.strxfrm(song.name))
+        songs_by_name = sorted(songs_by_number, key=lambda pair: locale.strxfrm(pair[0].name))
 
     update_status(request, Status.IN_PROGRESS)
 
     timer = Timer()
     try:
-        rel_path = f"{settings.PDF_FILE_DIR}/{request.filename}.pdf"
+        rel_path = f"{settings.PDF_FILE_DIR}/{request.get_filename()}.pdf"
         with tempfile.TemporaryFile(mode="a+b") as file:
             with translation.override(request.locale), timer:
                 name = os.path.basename(rel_path)
                 logger.info("Generating %s", name)
                 logger.debug("from request %s", request)
                 string = render_to_string(
-                    template_name="pdf/index.html",
+                    template_name="pdf/file.html",
                     context={
-                        "songs": songs,
-                        "sorted_songs": sorted_songs,
-                        "name": request.title or request.tenant.display_name,
+                        "songs_by_number": songs_by_number,
+                        "songs_by_name": songs_by_name,
+                        "name": request.get_title(),
                         "request": request,
                         "link": request.link,
                     },
@@ -134,11 +136,19 @@ def generate_pdf(request: PDFRequest):
                     base_url=get_base_url(),
                 ).write_pdf(file, optimize_size=("fonts", "images"))
                 PROGRESS_LOGGER.removeFilter(log_filter)
-            request.file.save(rel_path, File(file, name=rel_path))
-            request.time_elapsed = ceil(timer.duration)
+            pdf_file = PDFFile.objects.create(
+                tenant=request.get_tenant(),
+                request=request,
+                time_elapsed=ceil(timer.duration),
+                public=request.public,
+                locale=request.locale,
+                generated=now(),
+            )
+            pdf_file.file.save(rel_path, File(file, name=rel_path))
+            pdf_file.save()
 
             update_status(request, Status.DONE)
-            logger.info("Done in %i seconds", request.time_elapsed)
+            logger.info("Done in %i seconds", pdf_file.time_elapsed)
             return True, timer.duration
     except Exception as exception:  # pylint: disable=broad-except
         logger.error("Request failed: %s", str(exception))
