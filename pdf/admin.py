@@ -15,7 +15,7 @@ from pdf.models.request import PDFRequest
 class RequestAdmin(admin.ModelAdmin):
     """Request Model Admin"""
 
-    list_display = ["id", "title", "update_date", "type", "file", "status", "tenant_name"]
+    list_display = ["id", "title", "last_generated", "type", "status", "tenant_name"]
     actions = ["move_tenant"]
 
     @admin.display(description=_("Tenant"))

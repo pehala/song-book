@@ -14,20 +14,7 @@ class CategoryForm(ModelForm):
 
     class Meta:
         model = Category
-        fields = [
-            "name",
-            "slug",
-            "generate_pdf",
-            "tenant",
-            "filename",
-            "public",
-            "locale",
-            "title",
-            "show_date",
-            "image",
-            "margin",
-            "link",
-        ]
+        fields = "__all__"
 
 
 class NameForm(Form):
