@@ -13,7 +13,7 @@ pdf_children = (
 Menu.add_item(
     "pdf",
     MenuItem(
-        _("PDF"),
+        _("Files"),
         reverse("backend:index"),
         children=pdf_children,
         check=is_localadmin,

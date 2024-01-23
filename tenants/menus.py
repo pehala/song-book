@@ -21,7 +21,7 @@ def create_menus(tenant):
     Menu.add_item(
         create_tenant_string(tenant, "files"),
         CacheMenuItem(
-            title=_("Files"),
+            title=_("PDF"),
             url=reverse("backend:index"),
             generate_function=distinct_requests,
             key=create_tenant_string(tenant, settings.PDF_CACHE_KEY),
