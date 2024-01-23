@@ -4,8 +4,6 @@ from django.core.exceptions import ValidationError
 from django.db.models import Model, CharField, ManyToManyField, BooleanField, ImageField
 from django.utils.translation import gettext_lazy as _
 
-# Create your models here.
-
 
 def only_png(value):
     """Raises validation error if the file is not a PNG image"""

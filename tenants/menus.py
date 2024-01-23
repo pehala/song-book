@@ -1,5 +1,7 @@
 """Generates Tenant-specific menus"""
 from django.conf import settings
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
@@ -11,6 +13,31 @@ from pdf.models.request import PDFRequest, Status
 
 from tenants.models import Tenant
 from tenants.utils import create_tenant_string
+
+
+def create_menus(tenant):
+    """Generate menus specific for each tenant"""
+
+    Menu.add_item(
+        create_tenant_string(tenant, "files"),
+        CacheMenuItem(
+            title=_("Files"),
+            url=reverse("backend:index"),
+            generate_function=distinct_requests,
+            key=create_tenant_string(tenant, settings.PDF_CACHE_KEY),
+            timeout=60 * 60,
+        ),
+    )
+    Menu.add_item(
+        create_tenant_string(tenant, "songbook"),
+        CacheMenuItem(
+            title=_("Categories"),
+            url=reverse("backend:index"),
+            generate_function=categories,
+            key=create_tenant_string(tenant, settings.CATEGORY_CACHE_KEY),
+            timeout=60 * 60 * 24 * 7,
+        ),
+    )
 
 
 def categories(request):
@@ -47,23 +74,12 @@ def distinct_requests(request):
 
 
 for tenant in Tenant.objects.all():
-    Menu.add_item(
-        create_tenant_string(tenant, "files"),
-        CacheMenuItem(
-            title=_("Files"),
-            url=reverse("backend:index"),
-            generate_function=distinct_requests,
-            key=create_tenant_string(tenant, settings.PDF_CACHE_KEY),
-            timeout=60 * 60,
-        ),
-    )
-    Menu.add_item(
-        create_tenant_string(tenant, "songbook"),
-        CacheMenuItem(
-            title=_("Categories"),
-            url=reverse("backend:index"),
-            generate_function=categories,
-            key=create_tenant_string(tenant, settings.CATEGORY_CACHE_KEY),
-            timeout=60 * 60 * 24 * 7,
-        ),
-    )
+    create_menus(tenant)
+
+
+# pylint: disable=unused-argument
+@receiver(post_save, sender=Tenant)
+def generate_menus(sender, instance, created, **kwargs):
+    """Generates a menu for new tenants"""
+    if created:
+        create_menus(instance)
