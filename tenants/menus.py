@@ -1,4 +1,6 @@
 """Generates Tenant-specific menus"""
+import os
+
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -68,7 +70,7 @@ def distinct_requests(request):
     ):
         # pylint: disable=protected-access
         if entry.filename not in files and entry.public:
-            data.append(MenuItem(entry.filename, entry.file.url))
+            data.append(MenuItem(os.path.basename(entry.file.name), entry.file.url))
             files.add(entry.filename)
     return data
 
