@@ -20,6 +20,8 @@ from backend.views import BaseSongListView
 from backend.mixins import RegenerateViewMixin, LocalAdminRequired, SuperAdminRequired
 from category.forms import CategoryForm, NameForm, ChooseTenantForm
 from category.models import Category
+from pdf.forms import RequestForm
+from pdf.generate import generate_pdf_job
 from pdf.models.request import PDFRequest, RequestType, Status
 from pdf.utils import request_pdf_regeneration
 
@@ -59,7 +61,7 @@ class CategoryListView(LocalAdminRequired, ListView):
         ctx = super().get_context_data(object_list=object_list, **kwargs)
         ctx["already_staged"] = PDFRequest.objects.filter(
             type=RequestType.EVENT, status__in=[Status.QUEUED, Status.SCHEDULED], tenant=self.request.tenant
-        ).values_list("category_id", flat=True)
+        ).values_list("category__id", flat=True)
         return ctx
 
 
@@ -75,6 +77,19 @@ class CategoryCreateView(LocalAdminRequired, SuccessMessageMixin, CreateView):
     def get_initial(self):
         return {"tenant": self.request.tenant}
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["request_form"] = RequestForm(prefix="category")
+        return context
+
+    def form_valid(self, form):
+        request_form = RequestForm(data=self.request.POST, prefix="category")
+        if not request_form.is_valid():
+            return self.form_invalid(form)
+        request_form.save()
+        form.instance.request = request_form.instance
+        return super().form_valid(form)
+
     def get_success_message(self, cleaned_data):
         cache.delete(settings.CATEGORY_CACHE_KEY)
         return super().get_success_message(cleaned_data)
@@ -88,6 +103,18 @@ class CategoryUpdateView(LocalAdminRequired, SuccessMessageMixin, RegenerateView
     template_name = "category/add.html"
     success_url = reverse_lazy("category:list")
     success_message = _("Category %(name)s was successfully updated")
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["request_form"] = RequestForm(instance=self.object.request, prefix="category")
+        return context
+
+    def form_valid(self, form):
+        request_form = RequestForm(data=self.request.POST, instance=self.object.request, prefix="category")
+        if not request_form.is_valid():
+            return self.form_invalid(form)
+        request_form.save()
+        return super().form_valid(form)
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
@@ -197,3 +224,24 @@ class CategoryMoveView(SuperAdminRequired, TemplateView):
             self.action(tenant, ids)
             return redirect("admin:index")
         return self.render_to_response({"form": form, "formset": formset})
+
+
+class CategoryGenerateView(LocalAdminRequired, View, SingleObjectMixin):
+    """Regenerates PDF request for this category"""
+
+    model = Category
+
+    # pylint: disable=invalid-name, unused-argument
+    def get(self, request, pk):
+        """Processes the request"""
+        category = self.get_object()
+        obj = category.request
+        if obj.status in (Status.QUEUED, Status.SCHEDULED):
+            messages.error(request, _("Category %(name)s PDF generation is already pending ") % {"name": category.name})
+            return redirect("category:list")
+        obj.status = Status.QUEUED
+        obj.save()
+        generate_pdf_job(obj)
+
+        messages.success(request, _("Category %(name)s was scheduled for generation") % {"name": category.name})
+        return redirect("category:list")

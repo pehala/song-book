@@ -1,5 +1,6 @@
 {% extends "base/frame.html" %}
 {% load i18n %}
+{% get_current_language as LANGUAGE_CODE %}
 
 {% load types %}
 
@@ -21,6 +22,11 @@
     let stop = false
     const status = $("#status")
     const progress = $("#progress")
+    const format = new Intl.DateTimeFormat('{{ LANGUAGE_CODE }}', {
+        dateStyle: 'long',
+        timeStyle: 'short',
+        hour12: false,
+    })
     function setStatusCode(code) {
         const value = Math.ceil(code / 7 * 100)
         progress.text(code + "/7")
@@ -28,8 +34,27 @@
         progress.attr("style", "width: " + value + "%")
     }
     function process_response(data) {
-        console.log(data);
+        if (data["status"] === "QU") {
+            status.text('{% trans "Waiting for work to start" %}')
+            progress.attr("aria-valuenow", 100)
+            progress.attr("style", "width: 100%")
+            progress.addClass("bg-warning")
+            return false
+        }
+        if (data["status"] === "SC") {
+            const date = new Date(data["scheduled_at"])
+            let text = '{% trans "Scheduled at %datetime." %}'.replace("%datetime", format.format(date))
+            if (date > Date.now()) {
+                text += " " + '{% trans "Generation should have already started, please contact server administrator" %}'
+                progress.attr("aria-valuenow", 100)
+                progress.attr("style", "width: 100%")
+                progress.addClass("bg-danger")
+            }
+            status.text(text)
+            return false
+        }
         setStatusCode(data["progress"])
+        progress.addClass("bg-primary")
         if (data["ready"]) {
             status.text("Completed")
             console.log("Ready for download");
@@ -60,9 +85,9 @@
 
 {% block framed_body %}
 
-<div class="table-responsive">
+<div class="table-responsive table-sm">
     <table class="table table-bordered">
-        <thead class="thead-light">
+        <thead class="thead-light d-none">
             <tr>
                 <th scope="col"></th>
                 <th scope="col"></th>
@@ -80,7 +105,6 @@
                     <div class="progress">
                       <div id="progress" class="progress-bar progress-bar-striped" role="progressbar" style="width: 0" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
-
                 </td>
             </tr>
             <tr>

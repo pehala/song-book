@@ -5,8 +5,7 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 
-from pdf.models import PDFRequest
-from pdf.models.request import RequestType
+from pdf.models import PDFRequest, RequestType
 from tenants.models import Tenant
 
 
@@ -35,8 +34,9 @@ class Category(Model):
         unique_together = [["tenant", "slug"], ["tenant", "name"]]
 
 
+# pylint: disable=unused-argument
 @receiver(post_save, sender=Category)
-def create_pdf_request(_, instance, created, **kwargs):
+def create_pdf_request(signal, instance, created, **kwargs):
     """Generates a new PDFRequest for new category if not present"""
     if created:
         if not hasattr(instance, "request"):

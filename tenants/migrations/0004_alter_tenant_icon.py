@@ -7,13 +7,20 @@ from django.db import migrations, models
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('tenants', '0003_tenant_icon'),
+        ("tenants", "0003_tenant_icon"),
     ]
 
     operations = [
         migrations.AlterField(
-            model_name='tenant',
-            name='icon',
-            field=models.ImageField(blank=True, help_text='Optional Site logo, should be around 50x50 and in PNG format', null=True, upload_to='uploads/', validators=[tenants.models.only_png], verbose_name='Logo'),
+            model_name="tenant",
+            name="icon",
+            field=models.ImageField(
+                blank=True,
+                help_text="Optional Site logo, should be around 50x50 and in PNG format",
+                null=True,
+                upload_to="uploads/",
+                validators=[tenants.models.only_png],
+                verbose_name="Logo",
+            ),
         ),
     ]

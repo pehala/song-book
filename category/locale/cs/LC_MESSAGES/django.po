@@ -3,12 +3,11 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-26 14:31+0000\n"
+"POT-Creation-Date: 2024-02-11 19:44+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
-#: category/admin.py:21 category/forms.py:43
+#: category/admin.py:21 category/forms.py:39
 msgid "Tenant"
 msgstr "Do Zpěvníku"
 
@@ -27,28 +26,28 @@ msgstr "Do Zpěvníku"
 msgid "Move Category to a different Tenant"
 msgstr "Přesunout Kategorie do jiného Zpěvníku"
 
-#: category/models.py:14 category/templates/category/list.html:11
+#: category/models.py:16 category/templates/category/list.html:11
 msgid "Name"
 msgstr "Jméno"
 
-#: category/models.py:15 category/templates/category/list.html:12
+#: category/models.py:17 category/templates/category/list.html:12
 msgid "URL pattern"
 msgstr "URL vzor"
 
-#: category/models.py:17 category/templates/category/list.html:13
+#: category/models.py:24 category/templates/category/list.html:13
 msgid "PDF generation"
-msgstr "Automatické Generování PDF"
+msgstr "Automatické generování PDF souboru"
 
-#: category/models.py:18
+#: category/models.py:25
 msgid "Should the PDF file be automatically generated when a song changes?"
 msgstr ""
 "Má být vygenerován pdf soubor když se nějaká písnička z kategorie změní?"
 
-#: category/models.py:25
+#: category/models.py:32
 msgid "Category"
 msgstr "Kategorie"
 
-#: category/models.py:26 category/templates/admin/category/migrate.html:6
+#: category/models.py:33 category/templates/admin/category/migrate.html:6
 #: category/templates/category/list.html:4
 #: category/templates/category/list.html:5
 msgid "Categories"
@@ -63,10 +62,18 @@ msgstr "Přesun kategorii do jiného Zpěvníku"
 msgid "To Tenant"
 msgstr "Do Tenanta"
 
-#: category/templates/category/add.html:4
 #: category/templates/category/add.html:5
+#: category/templates/category/add.html:6
 msgid "Category Editor"
 msgstr "Editor Kategorie"
+
+#: category/templates/category/add.html:13
+msgid "PDF Options"
+msgstr "Nastavení PDF"
+
+#: category/templates/category/add.html:15
+msgid "Submit"
+msgstr "Odeslat"
 
 #: category/templates/category/confirm_delete.html:5
 #: category/templates/category/confirm_delete.html:6
@@ -93,7 +100,7 @@ msgstr "Jazyk"
 
 #: category/templates/category/list.html:15
 msgid "Actions"
-msgstr ""
+msgstr "Akce"
 
 #: category/templates/category/list.html:27
 msgid "Edit"
@@ -101,45 +108,58 @@ msgstr "Upravit"
 
 #: category/templates/category/list.html:29
 msgid "Toggle Dropdown"
-msgstr ""
+msgstr "Rozbalovací menu"
 
 #: category/templates/category/list.html:34
+#: category/templates/category/list.html:36
 msgid "Already in queue"
 msgstr "Již ve frontě"
 
-#: category/templates/category/list.html:36
-msgid "Regenerate"
-msgstr "Přegenerovat"
+#: category/templates/category/list.html:38
+#| msgid "Regenerate"
+msgid "Generate PDF"
+msgstr "Vygenerovat PDF"
 
-#: category/templates/category/list.html:39
+#: category/templates/category/list.html:41
 msgid "Delete"
 msgstr "Smazat"
 
-#: category/templates/category/list.html:48
+#: category/templates/category/list.html:50
 msgid "Add Category"
 msgstr "Přidat Kategorii"
 
-#: category/views.py:36
+#: category/views.py:42
 #, python-format
 msgid "Category with url /%(slug)s does not exist"
 msgstr "Kategorie s url /%(slug)s neexistuje"
 
-#: category/views.py:65
+#: category/views.py:75
 #, python-format
 msgid "Category %(name)s was successfully created"
 msgstr "Kategorie %(name)s byla úspěšně vytvořena"
 
-#: category/views.py:82
+#: category/views.py:105
 #, python-format
 msgid "Category %(name)s was successfully updated"
 msgstr "Kategorie %(name)s byla úspěšně upravena"
 
-#: category/views.py:103
+#: category/views.py:138
 #, python-format
 msgid "Category %s was successfully staged for PDF generation"
 msgstr "PDF pro Kategorii %s bylo přidáno do fronty"
 
-#: category/views.py:114
+#: category/views.py:149
 #, python-format
 msgid "Category %(name)s was successfully deleted"
 msgstr "Kategorie %(name)s byla úspěšně smazána"
+
+#: category/views.py:240
+#, python-format
+msgid "Category %(name)s PDF generation is already pending "
+msgstr "PDF pro Kategorie %(name)s je už naplánované"
+
+#: category/views.py:246
+#, python-format
+#| msgid "Category %s was successfully staged for PDF generation"
+msgid "Category %(name)s was scheduled for generation"
+msgstr "PDF pro %(name)s bylo přidána do fronty"

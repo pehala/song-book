@@ -10,6 +10,7 @@ from category.views import (
     CategoryDeleteView,
     CategoryRegeneratePDFView,
     CategoryMoveView,
+    CategoryGenerateView,
 )
 
 urlpatterns = [
@@ -20,4 +21,5 @@ urlpatterns = [
     path("regenerate/<int:pk>", CategoryRegeneratePDFView.as_view(), name="regenerate"),
     path("move", CategoryMoveView.as_view(), name="move"),
     path("<str:slug>", CategorySongsListView.as_view(), name="index"),
+    path("generate/<int:pk>", CategoryGenerateView.as_view, name="generate"),
 ]

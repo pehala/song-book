@@ -26,8 +26,7 @@ from huey.contrib.djhuey import task
 from weasyprint.logger import PROGRESS_LOGGER
 
 from pdf.locales import changed_locale, lang_to_locale
-from pdf.models import PDFFile
-from pdf.models.request import PDFRequest, Status
+from pdf.models import PDFRequest, Status, PDFFile
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)

@@ -1,19 +1,15 @@
 """Generates Tenant-specific menus"""
 
-import os
-
 from django.conf import settings
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-
 from simple_menu import MenuItem, Menu
 
 from category.models import Category
 from pdf.cachemenuitem import CacheMenuItem
 from pdf.models import PDFFile
-
 from tenants.models import Tenant
 from tenants.utils import create_tenant_string
 

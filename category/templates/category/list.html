@@ -21,7 +21,7 @@
           <td>{{ category.name }}</td>
           <td><a href="{% url "category:index" slug=category.slug %}">{% url "category:index" slug=category.slug %}</a></td>
           <td>{% if category.generate_pdf %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td>
-          <td>{{ category.locale }}</td>
+          <td>{{ category.request.locale }}</td>
           <td>
               <div class="btn-group me-1">
                   <a href="{% url "category:edit" pk=category.id %}" class="btn btn-primary">{% trans "Edit" %}</a>
@@ -30,10 +30,12 @@
                   </button>
                   <ul class="dropdown-menu dropdown-menu-end">
                       <li>
-                          {% if category.id in already_staged %}
-                            <a href="{% url "category:regenerate" pk=category.id %}" class="dropdown-item text-secondary pe-none">{% trans "Already in queue" %}</a>
+                          {% if category.request.status == "SC" %}
+                            <a href="{% url "pdf:wait" pk=category.request.id %}" class="dropdown-item text-secondary pe-none">{% trans "Already in queue" %} ({{ category.request.scheduled_at|time }})</a>
+                          {% elif category.request.status == "QU"  %}
+                            <a href="{% url "pdf:wait" pk=category.request.id %}" class="dropdown-item text-secondary pe-none">{% trans "Already in queue" %}</a>
                           {% else %}
-                            <span class="dropdown-item text-primary">{% trans "Regenerate" %}</span>
+                            <a href="{% url "category:generate" pk=category.id %}" class="dropdown-item text-primary">{% trans "Generate PDF" %}</a>
                           {% endif %}
                       </li>
                       <li><a href="{% url "category:delete" pk=category.id %}" class="dropdown-item text-danger">{% trans "Delete" %}</a></li>

@@ -4,6 +4,7 @@ from django.forms import ModelForm, IntegerField, Form, HiddenInput, ModelChoice
 from django.utils.translation import gettext_lazy as _
 
 from category.models import Category
+from pdf.models import PDFRequest
 from tenants.models import Tenant
 
 
@@ -14,7 +15,15 @@ class CategoryForm(ModelForm):
 
     class Meta:
         model = Category
-        fields = "__all__"
+        fields = ["name", "slug", "generate_pdf", "tenant"]
+
+
+class CategoryRequestForm(ModelForm):
+    """Form used for modifying category PDF generation options"""
+
+    class Meta:
+        model = PDFRequest
+        fields = ["public", "locale", "title", "show_date", "image", "margin", "link"]
 
 
 class NameForm(Form):

@@ -4,7 +4,6 @@ from django.conf import settings
 from django.contrib import messages
 from django.core.cache import cache
 from django.db import transaction
-from django.db.models import Subquery, OuterRef
 from django.forms import formset_factory
 from django.http import HttpResponseBadRequest, JsonResponse
 from django.shortcuts import redirect
@@ -47,14 +46,14 @@ class RequestRegenerateView(LocalAdminRequired, View, SingleObjectMixin):
     def get(self, request, pk):
         """Processes the request"""
         obj = self.get_object()
-        if obj.status == Status.QUEUED:
+        if obj.status in (Status.QUEUED, Status.SCHEDULED):
             messages.error(request, _("Request %(id)s is already in queue") % {"id": obj.id})
             return redirect("pdf:list")
         obj.status = Status.QUEUED
         obj.save()
         generate_pdf_job(obj)
 
-        messages.success(request, _("Request %(id)s was scheduled for regeneration") % {"id": obj.id})
+        messages.success(request, _("Request %(id)s was scheduled for PDF generation") % {"id": obj.id})
         return redirect("pdf:list")
 
 
@@ -174,9 +173,11 @@ class RenderInfoView(View, SingleObjectMixin):
         ready = request.status == Status.DONE
         return JsonResponse(
             {
-                "ready": request.status == Status.DONE,
+                "ready": ready,
                 "progress": request.progress,
-                "link": request.file.url if ready else None,
+                "link": request.get_latest.url if ready else None,
+                "status": request.status,
+                "scheduled_at": request.scheduled_at,
             }
         )
 

@@ -1,5 +1,24 @@
 {% extends "base/form.html" %}
 {% load i18n %}
+{% load django_bootstrap5 %}
 
 {% block title %} {% trans "Category Editor" %} {% endblock %}
 {% block header %} {% trans "Category Editor" %} {% endblock %}
+
+{% block framed_body %}
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {% bootstrap_form form layout='horizontal' %}
+     <hr>
+     <h2 class="mb-4">{% trans "PDF Options" %}</h2>
+    {% bootstrap_form request_form layout='horizontal' %}
+    {% bootstrap_button _("Submit") button_type="submit" %}
+  </form>
+  {{ form.media }}
+  <script type="module">
+    const select = document.getElementById("id_category-locale");
+    if (select.value === "") {
+        select.value = "{{ request.LANGUAGE_CODE }}"
+    }
+  </script>
+{% endblock %}
