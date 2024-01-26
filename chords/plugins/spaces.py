@@ -15,7 +15,7 @@ def parse_chords(inline, m, state: InlineState):
 
 def render_chords(renderer, text):
     """Renders tag into HTML"""
-    return r" " * int(text)
+    return r"&nbsp;" * int(text)
 
 
 def spaces(md):
