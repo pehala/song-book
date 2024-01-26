@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-09-10 13:27+0000\n"
+"POT-Creation-Date: 2024-01-26 14:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,11 +19,11 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
-#: analytics/models.py:12
+#: analytics/models.py:13
 msgid "Key"
 msgstr "Klíč"
 
-#: analytics/models.py:13
+#: analytics/models.py:14
 msgid "Hits"
 msgstr "Kliknutí"
 
@@ -59,6 +59,6 @@ msgstr "Měsíc"
 msgid "Year"
 msgstr "Rok"
 
-#: analytics/views.py:30
+#: analytics/views.py:31
 msgid "General"
 msgstr "Obecné"

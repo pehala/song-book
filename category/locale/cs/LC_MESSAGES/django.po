@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2023-12-29 14:14+0000\n"
+"POT-Creation-Date: 2024-01-26 14:31+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,36 +19,36 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
-#: category/admin.py:20 category/forms.py:27
+#: category/admin.py:21 category/forms.py:43
 msgid "Tenant"
 msgstr "Do Zpěvníku"
 
-#: category/admin.py:26
+#: category/admin.py:27
 msgid "Move Category to a different Tenant"
 msgstr "Přesunout Kategorie do jiného Zpěvníku"
 
-#: category/models.py:13 category/templates/category/list.html:11
+#: category/models.py:14 category/templates/category/list.html:11
 msgid "Name"
 msgstr "Jméno"
 
-#: category/models.py:14 category/templates/category/list.html:12
+#: category/models.py:15 category/templates/category/list.html:12
 msgid "URL pattern"
 msgstr "URL vzor"
 
-#: category/models.py:16 category/templates/category/list.html:13
+#: category/models.py:17 category/templates/category/list.html:13
 msgid "PDF generation"
 msgstr "Automatické Generování PDF"
 
-#: category/models.py:17
+#: category/models.py:18
 msgid "Should the PDF file be automatically generated when a song changes?"
 msgstr ""
 "Má být vygenerován pdf soubor když se nějaká písnička z kategorie změní?"
 
-#: category/models.py:24
+#: category/models.py:25
 msgid "Category"
 msgstr "Kategorie"
 
-#: category/models.py:25 category/templates/admin/category/migrate.html:6
+#: category/models.py:26 category/templates/admin/category/migrate.html:6
 #: category/templates/category/list.html:4
 #: category/templates/category/list.html:5
 msgid "Categories"
@@ -78,12 +78,12 @@ msgid "Are you sure, you want to delete Category"
 msgstr "Jste si jisti že chcete smazat Kategorii"
 
 #: category/templates/category/confirm_delete.html:11
-#: category/templates/category/list.html:25
+#: category/templates/category/list.html:23
 msgid "No"
 msgstr "Ne"
 
 #: category/templates/category/confirm_delete.html:12
-#: category/templates/category/list.html:25
+#: category/templates/category/list.html:23
 msgid "Yes"
 msgstr "Ano"
 
@@ -95,50 +95,51 @@ msgstr "Jazyk"
 msgid "Actions"
 msgstr ""
 
-#: category/templates/category/list.html:29
+#: category/templates/category/list.html:27
 msgid "Edit"
 msgstr "Upravit"
 
-#: category/templates/category/list.html:31
+#: category/templates/category/list.html:29
 msgid "Toggle Dropdown"
 msgstr ""
 
-#: category/templates/category/list.html:36
+#: category/templates/category/list.html:34
 msgid "Already in queue"
 msgstr "Již ve frontě"
 
-#: category/templates/category/list.html:38
+#: category/templates/category/list.html:36
 msgid "Regenerate"
 msgstr "Přegenerovat"
 
-#: category/templates/category/list.html:41
+#: category/templates/category/list.html:39
 msgid "Delete"
 msgstr "Smazat"
 
-#: category/views.py:35
+#: category/templates/category/list.html:48
+msgid "Add Category"
+msgstr "Přidat Kategorii"
+
+#: category/views.py:36
 #, python-format
 msgid "Category with url /%(slug)s does not exist"
 msgstr "Kategorie s url /%(slug)s neexistuje"
 
-#: category/views.py:64
+#: category/views.py:65
 #, python-format
 msgid "Category %(name)s was successfully created"
 msgstr "Kategorie %(name)s byla úspěšně vytvořena"
 
-#: category/views.py:78
+#: category/views.py:82
 #, python-format
 msgid "Category %(name)s was successfully updated"
 msgstr "Kategorie %(name)s byla úspěšně upravena"
 
-#: category/views.py:99
+#: category/views.py:103
 #, python-format
 msgid "Category %s was successfully staged for PDF generation"
 msgstr "PDF pro Kategorii %s bylo přidáno do fronty"
 
-#: category/views.py:110
+#: category/views.py:114
 #, python-format
 msgid "Category %(name)s was successfully deleted"
 msgstr "Kategorie %(name)s byla úspěšně smazána"
-
-#~ msgid "Remove"
-#~ msgstr "Odstranit"

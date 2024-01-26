@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-12 15:11+0000\n"
+"POT-Creation-Date: 2024-01-26 14:35+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -112,6 +112,10 @@ msgstr "Zobrazí akord"
 #: frontend/templates/markdownx/widget.html:11
 msgid "Adds N empty spaces"
 msgstr "Přidá N mezer"
+
+#: frontend/templates/markdownx/widget.html:18
+msgid "Preview"
+msgstr "Náhled"
 
 #: frontend/templates/registration/login.html:4
 #: frontend/templates/registration/login.html:5
