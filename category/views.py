@@ -64,6 +64,9 @@ class CategoryCreateView(LocalAdminRequired, SuccessMessageMixin, CreateView):
     success_url = reverse_lazy("category:list")
     success_message = _("Category %(name)s was successfully created")
 
+    def get_initial(self):
+        return {"tenant": self.request.tenant}
+
     def get_success_message(self, cleaned_data):
         cache.delete(settings.CATEGORY_CACHE_KEY)
         return super().get_success_message(cleaned_data)
