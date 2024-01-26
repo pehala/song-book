@@ -10,9 +10,24 @@ from tenants.models import Tenant
 class CategoryForm(ModelForm):
     """Category form"""
 
+    tenant = ModelChoiceField(queryset=Tenant.objects.all(), widget=HiddenInput())
+
     class Meta:
         model = Category
-        exclude = ["tenant"]  # pylint: disable=modelform-uses-exclude
+        fields = [
+            "name",
+            "slug",
+            "generate_pdf",
+            "tenant",
+            "filename",
+            "public",
+            "locale",
+            "title",
+            "show_date",
+            "image",
+            "margin",
+            "link",
+        ]
 
 
 class NameForm(Form):
