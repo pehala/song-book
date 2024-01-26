@@ -1,4 +1,5 @@
 """Management command for importing Songs"""
+
 import json
 import logging
 from argparse import ArgumentParser

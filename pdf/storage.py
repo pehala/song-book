@@ -1,4 +1,5 @@
 """Storages for the PDF application"""
+
 from pathlib import Path
 
 from django.core.files.storage import FileSystemStorage

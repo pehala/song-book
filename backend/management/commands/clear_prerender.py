@@ -1,4 +1,5 @@
 """Clear prerender command"""
+
 from django.core.management import BaseCommand
 
 from backend.models import Song

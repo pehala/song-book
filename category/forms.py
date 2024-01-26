@@ -1,4 +1,5 @@
 """Forms for category app"""
+
 from django.forms import ModelForm, IntegerField, Form, HiddenInput, ModelChoiceField, CharField
 from django.utils.translation import gettext_lazy as _
 

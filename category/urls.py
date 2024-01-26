@@ -1,4 +1,5 @@
 """Backend app URL Configuration"""
+
 from django.urls import path
 
 from category.views import (

@@ -1,4 +1,5 @@
 """Common classes for PDF"""
+
 from django.conf import settings
 from django.db.models import Model, BooleanField, CharField, ImageField, FloatField
 from django.utils.translation import gettext_lazy as _

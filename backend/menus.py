@@ -1,4 +1,5 @@
 """Menus for backend app"""
+
 from django.urls import reverse
 from django.utils.translation import gettext_noop as _
 from menu import MenuItem, Menu

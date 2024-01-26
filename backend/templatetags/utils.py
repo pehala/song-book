@@ -1,4 +1,5 @@
 """Tags for drawing the menu"""
+
 from django import template
 from django.template.defaultfilters import stringfilter
 from django.templatetags.static import static

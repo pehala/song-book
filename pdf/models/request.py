@@ -1,4 +1,5 @@
 """Models for PDF module"""
+
 from datetime import datetime
 from typing import List
 

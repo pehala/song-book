@@ -1,4 +1,5 @@
 """Utility methods"""
+
 from tenants.models import Tenant
 
 

@@ -1,4 +1,5 @@
 """Management command for generating PDF files from requests"""
+
 import logging
 from argparse import ArgumentParser
 from pathlib import Path

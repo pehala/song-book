@@ -1,4 +1,5 @@
 """Analytics Application configuration"""
+
 from django.apps import AppConfig
 
 

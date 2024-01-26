@@ -1,4 +1,5 @@
 """General mixins"""
+
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from backend.auth import is_localadmin, is_superadmin

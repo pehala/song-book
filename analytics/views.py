@@ -1,4 +1,5 @@
 """Analytics views"""
+
 from datetime import datetime, timedelta
 
 from django.contrib.auth.decorators import login_required

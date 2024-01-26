@@ -1,4 +1,5 @@
 """Admin models for Tenants"""
+
 from django.conf import settings
 from django.contrib import admin
 from django.urls import reverse_lazy, reverse

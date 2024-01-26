@@ -1,4 +1,5 @@
 """Module containing all things related to generating PDF"""
+
 import locale
 import logging
 import mimetypes
