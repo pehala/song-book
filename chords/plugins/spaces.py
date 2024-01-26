@@ -1,4 +1,5 @@
 """Markdown extension for spaces"""
+
 from mistune import InlineState
 
 SPACES_RE = r"\/(?P<spacers>\d+)\/"

@@ -1,4 +1,5 @@
 """Views for backend app"""
+
 import json
 from typing import Dict
 

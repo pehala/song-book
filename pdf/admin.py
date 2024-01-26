@@ -1,4 +1,5 @@
 """PDF Admin classes"""
+
 from urllib.parse import urlencode
 
 from django.contrib import admin

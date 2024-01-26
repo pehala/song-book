@@ -1,4 +1,5 @@
 """Frontend App"""
+
 from django.apps import AppConfig
 
 

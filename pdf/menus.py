@@ -1,4 +1,5 @@
 """Menus for PDF app"""
+
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from menu import Menu, MenuItem

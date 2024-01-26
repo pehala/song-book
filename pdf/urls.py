@@ -1,4 +1,5 @@
 """Url configuration for PDF app"""
+
 from django.urls import path
 
 from pdf.views import (

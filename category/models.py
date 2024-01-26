@@ -1,4 +1,5 @@
 """Models"""
+
 from django.db.models import CharField, SlugField, BooleanField, ForeignKey, CASCADE
 from django.utils.translation import gettext_lazy as _
 

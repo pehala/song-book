@@ -1,4 +1,5 @@
 """Analytics models"""
+
 from django.db.models import Model, CharField, IntegerField, DateField, ForeignKey, CASCADE
 from django.utils.translation import gettext_lazy as _
 

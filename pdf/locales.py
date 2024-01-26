@@ -1,4 +1,5 @@
 """Utils module for locale manipulation"""
+
 import locale
 from contextlib import contextmanager
 

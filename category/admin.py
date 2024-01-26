@@ -1,4 +1,5 @@
 """Category admin classes"""
+
 from django.contrib import admin
 from django.http import HttpResponseRedirect
 from django.urls import reverse, reverse_lazy

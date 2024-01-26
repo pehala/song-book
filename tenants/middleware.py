@@ -1,4 +1,5 @@
 """Middleware for Tenants"""
+
 from urllib.parse import urlparse
 from django.conf import settings
 from django.http import Http404

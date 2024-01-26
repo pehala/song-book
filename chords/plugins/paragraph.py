@@ -1,4 +1,5 @@
 """Markdown extension for paragraphs"""
+
 import re
 import string
 

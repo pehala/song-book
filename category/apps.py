@@ -1,4 +1,5 @@
 """Category Application"""
+
 from django.apps import AppConfig
 
 

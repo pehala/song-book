@@ -1,4 +1,5 @@
 """Markdown extension for chords"""
+
 from mistune import InlineState
 
 CHORD_RE = r"\{(?!\s)(?P<chords>.+?)(?!\s)\}"

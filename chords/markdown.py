@@ -1,4 +1,5 @@
 """Module containing Rendering function for converting Markdown to HTML"""
+
 import mistune
 
 from chords.plugins.chords import chords

@@ -1,4 +1,5 @@
 """Middleware containing forwarding variables from settings to templates"""
+
 from django.conf import settings
 
 

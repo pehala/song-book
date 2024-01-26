@@ -1,4 +1,5 @@
 """Tenant forms"""
+
 from django.forms import ModelForm, CharField
 
 from tenants.models import Tenant
