@@ -2,7 +2,7 @@
 {% load i18n %}
 
 {% block title %} {% trans "Categories" %} {% endblock %}
-{% block header %} {% trans "Categories" %}  {% endblock %}
+{% block header %} {% trans "Categories" %} {% endblock %}
 
 {% block framed_body %}
     <table class="table table-bordered">
@@ -13,8 +13,6 @@
           <th scope="col">{% trans "PDF generation" %}</th>
           <th scope="col">{% trans "Language" %}</th>
           <th scope="col">{% trans "Actions" %}</th>
-{#          <th scope="col">{% trans "Remove" %}</th>#}
-{#          <th scope="col">{% trans "Regenerate" %}</th>#}
         </tr>
       </thead>
       <tbody>
@@ -42,25 +40,13 @@
                   </ul>
               </div>
           </td>
-{#          <td>#}
-{#              <a href="{% url "category:edit" pk=category.id %}" class="btn btn-primary">{% trans "Edit" %}</a>#}
-{#          </td>#}
-{#          <td>#}
-{#              <a href="{% url "category:delete" pk=category.id %}" class="btn btn-danger">{% trans "Delete" %}</a>#}
-{#          </td>#}
-{#          {% if category.id in already_staged %}#}
-{#          <td>#}
-{#              <span class="text">{% trans "Already in queue" %}</span>#}
-{#          </td>#}
-{#          {% else %}#}
-{#          <td>#}
-{#              <a href="{% url "category:regenerate" pk=category.id %}" class="btn btn-primary"></a>#}
-{#          </td>#}
-{#          {% endif %}#}
         </tr>
         {% endfor %}
       </tbody>
     </table>
+    <div class="text-center">
+        <a href="{% url "category:add" %}" class="btn btn-primary">{% trans "Add Category" %}</a>
+    </div>
     <script defer>
     const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
     const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))

@@ -23,9 +23,8 @@ Menu.add_item(
 )
 
 songbook_children = (
-    MenuItem(_("Category list"), reverse("category:list")),
-    MenuItem(_("Add Category"), reverse("category:add")),
     MenuItem(_("Add Song"), reverse("backend:add")),
+    MenuItem(_("Categories"), reverse("category:list")),
 )
 
 Menu.add_item(
