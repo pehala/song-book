@@ -35,7 +35,7 @@ class BaseSongListView(ListView):
     FIELDS = ["id", "name", "capo", "author", "link", "prerendered"]
 
     def get_queryset(self):
-        queryset = super().get_queryset().filter(categories__tenant=self.request.tenant)
+        queryset = super().get_queryset()
         if not self.request.user.is_superuser:
             queryset = queryset.filter(archived=False)
         return queryset
