@@ -184,22 +184,37 @@
     $.fn.DataTable.ext.pager.numbers_length = 5;
     $.templates("song", "#songTemplate")
 
-    let wakelock;
+    let wakeLock = null;
+    const requestWakeLock = async () => {
+          wakeLock = await navigator.wakeLock
+                .request('screen')
+                .catch(err => console.error('Failed to lock wake state with reason:', err.message))
+    
+          console.log("Screen WakeLock turned on")
+    
+          // listen for our release event
+          wakeLock.onrelease = function(ev) {
+            console.log("Screen WakeLock released")
+          }
+    }
+    const handleVisibilityChange = () => {
+        if (wakeLock !== null && document.visibilityState === 'visible') {
+          requestWakeLock();
+        }
+    }
+    
     async function preventSleep(value) {
             if(!canWakeLock()) return;
             if (value) {
-              try {
-                wakelock = await navigator.wakeLock.request();
-                wakelock.addEventListener('release', () => {
-                  console.log('Screen Wake State Locked:', !wakelock.released);
-                });
-                console.log('Screen Wake State Locked:', !wakelock.released);
-              } catch(e) {
-                console.error('Failed to lock wake state with reason:', e.message);
-              }
+                await requestWakeLock()
+                document.addEventListener('visibilitychange', handleVisibilityChange);
             } else {
-                if(wakelock) wakelock.release();
-                wakelock = null;
+                if(wakeLock) {
+                    wakeLock.release().then(() => {
+                        wakeLock = null;
+                        document.removeEventListener('visibilitychange', handleVisibilityChange);
+                    });
+                }
             }
     }
     let hidden = false
