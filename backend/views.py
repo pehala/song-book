@@ -40,6 +40,10 @@ class BaseSongListView(ListView):
             queryset = queryset.filter(archived=False)
         return queryset
 
+    def get_title(self):
+        """Return title of this song set"""
+        return self.request.tenant.display_name
+
     def get_context_data(self, *, object_list=None, **kwargs):
         context_data = super().get_context_data(object_list=object_list, **kwargs)
 
@@ -59,6 +63,7 @@ class BaseSongListView(ListView):
             i += 1
 
         context_data["songs"] = json.dumps(songs, cls=DjangoJSONEncoder)
+        context_data["title"] = self.get_title()
         return context_data
 
 
@@ -67,6 +72,10 @@ class AllSongListView(BaseSongListView):
 
     def get_queryset(self):
         return super().get_queryset().filter(categories__tenant=self.request.tenant)
+
+    def get_title(self):
+        """Return title of this song set"""
+        return f'{_("All Songs")} | {self.request.tenant.display_name}'
 
 
 class IndexSongListView(RedirectView):
