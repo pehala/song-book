@@ -30,11 +30,19 @@ class CategorySongsListView(BaseSongListView, AnalyticsMixin):
     def get_key(self):
         return self.kwargs["slug"]
 
+    def category_queryset(self):
+        """Returns queryset for this category"""
+        return Category.objects.filter(slug=self.kwargs["slug"], tenant=self.request.tenant)
+
     def get_queryset(self):
         slug = self.kwargs["slug"]
-        if not Category.objects.filter(slug=slug, tenant=self.request.tenant).exists():
+        if not self.category_queryset().exists():
             raise Http404(_("Category with url /%(slug)s does not exist") % {"slug": slug})
         return super().get_queryset().filter(categories__slug=slug)
+
+    def get_title(self):
+        """Return title of this song set"""
+        return f"{self.category_queryset().get().name} | {self.request.tenant.display_name}"
 
 
 class CategoryListView(LocalAdminRequired, ListView):
