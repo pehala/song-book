@@ -120,6 +120,17 @@
     import {Options, BooleanOption} from "{% static 'js/Options.js' %}"
     const canWakeLock = () => 'wakeLock' in navigator;
 
+    function debounce(callback, delay = 1000) {
+      var time;
+
+      return (...args) => {
+        clearTimeout(time);
+        time = setTimeout(() => {
+          callback(...args);
+        }, delay);
+      };
+    }
+
     let table = null
     function createDatatable(paging) {
         return $('#datatable').DataTable({
@@ -226,6 +237,14 @@
             $(".chord").show()
         }
     }
+    const search = debounce(
+        function ( val ) {
+            table.search(val);
+            table.draw(false);
+            console.log("searched")
+        }, 200
+    );
+
     const config = new Map([
             ["hide_chords", new BooleanOption(document.getElementById("hideChords"), hideChords, false)],
             ["prevent_sleep", new BooleanOption(document.getElementById("preventSleep"), function(value) {
@@ -280,9 +299,8 @@
 
     });
 
-    document.getElementById("searchInput").addEventListener("input", function (event) {
-        table.search(event.target.value);
-        table.draw();
+    document.getElementById("searchInput").addEventListener("input", function(event) {
+        search(event.target.value)
     })
     </script>
 {% endblock %}
