@@ -132,59 +132,65 @@
     }
 
     let table = null
-    function createDatatable(paging) {
-        return $('#datatable').DataTable({
-        processing: true,
-        select: false,
-        paging: paging,
-        deferRender: true,
-        drawCallback: function () {
-            const selector = $(".raw[type='number']")
-            selector.inputSpinner({
-                decrementButton: "<i class=\"icon-minus\"></i>", // button text
-                incrementButton: "<i class=\"icon-plus\"></i>",
-                groupClass: "transposer",
-            });
-            selector.toggleClass("raw")
-        },
-        initComplete: function() {
-            document.getElementById("content").classList.remove("d-none");
-            document.getElementById("spinner").classList.add("d-none");
-        },
-        dom: 'rt<"mt-2 ms-1"p>',
-        columns: [
-            {
-                data: 'number',
-                visible: false,
-                searchable: true,
+    function createDatatable(paging, initialSearch) {
+        const options = {
+            processing: true,
+            select: false,
+            paging: paging,
+            deferRender: true,
+            drawCallback: function () {
+                const selector = $(".raw[type='number']")
+                selector.inputSpinner({
+                    decrementButton: "<i class=\"icon-minus\"></i>", // button text
+                    incrementButton: "<i class=\"icon-plus\"></i>",
+                    groupClass: "transposer",
+                });
+                selector.toggleClass("raw")
             },
-            {
-                data: 'text',
-                render: function ( data, type, row ) {
-                    {% if user.is_authenticated %}
-                    row["edit_url"] = baseEditUrl.replace("0", row.id)
-                    row["delete_url"] = baseDeleteUrl.replace("0", row.id)
-                    {% endif %}
-                    return $.render.song(row);
+            initComplete: function() {
+                document.getElementById("content").classList.remove("d-none");
+                document.getElementById("spinner").classList.add("d-none");
+            },
+            dom: 'rt<"mt-2 ms-1"p>',
+            columns: [
+                {
+                    data: 'number',
+                    visible: false,
+                    searchable: true,
                 },
-                className: "accordion-item mt-1 ms-1 p-0",
-                searchable: true,
-            },
-            {
-                data: 'name',
-                visible: false,
-                searchable: true,
-            },
-            {
-                data: 'author',
-                visible: false,
-                searchable: true,
+                {
+                    data: 'text',
+                    render: function ( data, type, row ) {
+                        {% if user.is_authenticated %}
+                        row["edit_url"] = baseEditUrl.replace("0", row.id)
+                        row["delete_url"] = baseDeleteUrl.replace("0", row.id)
+                        {% endif %}
+                        return $.render.song(row)
+                    },
+                    className: "accordion-item mt-1 ms-1 p-0",
+                    searchable: true,
+                },
+                {
+                    data: 'name',
+                    visible: false,
+                    searchable: true,
+                },
+                {
+                    data: 'author',
+                    visible: false,
+                    searchable: true,
+                }
+            ],
+            data: JSON.parse("{{ songs|escapejs }}"),
+            pageLength: 50,
+            {% datatables_language %}
+        }
+        if (initialSearch.length !== 0) {
+            options["search"] = {
+                "search": initialSearch
             }
-        ],
-        data: JSON.parse("{{ songs|escapejs }}"),
-        pageLength: 50,
-        {% datatables_language %}
-    });
+        }
+        return $('#datatable').DataTable(options);
     }
     {% if user.is_authenticated %}
     const baseEditUrl = "{% url "chords:edit" pk="0" %}?next={{ request.path }}"
@@ -256,7 +262,7 @@
                     document.getElementById("content").classList.add("d-none");
                     document.getElementById("spinner").classList.remove("d-none");
                 }
-                table = createDatatable(!value)
+                table = createDatatable(!value, document.getElementById("searchInput").value)
             }, false)],
         ])
     const options = new Options(config)
