@@ -11,7 +11,7 @@
               <button type="submit" class="btn-link dropdown-item">{% if item.skip_translate %}{{ item.title }}{% else %}{% trans item.title %}{% endif %}</button>
             </form>
             {% else %}
-                <a class="dropdown-item" href="{{ item.url }}">{% if item.skip_translate %}{{ item.title }}{% else %}{% trans item.title %}{% endif %}</a>
+                <a class="dropdown-item {% if item.selected %}active{% endif %}" href="{{ item.url }}">{% if item.skip_translate %}{{ item.title }}{% else %}{% trans item.title %}{% endif %}</a>
             {% endif %}
         {% endif %}
     {% endfor %}
