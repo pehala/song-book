@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-26 14:35+0000\n"
+"POT-Creation-Date: 2024-04-07 16:50+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,54 +24,39 @@ msgid "Bad Request"
 msgstr "Špatný dotaz"
 
 #: frontend/templates/400.html:9
-msgid ""
-"There is something wrong there, I don't think this is the way to do it? "
-"Aren't some of the data missing? Or in the wrong format?"
-msgstr ""
-"Něco tu nesedí. Nemyslím že tohle je ten správný způsob jak tohle udělat. "
-"Nechybí ti nějaká data? A neposlals je ve špatném formátu?"
+#| msgid "Bad Request"
+msgid "Invalid request"
+msgstr "Špatný požadavek"
 
 #: frontend/templates/403.html:4 frontend/templates/403.html:5
 msgid "Permission denied"
 msgstr "Přístup zamítnut"
 
 #: frontend/templates/403.html:9
-msgid ""
-"Didn't your Mom tell you to not enter websites you don't have permissions "
-"for? Get out of here!"
-msgstr ""
-"Maminka ti neříkala že nemáš lozit na zakázané stránky? Vypadni! Tohle je "
-"jen pro přihlášené!"
+msgid "Insufficient permissions"
+msgstr "Nedostatečné oprávnění"
 
-#: frontend/templates/404.html:13 frontend/templates/404.html:30
-msgid "Not found"
+#: frontend/templates/404.html:4
+msgid "Not Found"
 msgstr "Nenalezeno"
 
-#: frontend/templates/404.html:34
-#, python-format
-msgid ""
-"Welp, nothing is at %(request)s. Like, literally nothing. Not even "
-"cockroaches or russians. How did you get here? Are you sure this is the "
-"right URL?"
-msgstr ""
-"No, na adrese %(request)s není lautr nic. Jakože, doslova nic. Nežijí tu "
-"švábi a rusáci. Jak ses sem sakra dostal? Jsi si jistý že je tohle správná "
-"adresa?"
+#: frontend/templates/404.html:4
+msgid "Back to homepage"
+msgstr "Zpátky domů"
 
-#: frontend/templates/404.html:38
+#: frontend/templates/404.html:7
 #, python-format
-msgid ""
-"It seems you turned wrong somewhere, there is nothing here but small midget "
-"wizard with long beard telling you reason what you did wrong:<br> "
-"<b>%(exception)s</b>"
-msgstr ""
-"Vypadá to že si někde špatně uhl, není tu nic vyjma trpasličího čaroděje s "
-"dlouhými vousy který se ti snaží říct co pokazilo:<br> <b>%(exception)s</b>"
+msgid "URL %(request_path)s does not exist."
+msgstr "URL %(request_path)s neexistuje."
 
 #: frontend/templates/admin/base/migrate.html:29
 #: frontend/templates/base/form.html:9
 msgid "Submit"
 msgstr "Odeslat"
+
+#: frontend/templates/base/error.html:8
+msgid "Not found"
+msgstr "Nenalezeno"
 
 #: frontend/templates/base/index.html:35
 msgid "Logo"
