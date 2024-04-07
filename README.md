@@ -20,7 +20,7 @@ This project aims to create a song book for storing, managing and viewing songs.
   * Set `TENANT_HOSTNAME` to the hostname that the site should use
 * Setup gunicorn or any other WSGI server
 * Setup Worker
-  * `poetry run python manage.py rqworker default --with-scheduler`
+  * `poetry run python manage.py run_huey --worker-type process`
   * Responsible for async PDF generation
 * Setup NGINX or any other reverse proxy to expose the website
 
