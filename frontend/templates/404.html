@@ -1,49 +1,13 @@
-{% load static %}
-{% load sass_tags %}
+{% extends "base/error.html" %}
 {% load i18n %}
 
-{% get_current_language as LANGUAGE_CODE %}
-{% get_available_languages as LANGUAGES %}
-{% get_language_info_list for LANGUAGES as languages %}
-
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>{% trans "Not found" %}</title>
-    <link rel="shortcut icon" type="image/png" href="{{ request.tenant.icon.url }}"/>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous" defer></script>
-    <script   src="{% static "js/jquery-3.7.1.min.js" %}"
-              type="text/javascript"
-              defer></script>
-    <link rel="stylesheet" type="text/css" href="{% static 'icons/css/songs.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% sass_src 'styles.sass' %}">
-    {% block extra_head %} {% endblock %}
-</head>
-<body>
-<div class="wrap">
-    <div class="main-div container mt-3 mb-3 pb-3">
-        <h1 class="mt-2">{% trans "Not found" %} (404)<a class="btn btn-primary float-end" href="{{ request.tenant.index_redirect }}">{% trans "Back to homepage" %}</a></h1>
-        <hr>
-        <p>
-        {% if exception == "Resolver404" %}
-            {% blocktranslate with request=request_path trimmed %}
-    Unable to find {{ request }}.
-            {% endblocktranslate %}
-        {% else %}
-            <b>{{ exception }}</b>
-        {% endif %}
-        </p>
-    </div>
-</div>
-</body>
-<script type="module">
-$('#options').on('click', function(event){
-    // The event won't be propagated up to the document NODE and
-    // therefore delegated events won't be fired
-    event.stopPropagation();
-});
-</script>
-</html>
+{% block header %} {% trans "Not Found" %} (404)<a class="btn btn-primary float-end" href="{{ request.tenant.index_redirect }}">{% trans "Back to homepage" %}</a>{% endblock %}
+{% block body %}
+    {% if exception == "Resolver404" %}
+        <b>{% blocktranslate with request=request_path trimmed %}
+URL {{ request_path }} does not exist.
+        {% endblocktranslate %}</b>
+    {% else %}
+        <b>{{ exception }}</b>
+    {% endif %}
+{% endblock %}

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-26 14:31+0000\n"
+"POT-Creation-Date: 2024-04-07 16:49+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -119,27 +119,27 @@ msgstr "Smazat"
 msgid "Add Category"
 msgstr "Přidat Kategorii"
 
-#: category/views.py:36
+#: category/views.py:40
 #, python-format
 msgid "Category with url /%(slug)s does not exist"
 msgstr "Kategorie s url /%(slug)s neexistuje"
 
-#: category/views.py:65
+#: category/views.py:73
 #, python-format
 msgid "Category %(name)s was successfully created"
 msgstr "Kategorie %(name)s byla úspěšně vytvořena"
 
-#: category/views.py:82
+#: category/views.py:90
 #, python-format
 msgid "Category %(name)s was successfully updated"
 msgstr "Kategorie %(name)s byla úspěšně upravena"
 
-#: category/views.py:103
+#: category/views.py:111
 #, python-format
 msgid "Category %s was successfully staged for PDF generation"
 msgstr "PDF pro Kategorii %s bylo přidáno do fronty"
 
-#: category/views.py:114
+#: category/views.py:122
 #, python-format
 msgid "Category %(name)s was successfully deleted"
 msgstr "Kategorie %(name)s byla úspěšně smazána"

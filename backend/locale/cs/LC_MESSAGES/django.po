@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-26 14:31+0000\n"
+"POT-Creation-Date: 2024-04-07 16:49+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -104,53 +104,53 @@ msgstr "Jste si jisti že chcete smazat písničku"
 msgid "Confirm"
 msgstr "Potvrdit"
 
-#: backend/templates/songs/index.html:25
+#: backend/templates/songs/index.html:27
 msgid "Hide chords"
 msgstr "Skrýt akordy"
 
-#: backend/templates/songs/index.html:31
+#: backend/templates/songs/index.html:33
 msgid "Prevent sleep"
 msgstr "Zabránit uspání"
 
-#: backend/templates/songs/index.html:37
+#: backend/templates/songs/index.html:39
 msgid "Single page"
 msgstr "Bez stránek"
 
-#: backend/templates/songs/index.html:62
+#: backend/templates/songs/index.html:64
 msgid "Actions"
 msgstr "Akce"
 
-#: backend/templates/songs/index.html:67
+#: backend/templates/songs/index.html:69
 msgid "Edit"
 msgstr "Editor"
 
-#: backend/templates/songs/index.html:70
+#: backend/templates/songs/index.html:72
 msgid "Delete"
 msgstr "Smazat"
 
-#: backend/templates/songs/index.html:84
+#: backend/templates/songs/index.html:86
 msgid "Transpose"
 msgstr "Transponovat"
 
-#: backend/templates/songs/index.html:103
+#: backend/templates/songs/index.html:105
 msgid "Search"
 msgstr "Vyhledávání"
 
-#: backend/templates/songs/index.html:105
+#: backend/templates/songs/index.html:107
 msgid "Number, text or author"
 msgstr "Číslo, text nebo autor"
 
-#: backend/views.py:92
+#: backend/views.py:101
 #, python-format
 msgid "Song %(name)s was successfully created"
 msgstr "Písnička %(name)s byla úspěšně přidána"
 
-#: backend/views.py:115
+#: backend/views.py:124
 #, python-format
 msgid "Song %(name)s was successfully updated"
 msgstr "Písnička %(name)s byla úspěšně upravena"
 
-#: backend/views.py:131
+#: backend/views.py:140
 #, python-format
 msgid "Song %s was successfully deleted"
 msgstr "Písnička %s byla úspěšně odstraněna"
