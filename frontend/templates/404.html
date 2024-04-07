@@ -1,7 +1,6 @@
 {% load static %}
 {% load sass_tags %}
 {% load i18n %}
-{% load menu %}
 
 {% get_current_language as LANGUAGE_CODE %}
 {% get_available_languages as LANGUAGES %}
@@ -11,33 +10,30 @@
 <html lang="en">
 <head>
     <title>{% trans "Not found" %}</title>
-    <link rel="shortcut icon" type="image/png" href="{% static 'favicon.ico' %}"/>
+    <link rel="shortcut icon" type="image/png" href="{{ request.tenant.icon.url }}"/>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous" defer></script>
-    <script   src="{% static "jquery-3.7.1.min.js" %}"
+    <script   src="{% static "js/jquery-3.7.1.min.js" %}"
               type="text/javascript"
               defer></script>
     <link rel="stylesheet" type="text/css" href="{% static 'icons/css/songs.css' %}">
     <link rel="stylesheet" type="text/css" href="{% sass_src 'styles.sass' %}">
-    <link rel="stylesheet" type="text/css" href="{% sass_src 'navbar4.sass' %}">
     {% block extra_head %} {% endblock %}
 </head>
 <body>
 <div class="wrap">
     <div class="main-div container mt-3 mb-3 pb-3">
-        <h1 class="mt-2">{% trans "Not found" %}</h1>
+        <h1 class="mt-2">{% trans "Not found" %} (404)<a class="btn btn-primary float-end" href="{{ request.tenant.index_redirect }}">{% trans "Back to homepage" %}</a></h1>
         <hr>
         <p>
         {% if exception == "Resolver404" %}
-            {% blocktranslate with request=request_path trimmed%}
-    Welp, nothing is at {{ request }}. Like, literally nothing. Not even cockroaches or russians. How did you get here? Are you sure this is the right URL?
+            {% blocktranslate with request=request_path trimmed %}
+    Unable to find {{ request }}.
             {% endblocktranslate %}
         {% else %}
-            {% blocktranslate with exception=exception trimmed%}
-    It seems you turned wrong somewhere, there is nothing here but small midget wizard with long beard telling you reason what you did wrong:<br> <b>{{ exception }}</b>
-            {% endblocktranslate %}
+            <b>{{ exception }}</b>
         {% endif %}
         </p>
     </div>
