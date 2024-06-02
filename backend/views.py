@@ -71,7 +71,7 @@ class AllSongListView(BaseSongListView):
     """Returns all songs for this specific tenant"""
 
     def get_queryset(self):
-        return super().get_queryset().filter(categories__tenant=self.request.tenant)
+        return super().get_queryset().filter(categories__tenant=self.request.tenant).distinct()
 
     def get_title(self):
         """Return title of this song set"""
