@@ -15,8 +15,6 @@ from django.db.models import (
     ForeignKey,
     CASCADE,
     SET_NULL,
-    CheckConstraint,
-    Q,
     PositiveIntegerField,
 )
 from django.utils.translation import gettext_lazy as _
@@ -77,12 +75,6 @@ class PDFRequest(PDFOptions):
     class Meta:
         verbose_name = _("PDFRequest")
         verbose_name_plural = _("PDFRequests")
-        constraints = [
-            CheckConstraint(
-                check=Q(type=RequestType.MANUAL) | Q(category__isnull=False),
-                name="automated_category_present",
-            ),
-        ]
         ordering = ["-update_date"]
 
 
