@@ -1,5 +1,8 @@
 
+.icon-light-up:before { content: '\e800'; } /* '' */
+.icon-moon:before { content: '\e801'; } /* '' */
 .icon-trash-empty:before { content: '\e802'; } /* '' */
+.icon-adjust:before { content: '\e803'; } /* '' */
 .icon-plus:before { content: '\e804'; } /* '' */
 .icon-minus:before { content: '\e805'; } /* '' */
 .icon-up-open:before { content: '\e806'; } /* '' */
