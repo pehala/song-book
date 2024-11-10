@@ -38,7 +38,7 @@ $border-color: $bgHighlight
   margin: auto
   width: 90%
   text-align: center
-  border: 3px solid $border-color
+  border: 3px solid var(--bs-border-color)
 
 html, body
   height: 100%
@@ -63,7 +63,7 @@ html, body
     z-index: 10
 
 hr
-  background-color: $border-color
+  background-color: var(--bs-border-color)
   height: 2px
 
 .languages
@@ -94,8 +94,8 @@ hr
   height: 1px
 
 .accordion-button:not(.collapsed)
-  background-color: white
-  color: black
+  background-color: var(--bs-accordion-btn-bg)
+  color: var(--bs-accordion-btn-color)
   &:focus
     box-shadow: var(--bs-accordion-btn-focus-box-shadow)
 
