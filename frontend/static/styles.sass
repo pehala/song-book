@@ -2,7 +2,15 @@ $bgDefault      : #f9f9f9
 $bgHighlight    : #c4c2bd
 $colDefault     : #7793f3
 $colHighlight   : #e81c1c
+$absoluteBlack  : #000000
+$originalDark   : #212529
 $border-color: $bgHighlight
+
+[data-bs-theme="dark"]
+  --bs-body-bg: #{$absoluteBlack}
+
+[data-bs-theme="dark"] .navbar
+  background: #{$originalDark}
 
 .navbar
   --bs-navbar-color: #{$colDefault}

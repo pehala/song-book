@@ -53,6 +53,24 @@
       "css": "menu",
       "code": 61762,
       "src": "fontawesome"
+    },
+    {
+      "uid": "f8e120c48c070f8afd2d072651b4fb9f",
+      "css": "light-up",
+      "code": 59392,
+      "src": "entypo"
+    },
+    {
+      "uid": "0d03db7afd4857accf1821efdc8ea72b",
+      "css": "moon",
+      "code": 59393,
+      "src": "entypo"
+    },
+    {
+      "uid": "f6fa10cb3ffec7becb60834f50bb0182",
+      "css": "adjust",
+      "code": 59395,
+      "src": "entypo"
     }
   ]
 }

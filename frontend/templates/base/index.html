@@ -23,6 +23,9 @@
     <script   src="{% static "js/jquery-3.7.1.min.js" %}"
               type="text/javascript"
               defer></script>
+    <script   src="{% static "js/auto_darktheme.js" %}"
+              type="text/javascript"
+              defer></script>
     <link rel="stylesheet" type="text/css" href="{% static 'icons/css/songs.css' %}">
     <link rel="stylesheet" type="text/css" href="{% sass_src 'styles.sass' %}">
     {% block extra_head %} {% endblock %}
@@ -73,6 +76,11 @@
                             <label for="language" class="visually-hidden">
                                 {% trans "Language" %}
                             </label>
+                        </div>
+                        <div class="mb-1 d-flex ms-2 me-2 justify-content-center">
+                            <button class="btn btn-outline-secondary me-2" type="button" data-bs-theme-value="light"><i class="icon-light-up"></i></button>
+                            <button class="btn btn-outline-secondary me-2" type="button" data-bs-theme-value="dark"><i class="icon-moon"></i></button>
+                            <button class="btn btn-outline-secondary" type="button" data-bs-theme-value="auto"><i class="icon-adjust"></i></button>
                         </div>
                         {% for locale in languages %}
                             <form id="{{ locale.code }}" action="{% url 'set_language' %}" method="post">
