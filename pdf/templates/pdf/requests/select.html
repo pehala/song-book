@@ -16,12 +16,6 @@
 
 {% block framed_body %}
     <p class="text-center fw-bold">{% trans "Please select which songs would you like to include in the pdf" %}</p>
-    <div class="input-group">
-      <div class="input-group-prepend">
-        <div class="input-group-text">{% trans "Search" %}</div>
-      </div>
-      <input type="text" class="form-control" id="searchInput" placeholder={% trans "Insert query" %}>
-    </div>
     <div class="d-flex flex-row justify-content-center">
     {% for category in categories %}
       <div class="form-check form-switch align-middle me-3">
@@ -69,7 +63,22 @@
     var table = $('#datatable').DataTable( {
         processing: true,
         select: 'multi+shift',
-        dom: 'rtipB',
+        layout: {
+            bottomStart: 'info',
+            bottomEnd: {
+                paging: {
+                    firstLast: false,
+                }
+            },
+            bottom1: "buttons"
+        },
+        columns: [
+            {visible: true, searchable: false,},
+            null,
+            null,
+            {searchable: false, orderable: false,},
+            {visible: false, orderable: false,}
+        ],
         {% datatables_language %}
         buttons: [
             {
@@ -98,9 +107,6 @@
             },
         ],
 
-    });
-    $("#searchInput").on("input", function (event) {
-        table.search($(this).val()).draw();
     });
     function get_checkbox_value(x) {
         const checkbox = $(`#${x}-checkbox`);
