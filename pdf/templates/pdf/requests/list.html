@@ -15,7 +15,7 @@
 {% endblock %}
 
 {% block framed_body %}
-    <div class="btn-group mb-2 float-start" data-bs-toggle="buttons">
+    <div class="btn-group mb-2 float-center" data-bs-toggle="buttons">
       <input type="radio" id="manual" class="btn-check" name="options" value="MA">
       <label class="btn btn-outline-info" for="manual">{% trans "Manual" %}</label>
 
@@ -23,12 +23,6 @@
       <label class="btn btn-outline-info" for="automatic">{% trans "Automated" %}</label>
     </div>
 
-    <div class="input-group">
-      <div class="input-group-prepend">
-        <div class="input-group-text">{% trans "Search" %}</div>
-      </div>
-      <input type="text" class="form-control" id="searchInput" placeholder="{% trans "Insert query" %}">
-    </div>
     <div class="table-responsive">
         <table id="datatable" class="table table-bordered">
           <thead class="thead-light">
@@ -109,7 +103,15 @@
     table = $('#datatable').DataTable({
         processing: true,
         order: [[ 1, "desc" ]],
-        dom: 'rtip',
+        layout: {
+            bottomStart: null,
+            bottomEnd: null,
+            bottom: {
+                paging: {
+                    firstLast: false,
+                }
+            },
+        },
         searchCols: [
           null,
           null,
@@ -117,9 +119,5 @@
         ],
         {% datatables_language %}
     });
-    document.getElementById("searchInput").addEventListener("input", function (event) {
-        table.search(event.target.value);
-        table.draw();
-    })
     </script>
 {% endblock %}

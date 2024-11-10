@@ -153,7 +153,17 @@
                 document.getElementById("content").classList.remove("d-none");
                 document.getElementById("spinner").classList.add("d-none");
             },
-            dom: 'rt<"mt-2 ms-1"p>',
+            layout: {
+                topStart: null,
+                topEnd: null,
+                bottom: {
+                    paging: {
+                        firstLast: false,
+                    }
+                },
+                bottomStart: null,
+                bottomEnd: null,
+            },
             columns: [
                 {
                     data: 'number',
@@ -185,6 +195,10 @@
             ],
             data: JSON.parse("{{ songs|escapejs }}"),
             pageLength: 50,
+            // Workaround for incorrect page number
+            search: {
+                search: "",
+            },
             {% datatables_language %}
         }
         if (initialSearch.length !== 0) {
