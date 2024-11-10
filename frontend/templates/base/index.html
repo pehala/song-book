@@ -10,7 +10,7 @@
 {% get_language_info_list for LANGUAGES as languages %}
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="{{ LANGUAGE_CODE }}">
 <head>
     <title>{% block title %} {{ request.tenant.display_name }} {% endblock %}</title>
     {% if request.tenant.icon %}
