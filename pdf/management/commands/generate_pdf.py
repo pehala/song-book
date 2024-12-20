@@ -9,8 +9,8 @@ from django.core.cache import cache
 from django.core.management import BaseCommand
 
 from category.models import Category
-from pdf.models.request import PDFRequest, Status
-from pdf.utils import generate_new_pdf_request
+from pdf.generate import generate_pdf_file
+from tenants.models import Tenant
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -19,40 +19,36 @@ logger.setLevel(logging.INFO)
 class Command(BaseCommand):
     """Generates PDF according to the PDF requests"""
 
-    help = "Generates PDFs that were requested"
+    help = "Generates PDFs for all categories"
 
     def add_arguments(self, parser: ArgumentParser):
         parser.add_argument(
-            "requests",
-            metavar="Requests",
+            "tenants",
+            metavar="Tenants",
             type=int,
-            nargs="?",
-            default="0",
-            help="Number of requests to process, will process all requests if not value is specified",
+            nargs="+",
+            default=[],
+            help="Tenants IDs for which generate pdfs, if none specified, all tenants are considered",
         )
-        parser.add_argument("--all", action="store_true", help="Regenerates PDF for all categories")
 
     # pylint: disable=too-many-locals
     def handle(self, *args, **options):
         Path(f"{settings.MEDIA_ROOT}/{settings.PDF_FILE_DIR}").mkdir(parents=True, exist_ok=True)
-        all_requests = options["all"]
-        requests = options["requests"]
-
-        if all_requests:
-            objects = [
-                generate_new_pdf_request(category, force_now=True)
-                for category in Category.objects.filter(generate_pdf=True)
-            ]
-        else:
-            objects = PDFRequest.objects.filter(status__in={Status.QUEUED, Status.SCHEDULED})
-            if requests:
-                objects = objects[:requests]
-
-        num = len(objects)
-        if num == 0:
-            logger.info("No requests, skipping")
+        tenants = set(options["tenants"])
+        ids = set(Tenant.objects.filter(id__in=tenants).values_list("id", flat=True))
+        diff = tenants - ids
+        if diff:
+            logger.error("Tenants with ids %s don't exists", diff)
             return
 
+        queryset = Category.objects.filter(generate_pdf=True)
+        if len(tenants) > 0:
+            queryset = queryset.filter(tenant__id__in=tenants)
+
+        for category in queryset:
+            logger.info("Scheduling generation for category %s from Tenant %s", category, category.tenant.name)
+        objects = [generate_pdf_file(category) for category in queryset]
+
         cache.delete(settings.PDF_CACHE_KEY)
-        logger.info("Scheduled %i requests", num)
+        logger.info("Scheduled %i requests", len(objects))
         return

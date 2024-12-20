@@ -119,7 +119,7 @@ class SongUpdateView(
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
         if self.regenerate:
-            regenerate_pdf(self.object, True)
+            regenerate_pdf(self.object)
             regenerate_prerender(self.object)
         return response
 

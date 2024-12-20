@@ -4,6 +4,7 @@ from django.forms import ModelForm, IntegerField, Form, HiddenInput, ModelChoice
 from django.utils.translation import gettext_lazy as _
 
 from category.models import Category
+from pdf.forms import PrependWidget
 from tenants.models import Tenant
 
 
@@ -17,17 +18,18 @@ class CategoryForm(ModelForm):
         fields = [
             "name",
             "slug",
-            "generate_pdf",
             "tenant",
+            "generate_pdf",
+            "title",
+            "display_name",
             "filename",
             "public",
             "locale",
-            "title",
             "show_date",
             "image",
-            "margin",
             "link",
         ]
+        widgets = {"filename": PrependWidget(".pdf")}
 
 
 class NameForm(Form):

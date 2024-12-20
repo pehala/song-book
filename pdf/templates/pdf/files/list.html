@@ -1,0 +1,97 @@
+{% extends "base/frame.html" %}
+{% load utils %}
+{% load i18n %}
+{% load types %}
+{% load static %}
+{% load tz %}
+
+{% block title %}{% trans "Files" %}{% endblock %}
+{% block header %}{% trans "Files" %}{% endblock %}
+
+{% block extra_head %}
+  <script defer type="text/javascript" src="{% static "datatables/datatables.min.js" %}"></script>
+  <link rel="stylesheet" type="text/css" href="{% static "datatables/datatables.min.css" %}"/>
+  <script type="module" src="{% static 'js/js.cookie.js' %}"></script>
+  <script type="module" src="{% static 'js/Options.js' %}"></script>
+{% endblock %}
+
+{% block framed_body %}
+  <div class="table-responsive">
+    <table id="datatable" class="table table-bordered">
+      <thead class="thead-light">
+      <tr>
+        <th scope="col">{% trans "Filename" %}</th>
+        <th scope="col" data-searchable="false" data-orderable="false">{% trans "Link" %}</th>
+        <th scope="col">{% trans "Public" %}</th>
+        <th scope="col">{% trans "Title" %}</th>
+        <th scope="col">{% trans "Status" %}</th>
+        <th scope="col">{% trans "Last update" %}</th>
+        <th scope="col">{% trans "PDF Template" %}</th>
+        <th scope="col" data-searchable="false" data-orderable="false">{% trans "Actions" %}</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for pdf in files %}
+        <tr>
+          <td>{{ pdf.filename }}.pdf</td>
+          {% if pdf.file %}
+            <td><a href="{{ pdf.file.url }}" target="_blank">{{ pdf.name }}</a></td>
+          {% else %}
+            <td>{% trans "None" %}</td>
+          {% endif %}
+          <td>{{ pdf.public|yesno }}</td>
+          <td>{{ pdf.title }}</td>
+          <td style="background-color: {{ pdf.status|get_status_color }}" class="text-black">{{ pdf.get_status_display }}
+            {% if pdf.status == "PR" %}{{ pdf.progress }}/7 {% endif %} {% if pdf.status == "SC" %}
+              {{ pdf.scheduled_at }} {% endif %}</td>
+          <td data-order="{{ pdf.update_date|date:"c" }}">{{ pdf.update_date }}</td>
+          {% if pdf.template %}
+            <td data-filter="{{ pdf.template.id }}">{{ pdf.template.name }}</td>
+          {% else %}
+            <td>-------</td>
+          {% endif %}
+          <td>
+            <div class="btn-group me-1">
+              {% if pdf.finished %}
+                <a type="button" class="btn btn-primary" href="{% url "pdf:files:edit" pk=pdf.pk %}">{% trans "Edit" %}</a>
+              {% else %}
+                <a type="button" class="btn btn-info" href="{% url "pdf:files:wait" pk=pdf.pk %}">{% trans "See progress" %}</a>
+              {% endif %}
+              <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
+                      data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="visually-hidden">{% trans "Toggle Dropdown" %}</span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+                  {% if pdf.template %}
+                    <a type="button" class="dropdown-item text-primary"
+                       href="{% url "pdf:templates:generate" pk=pdf.template.pk %}">{% trans "Generate Another" %}</a>
+                  {% endif %}                  
+                  <a type="button" class="dropdown-item text-danger"
+                     href="{% url "pdf:files:delete" pk=pdf.pk %}">{% trans "Delete" %}</a>
+                </li>
+              </ul>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <script type="module">
+      const table = $('#datatable').DataTable({
+          processing: true,
+          order: [[5, "desc"]],
+          layout: {
+              bottomStart: null,
+              bottomEnd: null,
+              bottom: {
+                  paging: {
+                      firstLast: false,
+                  }
+              },
+          },
+          {% datatables_language %}
+      });
+  </script>
+{% endblock %}

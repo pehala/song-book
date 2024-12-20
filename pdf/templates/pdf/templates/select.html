@@ -3,10 +3,11 @@
 {% load utils %}
 {% load i18n %}
 {% load types %}
+{% load django_bootstrap5 %}
 {% load sass_tags %}
 
-{% block title %} {% trans "PDF Requests" %} {% endblock %}
-{% block header %} {% trans "PDF Requests" %}  {% endblock %}
+{% block title %} {% trans "Create new File Template" %} {% endblock %}
+{% block header %} {% trans "Create new File Template" %}  {% endblock %}
 {% block extra_head %}
 <script defer type="text/javascript" src="{% static "datatables/datatables.min.js" %}"></script>
 <script defer type="text/javascript" src="{% static "datatables/accent-neutralize.min.js" %}"></script>
@@ -15,11 +16,18 @@
 {% endblock %}
 
 {% block framed_body %}
-    <p class="text-center fw-bold">{% trans "Please select which songs would you like to include in the pdf" %}</p>
+{#    <p class="text-center fw-bold">{% trans "Please, now please fill all the details for the PDF and choose song ordering" %}</p>#}
+    <form id="assign_form" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {% bootstrap_form songs_form %}
+        {% bootstrap_form template_form %}
+        <select id="select" name="songs" class="d-none" multiple="multiple"></select>
+    </form>
+    <p class="text-center fw-bold">{% trans "Please enter file configuration option and select which songs you would like to include" %}</p>
     <div class="d-flex flex-row justify-content-center">
     {% for category in categories %}
       <div class="form-check form-switch align-middle me-3">
-          <input type="checkbox" class="form-check-input category-checkbox" name="online" id="{{ category.slug }}-checkbox" cat_name="{{ category.name }}"  checked>
+          <input type="checkbox" class="form-check-input category-checkbox" name="{{ category.name }}" id="{{ category.slug }}-checkbox" checked>
           <label class="form-check-label" for="{{ category.slug }}-checkbox">{{ category.name }}</label>
       </div>
     {% endfor %}
@@ -48,19 +56,19 @@
         {% endfor %}
         </tbody>
     </table>
-    <form class="hidden" id="assign_form" action="{% url "pdf:assign" %}"></form>
     <script type="module">
     const categories = {{ slugs|safe }};
-    const form = $('#assign_form');
+    const initial_songs = {{ initial_songs|safe }}.map(item => item.toString());
+    const form = document.getElementById("assign_form");
+    const select = document.getElementById("select");
     function addSong(id) {
-        $("<input>")
-            .attr("type", "hidden")
-            .attr("name", "songs")
-            .val(id)
-            .appendTo(form);
+        const option = document.createElement("option");
+        option.setAttribute("value", id);
+        option.setAttribute("selected", "1");
+        select.appendChild(option);
     }
     $.fn.DataTable.ext.pager.numbers_length = 5;
-    var table = $('#datatable').DataTable( {
+    const table = $('#datatable').DataTable( {
         processing: true,
         select: 'multi+shift',
         layout: {
@@ -73,7 +81,7 @@
             bottom1: "buttons"
         },
         columns: [
-            {visible: true, searchable: false,},
+            {visible: true, searchable: false},
             null,
             null,
             {searchable: false, orderable: false,},
@@ -98,7 +106,7 @@
                 action: function (e, dt, node, config) {
                     const rows = dt.rows( { selected: true } );
                     const data = rows.data();
-                    for (var i = 0; i < rows.count(); i++) {
+                    for (let i = 0; i < rows.count(); i++) {
                         const id = data[i][0]
                         addSong(id)
                     }
@@ -106,24 +114,31 @@
                 }
             },
         ],
+        initComplete: function () {
+            if (initial_songs.length > 0) {
+                this.dataTable().api().rows((idx, data) => initial_songs.includes(data[0])).select();
+            }
+        }
 
     });
     function get_checkbox_value(x) {
-        const checkbox = $(`#${x}-checkbox`);
-        return {[x]: {"name": checkbox.attr("cat_name") , "checked": checkbox.is(":checked")}}
+        const checkbox = document.getElementById(`${x}-checkbox`);
+        return {[x]: {"name": checkbox.getAttribute("name") , "checked": checkbox.checked}}
     }
     $(".category-checkbox").on("change", function (event) {
-        table.columns(4).search()
+        const column = table.columns(4)
+        column.search()
         let dictionary = Object.assign({}, ...categories.map((x) => get_checkbox_value(x)));
         const names = Object.values(dictionary)
                     .filter( value => value.checked)
                     .map( value => value.name);
         if (names.length === 0) {
-            table.columns(4).search(-1).draw()
+            column.search(-1).draw()
             return
         }
         const regex = `(${names.join("|")})`
-        table.columns(4).search(regex, true, false, false).draw()
+        column.search(regex, true, false, false).draw()
     })
+    
     </script>
 {% endblock %}

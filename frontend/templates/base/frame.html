@@ -1,7 +1,10 @@
 {% extends "base/index.html" %}
 {% block body %}
     <div class="main-div container mt-3 mb-3 pb-3">
-        <h1 class="mt-2">{% block header %} Cool header dude {% endblock %}</h1>
+        <div class="d-flex flex-row justify-content-center">
+          <h1 class="mt-2 ms-auto me-auto">{% block header %} Cool header dude {% endblock %}</h1>
+          {% block extra_header %}{% endblock %}
+        </div>
         <hr>
         {% block framed_body %}
             Here should be your text

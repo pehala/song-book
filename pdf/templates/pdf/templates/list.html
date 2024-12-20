@@ -1,0 +1,109 @@
+{% extends "base/frame.html" %}
+{% load utils %}
+{% load i18n %}
+{% load types %}
+{% load static %}
+
+{% block title %}{% trans "File Templates" %}{% endblock %}
+{% block header %}{% trans "File Templates" %}{% endblock %}
+{% block extra_header %}
+  <div class="align-self-center float-end">
+    <a href="{% url "pdf:templates:new" %}" class="btn btn-primary">{% trans "Add Template" %}</a>
+  </div>
+{% endblock %}
+
+{% block extra_head %}
+  <script defer type="text/javascript" src="{% static "datatables/datatables.min.js" %}"></script>
+  <link rel="stylesheet" type="text/css" href="{% static "datatables/datatables.min.css" %}"/>
+  <script type="module" src="{% static 'js/js.cookie.js' %}"></script>
+  <script type="module" src="{% static 'js/Options.js' %}"></script>
+{% endblock %}
+
+{% block framed_body %}
+
+  <div class="table-responsive">
+    <table id="datatable" class="table table-bordered table-striped">
+      <thead class="thead-light">
+      <tr>
+        <th scope="col">{% trans "Name" %}</th>
+        <th scope="col">{% trans "Filename" %}</th>
+        <th scope="col">{% trans "Public" %}</th>
+        <th scope="col">{% trans "Number of songs" %}</th>
+        <th scope="col">{% trans "Number of files" %}</th>
+        <th scope="col">{% trans "Last file" %}</th>
+        <th scope="col">{% trans "Status" %}</th>
+        <th scope="col">{% trans "Last update" %}</th>
+        <th scope="col" data-searchable="false" data-orderable="false">{% trans "Actions" %}</th>
+      </tr>
+      </thead>
+      <tbody>
+      {% for template in templates %}
+        <tr>
+          <td>{{ template.name }}</td>
+          <td>{{ template.filename }}.pdf</td>
+          <td>{{ template.public|yesno }}</td>
+          <td>{{ template.song_count }}</td>
+          <td>{{ template.file_count }}</td>
+          {% with template.latest_file as pdf %}
+            {% if pdf %}
+              <td>
+                {% if pdf.file %}
+                  <a href="{{ pdf.file.url }}" target="_blank">{{ pdf.name }}</a>
+                {% else %}
+                  {% trans "None" %}
+                {% endif %}
+              </td>
+              <td style="background-color: {{ pdf.status|get_status_color }}" class="text-black">{{ pdf.get_status_display }} {% if pdf.status == "PR" %}{{ pdf.progress }}/7 {% endif %} {% if pdf.status == "SC" %} {{ pdf.scheduled_at }} {% endif %}</td>
+              <td data-order="{{ pdf.update_date|date:"c" }}">{{ pdf.update_date }}</td>
+            {% else %}
+              <td colspan="3">{% trans "No generated files" %}</td>
+              <td style="display: none;"></td>
+              <td style="display: none;"></td>
+            {% endif %}
+          {% endwith %}
+          <td>
+            <div class="btn-group me-1">
+              {% if template.has_scheduled_file %}
+                <button class="btn btn-outline-secondary" disabled>{% trans "Already in queue" %}</button>
+              {% else %}
+                <a type="button" class="btn btn-primary"
+                   href="{% url "pdf:templates:generate" pk=template.pk %}">{% trans "Generate" %}</a>
+              {% endif %}
+              <a type="button" class="btn btn-info"
+                     href="{% url "pdf:templates:edit" pk=template.pk %}">{% trans "Edit" %}</a>
+              <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
+                      data-bs-toggle="dropdown" aria-expanded="false">
+                <span class="visually-hidden">{% trans "Toggle Dropdown" %}</span>
+              </button>
+              <ul class="dropdown-menu dropdown-menu-end">
+                <li>
+{#                  <a type="button" class="dropdown-item text-secondary"#}
+{#                     href="{% url "pdf:edit" pk=template.pk %}">{% trans "Edit" %}</a>#}
+                  <a type="button" class="dropdown-item text-danger"
+                     href="{% url "pdf:templates:delete" pk=template.pk %}">{% trans "Delete" %}</a>
+                </li>
+              </ul>
+            </div>
+          </td>
+        </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  <script type="module">
+      const table = $('#datatable').DataTable({
+          processing: true,
+          order: [[1, "desc"]],
+          layout: {
+              bottomStart: null,
+              bottomEnd: null,
+              bottom: {
+                  paging: {
+                      firstLast: false,
+                  }
+              },
+          },
+          {% datatables_language %}
+      });
+  </script>
+{% endblock %}

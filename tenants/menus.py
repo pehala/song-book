@@ -9,8 +9,9 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from simple_menu import MenuItem, Menu
 
+from category.models import Category
 from pdf.cachemenuitem import CacheMenuItem
-from pdf.models.request import Status, PDFFile
+from pdf.models.request import Status, PDFFile, ManualPDFTemplate
 from tenants.models import Tenant
 from tenants.utils import create_tenant_string
 
@@ -72,15 +73,16 @@ def distinct_requests(request):
     PDFRequest.objects.filter(file__isnull=False, status=Status.DONE).distinct("filename")[:5]
 
     """
-    files = set()
     data = []
-    for entry in PDFFile.objects.filter(
-        file__isnull=False, status=Status.DONE, tenant=request.tenant, public=True
-    ).exclude(file__exact=""):
-        display_name = entry.name
-        if display_name not in files and entry.public:
-            data.append(MenuItem(display_name, entry.file.url))
-            files.add(display_name)
+    for model in [Category, ManualPDFTemplate]:
+        for template in model.objects.filter(tenant=request.tenant):
+            file = template.latest_file
+            if file and file.file:
+                data.append(MenuItem(file.name, file.file.url))
+    # Without template
+    for file in PDFFile.objects.filter(tenant=request.tenant, status=Status.DONE, public=True, template=None):
+        if file.file:
+            data.append(MenuItem(file.name, file.file.url))
     return data
 
 

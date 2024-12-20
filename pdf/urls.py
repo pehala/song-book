@@ -1,25 +1,43 @@
 """Url configuration for PDF app"""
 
-from django.urls import path
+from django.urls import path, include
 
-from pdf.views import (
-    RequestListView,
-    RequestSongSelectorView,
-    RequestNumberSelectView,
-    RequestRemoveFileView,
-    RequestRegenerateView,
-    WaitForPDFView,
+from pdf.views.files import (
     RenderInfoView,
-    RequestMoveView,
+    FileDeleteView,
+    FileUpdateView,
+    FileListView,
+    MovePDFTemplatesView,
+    WaitForFileView,
+)
+from pdf.views.templates import (
+    UpdateTemplateView,
+    TemplateListView,
+    TemplateDeleteView,
+    TemplateNumberSelectView,
+    GenerateFromTemplateView,
 )
 
-urlpatterns = [
-    path("list", RequestListView.as_view(), name="list"),
-    path("new", RequestSongSelectorView.as_view(), name="new"),
-    path("assign", RequestNumberSelectView.as_view(), name="assign"),
-    path("wait/<int:pk>", WaitForPDFView.as_view(), name="wait"),
+template_patterns = [
+    path("list", TemplateListView.as_view(), name="list"),
+    path("new", UpdateTemplateView.as_view(), name="new"),
+    path("edit/<int:pk>", UpdateTemplateView.as_view(), name="edit"),
+    path("delete/<int:pk>", TemplateDeleteView.as_view(), name="delete"),
+    path("assign", TemplateNumberSelectView.as_view(), name="assign"),
+    path("assign/<int:pk>", TemplateNumberSelectView.as_view(), name="assign"),
+    path("<int:pk>/generate", GenerateFromTemplateView.as_view(), name="generate"),
+    path("move", MovePDFTemplatesView.as_view(), name="move"),
+]
+
+file_patterns = [
+    path("wait/<int:pk>", WaitForFileView.as_view(), name="wait"),
     path("info/<int:pk>", RenderInfoView.as_view(), name="info"),
-    path("remove_file/<int:pk>", RequestRemoveFileView.as_view(), name="remove_file"),
-    path("regenerate/<int:pk>", RequestRegenerateView.as_view(), name="regenerate"),
-    path("move", RequestMoveView.as_view(), name="move"),
+    path("delete/<int:pk>", FileDeleteView.as_view(), name="delete"),
+    path("edit/<int:pk>", FileUpdateView.as_view(), name="edit"),
+    path("list", FileListView.as_view(), name="list"),
+]
+
+urlpatterns = [
+    path("templates/", include((template_patterns, "pdf"), namespace="templates")),
+    path("files/", include((file_patterns, "pdf"), namespace="files")),
 ]

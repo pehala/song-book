@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-25 17:43+0000\n"
+"POT-Creation-Date: 2024-12-25 21:59+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,29 +23,29 @@ msgstr ""
 msgid "Move Category to a different Tenant"
 msgstr "Přesunout Kategorie do jiného Zpěvníku"
 
-#: category/models.py:14 category/templates/category/list.html:11
+#: category/models.py:19 category/templates/category/list.html:12
 msgid "Name"
 msgstr "Jméno"
 
-#: category/models.py:15 category/templates/category/list.html:12
+#: category/models.py:20 category/templates/category/list.html:13
 msgid "URL pattern"
 msgstr "URL vzor"
 
-#: category/models.py:17 category/templates/category/list.html:13
+#: category/models.py:22 category/templates/category/list.html:16
 msgid "PDF generation"
 msgstr "Automatické Generování PDF"
 
-#: category/models.py:18
+#: category/models.py:23
 msgid "Should the PDF file be automatically generated when a song changes?"
 msgstr ""
 "Má být vygenerován pdf soubor když se nějaká písnička z kategorie změní?"
 
-#: category/models.py:25
+#: category/models.py:33
 msgid "Category"
 msgstr "Kategorie"
 
-#: category/models.py:26 category/templates/category/list.html:4
-#: category/templates/category/list.html:5
+#: category/models.py:34 category/templates/category/list.html:5
+#: category/templates/category/list.html:6
 msgid "Categories"
 msgstr "Kategorie"
 
@@ -54,47 +54,70 @@ msgid "Language"
 msgstr "Jazyk"
 
 #: category/templates/category/list.html:15
+msgid "Number of songs"
+msgstr "Počet písniček"
+
+#: category/templates/category/list.html:17
+msgid "Number of files"
+msgstr "Počet souborů"
+
+#: category/templates/category/list.html:18
+msgid "Last file"
+msgstr "Poslední soubor"
+
+#: category/templates/category/list.html:19
+msgid "Status"
+msgstr ""
+
+#: category/templates/category/list.html:20
+msgid "Last update"
+msgstr "Poslední změna"
+
+#: category/templates/category/list.html:21
 msgid "Actions"
 msgstr "Akce"
 
-#: category/templates/category/list.html:23
-msgid "Yes"
-msgstr "Ano"
+#: category/templates/category/list.html:40
+msgid "None"
+msgstr "Nic"
 
-#: category/templates/category/list.html:23
-msgid "No"
-msgstr "Ne"
+#: category/templates/category/list.html:48
+msgid "No generated files"
+msgstr "Žádné soubory"
 
-#: category/templates/category/list.html:27
+#: category/templates/category/list.html:55
 msgid "Edit"
 msgstr "Upravit"
 
-#: category/templates/category/list.html:29
+#: category/templates/category/list.html:58
 msgid "Toggle Dropdown"
 msgstr "Rozbalit"
 
-#: category/templates/category/list.html:34
+#: category/templates/category/list.html:64
 msgid "Already in queue"
 msgstr "Již ve frontě"
 
-#: category/templates/category/list.html:36
-msgid "Regenerate"
-msgstr "Přegenerovat"
+#: category/templates/category/list.html:67
+msgid "Generate PDF"
+msgstr "Vygenerovat PDF"
 
-#: category/templates/category/list.html:39
+#: category/templates/category/list.html:70
+msgid "Filename required for PDF generation"
+msgstr "Chybí jméno souboru pro generování PDF"
+
+#: category/templates/category/list.html:74
 msgid "Delete"
 msgstr "Smazat"
 
-#: category/templates/category/list.html:48
+#: category/templates/category/list.html:83
 msgid "Add Category"
 msgstr "Přidat Kategorii"
 
-#: category/views.py:40
+#: category/views.py:38
 #, python-format
 msgid "Category with url /%(slug)s does not exist"
 msgstr "Kategorie s url /%(slug)s neexistuje"
 
-#: category/views.py:107
-#, python-format
-msgid "Category %s was successfully staged for PDF generation"
-msgstr "PDF pro Kategorii %s bylo přidáno do fronty"
+#: category/views.py:72
+msgid "songbook"
+msgstr "zpevnicek"

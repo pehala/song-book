@@ -1,54 +1,85 @@
 {% extends "base/frame.html" %}
 {% load i18n %}
+{% load types %}
 
 {% block title %} {% trans "Categories" %} {% endblock %}
 {% block header %} {% trans "Categories" %} {% endblock %}
 
 {% block framed_body %}
-    <table class="table table-bordered">
-      <thead class="thead-light">
-        <tr>
-          <th scope="col">{% trans "Name" %}</th>
-          <th scope="col">{% trans "URL pattern" %}</th>
-          <th scope="col">{% trans "PDF generation" %}</th>
-          <th scope="col">{% trans "Language" %}</th>
-          <th scope="col">{% trans "Actions" %}</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for category in categories %}
-        <tr>
-          <td>{{ category.name }}</td>
-          <td><a href="{% url "category:index" slug=category.slug %}">{% url "category:index" slug=category.slug %}</a></td>
-          <td>{% if category.generate_pdf %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td>
-          <td>{{ category.locale }}</td>
-          <td>
-              <div class="btn-group me-1">
-                  <a href="{% url "category:edit" pk=category.id %}" class="btn btn-primary">{% trans "Edit" %}</a>
-                  <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span class="visually-hidden">{% trans "Toggle Dropdown" %}</span>
-                  </button>
-                  <ul class="dropdown-menu dropdown-menu-end">
-                      <li>
-                          {% if category.id in already_staged %}
-                            <a href="{% url "category:regenerate" pk=category.id %}" class="dropdown-item text-secondary pe-none">{% trans "Already in queue" %}</a>
-                          {% else %}
-                            <span class="dropdown-item text-primary">{% trans "Regenerate" %}</span>
-                          {% endif %}
-                      </li>
-                      <li><a href="{% url "category:delete" pk=category.id %}" class="dropdown-item text-danger">{% trans "Delete" %}</a></li>
-                  </ul>
-              </div>
-          </td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-    <div class="text-center">
-        <a href="{% url "category:add" %}" class="btn btn-primary">{% trans "Add Category" %}</a>
-    </div>
-    <script defer>
-    const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]')
-    const tooltipList = [...tooltipTriggerList].map(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl))
-    </script>
+  <table class="table table-bordered">
+    <thead class="thead-light">
+    <tr>
+      <th scope="col">{% trans "Name" %}</th>
+      <th scope="col">{% trans "URL pattern" %}</th>
+      <th scope="col">{% trans "Language" %}</th>
+      <th scope="col">{% trans "Number of songs" %}</th>
+      <th scope="col">{% trans "PDF generation" %}</th>
+      <th scope="col">{% trans "Number of files" %}</th>
+      <th scope="col">{% trans "Last file" %}</th>
+      <th scope="col">{% trans "Status" %}</th>
+      <th scope="col">{% trans "Last update" %}</th>
+      <th scope="col">{% trans "Actions" %}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for category in categories %}
+      <tr>
+        <td>{{ category.name }}</td>
+        <td><a href="{% url "category:index" slug=category.slug %}">{% url "category:index" slug=category.slug %}</a>
+        </td>
+        <td>{{ category.locale }}</td>
+        <td>{{ category.song_count }}</td>
+        <td>{{ category.generate_pdf|yesno }}</td>
+        <td>{{ category.file_count }}</td>
+        {% with category.latest_file as pdf %}
+          {% if pdf %}
+            <td>
+              {% if pdf.file %}
+                <a href="{{ pdf.file.url }}" target="_blank">{{ pdf.name }}</a>
+              {% else %}
+                {% trans "None" %}
+              {% endif %}
+            </td>
+            <td style="background-color: {{ pdf.status|get_status_color }}" class="text-black">{{ pdf.get_status_display }}
+              {% if pdf.status == "PR" %}{{ pdf.progress }}/7 {% endif %} {% if pdf.status == "SC" %}
+                {{ pdf.scheduled_at }} {% endif %}</td>
+            <td data-order="{{ pdf.update_date|date:"c" }}">{{ pdf.update_date }}</td>
+          {% else %}
+            <td colspan="3">{% trans "No generated files" %}</td>
+            <td style="display: none;"></td>
+            <td style="display: none;"></td>
+          {% endif %}
+        {% endwith %}
+        <td>
+          <div class="btn-group me-1">
+            <a href="{% url "category:edit" pk=category.id %}" class="btn btn-primary">{% trans "Edit" %}</a>
+            <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+              <span class="visually-hidden">{% trans "Toggle Dropdown" %}</span>
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li>
+                {% if category.filename %}
+                  {% if category.has_scheduled_file %}
+                    <span class="dropdown-item text-secondary">{% trans "Already in queue" %}</span>
+                  {% else %}
+                    <a href="{% url "pdf:templates:generate" pk=category.id %}"
+                       class="dropdown-item text-primary">{% trans "Generate PDF" %}</a>
+                  {% endif %}
+                {% else %}
+                  <span class="dropdown-item text-secondary">{% trans "Filename required for PDF generation" %}</span>
+                {% endif %}
+              </li>
+              <li><a href="{% url "category:delete" pk=category.id %}"
+                     class="dropdown-item text-danger">{% trans "Delete" %}</a></li>
+            </ul>
+          </div>
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+  <div class="text-center">
+    <a href="{% url "category:add" %}" class="btn btn-primary">{% trans "Add Category" %}</a>
+  </div>
 {% endblock %}
