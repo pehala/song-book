@@ -7,8 +7,8 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from category.models import Category
-from tenants.forms import TenantForm
-from tenants.models import Tenant
+from tenants.forms import TenantForm, LinkForm
+from tenants.models import Tenant, Link
 
 
 @admin.register(Tenant)
@@ -33,6 +33,14 @@ class TenantAdmin(admin.ModelAdmin):
             Category.objects.create(
                 tenant=obj, name="Default Category", slug="default", locale=settings.LANGUAGES[0][0], generate_pdf=False
             )
+
+
+@admin.register(Link)
+class LinkAdmin(admin.ModelAdmin):
+    """Link Admin view"""
+
+    list_display = ["display_name", "link"]
+    form = LinkForm
 
 
 admin.site.login_template = "registration/login.html"

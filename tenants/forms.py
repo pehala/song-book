@@ -2,7 +2,7 @@
 
 from django.forms import ModelForm, CharField
 
-from tenants.models import Tenant
+from tenants.models import Tenant, Link
 
 
 class TenantForm(ModelForm):
@@ -12,6 +12,14 @@ class TenantForm(ModelForm):
 
     class Meta:
         model = Tenant
+        fields = "__all__"
+
+
+class LinkForm(ModelForm):
+    """Specific Form for Link, used only in Admin"""
+
+    class Meta:
+        model = Link
         fields = "__all__"
 
 

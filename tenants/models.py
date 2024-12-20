@@ -2,7 +2,7 @@
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from django.db.models import Model, CharField, ManyToManyField, BooleanField, ImageField
+from django.db.models import Model, CharField, ManyToManyField, BooleanField, ImageField, URLField, ForeignKey, CASCADE
 from django.utils.translation import gettext_lazy as _
 
 
@@ -10,6 +10,16 @@ def only_png(value):
     """Raises validation error if the file is not a PNG image"""
     if not value.url and value.file.content_type != "image/png":
         raise ValidationError(_("Only PNG images are allowed"))
+
+
+class Link(Model):
+    """Represents a Link to other site"""
+
+    link = URLField(verbose_name=_("Link URL"))
+    display_name = CharField(verbose_name=_("Display Name"), null=True, blank=True, max_length=64)
+
+    def __str__(self):
+        return f"{self.display_name} ({self.link})"
 
 
 class Tenant(Model):
@@ -38,7 +48,7 @@ class Tenant(Model):
         upload_to="uploads/",
         validators=[only_png],
     )
-
+    links = ManyToManyField(Link)
     admins = ManyToManyField(get_user_model())
 
     def __str__(self):
