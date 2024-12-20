@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-07 16:50+0000\n"
+"POT-Creation-Date: 2024-12-20 13:06+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -24,7 +24,6 @@ msgid "Bad Request"
 msgstr "Špatný dotaz"
 
 #: frontend/templates/400.html:9
-#| msgid "Bad Request"
 msgid "Invalid request"
 msgstr "Špatný požadavek"
 
@@ -58,31 +57,31 @@ msgstr "Odeslat"
 msgid "Not found"
 msgstr "Nenalezeno"
 
-#: frontend/templates/base/index.html:35
+#: frontend/templates/base/index.html:38
 msgid "Logo"
 msgstr ""
 
-#: frontend/templates/base/index.html:64
+#: frontend/templates/base/index.html:72
 msgid "Options"
 msgstr "Možnosti"
 
-#: frontend/templates/base/index.html:74
+#: frontend/templates/base/index.html:82
 msgid "Language"
 msgstr "Jazyk"
 
-#: frontend/templates/base/index.html:88
+#: frontend/templates/base/index.html:101
 msgid "Version"
 msgstr "Verze"
 
-#: frontend/templates/base/index.html:89
+#: frontend/templates/base/index.html:102
 msgid "Git"
 msgstr ""
 
-#: frontend/templates/base/index.html:97
+#: frontend/templates/base/index.html:110
 msgid "Logged as"
 msgstr "Přihlášen jako"
 
-#: frontend/templates/base/index.html:99
+#: frontend/templates/base/index.html:112
 msgid "Log in"
 msgstr "Přihlásit se"
 

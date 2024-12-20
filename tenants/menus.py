@@ -41,6 +41,17 @@ def create_menus(tenant):
             timeout=60 * 60 * 24 * 7,
         ),
     )
+    links = tenant.links.all()
+    if len(links) > 0:
+        children = [MenuItem(link.display_name, url=link.link, skip_translate=True, new_tab=True) for link in links]
+        Menu.add_item(
+            create_tenant_string(tenant, "links"),
+            MenuItem(
+                title=_("See Also"),
+                url=reverse("backend:index"),
+                children=children,
+            ),
+        )
 
 
 def categories(request):

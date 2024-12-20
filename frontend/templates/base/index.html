@@ -50,6 +50,11 @@
             <ul class="navbar-nav nav-left ms-1">
                 {% draw_menu "files" use_tenant=True %}
             </ul>
+            {% if request.tenant.links.all|length > 0 %}
+            <ul class="navbar-nav nav-left ms-1">
+                {% draw_menu "links" use_tenant=True %}
+            </ul>
+            {% endif%}
             <ul class="navbar-nav nav-right ms-auto ps-1">
                 {% draw_menu "pdf" %}
             </ul>
