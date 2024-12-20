@@ -24,6 +24,7 @@ mistune = ">3"
 netifaces = "*"
 django-compressor = "*"
 libsass = "*"
+django-polymorphic = {git = "https://github.com/jazzband/django-polymorphic.git", rev = "v4.0.0a"}
 
 [tool.poetry.group.production]
 optional = true

@@ -14,8 +14,8 @@ from django.db.models import (
 from django.utils.translation import gettext_lazy as _
 from markdownx.models import MarkdownxField
 
-from chords.markdown import RENDERER
 from category.models import Category
+from chords.markdown import RENDERER
 
 
 class Song(Model):
