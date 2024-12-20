@@ -1,16 +1,14 @@
 """Views for categories"""
 
 from django.conf import settings
-from django.contrib import messages
 from django.core.cache import cache
 from django.db import transaction
+from django.db.models import Count, Q
 from django.http import Http404
-from django.shortcuts import redirect
 from django.urls import reverse_lazy
-from django.utils.translation import gettext_lazy as _
-from django.views import View
+from django.utils import translation
+from django.utils.translation import gettext_lazy as _, get_language, gettext
 from django.views.generic import ListView
-from django.views.generic.detail import SingleObjectMixin
 
 from analytics.views import AnalyticsMixin
 from backend.generic import UniversalDeleteView, UniversalUpdateView, UniversalCreateView
@@ -19,8 +17,8 @@ from backend.models import Song
 from backend.views import BaseSongListView
 from category.forms import CategoryForm, NameForm
 from category.models import Category
-from pdf.models.request import PDFRequest, RequestType, Status
-from pdf.utils import request_pdf_regeneration
+from category.utils import request_pdf_regeneration
+from pdf.models.request import PDFTemplate, PDFFile
 from tenants.views import AdminMoveView
 
 
@@ -53,14 +51,13 @@ class CategoryListView(LocalAdminRequired, ListView):
     context_object_name = "categories"
 
     def get_queryset(self):
-        return super().get_queryset().filter(tenant=self.request.tenant)
-
-    def get_context_data(self, *, object_list=None, **kwargs):
-        ctx = super().get_context_data(object_list=object_list, **kwargs)
-        ctx["already_staged"] = PDFRequest.objects.filter(
-            type=RequestType.EVENT, status__in=[Status.QUEUED, Status.SCHEDULED], tenant=self.request.tenant
-        ).values_list("category_id", flat=True)
-        return ctx
+        return (
+            super()
+            .get_queryset()
+            .filter(tenant=self.request.tenant)
+            .annotate(song_count=Count("song", filter=Q(song__archived=False)))
+            .annotate(file_count=Count("pdffile"))
+        )
 
 
 class CategoryCreateView(LocalAdminRequired, UniversalCreateView):
@@ -71,7 +68,8 @@ class CategoryCreateView(LocalAdminRequired, UniversalCreateView):
     success_url = reverse_lazy("category:list")
 
     def get_initial(self):
-        return {"tenant": self.request.tenant}
+        with translation.override(get_language()):
+            return {"tenant": self.request.tenant, "filename": gettext("songbook")}
 
     def get_success_message(self, cleaned_data):
         cache.delete(settings.CATEGORY_CACHE_KEY)
@@ -87,26 +85,10 @@ class CategoryUpdateView(LocalAdminRequired, RegenerateViewMixin, UniversalUpdat
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
-        if self.regenerate:
+        if self.regenerate and self.object.generate_pdf:
             request_pdf_regeneration(self.object)
         cache.delete(settings.CATEGORY_CACHE_KEY)
         return response
-
-
-class CategoryRegeneratePDFView(LocalAdminRequired, View, SingleObjectMixin):
-    """Creates PDF regeneration request for Category, if it doesn't already exist"""
-
-    model = Category
-
-    def get(self, request, *args, **kwargs):
-        """GET Request"""
-        category = self.get_object()
-        request_pdf_regeneration(category)
-        messages.success(
-            request,
-            _("Category %s was successfully staged for PDF generation") % category.name,
-        )
-        return redirect("category:list")
 
 
 class CategoryDeleteView(LocalAdminRequired, UniversalDeleteView):
@@ -131,14 +113,17 @@ class CategoryMoveView(AdminMoveView):
         """What should happen on POST with data from forms"""
         categories = Category.objects.filter(id__in=ids)
         songs = Song.objects.filter(categories__id__in=ids).distinct()
-        requests = PDFRequest.objects.filter(category_id__in=ids).distinct()
+        requests = PDFTemplate.objects.filter(category_id__in=ids).distinct()
         with transaction.atomic():
             for category in categories:
                 category.tenant = target
             for request in requests:
                 request.tenant = target
+                for file in request.files:
+                    file.tenant = target
+                PDFFile.objects.bulk_update(request.files, ["tenant"])
             Category.objects.bulk_update(categories, ["tenant"])
-            PDFRequest.objects.bulk_update(requests, ["tenant"])
+            PDFTemplate.objects.bulk_update(requests, ["tenant"])
             for song in songs:
                 to_keep = []
                 to_remove = []

@@ -4,16 +4,28 @@
 
 ### PDFTemplate
 * Represents set of configuration options that are used for generating a PDFFile
-* No way of recreating exactly the same file, PDFTemplates can change and every regeneration will be based on the new configuration
+* Can be regenerated
 
 #### ManualPDFTemplate
+* User created template for creating PDFFiles
+* Schedule manually
+* Songs need to be configured manually
+
 #### Category
-* Category is a subclass of PDFTemplate and provides songs
+* Category is a subclass of PDFTemplate.
+* When generating PDF from Category, songs will be taken from the Category itself
+* Scheduled automatically. but can be manually triggered
 
 ### PDFFile
 * Represents single file that is either generated or scheduled for generation
-
-### NumberedSong
-* Song + fixed song number, used in PDFTemplate to change order of songs in PDF
+* No way of recreating the exact configuration that led to this File
 
 ## Workflow
+
+### Automated
+* Create Category -> Schedule PDF generation, if it is enabled
+* Song updated -> [Schedule PDF generation for every Category the song is in, if it is enabled]
+
+### Manual
+Create Template -> Generate File
+Existing Template (Including Categories) -> Generate File

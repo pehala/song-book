@@ -34,13 +34,14 @@ def file_cleanup(sender, **kwargs):
         if field and isinstance(field, FileField):
             inst = kwargs["instance"]
             f = getattr(inst, field.name)
-            m = inst.__class__._default_manager
-            if (
-                hasattr(f, "path")
-                and os.path.exists(f.path)
-                and not m.filter(**{f"{f}__exact": True}).exclude(pk=inst._get_pk_val())
-            ):
-                try:
-                    field.storage.delete(f.path)
-                except:  # pylint: disable=bare-except
-                    pass
+            if f:
+                m = inst.__class__._default_manager
+                if (
+                    hasattr(f, "path")
+                    and os.path.exists(f.path)
+                    and not m.filter(**{f"{f}__exact": True}).exclude(pk=inst._get_pk_val())
+                ):
+                    try:
+                        field.storage.delete(f.path)
+                    except:  # pylint: disable=bare-except
+                        pass

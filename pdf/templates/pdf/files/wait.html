@@ -3,13 +3,13 @@
 
 {% load types %}
 
-{% block title %} {% blocktrans with filename=pdf.filename %}Waiting for render of {{ filename }}.pdf{% endblocktrans %} {% endblock %}
-{% block header %} {% blocktrans with filename=pdf.filename %}Waiting for render of {{ filename }}.pdf{% endblocktrans %} {% endblock %}
+{% block title %} {% blocktrans with filename=pdf.name %}Waiting for render of {{ filename }}{% endblocktrans %} {% endblock %}
+{% block header %} {% blocktrans with filename=pdf.name %}Waiting for render of {{ filename }}{% endblocktrans %} {% endblock %}
 
 {% block extra_head %}
 <script type="module">
     const statuses = [
-        '{% trans "HTML Generation" %}',
+        '{% trans "Waiting for start" %}',
         '{% trans "Parsing HTML" %}',
         '{% trans "Parsing CSS" %}',
         '{% trans "Applying CSS" %}',
@@ -19,36 +19,36 @@
         '{% trans "Adding PDF metadata" %}',
     ]
     let stop = false
-    const status = $("#status")
-    const progress = $("#progress")
+    const status = document.getElementById("status")
+    const progress = document.getElementById("progress")
+    const link = document.getElementById("link")
     function setStatusCode(code) {
         const value = Math.ceil(code / 7 * 100)
-        progress.text(code + "/7")
-        progress.attr("aria-valuenow", value)
-        progress.attr("style", "width: " + value + "%")
+        progress.innerText = code + "/7"
+        progress.setAttribute("aria-valuenow", value)
+        progress.setAttribute("style", "width: " + value + "%")
     }
     function process_response(data) {
         console.log(data);
         setStatusCode(data["progress"])
         if (data["ready"]) {
-            status.text("Completed")
+            status.innerText ="{% trans "Completed" %}"
             console.log("Ready for download");
-            progress.removeClass("progress-bar-striped")
-            progress.addClass("bg-success")
-            const link = $("#link")
-            link.text(data["link"])
-            link.attr("href", data["link"])
-            link.click()
+            progress.classList.remove("progress-bar-striped")
+            progress.classList.add("bg-success")
+            link.innerText = data["link"]
+            link.setAttribute("href", data["link"])
+            {#link.click()#}
             return true
         }
-        status.text(statuses[data["progress"]])
+        status.innerText = statuses[data["progress"]]
         return false
     }
     const sleep = duration => new Promise(resolve => setTimeout(resolve, duration));
     const poll = (promiseFn, duration) => promiseFn().then(
         (stop) => !stop ? sleep(duration).then(() => poll(promiseFn, duration)): false);
 
-    poll(() => fetch('{% url "pdf:info" pk=pdf.id %}')
+    poll(() => fetch('{% url "pdf:files:info" pk=pdf.id %}')
         .then(response => response.json())
         .then(process_response)
         .catch(err => {
@@ -70,9 +70,8 @@
         </thead>
         <tbody>
             <tr>
-                {% trans "No title" as no_title %}
-                <th scope="row" class="w-25">{% trans "Title" %}</th>
-                <td>{{ pdf.title|default:no_title }}</td>
+                <th scope="row" class="w-25">{% trans "File name" %}</th>
+                <td>{{ pdf.filename }}.pdf</td>
             </tr>
             <tr>
                 <th scope="row" class="w-25">{% trans "Progress" %}</th>
@@ -80,7 +79,6 @@
                     <div class="progress">
                       <div id="progress" class="progress-bar progress-bar-striped" role="progressbar" style="width: 0" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
-
                 </td>
             </tr>
             <tr>
@@ -93,7 +91,6 @@
             </tr>
         </tbody>
     </table>
+    <a class="btn btn-primary float-center" href="{% url "pdf:files:list" %}">{% trans "Back to all files" %}</a>
 </div>
-
-
 {% endblock %}

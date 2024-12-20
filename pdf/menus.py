@@ -5,10 +5,15 @@ from django.utils.translation import gettext_lazy as _
 from menu import Menu, MenuItem
 
 from backend.auth import is_localadmin
+from pdf.models.request import ManualPDFTemplate, PDFFile
 
 pdf_children = (
-    MenuItem(_("Create PDF"), reverse("pdf:new")),
-    MenuItem(_("PDF Requests"), reverse("pdf:list")),
+    MenuItem(
+        _("Generated %(files)s") % {"files": PDFFile._meta.verbose_name_plural},
+        reverse("pdf:files:list"),
+        skip_translate=True,
+    ),
+    MenuItem(ManualPDFTemplate._meta.verbose_name_plural, reverse("pdf:templates:list"), skip_translate=True),
 )
 
 Menu.add_item(

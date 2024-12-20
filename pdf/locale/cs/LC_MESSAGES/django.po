@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-25 17:41+0000\n"
+"POT-Creation-Date: 2024-12-26 13:41+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,311 +18,378 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
-#: pdf/admin.py:21
-msgid "Tenant"
-msgstr "Zpěvník"
-
-#: pdf/admin.py:27
+#: pdf/admin.py:28
 msgid "Move Request to a different Tenant"
 msgstr "Přesunout požadavky do jiného Tenanta"
 
-#: pdf/forms.py:39
+#: pdf/forms.py:102
+msgid "No songs selected"
+msgstr "Nevybrány žádné písničky"
+
+#: pdf/forms.py:127
 msgid "Each song has to have distinct song number"
 msgstr "Každá písnička musí mít unikátní číslo"
 
-#: pdf/menus.py:10
-msgid "Create PDF"
-msgstr "Vytvořit PDF"
+#: pdf/menus.py:12
+#, python-format
+msgid "Generated %(files)s"
+msgstr "Existující %(files)s"
 
-#: pdf/menus.py:11 pdf/templates/pdf/requests/list.html:7
-#: pdf/templates/pdf/requests/list.html:8
-#: pdf/templates/pdf/requests/select.html:8
-#: pdf/templates/pdf/requests/select.html:9
-msgid "PDF Requests"
-msgstr "PDF požadavky"
-
-#: pdf/menus.py:17
+#: pdf/menus.py:22 pdf/models/request.py:104
+#: pdf/templates/pdf/files/list.html:8 pdf/templates/pdf/files/list.html:9
 msgid "Files"
 msgstr "Soubory"
 
-#: pdf/models/__init__.py:14
-msgid "Filename of the generated PDF, please do not include .pdf"
-msgstr "Název vygenerovaného PDF, prosím piště bez přípony .pdf"
-
-#: pdf/models/__init__.py:15
-msgid "File name"
-msgstr "Název souboru"
-
-#: pdf/models/__init__.py:19
-msgid "True, if the file should be public"
-msgstr "Zaškrkněte, pokud chcete aby byl PDF soubor veřejně viditelný"
-
-#: pdf/models/__init__.py:20
-msgid "Public file"
-msgstr "Veřejný soubor"
-
 #: pdf/models/__init__.py:24
-msgid "Language"
-msgstr "Jazyk"
-
-#: pdf/models/__init__.py:26
-msgid "Language to be used in the generated PDF"
-msgstr "Jazyk pro použití ve vygenerovaných PDF"
-
-#: pdf/models/__init__.py:31
-msgid "Name to be used on the title page of the PDF"
-msgstr "Jméno pro titulní stranu pdf souboru"
-
-#: pdf/models/__init__.py:32 pdf/templates/pdf/requests/list.html:30
-#: pdf/templates/pdf/requests/wait.html:74
-msgid "Title"
-msgstr "Titulek"
-
-#: pdf/models/__init__.py:36
-msgid "Show date"
-msgstr "Vložit datum"
-
-#: pdf/models/__init__.py:37
-msgid "True, if the date should be included in the final PDF"
-msgstr "Zaškrkněte, pokud chcete aby v PDF souboru bylo datum"
-
-#: pdf/models/__init__.py:40
-msgid "Title Image"
-msgstr "Úvodní obrázek"
-
-#: pdf/models/__init__.py:41
-msgid "Optional title image of the songbook"
-msgstr "Volitelný obrázek na úvodní stránku "
-
-#: pdf/models/__init__.py:47
-msgid "Title Image margins"
-msgstr "Odsazení úvodního obrázku"
-
-#: pdf/models/__init__.py:48
-msgid "Margins for title image, might be needed for some printers"
-msgstr ""
-"Odsazení obrázku na titulní stránce, může být nutné pro některé tiskárny"
-
-#: pdf/models/__init__.py:54
-msgid "Link to include in the PDF"
-msgstr "Odkaz, který bude v PDF"
-
-#: pdf/models/__init__.py:55 pdf/templates/pdf/requests/list.html:35
-#: pdf/templates/pdf/requests/wait.html:91
-msgid "Link"
-msgstr "Odkaz"
-
-#: pdf/models/request.py:34 pdf/templates/pdf/requests/list.html:23
-msgid "Automated"
-msgstr "Automaticky"
-
-#: pdf/models/request.py:35 pdf/templates/pdf/requests/list.html:20
-msgid "Manual"
-msgstr "Manuální"
-
-#: pdf/models/request.py:41
 msgid "Queued"
 msgstr "Ve frontě"
 
-#: pdf/models/request.py:42
+#: pdf/models/__init__.py:25
 msgid "Scheduled"
 msgstr "Naplánováno"
 
-#: pdf/models/request.py:43
+#: pdf/models/__init__.py:26
 msgid "In progress"
 msgstr "Generuje se"
 
-#: pdf/models/request.py:44
+#: pdf/models/__init__.py:27
 msgid "Done"
 msgstr "Hotovo"
 
-#: pdf/models/request.py:45
+#: pdf/models/__init__.py:28
 msgid "Failed"
-msgstr "Selhalo"
+msgstr "Chyba"
 
-#: pdf/models/request.py:80
-msgid "PDFRequest"
-msgstr "PDF požadavek"
+#: pdf/models/__init__.py:38
+msgid ""
+"(Optional) Display name for the generated files. If empty filename will be "
+"used"
+msgstr ""
+"(Nepovinné) Veřejné jméno pro vytvořené soubory. V případě že necháte pole "
+"prázdné, veřejné jméno bude vytvořeno na zákaldě jména souboru"
 
-#: pdf/models/request.py:81
-msgid "PDFRequests"
-msgstr "PDF požadavky"
+#: pdf/models/__init__.py:39 pdf/models/request.py:76
+msgid "Display name"
+msgstr "Veřejné jméno"
 
-#: pdf/models/request.py:97
+#: pdf/models/__init__.py:45 pdf/models/request.py:68
+msgid "File name of the generated PDF"
+msgstr "Název vygenerovaného PDF"
+
+#: pdf/models/__init__.py:46 pdf/models/request.py:69
+#: pdf/templates/pdf/files/wait.html:73
+msgid "File name"
+msgstr "Název souboru"
+
+#: pdf/models/__init__.py:50
+msgid "True, if the file should be visible in the menu"
+msgstr "Zaškrkněte, pokud chcete aby byl PDF soubor veřejně viditelný v menu"
+
+#: pdf/models/__init__.py:51 pdf/models/request.py:87
+msgid "Public file"
+msgstr "Veřejný soubor"
+
+#: pdf/models/__init__.py:55
+msgid "Language"
+msgstr "Jazyk"
+
+#: pdf/models/__init__.py:57
+msgid "Language of the generated PDF"
+msgstr "Jazyk PDF souboru"
+
+#: pdf/models/__init__.py:62
+msgid ""
+"Name to be used on the title page of the PDF, usually only this or Title "
+"image should be used"
+msgstr ""
+"Jméno pro titulní stranu pdf souboru. Obvykle stačí vyplnit pouze Nadpis "
+"nebo Úvodné obrázek"
+
+#: pdf/models/__init__.py:63 pdf/templates/pdf/files/list.html:26
+msgid "Title"
+msgstr "Nadpis"
+
+#: pdf/models/__init__.py:67
+msgid "Show date"
+msgstr "Vložit datum"
+
+#: pdf/models/__init__.py:68
+msgid "True, if the date should be included in the PDF"
+msgstr "Zaškrkněte, pokud chcete aby v PDF souboru bylo datum"
+
+#: pdf/models/__init__.py:71
+msgid "Title Image"
+msgstr "Úvodní obrázek"
+
+#: pdf/models/__init__.py:72
+msgid "(Optional) title image for the PDF"
+msgstr "(Nepovinný) Obrázek na úvodní stránku PDF souboru"
+
+#: pdf/models/__init__.py:78
+msgid "Title Image margins"
+msgstr "Odsazení úvodního obrázku"
+
+#: pdf/models/__init__.py:79
+msgid "Margins for title image, might be needed for some printers"
+msgstr ""
+"Odsazení obrázku na úvodní stránce, může být nutné pro některé tiskárny"
+
+#: pdf/models/__init__.py:85
+msgid "(Optional) URL Link to include in the PDF"
+msgstr "(Nepovinné) URL adresa, zobrazená v PDF."
+
+#: pdf/models/__init__.py:86 pdf/templates/pdf/files/list.html:24
+#: pdf/templates/pdf/files/wait.html:89
+msgid "Link"
+msgstr "Odkaz"
+
+#: pdf/models/request.py:33
+msgid "Automated"
+msgstr "Automaticky"
+
+#: pdf/models/request.py:34
+msgid "Manual"
+msgstr "Manuální"
+
+#: pdf/models/request.py:47
+msgid "Template Name"
+msgstr "Název Šablony"
+
+#: pdf/models/request.py:47
+msgid "Name of this template, only shown internally"
+msgstr "Název šablony, viditelný pouze interně"
+
+#: pdf/models/request.py:54
+msgid "File Template"
+msgstr "Šablona"
+
+#: pdf/models/request.py:55 pdf/templates/pdf/templates/list.html:7
+#: pdf/templates/pdf/templates/list.html:8
+msgid "File Templates"
+msgstr "Šablony"
+
+#: pdf/models/request.py:75
+msgid "Display name for the file, if empty filename will be used"
+msgstr ""
+"Veřejné jméno pro vytvořené soubory. V případě že necháte pole prázdné, "
+"veřejné jméno bude vytvořeno na zákaldě jména souboru"
+
+#: pdf/models/request.py:86
+msgid "True, if the file should be public"
+msgstr "Zaškrkněte, pokud chcete aby byl PDF soubor veřejně viditelný"
+
+#: pdf/models/request.py:103
+msgid "File"
+msgstr "Soubor"
+
+#: pdf/models/request.py:116
 msgid "Song number"
 msgstr "Číslo písničky"
+
+#: pdf/templates/pdf/files/list.html:23
+#: pdf/templates/pdf/templates/list.html:29
+msgid "Filename"
+msgstr "Název souboru"
+
+#: pdf/templates/pdf/files/list.html:25
+#: pdf/templates/pdf/templates/list.html:30
+msgid "Public"
+msgstr "Veřejný"
+
+#: pdf/templates/pdf/files/list.html:27 pdf/templates/pdf/files/wait.html:85
+#: pdf/templates/pdf/templates/list.html:34
+msgid "Status"
+msgstr "Status"
+
+#: pdf/templates/pdf/files/list.html:28
+#: pdf/templates/pdf/templates/list.html:35
+msgid "Last update"
+msgstr "Poslední změna"
+
+#: pdf/templates/pdf/files/list.html:29
+msgid "PDF Template"
+msgstr "Šablona"
+
+#: pdf/templates/pdf/files/list.html:30
+#: pdf/templates/pdf/templates/list.html:36
+msgid "Actions"
+msgstr "Akce"
+
+#: pdf/templates/pdf/files/list.html:40
+#: pdf/templates/pdf/templates/list.html:53
+msgid "None"
+msgstr "Nic"
+
+#: pdf/templates/pdf/files/list.html:56
+#: pdf/templates/pdf/templates/list.html:73
+msgid "Edit"
+msgstr "Upravit"
+
+#: pdf/templates/pdf/files/list.html:58
+msgid "See progress"
+msgstr "Sledovat"
+
+#: pdf/templates/pdf/files/list.html:62
+#: pdf/templates/pdf/templates/list.html:76
+msgid "Toggle Dropdown"
+msgstr "Otevřít menu"
+
+#: pdf/templates/pdf/files/list.html:68
+msgid "Generate Another"
+msgstr "Vygenerovat další"
+
+#: pdf/templates/pdf/files/list.html:71
+#: pdf/templates/pdf/templates/list.html:83
+msgid "Delete"
+msgstr "Smazat"
+
+#: pdf/templates/pdf/files/wait.html:6 pdf/templates/pdf/files/wait.html:7
+#, python-format
+msgid "Waiting for render of %(filename)s"
+msgstr "Čekání na vygenerování %(filename)s"
+
+#: pdf/templates/pdf/files/wait.html:12
+msgid "Waiting for start"
+msgstr "Čeká na zpracování"
+
+#: pdf/templates/pdf/files/wait.html:13
+msgid "Parsing HTML"
+msgstr "Zpracovávání HTML"
+
+#: pdf/templates/pdf/files/wait.html:14
+msgid "Parsing CSS"
+msgstr "Zpracovávání CSS"
+
+#: pdf/templates/pdf/files/wait.html:15
+msgid "Applying CSS"
+msgstr "Aplikace CSS pravidel"
+
+#: pdf/templates/pdf/files/wait.html:16
+msgid "Creating formatting structure"
+msgstr "Vytváření formátovací struktury"
+
+#: pdf/templates/pdf/files/wait.html:17
+msgid "Generating layout"
+msgstr "Generování rozložení"
+
+#: pdf/templates/pdf/files/wait.html:18
+msgid "Creating PDF"
+msgstr "Vytvořit PDF"
+
+#: pdf/templates/pdf/files/wait.html:19
+msgid "Adding PDF metadata"
+msgstr "Přidávání metadat do PDF"
+
+#: pdf/templates/pdf/files/wait.html:35
+msgid "Completed"
+msgstr "Dokončeno"
+
+#: pdf/templates/pdf/files/wait.html:77
+msgid "Progress"
+msgstr "Postup"
+
+#: pdf/templates/pdf/files/wait.html:94
+msgid "Back to all files"
+msgstr "Zpátky na seznam souborů"
 
 #: pdf/templates/pdf/index.html:45
 msgid "Table of Contents"
 msgstr "Obsah"
 
-#: pdf/templates/pdf/requests/assign.html:6
-#: pdf/templates/pdf/requests/assign.html:7
-msgid "PDF details"
-msgstr "Informace o PDF souboru"
+#: pdf/templates/pdf/templates/assign.html:6
+#: pdf/templates/pdf/templates/assign.html:7
+msgid "Song order"
+msgstr "Pořadí písniček"
 
-#: pdf/templates/pdf/requests/assign.html:15
-msgid ""
-"Please, now please fill all the details for the PDF and choose song ordering"
-msgstr "Prosím vyplňte informace o PDF souboru a vyberte pořadí písniček"
+#: pdf/templates/pdf/templates/assign.html:15
+msgid "Please, choose song order and their numbers"
+msgstr "Zvolte prosím pořadí písniček a jejich čísla"
 
-#: pdf/templates/pdf/requests/assign.html:21
+#: pdf/templates/pdf/templates/assign.html:23
 msgid "Song numbers"
 msgstr "Čísla písniček"
 
-#: pdf/templates/pdf/requests/assign.html:35
+#: pdf/templates/pdf/templates/assign.html:37
 msgid "Sort by name"
 msgstr "Seřadit podle jména"
 
-#: pdf/templates/pdf/requests/assign.html:36
+#: pdf/templates/pdf/templates/assign.html:38
 msgid "Finish"
 msgstr "Dokončit"
 
-#: pdf/templates/pdf/requests/list.html:31
-msgid "Last updated"
-msgstr "Naposledy změněno"
+#: pdf/templates/pdf/templates/list.html:11
+msgid "Add Template"
+msgstr "Přidat Šablonu"
 
-#: pdf/templates/pdf/requests/list.html:33
-msgid "Type"
-msgstr "Typ"
+#: pdf/templates/pdf/templates/list.html:28
+msgid "Name"
+msgstr "Jméno"
 
-#: pdf/templates/pdf/requests/list.html:34
-#: pdf/templates/pdf/requests/wait.html:87
-msgid "Status"
-msgstr "Status"
+#: pdf/templates/pdf/templates/list.html:31
+msgid "Number of songs"
+msgstr "Počet písníček"
 
-#: pdf/templates/pdf/requests/list.html:36
-msgid "Time elapsed"
-msgstr "Trvání"
+#: pdf/templates/pdf/templates/list.html:32
+msgid "Number of files"
+msgstr "Počet souborů"
 
-#: pdf/templates/pdf/requests/list.html:37
-msgid "Category"
-msgstr "Kategorie"
+#: pdf/templates/pdf/templates/list.html:33
+msgid "Last file"
+msgstr "Poslední soubor"
 
-#: pdf/templates/pdf/requests/list.html:38
-msgid "Actions"
-msgstr "Akce"
+#: pdf/templates/pdf/templates/list.html:59
+msgid "No generated files"
+msgstr "Žádné soubory"
 
-#: pdf/templates/pdf/requests/list.html:53
-#: pdf/templates/pdf/requests/list.html:61
-msgid "None"
-msgstr "Nic"
-
-#: pdf/templates/pdf/requests/list.html:67
-msgid "Regenerate"
-msgstr "Přegenerovat"
-
-#: pdf/templates/pdf/requests/list.html:69
+#: pdf/templates/pdf/templates/list.html:67
 msgid "Already in queue"
 msgstr "Již ve frontě"
 
-#: pdf/templates/pdf/requests/list.html:72
-msgid "Toggle Dropdown"
-msgstr "Otevřít menu"
+#: pdf/templates/pdf/templates/list.html:70
+msgid "Generate"
+msgstr "Generovat"
 
-#: pdf/templates/pdf/requests/list.html:77
-msgid "Delete File"
-msgstr "Odstranit soubor"
+#: pdf/templates/pdf/templates/select.html:9
+#: pdf/templates/pdf/templates/select.html:10
+msgid "Create new File Template"
+msgstr "Vytvořit novou Šablonu"
 
-#: pdf/templates/pdf/requests/list.html:79
-msgid "No file present"
-msgstr "Nemá soubor"
+#: pdf/templates/pdf/templates/select.html:26
+msgid ""
+"Please enter file configuration option and select which songs you would like "
+"to include"
+msgstr ""
+"Prosím vyplňte parametry PDF souboru a vyberte písničky, které má soubor "
+"obsahovat"
 
-#: pdf/templates/pdf/requests/select.html:18
-msgid "Please select which songs would you like to include in the pdf"
-msgstr "Prosím vyberte písničky které byste chtěli mít v PDF souboru"
-
-#: pdf/templates/pdf/requests/select.html:85
+#: pdf/templates/pdf/templates/select.html:93
 msgid "Select All"
 msgstr "Vybrat všechny"
 
-#: pdf/templates/pdf/requests/select.html:92
+#: pdf/templates/pdf/templates/select.html:100
 msgid "Deselect all"
 msgstr "Zrušit výběr"
 
-#: pdf/templates/pdf/requests/select.html:97
+#: pdf/templates/pdf/templates/select.html:105
 msgid "Finish selecting"
 msgstr "Dokončit výběr"
 
-#: pdf/templates/pdf/requests/wait.html:6
-#: pdf/templates/pdf/requests/wait.html:7
+#: pdf/views/templates.py:63
 #, python-format
-msgid "Waiting for render of %(filename)s.pdf"
-msgstr "Čekání na vygenerování %(filename)s.pdf"
+msgid "Another file %(id)s for %(name)s is already in queue"
+msgstr "Jiný Soubor (%(id)s) for %(name)s je již ve frontě"
 
-#: pdf/templates/pdf/requests/wait.html:12
-msgid "HTML Generation"
-msgstr "Tvorba HTML"
-
-#: pdf/templates/pdf/requests/wait.html:13
-msgid "Parsing HTML"
-msgstr "Zpracovávání HTML"
-
-#: pdf/templates/pdf/requests/wait.html:14
-msgid "Parsing CSS"
-msgstr "Zpracovávání CSS"
-
-#: pdf/templates/pdf/requests/wait.html:15
-msgid "Applying CSS"
-msgstr "Aplikace CSS pravidel"
-
-#: pdf/templates/pdf/requests/wait.html:16
-msgid "Creating formatting structure"
-msgstr "Vytváření formátovací struktury"
-
-#: pdf/templates/pdf/requests/wait.html:17
-msgid "Generating layout"
-msgstr "Generování rozložení"
-
-#: pdf/templates/pdf/requests/wait.html:18
-msgid "Creating PDF"
-msgstr "Vytvořit PDF"
-
-#: pdf/templates/pdf/requests/wait.html:19
-msgid "Adding PDF metadata"
-msgstr "Přidávání metadat do PDF"
-
-#: pdf/templates/pdf/requests/wait.html:73
-msgid "No title"
-msgstr "Bez nadpisu"
-
-#: pdf/templates/pdf/requests/wait.html:78
-msgid "Progress"
-msgstr "Postup"
-
-#: pdf/utils.py:67
-msgid "songbook"
-msgstr "zpevnik"
-
-#: pdf/views.py:47
+#: pdf/views/templates.py:69
 #, python-format
-msgid "Request %(id)s is already in queue"
-msgstr "Požadavek %(id)s je již ve frontě"
+msgid "Scheduled File (%(id)s) generation from template %(template)s"
+msgstr "Generování souboru (%(id)s) ze šablony %(template)s bylo naplánováno"
 
-#: pdf/views.py:53
+#: pdf/views/templates.py:171
 #, python-format
-msgid "Request %(id)s was scheduled for regeneration"
-msgstr "Požadavek %(id)s byl označen k přegenerování"
+msgid "File Template '%(name)s' was successfully updated"
+msgstr "Šablona %(name)s byla úspěšně upravena"
 
-#: pdf/views.py:69
+#: pdf/views/templates.py:176
 #, python-format
-msgid "Unable to remove file from request %(id)s that doesn't have one"
-msgstr "Nepodařilo se odstranit soubor z požadavku %(id)s, protože žádný nemá"
-
-#: pdf/views.py:76
-#, python-format
-msgid "File %(name)s was successfully deleted"
-msgstr "Soubor %(name)s byl úspěšně odstraněn"
-
-#: pdf/views.py:113
-msgid "Required parameters not found"
-msgstr "Požadované parametry nenalezeny"
-
-#: pdf/views.py:118
-msgid "You need to select at least one song"
-msgstr "Musíte vybrat alespoň jednu písničku"
-
-#: pdf/views.py:143
-#, python-format
-msgid "PDF Request with id %(id)s was successfully created"
-msgstr "PDF požadavek se id %(id)s byl úspěšně vytvořen"
+msgid "File Template '%(name)s' was successfully created"
+msgstr "Šablona %(name)s byl úspěšně vytvořena"

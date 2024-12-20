@@ -143,8 +143,6 @@ LANGUAGES = (
     ("cs", "Česky"),
 )
 
-TIME_ZONE = "UTC"
-
 USE_I18N = True
 
 USE_L10N = True
@@ -220,3 +218,7 @@ RQ_QUEUES = {
 # Default Tenant, only used on migration
 TENANT_NAME = "Default"
 TENANT_HOSTNAME = "localhost"
+
+# How many seconds to wait until starting PDF generation of a Category after a change,
+# Delay helps with batching changes before creating PDF, resulting in less PDFs after editing spree
+CATEGORY_PDF_DELAY = 30 * 60

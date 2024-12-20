@@ -44,14 +44,14 @@
       {% endif %}
       <h3 class="contents name">{% trans "Table of Contents" %}</h3>
       <ul>
-        {% for song in sorted_songs %}
+        {% for _,song in sorted_songs %}
             <li><a href="#{{ song.id }}-title"></a></li>
         {% endfor %}
       </ul>
     </article>
-    {% for song in songs %}
+    {% for song_number, song in songs %}
         <article class="columns">
-          <h2 id="{{ song.id }}-title">{{ song.song_number }}. <span class="name">{{ song.name }}</span></h2>
+          <h2 id="{{ song.id }}-title">{{ song_number }}. <span class="name">{{ song.name }}</span></h2>
           <h3>{{ song.author }} {% if song.capo > 0 %}<span class="right">Capo {{ song.capo }}</span> {% endif %}</h3>
 
           <section>

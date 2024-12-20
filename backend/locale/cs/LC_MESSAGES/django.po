@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-22 22:15+0000\n"
+"POT-Creation-Date: 2024-12-23 15:17+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -44,43 +44,35 @@ msgstr "%(class)s %(identifier)s byla úspěšně vytvořena"
 msgid "Create %(class)s"
 msgstr "Nová %(class)s"
 
-#: backend/menus.py:10
+#: backend/menus.py:12
 msgid "Analytics"
 msgstr "Statistiky"
 
-#: backend/menus.py:11
+#: backend/menus.py:13
 msgid "Edit Songbook"
 msgstr "Upravit zpěvník"
 
-#: backend/menus.py:12
+#: backend/menus.py:14
 msgid "Django Admin"
 msgstr ""
 
-#: backend/menus.py:18
+#: backend/menus.py:20
 msgid "Admin"
 msgstr "Administrace"
 
-#: backend/menus.py:26
+#: backend/menus.py:28
 msgid "Add Song"
 msgstr "Přidat Písničku"
 
-#: backend/menus.py:27 backend/models.py:29
-msgid "Categories"
-msgstr "Kategorie"
-
-#: backend/menus.py:33 backend/models.py:70
-msgid "Songs"
-msgstr "Písničky"
-
-#: backend/menus.py:41
+#: backend/menus.py:43
 msgid "Logout"
 msgstr "Odhlásit se"
 
-#: backend/menus.py:43
+#: backend/menus.py:45
 msgid "Change password"
 msgstr "Změna hesla"
 
-#: backend/menus.py:50
+#: backend/menus.py:52
 msgid "Account"
 msgstr "Účet"
 
@@ -100,6 +92,10 @@ msgstr "Autor"
 msgid "Youtube Link"
 msgstr "Odkaz na Youtube"
 
+#: backend/models.py:29
+msgid "Categories"
+msgstr "Kategorie"
+
 #: backend/models.py:30
 msgid "Archived"
 msgstr "Archivovat"
@@ -111,6 +107,10 @@ msgstr "Text"
 #: backend/models.py:69
 msgid "Song"
 msgstr "Písnička"
+
+#: backend/models.py:70
+msgid "Songs"
+msgstr "Písničky"
 
 #: backend/templates/songs/index.html:27
 msgid "Hide chords"

@@ -94,6 +94,11 @@ class PDFFile(Model):
             return self.display_name
         return f"{self.filename}.pdf"
 
+    @property
+    def finished(self):
+        """True, if file generation finished"""
+        return self.status in [Status.DONE, Status.FAILED]
+
     class Meta:
         verbose_name = _("File")
         verbose_name_plural = _("Files")

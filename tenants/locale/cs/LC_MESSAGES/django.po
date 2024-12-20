@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-25 17:34+0000\n"
+"POT-Creation-Date: 2024-12-26 13:41+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,19 +23,19 @@ msgstr ""
 msgid "Tenant"
 msgstr "Zpěvník"
 
-#: tenants/menus.py:27
+#: tenants/menus.py:25
 msgid "PDF"
 msgstr ""
 
-#: tenants/menus.py:37
+#: tenants/menus.py:35
 msgid "Categories"
 msgstr "Kategorie"
 
-#: tenants/menus.py:50
+#: tenants/menus.py:48
 msgid "See Also"
 msgstr "Jiné stránky"
 
-#: tenants/menus.py:68 tenants/models.py:40
+#: tenants/menus.py:66 tenants/models.py:40
 msgid "All Songs"
 msgstr "Všechno"
 

@@ -15,6 +15,7 @@ from tenants.models import Tenant
 
 if TYPE_CHECKING:
     from backend.models import Song
+    from .request import PDFFile
 
 
 class Status(TextChoices):
@@ -86,16 +87,14 @@ class PDFTemplate(PolymorphicModel):
     )
 
     @property
-    @lru_cache
-    def latest_file(self):
+    def latest_file(self) -> "PDFFile":
         """Returns latest generated file for this template"""
         return self.pdffile_set.first()
 
-    @lru_cache
     def has_scheduled_file(self):
         """True, if the latest file created from this template is scheduled to be generated"""
         file = self.latest_file
-        return file and file.status not in [Status.DONE, Status.FAILED]
+        return file and not file.finished
 
     @abstractmethod
     def get_songs(self) -> Iterable[Tuple[int, "Song"]]:

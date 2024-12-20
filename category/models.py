@@ -24,7 +24,7 @@ class Category(PDFTemplate):
     )
 
     def get_songs(self) -> Iterable[Tuple[int, "Song"]]:
-        return list(enumerate(self.song_set.filter(archived=False)))
+        return list(enumerate(self.song_set.filter(archived=False), start=1))
 
     def __str__(self):
         return self.name

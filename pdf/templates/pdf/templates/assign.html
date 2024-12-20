@@ -3,8 +3,8 @@
 {% load django_bootstrap5 %}
 {% load static %}
 
-{% block header %} {% trans "PDF details" %} {% endblock %}
-{% block title %} {% trans "PDF details" %} {% endblock %}
+{% block header %} {% trans "Song order" %} {% endblock %}
+{% block title %} {% trans "Song order" %} {% endblock %}
 
 {% block extra_head %}
 <script defer type="text/javascript" src="{% static "jquery-ui.min.js" %}"></script>
@@ -12,10 +12,12 @@
 {% endblock %}
 
 {% block framed_body %}
-  <p class="text-center fw-bold">{% trans "Please, now please fill all the details for the PDF and choose song ordering" %}</p>
-  <form method="post" enctype="multipart/form-data">
+  <p class="text-center fw-bold">{% trans "Please, choose song order and their numbers" %}</p>
+  <form method="post" action="{{ action }}">
     {% csrf_token %}
+    <div class="d-none">
     {% bootstrap_form form %}
+    </div>
     {{ formset.management_form }}
     {{ formset.non_form_errors.as_ul }}
     <h4>{% trans "Song numbers" %}</h4>
@@ -69,8 +71,5 @@
             element.attr("style", "max-width: 70px;");
             {#element.attr("disabled", "");#}
     }
-    window.addEventListener("load", function(){
-
-    });
 </script>
 {% endblock %}
