@@ -95,5 +95,4 @@ for tenant in Tenant.objects.all():
 @receiver(post_save, sender=Tenant)
 def generate_menus(sender, instance, created, **kwargs):
     """Generates a menu for new tenants"""
-    if created:
-        create_menus(instance)
+    create_menus(instance)
