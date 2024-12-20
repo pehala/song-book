@@ -1,6 +1,5 @@
 """Generates Tenant-specific menus"""
 
-import os
 from functools import partial
 
 from django.conf import settings
@@ -8,12 +7,10 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-
 from simple_menu import MenuItem, Menu
 
 from pdf.cachemenuitem import CacheMenuItem
-from pdf.models.request import PDFRequest, Status
-
+from pdf.models.request import Status, PDFFile
 from tenants.models import Tenant
 from tenants.utils import create_tenant_string
 
@@ -77,13 +74,13 @@ def distinct_requests(request):
     """
     files = set()
     data = []
-    for entry in PDFRequest.objects.filter(file__isnull=False, status=Status.DONE, tenant=request.tenant).exclude(
-        file__exact=""
-    ):
-        # pylint: disable=protected-access
-        if entry.filename not in files and entry.public:
-            data.append(MenuItem(os.path.basename(entry.file.name), entry.file.url))
-            files.add(entry.file.name)
+    for entry in PDFFile.objects.filter(
+        file__isnull=False, status=Status.DONE, tenant=request.tenant, public=True
+    ).exclude(file__exact=""):
+        display_name = entry.name
+        if display_name not in files and entry.public:
+            data.append(MenuItem(display_name, entry.file.url))
+            files.add(display_name)
     return data
 
 
