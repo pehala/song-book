@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-07 16:49+0000\n"
+"POT-Creation-Date: 2024-12-22 22:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -61,31 +61,7 @@ msgstr "Přesun kategorii do jiného Zpěvníku"
 
 #: category/templates/admin/category/migrate.html:7
 msgid "To Tenant"
-msgstr "Do Tenanta"
-
-#: category/templates/category/add.html:4
-#: category/templates/category/add.html:5
-msgid "Category Editor"
-msgstr "Editor Kategorie"
-
-#: category/templates/category/confirm_delete.html:5
-#: category/templates/category/confirm_delete.html:6
-msgid "Please confirm removal"
-msgstr "Prosím potrvďte odstranění"
-
-#: category/templates/category/confirm_delete.html:9
-msgid "Are you sure, you want to delete Category"
-msgstr "Jste si jisti že chcete smazat Kategorii"
-
-#: category/templates/category/confirm_delete.html:11
-#: category/templates/category/list.html:23
-msgid "No"
-msgstr "Ne"
-
-#: category/templates/category/confirm_delete.html:12
-#: category/templates/category/list.html:23
-msgid "Yes"
-msgstr "Ano"
+msgstr "Do Zpěvníku"
 
 #: category/templates/category/list.html:14
 msgid "Language"
@@ -94,6 +70,14 @@ msgstr "Jazyk"
 #: category/templates/category/list.html:15
 msgid "Actions"
 msgstr ""
+
+#: category/templates/category/list.html:23
+msgid "Yes"
+msgstr "Ano"
+
+#: category/templates/category/list.html:23
+msgid "No"
+msgstr "Ne"
 
 #: category/templates/category/list.html:27
 msgid "Edit"
@@ -124,22 +108,7 @@ msgstr "Přidat Kategorii"
 msgid "Category with url /%(slug)s does not exist"
 msgstr "Kategorie s url /%(slug)s neexistuje"
 
-#: category/views.py:73
-#, python-format
-msgid "Category %(name)s was successfully created"
-msgstr "Kategorie %(name)s byla úspěšně vytvořena"
-
-#: category/views.py:90
-#, python-format
-msgid "Category %(name)s was successfully updated"
-msgstr "Kategorie %(name)s byla úspěšně upravena"
-
-#: category/views.py:111
+#: category/views.py:107
 #, python-format
 msgid "Category %s was successfully staged for PDF generation"
 msgstr "PDF pro Kategorii %s bylo přidáno do fronty"
-
-#: category/views.py:122
-#, python-format
-msgid "Category %(name)s was successfully deleted"
-msgstr "Kategorie %(name)s byla úspěšně smazána"

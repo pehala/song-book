@@ -3,18 +3,17 @@
 import json
 from typing import Dict
 
-from django.contrib import messages
-from django.contrib.messages.views import SuccessMessageMixin
 from django.core.serializers.json import DjangoJSONEncoder
 from django.forms import model_to_dict
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, RedirectView
+from django.views.generic import ListView, RedirectView
 
 from backend.forms import SongForm
-from backend.mixins import RegenerateViewMixin, PassRequestToFormMixin, LocalAdminRequired, RedirectToNextMixin
+from backend.mixins import RegenerateViewMixin, PassRequestToFormMixin, LocalAdminRequired
 from backend.models import Song
 from backend.utils import regenerate_pdf, regenerate_prerender
+from backend.generic import UniversalDeleteView, UniversalUpdateView, UniversalCreateView
 
 
 def transform_song(song: Song, number: int) -> Dict:
@@ -92,13 +91,11 @@ class IndexSongListView(RedirectView):
         return self.request.tenant.index_redirect
 
 
-class SongCreateView(LocalAdminRequired, PassRequestToFormMixin, SuccessMessageMixin, CreateView):
+class SongCreateView(LocalAdminRequired, PassRequestToFormMixin, UniversalCreateView):
     """Creates new song"""
 
     form_class = SongForm
     model = Song
-    template_name = "songs/add.html"
-    success_message = _("Song %(name)s was successfully created")
     success_url = reverse_lazy("backend:index")
 
     def get_success_url(self):
@@ -110,18 +107,14 @@ class SongCreateView(LocalAdminRequired, PassRequestToFormMixin, SuccessMessageM
 class SongUpdateView(
     LocalAdminRequired,
     PassRequestToFormMixin,
-    SuccessMessageMixin,
     RegenerateViewMixin,
-    RedirectToNextMixin,
-    UpdateView,
+    UniversalUpdateView,
 ):
     """Updates existing song"""
 
     form_class = SongForm
     model = Song
-    template_name = "songs/add.html"
-    default_next_page = reverse_lazy("backend:index")
-    success_message = _("Song %(name)s was successfully updated")
+    success_url = reverse_lazy("backend:index")
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
@@ -131,16 +124,13 @@ class SongUpdateView(
         return response
 
 
-class SongDeleteView(LocalAdminRequired, RedirectToNextMixin, DeleteView):
+class SongDeleteView(LocalAdminRequired, UniversalDeleteView):
     """Removes song"""
 
     model = Song
-    template_name = "songs/confirm_delete.html"
-    default_next_page = reverse_lazy("backend:index")
-    success_message = _("Song %s was successfully deleted")
+    success_url = reverse_lazy("backend:index")
 
     def post(self, request, *args, **kwargs):
         regenerate_pdf(self.get_object())
         response = super().post(request, *args, **kwargs)
-        messages.success(self.request, self.success_message % self.object.name)
         return response

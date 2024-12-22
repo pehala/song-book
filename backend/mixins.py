@@ -59,4 +59,4 @@ class RedirectToNextMixin:
             return self.request.GET["next"]
         if "next" in self.request.POST:
             return self.request.POST["next"]
-        return self.default_next_page
+        return self.default_next_page or self.success_url

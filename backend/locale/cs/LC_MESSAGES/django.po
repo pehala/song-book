@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-04-07 16:49+0000\n"
+"POT-Creation-Date: 2024-12-22 22:15+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,6 +18,31 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
+
+#: backend/generic.py:34
+#, python-format
+msgid "%(class)s %(identifier)s was successfully deleted"
+msgstr "%(class)s %(identifier)s byla úspěšně smazána"
+
+#: backend/generic.py:61 backend/generic.py:76
+#, python-format
+msgid "%(class)s %(identifier)s was successfully updated"
+msgstr "%(class)s %(identifier)s byla úspěšně upravena"
+
+#: backend/generic.py:77
+#, python-format
+msgid "Update %(class)s %(identifier)s"
+msgstr "%(class)s %(identifier)s"
+
+#: backend/generic.py:94
+#, python-format
+msgid "%(class)s %(identifier)s was successfully created"
+msgstr "%(class)s %(identifier)s byla úspěšně vytvořena"
+
+#: backend/generic.py:95
+#, python-format
+msgid "Create %(class)s"
+msgstr "Nová %(class)s"
 
 #: backend/menus.py:10
 msgid "Analytics"
@@ -87,23 +112,6 @@ msgstr "Text"
 msgid "Song"
 msgstr "Písnička"
 
-#: backend/templates/songs/add.html:4 backend/templates/songs/add.html:5
-msgid "Song Editor"
-msgstr "Editor písničky"
-
-#: backend/templates/songs/confirm_delete.html:5
-#: backend/templates/songs/confirm_delete.html:6
-msgid "Please confirm removal"
-msgstr "Potvrďte odstranění"
-
-#: backend/templates/songs/confirm_delete.html:9
-msgid "Are you sure you wanna delete song"
-msgstr "Jste si jisti že chcete smazat písničku"
-
-#: backend/templates/songs/confirm_delete.html:10
-msgid "Confirm"
-msgstr "Potvrdit"
-
 #: backend/templates/songs/index.html:27
 msgid "Hide chords"
 msgstr "Skrýt akordy"
@@ -139,18 +147,3 @@ msgstr "Vyhledávání"
 #: backend/templates/songs/index.html:107
 msgid "Number, text or author"
 msgstr "Číslo, text nebo autor"
-
-#: backend/views.py:101
-#, python-format
-msgid "Song %(name)s was successfully created"
-msgstr "Písnička %(name)s byla úspěšně přidána"
-
-#: backend/views.py:124
-#, python-format
-msgid "Song %(name)s was successfully updated"
-msgstr "Písnička %(name)s byla úspěšně upravena"
-
-#: backend/views.py:140
-#, python-format
-msgid "Song %s was successfully deleted"
-msgstr "Písnička %s byla úspěšně odstraněna"
