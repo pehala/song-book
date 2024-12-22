@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-20 13:06+0000\n"
+"POT-Creation-Date: 2024-12-22 21:56+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -84,6 +84,24 @@ msgstr "Přihlášen jako"
 #: frontend/templates/base/index.html:112
 msgid "Log in"
 msgstr "Přihlásit se"
+
+#: frontend/templates/base/verbs/delete.html:5
+#: frontend/templates/base/verbs/delete.html:6
+msgid "Please confirm removal"
+msgstr "Prosím potrvďte odstranění"
+
+#: frontend/templates/base/verbs/delete.html:10
+#, python-format
+msgid "Are you sure, you want to delete %(model_verbose_name)s"
+msgstr "Jste si jistí že chcete smazat %(model_verbose_name)s"
+
+#: frontend/templates/base/verbs/delete.html:13
+msgid "No"
+msgstr "Ne"
+
+#: frontend/templates/base/verbs/delete.html:14
+msgid "Yes"
+msgstr "Ano"
 
 #: frontend/templates/markdownx/widget.html:8
 msgid "Help"

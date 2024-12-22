@@ -2,7 +2,6 @@
 
 from django.conf import settings
 from django.contrib import messages
-from django.contrib.messages.views import SuccessMessageMixin
 from django.core.cache import cache
 from django.db import transaction
 from django.forms import formset_factory
@@ -11,13 +10,14 @@ from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views import View
-from django.views.generic import ListView, CreateView, UpdateView, DeleteView, TemplateView
+from django.views.generic import ListView, TemplateView
 from django.views.generic.detail import SingleObjectMixin
 
 from analytics.views import AnalyticsMixin
+from backend.generic import UniversalDeleteView, UniversalUpdateView, UniversalCreateView
+from backend.mixins import RegenerateViewMixin, LocalAdminRequired, SuperAdminRequired
 from backend.models import Song
 from backend.views import BaseSongListView
-from backend.mixins import RegenerateViewMixin, LocalAdminRequired, SuperAdminRequired
 from category.forms import CategoryForm, NameForm, ChooseTenantForm
 from category.models import Category
 from pdf.models.request import PDFRequest, RequestType, Status
@@ -63,14 +63,12 @@ class CategoryListView(LocalAdminRequired, ListView):
         return ctx
 
 
-class CategoryCreateView(LocalAdminRequired, SuccessMessageMixin, CreateView):
+class CategoryCreateView(LocalAdminRequired, UniversalCreateView):
     """Create new category"""
 
     form_class = CategoryForm
     model = Category
-    template_name = "category/add.html"
     success_url = reverse_lazy("category:list")
-    success_message = _("Category %(name)s was successfully created")
 
     def get_initial(self):
         return {"tenant": self.request.tenant}
@@ -80,14 +78,12 @@ class CategoryCreateView(LocalAdminRequired, SuccessMessageMixin, CreateView):
         return super().get_success_message(cleaned_data)
 
 
-class CategoryUpdateView(LocalAdminRequired, SuccessMessageMixin, RegenerateViewMixin, UpdateView):
+class CategoryUpdateView(LocalAdminRequired, RegenerateViewMixin, UniversalUpdateView):
     """Updates category"""
 
     form_class = CategoryForm
     model = Category
-    template_name = "category/add.html"
     success_url = reverse_lazy("category:list")
-    success_message = _("Category %(name)s was successfully updated")
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
@@ -113,17 +109,13 @@ class CategoryRegeneratePDFView(LocalAdminRequired, View, SingleObjectMixin):
         return redirect("category:list")
 
 
-class CategoryDeleteView(LocalAdminRequired, DeleteView):
+class CategoryDeleteView(LocalAdminRequired, UniversalDeleteView):
     """Removes category"""
 
     model = Category
-    template_name = "category/confirm_delete.html"
     success_url = reverse_lazy("category:list")
-    success_message = _("Category %(name)s was successfully deleted")
 
     def post(self, request, *args, **kwargs):
-        obj = self.get_object()
-        messages.success(self.request, self.success_message % obj.__dict__)
         response = super().post(request, *args, **kwargs)
         cache.delete(settings.CATEGORY_CACHE_KEY)
         return response
