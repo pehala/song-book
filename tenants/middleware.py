@@ -21,6 +21,11 @@ class RecognizeTenantMiddleware:
             if not query_set.exists():
                 raise Http404(f"Unable to find Tenant for hostname {hostname}")
             request.tenant = query_set.first()
+            request.user.is_localadmin = (
+                request.user.is_authenticated
+                and request.tenant.admins.filter(id=request.user.id).exists()
+                or request.user.is_superuser
+            )
         except Http404 as exception:
             if settings.DEBUG:
                 request.tenant = Tenant.objects.first()

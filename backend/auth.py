@@ -9,7 +9,7 @@ def is_superadmin(request):
 def is_localadmin(request):
     """Returns True, if the current user is Tenant-level administrator"""
     user = request.user
-    return user.is_authenticated and request.tenant.admins.filter(id=user.id).exists() or is_superadmin(request)
+    return is_superadmin(request) or user.is_localadmin
 
 
 def is_authenticated(request):
