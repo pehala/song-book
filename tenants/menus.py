@@ -1,6 +1,7 @@
 """Generates Tenant-specific menus"""
 
 import os
+from functools import partial
 
 from django.conf import settings
 from django.db.models.signals import post_save
@@ -10,7 +11,6 @@ from django.utils.translation import gettext_lazy as _
 
 from simple_menu import MenuItem, Menu
 
-from category.models import Category
 from pdf.cachemenuitem import CacheMenuItem
 from pdf.models.request import PDFRequest, Status
 
@@ -36,7 +36,7 @@ def create_menus(tenant):
         CacheMenuItem(
             title=_("Categories"),
             url=reverse("backend:index"),
-            generate_function=categories,
+            generate_function=partial(categories, tenant),
             key=create_tenant_string(tenant, settings.CATEGORY_CACHE_KEY),
             timeout=60 * 60 * 24 * 7,
         ),
@@ -54,17 +54,17 @@ def create_menus(tenant):
         )
 
 
-def categories(request):
+def categories(tenant, request):
     """Returns MenuItems for all Categories"""
     items = [
         MenuItem(
-            category["name"],
-            reverse("category:index", kwargs={"slug": category["slug"]}),
+            category.name,
+            reverse("category:index", kwargs={"slug": category.slug}),
             skip_translate=True,
         )
-        for category in Category.objects.filter(tenant=request.tenant).values("name", "slug")
+        for category in tenant.category_set.all()
     ]
-    if request.tenant.all_songs_category:
+    if tenant.all_songs_category:
         items.append(MenuItem(title=_("All Songs"), url=reverse("backend:all"), separator=True, skip_translate=False))
     return items
 
@@ -83,11 +83,11 @@ def distinct_requests(request):
         # pylint: disable=protected-access
         if entry.filename not in files and entry.public:
             data.append(MenuItem(os.path.basename(entry.file.name), entry.file.url))
-            files.add(entry.filename)
+            files.add(entry.file.name)
     return data
 
 
-for tenant in Tenant.objects.all():
+for tenant in Tenant.objects.all().prefetch_related("links"):
     create_menus(tenant)
 
 
