@@ -1,6 +1,6 @@
 """Tenant forms"""
 
-from django.forms import ModelForm, CharField
+from django.forms import ModelForm, CharField, Form, ModelChoiceField
 
 from tenants.models import Tenant, Link
 
@@ -31,3 +31,11 @@ class UserTenantForm(ModelForm):
     class Meta:
         model = Tenant
         fields = "__all__"
+
+
+class ChooseTenantForm(Form):
+    """Form to choose Tenant"""
+
+    tenant = ModelChoiceField(
+        queryset=Tenant.objects.all(), label=Tenant._meta.verbose_name, blank=False, empty_label=None
+    )

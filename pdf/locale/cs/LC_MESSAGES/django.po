@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-20 12:45+0000\n"
+"POT-Creation-Date: 2024-12-25 17:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -140,26 +140,17 @@ msgstr "Hotovo"
 msgid "Failed"
 msgstr "Selhalo"
 
-#: pdf/models/request.py:76 pdf/templates/admin/pdf/migrate.html:6
+#: pdf/models/request.py:80
 msgid "PDFRequest"
 msgstr "PDF požadavek"
 
-#: pdf/models/request.py:77
+#: pdf/models/request.py:81
 msgid "PDFRequests"
 msgstr "PDF požadavky"
 
-#: pdf/models/request.py:93
+#: pdf/models/request.py:97
 msgid "Song number"
 msgstr "Číslo písničky"
-
-#: pdf/templates/admin/pdf/migrate.html:4
-#: pdf/templates/admin/pdf/migrate.html:5
-msgid "Migrating PDFRequests to Tenant"
-msgstr "Přesouvání PDF požadavků do Tenant"
-
-#: pdf/templates/admin/pdf/migrate.html:7
-msgid "To Tenant"
-msgstr "Do Tenanta"
 
 #: pdf/templates/pdf/index.html:45
 msgid "Table of Contents"
@@ -303,41 +294,35 @@ msgstr "Postup"
 msgid "songbook"
 msgstr "zpevnik"
 
-#: pdf/views.py:45
+#: pdf/views.py:47
 #, python-format
 msgid "Request %(id)s is already in queue"
 msgstr "Požadavek %(id)s je již ve frontě"
 
-#: pdf/views.py:51
+#: pdf/views.py:53
 #, python-format
 msgid "Request %(id)s was scheduled for regeneration"
 msgstr "Požadavek %(id)s byl označen k přegenerování"
 
-#: pdf/views.py:67
+#: pdf/views.py:69
 #, python-format
 msgid "Unable to remove file from request %(id)s that doesn't have one"
 msgstr "Nepodařilo se odstranit soubor z požadavku %(id)s, protože žádný nemá"
 
-#: pdf/views.py:74
+#: pdf/views.py:76
 #, python-format
 msgid "File %(name)s was successfully deleted"
 msgstr "Soubor %(name)s byl úspěšně odstraněn"
 
-#: pdf/views.py:111
+#: pdf/views.py:113
 msgid "Required parameters not found"
 msgstr "Požadované parametry nenalezeny"
 
-#: pdf/views.py:116
+#: pdf/views.py:118
 msgid "You need to select at least one song"
 msgstr "Musíte vybrat alespoň jednu písničku"
 
-#: pdf/views.py:141
+#: pdf/views.py:143
 #, python-format
 msgid "PDF Request with id %(id)s was successfully created"
 msgstr "PDF požadavek se id %(id)s byl úspěšně vytvořen"
-
-#~ msgid "Search"
-#~ msgstr "Hledat"
-
-#~ msgid "Insert query"
-#~ msgstr "Vložte text"
