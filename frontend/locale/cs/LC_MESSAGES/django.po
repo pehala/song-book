@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-22 21:56+0000\n"
+"POT-Creation-Date: 2024-12-25 17:32+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -48,14 +48,13 @@ msgstr "Zpátky domů"
 msgid "URL %(request_path)s does not exist."
 msgstr "URL %(request_path)s neexistuje."
 
-#: frontend/templates/admin/base/migrate.html:29
-#: frontend/templates/base/form.html:9
-msgid "Submit"
-msgstr "Odeslat"
-
 #: frontend/templates/base/error.html:8
 msgid "Not found"
 msgstr "Nenalezeno"
+
+#: frontend/templates/base/form.html:9
+msgid "Submit"
+msgstr "Odeslat"
 
 #: frontend/templates/base/index.html:38
 msgid "Logo"

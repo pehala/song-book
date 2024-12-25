@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-22 22:15+0000\n"
+"POT-Creation-Date: 2024-12-25 17:43+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,11 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
-#: category/admin.py:21 category/forms.py:43
-msgid "Tenant"
-msgstr "Do Zpěvníku"
-
-#: category/admin.py:27
+#: category/admin.py:28
 msgid "Move Category to a different Tenant"
 msgstr "Přesunout Kategorie do jiného Zpěvníku"
 
@@ -48,20 +44,10 @@ msgstr ""
 msgid "Category"
 msgstr "Kategorie"
 
-#: category/models.py:26 category/templates/admin/category/migrate.html:6
-#: category/templates/category/list.html:4
+#: category/models.py:26 category/templates/category/list.html:4
 #: category/templates/category/list.html:5
 msgid "Categories"
 msgstr "Kategorie"
-
-#: category/templates/admin/category/migrate.html:4
-#: category/templates/admin/category/migrate.html:5
-msgid "Migrating categories to Tenant"
-msgstr "Přesun kategorii do jiného Zpěvníku"
-
-#: category/templates/admin/category/migrate.html:7
-msgid "To Tenant"
-msgstr "Do Zpěvníku"
 
 #: category/templates/category/list.html:14
 msgid "Language"
@@ -69,7 +55,7 @@ msgstr "Jazyk"
 
 #: category/templates/category/list.html:15
 msgid "Actions"
-msgstr ""
+msgstr "Akce"
 
 #: category/templates/category/list.html:23
 msgid "Yes"
@@ -85,7 +71,7 @@ msgstr "Upravit"
 
 #: category/templates/category/list.html:29
 msgid "Toggle Dropdown"
-msgstr ""
+msgstr "Rozbalit"
 
 #: category/templates/category/list.html:34
 msgid "Already in queue"

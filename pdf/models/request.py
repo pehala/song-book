@@ -1,5 +1,6 @@
 """Models for PDF module"""
 
+import os
 from datetime import datetime
 from typing import List
 
@@ -67,6 +68,11 @@ class PDFRequest(PDFOptions):
     songs = ManyToManyField(Song, through="PDFSong")
     category = ForeignKey(Category, null=True, on_delete=SET_NULL)
     scheduled_at = DateTimeField(null=True)
+
+    @property
+    def name(self):
+        """Returns displayable name"""
+        return os.path.basename(self.file.name)
 
     def get_songs(self) -> List[Song]:
         """Returns all songs for request"""

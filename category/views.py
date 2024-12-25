@@ -4,24 +4,24 @@ from django.conf import settings
 from django.contrib import messages
 from django.core.cache import cache
 from django.db import transaction
-from django.forms import formset_factory
 from django.http import Http404
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views import View
-from django.views.generic import ListView, TemplateView
+from django.views.generic import ListView
 from django.views.generic.detail import SingleObjectMixin
 
 from analytics.views import AnalyticsMixin
 from backend.generic import UniversalDeleteView, UniversalUpdateView, UniversalCreateView
-from backend.mixins import RegenerateViewMixin, LocalAdminRequired, SuperAdminRequired
+from backend.mixins import RegenerateViewMixin, LocalAdminRequired
 from backend.models import Song
 from backend.views import BaseSongListView
-from category.forms import CategoryForm, NameForm, ChooseTenantForm
+from category.forms import CategoryForm, NameForm
 from category.models import Category
 from pdf.models.request import PDFRequest, RequestType, Status
 from pdf.utils import request_pdf_regeneration
+from tenants.views import AdminMoveView
 
 
 class CategorySongsListView(BaseSongListView, AnalyticsMixin):
@@ -121,46 +121,22 @@ class CategoryDeleteView(LocalAdminRequired, UniversalDeleteView):
         return response
 
 
-class CategoryMoveView(SuperAdminRequired, TemplateView):
+class CategoryMoveView(AdminMoveView):
     """Moves Categories to a different Tenant"""
 
-    template_name = "admin/category/migrate.html"
-    form_class = ChooseTenantForm
-    formset_class = formset_factory(NameForm, extra=0)
+    formset_form = NameForm
+    model = Category
 
-    def initial(self, pks):
-        """Initial Form population"""
-        query = Category.objects.filter(id__in=pks)
-
-        form = self.form_class()
-        initial = []
-        for category in query.values_list("id", "name"):
-            initial.append({"pk": category[0], "name": category[1]})
-
-        formset = self.formset_class(initial=initial)
-        return form, formset
-
-    def get_context_data(self, **kwargs):
-        """Appends Form and Formset"""
-        context = super().get_context_data(**kwargs)
-
-        pks = self.request.GET.getlist("pk")
-        form, formset = self.initial(pks)
-
-        context["form"] = form
-        context["formset"] = formset
-        return context
-
-    def action(self, tenant, ids):
+    def action(self, target, ids):
         """What should happen on POST with data from forms"""
         categories = Category.objects.filter(id__in=ids)
         songs = Song.objects.filter(categories__id__in=ids).distinct()
         requests = PDFRequest.objects.filter(category_id__in=ids).distinct()
         with transaction.atomic():
             for category in categories:
-                category.tenant = tenant
+                category.tenant = target
             for request in requests:
-                request.tenant = tenant
+                request.tenant = target
             Category.objects.bulk_update(categories, ["tenant"])
             PDFRequest.objects.bulk_update(requests, ["tenant"])
             for song in songs:
@@ -178,14 +154,3 @@ class CategoryMoveView(SuperAdminRequired, TemplateView):
                     song.save()
                     song.categories.set(to_remove)
                     song.save()
-
-    def post(self, request, *args, **kwargs):
-        """POST request"""
-        form = self.form_class(request.POST)
-        formset = self.formset_class(request.POST)
-        if all([form.is_valid(), formset.is_valid()]):
-            tenant = form.cleaned_data["tenant"]
-            ids = [inline_form.cleaned_data["pk"] for inline_form in formset]
-            self.action(tenant, ids)
-            return redirect("admin:index")
-        return self.render_to_response({"form": form, "formset": formset})

@@ -8,6 +8,7 @@ from django.utils.http import urlencode
 from django.utils.translation import gettext_lazy as _
 
 from category.models import Category
+from tenants.models import Tenant
 
 
 @admin.register(Category)
@@ -18,7 +19,7 @@ class CategoryAdmin(admin.ModelAdmin):
     # list_display_links = ["tenant_name"]
     actions = ["move_tenant"]
 
-    @admin.display(description=_("Tenant"))
+    @admin.display(description=Tenant._meta.verbose_name)
     def tenant_name(self, obj):
         """Shows Tenant name"""
         link = reverse("admin:tenants_tenant_change", args=[obj.tenant.id])

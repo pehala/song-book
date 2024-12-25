@@ -1,0 +1,19 @@
+{% extends "admin/base.html" %}
+{% load i18n %}
+
+{% block title %}{% blocktrans %}Migrating {{ source_verbose_name_plural }} to {{ target_verbose_name }}{% endblocktrans %}{% endblock %}
+{% block content_title %}{% blocktrans %}Migrating {{ source_verbose_name_plural }} to {{ target_verbose_name }}{% endblocktrans %}{% endblock %}
+{% block content %}
+    <form method="post">
+        {% csrf_token %}
+        {{ formset.management_form }}
+        {{ formset.non_form_errors.as_ul }}
+        <h4>{{ source_verbose_name_plural }}</h4>
+        {{ formset.as_div }}
+        <hr>
+        <h4>{% blocktrans %}To {{ target_verbose_name }}{% endblocktrans %}</h4>
+        {{ form.as_div }}
+        <input type="submit" value="{% trans "Submit" %}">
+    </form>
+    {{ form.media }}
+{% endblock %}

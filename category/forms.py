@@ -35,9 +35,3 @@ class NameForm(Form):
 
     pk = IntegerField(widget=HiddenInput())
     name = CharField(disabled=True, required=False)
-
-
-class ChooseTenantForm(Form):
-    """Form to choose Tenant"""
-
-    tenant = ModelChoiceField(queryset=Tenant.objects.all(), label=_("Tenant"))

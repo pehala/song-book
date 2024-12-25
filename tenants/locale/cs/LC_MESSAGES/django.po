@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-22 21:56+0000\n"
+"POT-Creation-Date: 2024-12-25 17:34+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
-#: tenants/admin.py:21
+#: tenants/admin.py:21 tenants/models.py:58
 msgid "Tenant"
 msgstr "Zpěvník"
 
@@ -99,10 +99,21 @@ msgstr ""
 "Logo zpěvníčku, nepovinné, mělo by mít rozměry kolem 50x50 a být v PNG "
 "formátu"
 
-#: tenants/templates/tenant/add.html:4 tenants/templates/tenant/add.html:5
-msgid "Tenant Editor"
-msgstr "Uprava Zpěvníku"
+#: tenants/models.py:59
+msgid "Tenants"
+msgstr "Zpěvníky"
 
-#: tenants/views.py:20
-msgid "Tenant was successfully updated"
-msgstr "Zpěvník byl úspěšně změněn"
+#: tenants/templates/admin/base/migrate.html:4
+#: tenants/templates/admin/base/migrate.html:5
+#, python-format
+msgid "Migrating %(source_verbose_name_plural)s to %(target_verbose_name)s"
+msgstr "Přesunout %(source_verbose_name_plural)s do %(target_verbose_name)s"
+
+#: tenants/templates/admin/base/migrate.html:14
+#, python-format
+msgid "To %(target_verbose_name)s"
+msgstr "Do %(target_verbose_name)s"
+
+#: tenants/templates/admin/base/migrate.html:16
+msgid "Submit"
+msgstr "Odeslat"

@@ -14,11 +14,12 @@ from django.views.generic.detail import SingleObjectMixin, DetailView
 
 from backend.mixins import LocalAdminRequired
 from backend.models import Song
+from category.forms import NameForm
 from category.models import Category
-from category.views import CategoryMoveView
-from pdf.forms import RequestForm, PDFSongForm, BasePDFSongFormset, FileForm
+from pdf.forms import RequestForm, PDFSongForm, BasePDFSongFormset
 from pdf.generate import generate_pdf_job
 from pdf.models.request import PDFRequest, RequestType, Status
+from tenants.views import AdminMoveView
 
 
 class RequestListView(LocalAdminRequired, ListView):
@@ -175,26 +176,15 @@ class RenderInfoView(View, SingleObjectMixin):
         )
 
 
-class RequestMoveView(CategoryMoveView):
+class RequestMoveView(AdminMoveView):
     """Moves Requests to a different Tenant"""
 
-    template_name = "admin/pdf/migrate.html"
-    formset_class = formset_factory(FileForm, extra=0)
+    formset_form = NameForm
+    model = PDFRequest
 
-    def initial(self, pks):
-        query = PDFRequest.objects.filter(id__in=pks)
-
-        form = self.form_class()
-        initial = []
-        for category in query.values_list("id", "file", "title"):
-            initial.append({"pk": category[0], "file": category[1], "title": category[2]})
-
-        formset = self.formset_class(initial=initial)
-        return form, formset
-
-    def action(self, tenant, ids):
+    def action(self, target, ids):
         requests = PDFRequest.objects.filter(id__in=ids).distinct()
         with transaction.atomic():
             for request in requests:
-                request.tenant = tenant
+                request.tenant = target
             PDFRequest.objects.bulk_update(requests, ["tenant"])
