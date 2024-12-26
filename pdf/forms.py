@@ -74,7 +74,7 @@ class PDFFileEditForm(ModelForm):
 
     class Meta:
         model = PDFFile
-        fields = ["display_name", "filename"]
+        fields = ["display_name", "public", "filename"]
 
 
 class SongSelectionForm(Form):
