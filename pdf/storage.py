@@ -39,7 +39,7 @@ def file_cleanup(sender, **kwargs):
                 if (
                     hasattr(f, "path")
                     and os.path.exists(f.path)
-                    and not m.filter(**{f"{f}__exact": True}).exclude(pk=inst._get_pk_val())
+                    and not m.filter(**{f"{field.name}__exact": True}).exclude(pk=inst._get_pk_val())
                 ):
                     try:
                         field.storage.delete(f.path)
