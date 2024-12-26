@@ -48,7 +48,7 @@ class Tenant(Model):
         upload_to="uploads/",
         validators=[only_png],
     )
-    links = ManyToManyField(Link)
+    links = ManyToManyField(Link, blank=True)
     admins = ManyToManyField(get_user_model())
 
     def __str__(self):
