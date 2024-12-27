@@ -13,29 +13,29 @@ from category.models import Category
 from pdf.cachemenuitem import CacheMenuItem
 from pdf.models.request import Status, PDFFile, ManualPDFTemplate
 from tenants.models import Tenant
-from tenants.utils import create_tenant_string
+from tenants.utils import tenant_cache_key
 
 
 def create_menus(tenant):
     """Generate menus specific for each tenant"""
 
     Menu.add_item(
-        create_tenant_string(tenant, "files"),
+        tenant_cache_key(tenant, "files"),
         CacheMenuItem(
             title=_("PDF"),
             url=reverse("backend:index"),
             generate_function=distinct_requests,
-            key=create_tenant_string(tenant, settings.PDF_CACHE_KEY),
+            key=tenant_cache_key(tenant, settings.PDF_CACHE_KEY),
             timeout=60 * 60,
         ),
     )
     Menu.add_item(
-        create_tenant_string(tenant, "songbook"),
+        tenant_cache_key(tenant, "songbook"),
         CacheMenuItem(
             title=_("Categories"),
             url=reverse("backend:index"),
             generate_function=partial(categories, tenant),
-            key=create_tenant_string(tenant, settings.CATEGORY_CACHE_KEY),
+            key=tenant_cache_key(tenant, settings.CATEGORY_CACHE_KEY),
             timeout=60 * 60 * 24 * 7,
         ),
     )
@@ -43,7 +43,7 @@ def create_menus(tenant):
     if len(links) > 0:
         children = [MenuItem(link.display_name, url=link.link, skip_translate=True, new_tab=True) for link in links]
         Menu.add_item(
-            create_tenant_string(tenant, "links"),
+            tenant_cache_key(tenant, "links"),
             MenuItem(
                 title=_("See Also"),
                 url=reverse("backend:index"),
