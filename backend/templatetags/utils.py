@@ -6,7 +6,7 @@ from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
 from backend import utils
-from tenants.utils import create_tenant_string
+from tenants.utils import tenant_cache_key
 
 register = template.Library()
 
@@ -15,7 +15,7 @@ register = template.Library()
 def draw_menu(context, key, use_tenant=False):
     """Draws menu"""
     if use_tenant:
-        key = create_tenant_string(context.request.tenant, key)
+        key = tenant_cache_key(context.request.tenant, key)
     return {"menu": context["menus"][key]}
 
 

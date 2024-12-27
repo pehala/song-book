@@ -3,6 +3,6 @@
 from tenants.models import Tenant
 
 
-def create_tenant_string(tenant: Tenant, key):
+def tenant_cache_key(tenant: Tenant, key):
     """Creates string that contains tenant id"""
     return f"{tenant.id}-{key}"
