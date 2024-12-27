@@ -100,13 +100,9 @@
         </div>
     </div>
     <div class="d-none" id="content">
-        <div>
-          <div class="input-group pe-sm-1">
-            <div class="input-group-prepend">
-              <div class="input-group-text">{% trans "Search" %}</div>
-            </div>
-            <input type="text" class="form-control" id="searchInput" placeholder="{% trans "Number, text or author" %}">
-          </div>
+        <div class="input-group">
+           <label class="input-group-text" for="searchInput">{% trans "Search" %}</label>
+           <input type="text" class="form-control" id="searchInput" placeholder="{% trans "Number, text or author" %}">
         </div>
         <table id="datatable" class="accordion accordion-flush w-100 h-100 table table-borderless">
             <thead class="d-none"></thead>
