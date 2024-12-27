@@ -8,7 +8,6 @@ from category.views import (
     CategoryCreateView,
     CategoryUpdateView,
     CategoryDeleteView,
-    # CategoryRegeneratePDFView,
     CategoryMoveView,
 )
 

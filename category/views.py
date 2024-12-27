@@ -12,7 +12,7 @@ from django.views.generic import ListView
 
 from analytics.views import AnalyticsMixin
 from backend.generic import UniversalDeleteView, UniversalUpdateView, UniversalCreateView
-from backend.mixins import RegenerateViewMixin, LocalAdminRequired
+from backend.mixins import RegenerateViewMixin, LocalAdminRequired, PassRequestToFormMixin
 from backend.models import Song
 from backend.views import BaseSongListView
 from category.forms import CategoryForm, NameForm
@@ -61,7 +61,7 @@ class CategoryListView(LocalAdminRequired, ListView):
         )
 
 
-class CategoryCreateView(LocalAdminRequired, UniversalCreateView):
+class CategoryCreateView(LocalAdminRequired, PassRequestToFormMixin, UniversalCreateView):
     """Create new category"""
 
     form_class = CategoryForm
@@ -81,7 +81,7 @@ class CategoryCreateView(LocalAdminRequired, UniversalCreateView):
         return super().get_success_message(cleaned_data)
 
 
-class CategoryUpdateView(LocalAdminRequired, RegenerateViewMixin, UniversalUpdateView):
+class CategoryUpdateView(LocalAdminRequired, PassRequestToFormMixin, RegenerateViewMixin, UniversalUpdateView):
     """Updates category"""
 
     form_class = CategoryForm
