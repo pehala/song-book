@@ -222,3 +222,5 @@ TENANT_HOSTNAME = "localhost"
 # How many seconds to wait until starting PDF generation of a Category after a change,
 # Delay helps with batching changes before creating PDF, resulting in less PDFs after editing spree
 CATEGORY_PDF_DELAY = 30 * 60
+
+LOCALE_PATHS = ["chords/locale"]

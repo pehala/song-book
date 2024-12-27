@@ -18,9 +18,7 @@ reformat:
 	$(RUN) black .
 
 check-fuzzy:
-	@ for app in "backend" "pdf" "frontend" "category" "analytics" "tenants"; do \
-  		if [ ! -z "$$(msgattrib $${app}/locale/cs/LC_MESSAGES/django.po --only-fuzzy)" ]; then echo "$${app} app contains fuzzy strings" && exit 1; fi \
-	done;
+	@ if [ ! -z "$$(msgattrib chords/locale/cs/LC_MESSAGES/django.po --only-fuzzy)" ]; then echo "chords/locale/cs/LC_MESSAGES/django.po contains fuzzy strings" && exit 1; fi
 
 messages:
 	$(MANAGE) makemessages -l cs

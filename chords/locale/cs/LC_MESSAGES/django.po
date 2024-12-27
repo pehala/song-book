@@ -1,0 +1,807 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2024-12-27 20:43+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
+"<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
+
+#: analytics/models.py:13
+msgid "Key"
+msgstr "Klíč"
+
+#: analytics/models.py:14 analytics/templates/analytics/show.html:84
+msgid "Hits"
+msgstr "Návštěvy"
+
+#: analytics/templates/analytics/show.html:8
+#: analytics/templates/analytics/show.html:9 backend/menus.py:12
+msgid "Analytics"
+msgstr "Statistiky"
+
+#: analytics/templates/analytics/show.html:14
+msgid "Keys"
+msgstr "Klíče"
+
+#: analytics/templates/analytics/show.html:16
+msgid "All"
+msgstr "Vše"
+
+#: analytics/templates/analytics/show.html:23
+msgid "Date Range"
+msgstr "Rozsah"
+
+#: analytics/templates/analytics/show.html:25
+msgid "Week"
+msgstr "Týden"
+
+#: analytics/templates/analytics/show.html:26
+msgid "Month"
+msgstr "Měsíc"
+
+#: analytics/templates/analytics/show.html:27
+msgid "Year"
+msgstr "Rok"
+
+#: analytics/views.py:30
+msgid "General"
+msgstr "Obecné"
+
+#: backend/generic.py:34
+#, python-format
+msgid "%(class)s %(identifier)s was successfully deleted"
+msgstr "%(class)s %(identifier)s byla úspěšně smazána"
+
+#: backend/generic.py:61 backend/generic.py:76
+#, python-format
+msgid "%(class)s %(identifier)s was successfully updated"
+msgstr "%(class)s %(identifier)s byla úspěšně upravena"
+
+#: backend/generic.py:77
+#, python-format
+msgid "Update %(class)s %(identifier)s"
+msgstr "%(class)s %(identifier)s"
+
+#: backend/generic.py:94
+#, python-format
+msgid "%(class)s %(identifier)s was successfully created"
+msgstr "%(class)s %(identifier)s byla úspěšně vytvořena"
+
+#: backend/generic.py:95
+#, python-format
+msgid "Create %(class)s"
+msgstr "Nová %(class)s"
+
+#: backend/menus.py:13
+msgid "Edit Songbook"
+msgstr "Upravit zpěvník"
+
+#: backend/menus.py:14
+msgid "Django Admin"
+msgstr ""
+
+#: backend/menus.py:20
+msgid "Admin"
+msgstr "Administrace"
+
+#: backend/menus.py:28
+msgid "Add Song"
+msgstr "Přidat Písničku"
+
+#: backend/menus.py:43
+msgid "Logout"
+msgstr "Odhlásit se"
+
+#: backend/menus.py:45
+#: frontend/templates/registration/password_change_form.html:4
+#: frontend/templates/registration/password_change_form.html:5
+msgid "Change password"
+msgstr "Změnit heslo"
+
+#: backend/menus.py:52
+msgid "Account"
+msgstr "Účet"
+
+#: backend/models.py:24 category/models.py:19
+#: category/templates/category/list.html:12
+#: pdf/templates/pdf/templates/list.html:28 tenants/models.py:31
+msgid "Name"
+msgstr "Jméno"
+
+#: backend/models.py:26
+msgid "Capo"
+msgstr ""
+
+#: backend/models.py:27
+msgid "Author"
+msgstr "Autor"
+
+#: backend/models.py:28
+msgid "Youtube Link"
+msgstr "Odkaz na Youtube"
+
+#: backend/models.py:29 category/models.py:38
+#: category/templates/category/list.html:5
+#: category/templates/category/list.html:6 tenants/menus.py:35
+msgid "Categories"
+msgstr "Kategorie"
+
+#: backend/models.py:30
+msgid "Archived"
+msgstr "Archivovat"
+
+#: backend/models.py:31
+msgid "Lyrics"
+msgstr "Text"
+
+#: backend/models.py:69
+msgid "Song"
+msgstr "Písnička"
+
+#: backend/models.py:70
+msgid "Songs"
+msgstr "Písničky"
+
+#: backend/templates/songs/index.html:27
+msgid "Hide chords"
+msgstr "Skrýt akordy"
+
+#: backend/templates/songs/index.html:33
+msgid "Prevent sleep"
+msgstr "Zabránit uspání"
+
+#: backend/templates/songs/index.html:39
+msgid "Single page"
+msgstr "Bez stránek"
+
+#: backend/templates/songs/index.html:64
+#: category/templates/category/list.html:21
+#: pdf/templates/pdf/files/list.html:30
+#: pdf/templates/pdf/templates/list.html:36
+msgid "Actions"
+msgstr "Akce"
+
+#: backend/templates/songs/index.html:69
+#: category/templates/category/list.html:55
+#: pdf/templates/pdf/files/list.html:56
+#: pdf/templates/pdf/templates/list.html:73
+msgid "Edit"
+msgstr "Upravit"
+
+#: backend/templates/songs/index.html:72
+#: category/templates/category/list.html:74
+#: pdf/templates/pdf/files/list.html:71
+#: pdf/templates/pdf/templates/list.html:83
+msgid "Delete"
+msgstr "Smazat"
+
+#: backend/templates/songs/index.html:86
+msgid "Transpose"
+msgstr "Transponovat"
+
+#: backend/templates/songs/index.html:105
+msgid "Search"
+msgstr "Vyhledávání"
+
+#: backend/templates/songs/index.html:107
+msgid "Number, text or author"
+msgstr "Číslo, text nebo autor"
+
+#: category/admin.py:28
+msgid "Move Category to a different Tenant"
+msgstr "Přesunout Kategorie do jiného Zpěvníku"
+
+#: category/models.py:21 category/templates/category/list.html:13
+msgid "URL Slug"
+msgstr "URL vzor"
+
+#: category/models.py:22
+msgid "URL Slug, under which the category should be accessible"
+msgstr "Část URL, pod kterou bude kategorie dostupná"
+
+#: category/models.py:26 category/templates/category/list.html:16
+msgid "PDF generation"
+msgstr "Automatické Generování PDF"
+
+#: category/models.py:27
+msgid ""
+"True, if the PDF file be automatically generated when a category or song "
+"changes?"
+msgstr ""
+"Zaškrknětě, pokud má být vygenerován PDF soubor když se kategorie nebo "
+"písnička změní?"
+
+#: category/models.py:37
+msgid "Category"
+msgstr "Kategorie"
+
+#: category/templates/category/list.html:14
+#: frontend/templates/base/index.html:82 pdf/models/__init__.py:54
+msgid "Language"
+msgstr "Jazyk"
+
+#: category/templates/category/list.html:15
+#: pdf/templates/pdf/templates/list.html:31
+msgid "Number of songs"
+msgstr "Počet písníček"
+
+#: category/templates/category/list.html:17
+#: pdf/templates/pdf/templates/list.html:32
+msgid "Number of files"
+msgstr "Počet souborů"
+
+#: category/templates/category/list.html:18
+#: pdf/templates/pdf/templates/list.html:33
+msgid "Last file"
+msgstr "Poslední soubor"
+
+#: category/templates/category/list.html:19
+#: pdf/templates/pdf/files/list.html:27 pdf/templates/pdf/files/wait.html:85
+#: pdf/templates/pdf/templates/list.html:34
+msgid "Status"
+msgstr "Status"
+
+#: category/templates/category/list.html:20
+#: pdf/templates/pdf/files/list.html:28
+#: pdf/templates/pdf/templates/list.html:35
+msgid "Last update"
+msgstr "Poslední změna"
+
+#: category/templates/category/list.html:40
+#: pdf/templates/pdf/files/list.html:40
+#: pdf/templates/pdf/templates/list.html:53
+msgid "None"
+msgstr "Nic"
+
+#: category/templates/category/list.html:48
+#: pdf/templates/pdf/templates/list.html:59
+msgid "No generated files"
+msgstr "Žádné soubory"
+
+#: category/templates/category/list.html:58
+#: pdf/templates/pdf/files/list.html:62
+#: pdf/templates/pdf/templates/list.html:76
+msgid "Toggle Dropdown"
+msgstr "Otevřít menu"
+
+#: category/templates/category/list.html:64
+#: pdf/templates/pdf/templates/list.html:67
+msgid "Already in queue"
+msgstr "Již ve frontě"
+
+#: category/templates/category/list.html:67
+msgid "Generate PDF"
+msgstr "Vygenerovat PDF"
+
+#: category/templates/category/list.html:70
+msgid "Filename required for PDF generation"
+msgstr "Chybí jméno souboru pro generování PDF"
+
+#: category/templates/category/list.html:83
+msgid "Add Category"
+msgstr "Přidat Kategorii"
+
+#: category/views.py:39
+#, python-format
+msgid "Category with url /%(slug)s does not exist"
+msgstr "Kategorie s url /%(slug)s neexistuje"
+
+#: category/views.py:75
+msgid "songbook"
+msgstr "zpevnicek"
+
+#: frontend/templates/400.html:4 frontend/templates/400.html:5
+msgid "Bad Request"
+msgstr "Špatný dotaz"
+
+#: frontend/templates/400.html:9
+msgid "Invalid request"
+msgstr "Špatný požadavek"
+
+#: frontend/templates/403.html:4 frontend/templates/403.html:5
+msgid "Permission denied"
+msgstr "Přístup zamítnut"
+
+#: frontend/templates/403.html:9
+msgid "Insufficient permissions"
+msgstr "Nedostatečné oprávnění"
+
+#: frontend/templates/404.html:4
+msgid "Not Found"
+msgstr "Nenalezeno"
+
+#: frontend/templates/404.html:4
+msgid "Back to homepage"
+msgstr "Zpátky domů"
+
+#: frontend/templates/404.html:7
+#, python-format
+msgid "URL %(request_path)s does not exist."
+msgstr "URL %(request_path)s neexistuje."
+
+#: frontend/templates/base/error.html:8
+msgid "Not found"
+msgstr "Nenalezeno"
+
+#: frontend/templates/base/form.html:9
+#: tenants/templates/admin/base/migrate.html:16
+msgid "Submit"
+msgstr "Odeslat"
+
+#: frontend/templates/base/index.html:38 tenants/models.py:44
+msgid "Logo"
+msgstr ""
+
+#: frontend/templates/base/index.html:72
+msgid "Options"
+msgstr "Možnosti"
+
+#: frontend/templates/base/index.html:101
+msgid "Version"
+msgstr "Verze"
+
+#: frontend/templates/base/index.html:102
+msgid "Git"
+msgstr ""
+
+#: frontend/templates/base/index.html:110
+msgid "Logged as"
+msgstr "Přihlášen jako"
+
+#: frontend/templates/base/index.html:112
+msgid "Log in"
+msgstr "Přihlásit se"
+
+#: frontend/templates/base/verbs/delete.html:5
+#: frontend/templates/base/verbs/delete.html:6
+msgid "Please confirm removal"
+msgstr "Prosím potrvďte odstranění"
+
+#: frontend/templates/base/verbs/delete.html:10
+#, python-format
+msgid "Are you sure, you want to delete %(model_verbose_name)s"
+msgstr "Jste si jistí že chcete smazat %(model_verbose_name)s"
+
+#: frontend/templates/base/verbs/delete.html:13
+msgid "No"
+msgstr "Ne"
+
+#: frontend/templates/base/verbs/delete.html:14
+msgid "Yes"
+msgstr "Ano"
+
+#: frontend/templates/markdownx/widget.html:8
+msgid "Help"
+msgstr "Nápověda"
+
+#: frontend/templates/markdownx/widget.html:10
+msgid "Displays chord"
+msgstr "Zobrazí akord"
+
+#: frontend/templates/markdownx/widget.html:11
+msgid "Adds N empty spaces"
+msgstr "Přidá N mezer"
+
+#: frontend/templates/markdownx/widget.html:18
+msgid "Preview"
+msgstr "Náhled"
+
+#: frontend/templates/registration/login.html:4
+#: frontend/templates/registration/login.html:5
+msgid "Login"
+msgstr "Přihlásit se"
+
+#: frontend/templates/registration/password_change_done.html:3
+#: frontend/templates/registration/password_change_done.html:4
+msgid "Password changed"
+msgstr "Heslo změněno"
+
+#: frontend/templates/registration/password_change_done.html:6
+msgid "Password was successfully changed"
+msgstr "Heslo bylo úspěšně změněno"
+
+#: pdf/admin.py:28
+msgid "Move Request to a different Tenant"
+msgstr "Přesunout požadavky do jiného Tenanta"
+
+#: pdf/forms.py:61
+msgid "No songs selected"
+msgstr "Nevybrány žádné písničky"
+
+#: pdf/forms.py:86
+msgid "Each song has to have distinct song number"
+msgstr "Každá písnička musí mít unikátní číslo"
+
+#: pdf/menus.py:12
+#, python-format
+msgid "Generated %(files)s"
+msgstr "Existující %(files)s"
+
+#: pdf/menus.py:22 pdf/models/request.py:104
+#: pdf/templates/pdf/files/list.html:8 pdf/templates/pdf/files/list.html:9
+msgid "Files"
+msgstr "Soubory"
+
+#: pdf/models/__init__.py:23
+msgid "Queued"
+msgstr "Ve frontě"
+
+#: pdf/models/__init__.py:24
+msgid "Scheduled"
+msgstr "Naplánováno"
+
+#: pdf/models/__init__.py:25
+msgid "In progress"
+msgstr "Generuje se"
+
+#: pdf/models/__init__.py:26
+msgid "Done"
+msgstr "Hotovo"
+
+#: pdf/models/__init__.py:27
+msgid "Failed"
+msgstr "Chyba"
+
+#: pdf/models/__init__.py:37
+msgid ""
+"(Optional) Display name for the generated files. If empty filename will be "
+"used"
+msgstr ""
+"(Nepovinné) Veřejné jméno pro vytvořené soubory. V případě že necháte pole "
+"prázdné, veřejné jméno bude vytvořeno na zákaldě jména souboru"
+
+#: pdf/models/__init__.py:38 pdf/models/request.py:76
+msgid "Display name"
+msgstr "Veřejné jméno"
+
+#: pdf/models/__init__.py:44 pdf/models/request.py:68
+msgid "File name of the generated PDF"
+msgstr "Název vygenerovaného PDF"
+
+#: pdf/models/__init__.py:45 pdf/models/request.py:69
+#: pdf/templates/pdf/files/wait.html:73
+msgid "File name"
+msgstr "Název souboru"
+
+#: pdf/models/__init__.py:49
+msgid "True, if the file should be visible in the menu"
+msgstr "Zaškrkněte, pokud chcete aby byl PDF soubor veřejně viditelný v menu"
+
+#: pdf/models/__init__.py:50 pdf/models/request.py:87
+msgid "Public file"
+msgstr "Veřejný soubor"
+
+#: pdf/models/__init__.py:56
+msgid "Language of the generated PDF"
+msgstr "Jazyk PDF souboru"
+
+#: pdf/models/__init__.py:61
+msgid ""
+"Name to be used on the title page of the PDF, usually only this or Title "
+"image should be used"
+msgstr ""
+"Jméno pro titulní stranu pdf souboru. Obvykle stačí vyplnit pouze Nadpis "
+"nebo Úvodné obrázek"
+
+#: pdf/models/__init__.py:62 pdf/templates/pdf/files/list.html:26
+#: tenants/models.py:32
+msgid "Title"
+msgstr "Nadpis"
+
+#: pdf/models/__init__.py:66
+msgid "Show date"
+msgstr "Vložit datum"
+
+#: pdf/models/__init__.py:67
+msgid "True, if the date should be included in the PDF"
+msgstr "Zaškrkněte, pokud chcete aby v PDF souboru bylo datum"
+
+#: pdf/models/__init__.py:70
+msgid "Title Image"
+msgstr "Úvodní obrázek"
+
+#: pdf/models/__init__.py:71
+msgid "(Optional) title image for the PDF"
+msgstr "(Nepovinný) Obrázek na úvodní stránku PDF souboru"
+
+#: pdf/models/__init__.py:77
+msgid "Title Image margins"
+msgstr "Odsazení úvodního obrázku"
+
+#: pdf/models/__init__.py:78
+msgid "Margins for title image, might be needed for some printers"
+msgstr ""
+"Odsazení obrázku na úvodní stránce, může být nutné pro některé tiskárny"
+
+#: pdf/models/__init__.py:84
+msgid "(Optional) URL Link to include in the PDF"
+msgstr "(Nepovinné) URL adresa, zobrazená v PDF."
+
+#: pdf/models/__init__.py:85 pdf/templates/pdf/files/list.html:24
+#: pdf/templates/pdf/files/wait.html:89
+msgid "Link"
+msgstr "Odkaz"
+
+#: pdf/models/request.py:33
+msgid "Automated"
+msgstr "Automaticky"
+
+#: pdf/models/request.py:34
+msgid "Manual"
+msgstr "Manuální"
+
+#: pdf/models/request.py:47
+msgid "Template Name"
+msgstr "Název Šablony"
+
+#: pdf/models/request.py:47
+msgid "Name of this template, only shown internally"
+msgstr "Název šablony, viditelný pouze interně"
+
+#: pdf/models/request.py:54
+msgid "File Template"
+msgstr "Šablona"
+
+#: pdf/models/request.py:55 pdf/templates/pdf/templates/list.html:7
+#: pdf/templates/pdf/templates/list.html:8
+msgid "File Templates"
+msgstr "Šablony"
+
+#: pdf/models/request.py:75
+msgid "Display name for the file, if empty filename will be used"
+msgstr ""
+"Veřejné jméno pro vytvořené soubory. V případě že necháte pole prázdné, "
+"veřejné jméno bude vytvořeno na zákaldě jména souboru"
+
+#: pdf/models/request.py:86
+msgid "True, if the file should be public"
+msgstr "Zaškrkněte, pokud chcete aby byl PDF soubor veřejně viditelný"
+
+#: pdf/models/request.py:103
+msgid "File"
+msgstr "Soubor"
+
+#: pdf/models/request.py:116
+msgid "Song number"
+msgstr "Číslo písničky"
+
+#: pdf/templates/pdf/files/list.html:23
+#: pdf/templates/pdf/templates/list.html:29
+msgid "Filename"
+msgstr "Název souboru"
+
+#: pdf/templates/pdf/files/list.html:25
+#: pdf/templates/pdf/templates/list.html:30
+msgid "Public"
+msgstr "Veřejný"
+
+#: pdf/templates/pdf/files/list.html:29
+msgid "PDF Template"
+msgstr "Šablona"
+
+#: pdf/templates/pdf/files/list.html:58
+msgid "See progress"
+msgstr "Sledovat"
+
+#: pdf/templates/pdf/files/list.html:68
+msgid "Generate Another"
+msgstr "Vygenerovat další"
+
+#: pdf/templates/pdf/files/wait.html:6 pdf/templates/pdf/files/wait.html:7
+#, python-format
+msgid "Waiting for render of %(filename)s"
+msgstr "Čekání na vygenerování %(filename)s"
+
+#: pdf/templates/pdf/files/wait.html:12
+msgid "Waiting for start"
+msgstr "Čeká na zpracování"
+
+#: pdf/templates/pdf/files/wait.html:13
+msgid "Parsing HTML"
+msgstr "Zpracovávání HTML"
+
+#: pdf/templates/pdf/files/wait.html:14
+msgid "Parsing CSS"
+msgstr "Zpracovávání CSS"
+
+#: pdf/templates/pdf/files/wait.html:15
+msgid "Applying CSS"
+msgstr "Aplikace CSS pravidel"
+
+#: pdf/templates/pdf/files/wait.html:16
+msgid "Creating formatting structure"
+msgstr "Vytváření formátovací struktury"
+
+#: pdf/templates/pdf/files/wait.html:17
+msgid "Generating layout"
+msgstr "Generování rozložení"
+
+#: pdf/templates/pdf/files/wait.html:18
+msgid "Creating PDF"
+msgstr "Vytvořit PDF"
+
+#: pdf/templates/pdf/files/wait.html:19
+msgid "Adding PDF metadata"
+msgstr "Přidávání metadat do PDF"
+
+#: pdf/templates/pdf/files/wait.html:35
+msgid "Completed"
+msgstr "Dokončeno"
+
+#: pdf/templates/pdf/files/wait.html:77
+msgid "Progress"
+msgstr "Postup"
+
+#: pdf/templates/pdf/files/wait.html:94
+msgid "Back to all files"
+msgstr "Zpátky na seznam souborů"
+
+#: pdf/templates/pdf/index.html:45
+msgid "Table of Contents"
+msgstr "Obsah"
+
+#: pdf/templates/pdf/templates/assign.html:6
+#: pdf/templates/pdf/templates/assign.html:7
+msgid "Song order"
+msgstr "Pořadí písniček"
+
+#: pdf/templates/pdf/templates/assign.html:15
+msgid "Please, choose song order and their numbers"
+msgstr "Zvolte prosím pořadí písniček a jejich čísla"
+
+#: pdf/templates/pdf/templates/assign.html:23
+msgid "Song numbers"
+msgstr "Čísla písniček"
+
+#: pdf/templates/pdf/templates/assign.html:37
+msgid "Sort by name"
+msgstr "Seřadit podle jména"
+
+#: pdf/templates/pdf/templates/assign.html:38
+msgid "Finish"
+msgstr "Dokončit"
+
+#: pdf/templates/pdf/templates/list.html:11
+msgid "Add Template"
+msgstr "Přidat Šablonu"
+
+#: pdf/templates/pdf/templates/list.html:70
+msgid "Generate"
+msgstr "Generovat"
+
+#: pdf/templates/pdf/templates/select.html:9
+#: pdf/templates/pdf/templates/select.html:10
+msgid "Create new File Template"
+msgstr "Vytvořit novou Šablonu"
+
+#: pdf/templates/pdf/templates/select.html:26
+msgid ""
+"Please enter file configuration option and select which songs you would like "
+"to include"
+msgstr ""
+"Prosím vyplňte parametry PDF souboru a vyberte písničky, které má soubor "
+"obsahovat"
+
+#: pdf/templates/pdf/templates/select.html:93
+msgid "Select All"
+msgstr "Vybrat všechny"
+
+#: pdf/templates/pdf/templates/select.html:100
+msgid "Deselect all"
+msgstr "Zrušit výběr"
+
+#: pdf/templates/pdf/templates/select.html:105
+msgid "Finish selecting"
+msgstr "Dokončit výběr"
+
+#: pdf/views/templates.py:63
+#, python-format
+msgid "Another file %(id)s for %(name)s is already in queue"
+msgstr "Jiný Soubor (%(id)s) for %(name)s je již ve frontě"
+
+#: pdf/views/templates.py:69
+#, python-format
+msgid "Scheduled File (%(id)s) generation from template %(template)s"
+msgstr "Generování souboru (%(id)s) ze šablony %(template)s bylo naplánováno"
+
+#: pdf/views/templates.py:171
+#, python-format
+msgid "File Template '%(name)s' was successfully updated"
+msgstr "Šablona %(name)s byla úspěšně upravena"
+
+#: pdf/views/templates.py:176
+#, python-format
+msgid "File Template '%(name)s' was successfully created"
+msgstr "Šablona %(name)s byl úspěšně vytvořena"
+
+#: tenants/admin.py:21 tenants/models.py:58
+msgid "Tenant"
+msgstr "Zpěvník"
+
+#: tenants/menus.py:25
+msgid "PDF"
+msgstr ""
+
+#: tenants/menus.py:48
+msgid "See Also"
+msgstr "Jiné stránky"
+
+#: tenants/menus.py:66 tenants/models.py:40
+msgid "All Songs"
+msgstr "Všechno"
+
+#: tenants/models.py:12
+msgid "Only PNG images are allowed"
+msgstr "Jen PNG obrázky jsou podporovány"
+
+#: tenants/models.py:18
+msgid "Link URL"
+msgstr "URL odkaz"
+
+#: tenants/models.py:19
+msgid "Display Name"
+msgstr "Jméno"
+
+#: tenants/models.py:29
+msgid "Hostname"
+msgstr "Doménové jméno"
+
+#: tenants/models.py:29
+msgid "The exact hostname for this Tenant"
+msgstr "Přesné doménové jméno pod kterým bude Zpěvník dostupný"
+
+#: tenants/models.py:31
+msgid "Internal name for this Tenant"
+msgstr "Interní název tohoto Zpevníku"
+
+#: tenants/models.py:32
+msgid "Title on the Main site"
+msgstr "Titulek na hlavní stránce"
+
+#: tenants/models.py:34
+msgid "Index redirect path"
+msgstr "Cíl přesměrování úvodní stránky"
+
+#: tenants/models.py:35
+msgid ""
+"Where should new tenant redirect from index page, usually a category slug"
+msgstr ""
+"Kam by měla úvodní stránka přesměrovat uživatele, většinou URL kategorie"
+
+#: tenants/models.py:41
+msgid "True, if all songs category should be added to navigation"
+msgstr "Pokud je zaškrknuto tak se do navigace přidá odkaz na všechny písničky"
+
+#: tenants/models.py:45
+msgid "Optional Site logo, should be around 50x50 and in PNG format"
+msgstr ""
+"Logo zpěvníčku, nepovinné, mělo by mít rozměry kolem 50x50 a být v PNG "
+"formátu"
+
+#: tenants/models.py:59
+msgid "Tenants"
+msgstr "Zpěvníky"
+
+#: tenants/templates/admin/base/migrate.html:4
+#: tenants/templates/admin/base/migrate.html:5
+#, python-format
+msgid "Migrating %(source_verbose_name_plural)s to %(target_verbose_name)s"
+msgstr "Přesunout %(source_verbose_name_plural)s do %(target_verbose_name)s"
+
+#: tenants/templates/admin/base/migrate.html:14
+#, python-format
+msgid "To %(target_verbose_name)s"
+msgstr "Do %(target_verbose_name)s"
