@@ -69,7 +69,11 @@ class CategoryCreateView(LocalAdminRequired, UniversalCreateView):
 
     def get_initial(self):
         with translation.override(get_language()):
-            return {"tenant": self.request.tenant, "filename": gettext("songbook")}
+            return {
+                "tenant": self.request.tenant,
+                "filename": gettext("songbook"),
+                "locale": self.request.LANGUAGE_CODE,
+            }
 
     def get_success_message(self, cleaned_data):
         cache.delete(settings.CATEGORY_CACHE_KEY)
