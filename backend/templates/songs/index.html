@@ -10,10 +10,9 @@
     <script async src="{% static 'js/chords.js' %}"></script>
     <script defer type="text/javascript" src="{% static "datatables/datatables.min.js" %}"></script>
     <script defer type="text/javascript" src="{% static "datatables/accent-neutralize.min.js" %}"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/bootstrap-input-spinner@3.3.3/src/bootstrap-input-spinner.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsrender/1.0.15/jsrender.min.js"
             integrity="sha512-6heofwTnm0osmeEuz47jQLMVpAe2/ww+hZ4xvyv/kgedYO0b9mhNnsh8nUQZrmcdbaDkxrN+1K4SV6L+V4EH6Q=="
-            crossorigin="anonymous" 
+            crossorigin="anonymous"
             referrerpolicy="no-referrer"
             defer>
     </script>
@@ -83,13 +82,13 @@
                         <i class="icon-youtube-play"></i>
                     </a>
                 <%/if%>
-                <div class="input-group-prepend">
-                  <span class="input-group-text">{% trans "Transpose" %}</span>
-                </div>
-                <input class="form-control raw" type="number" value="0" min="-11" max="11" step="1" previous_value=0 onchange="transpose(event, this, <%:number%> )"/>
+                <label for="id<%:number%>-input" class="input-group-text">{% trans "Transpose" %}</label>
+                <button class="btn btn-outline-secondary" type="button" data-target="id<%:number%>-input" onclick="add(event, this)"><i class="icon-plus"></i></button>
+                <input class="form-control transposer text-center" type="text" value="0" min="-11" max="11" step="1" data-target="id<%:number%>-text" id="id<%:number%>-input" disabled onchange="transpose(this)" placeholder="0"/>
+                <button class="btn btn-outline-secondary" type="button" data-target="id<%:number%>-input" onclick="subtract(event, this)"><i class="icon-minus"></i></button>
             </div>
             <%if capo > 0%><h5 class="ms-2">Capo <%:capo%> </h5> <%/if%>
-            <div class="text-wrap song-text">
+            <div class="text-wrap song-text" id="id<%:number%>-text">
                 <%:text%>
             </div>
         </div>
@@ -126,15 +125,6 @@
             select: false,
             paging: paging,
             deferRender: true,
-            drawCallback: function () {
-                const selector = $(".raw[type='number']")
-                selector.inputSpinner({
-                    decrementButton: "<i class=\"icon-minus\"></i>", // button text
-                    incrementButton: "<i class=\"icon-plus\"></i>",
-                    groupClass: "transposer",
-                });
-                selector.toggleClass("raw")
-            },
             initComplete: function() {
                 document.getElementById("content").classList.remove("d-none");
                 document.getElementById("spinner").classList.add("d-none");

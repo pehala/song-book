@@ -11,15 +11,15 @@ function transposeChord(chord, amount) {
     })
 }
 
-function transpose(event, object, id) {
-    const input = $(object);
-    const old_value = input.attr("previous_value");
-    const new_value = input.val();
+function transpose(object) {
+    const target = object.getAttribute("data-target")
+    const old_value = object.getAttribute("data-previous-value", 0);
+    const new_value = object.value;
     const diff = new_value - old_value;
-    $("#id" + id).find(".chord").each(function(element) {
-        $( this ).html(transposeChord($( this ).html(), diff))
+    document.querySelectorAll("#" + target + " .chord").forEach(function(element) {
+        element.innerText = transposeChord(element.innerText, diff)
     });
-    input.attr("previous_value", new_value);
+    object.setAttribute("data-previous-value", new_value);
 }
 
 function isElementInViewPort(element) {
@@ -62,4 +62,25 @@ function betterScrollDown() {
         }, 800);
     }
 
+}
+
+function _change(source, diff) {
+    const target = document.getElementById(source.getAttribute("data-target"))
+    const min = parseInt(target.getAttribute("min"))
+    const max = parseInt(target.getAttribute("max"))
+    const previous_value = parseInt(target.value)
+    target.value = Math.min(Math.max(previous_value + diff, min), max)
+    target.dispatchEvent(new Event('change'));
+}
+
+function add(event, source) {
+    if(!event.detail || event.detail === 1){//activate on first click only to avoid hiding again on multiple clicks
+        _change(source, 1)
+    }
+}
+
+function subtract(event, source) {
+    if(!event.detail || event.detail === 1){//activate on first click only to avoid hiding again on multiple clicks
+        _change(source, -1)
+    }
 }
