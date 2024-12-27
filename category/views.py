@@ -19,6 +19,7 @@ from category.forms import CategoryForm, NameForm
 from category.models import Category
 from category.utils import request_pdf_regeneration
 from pdf.models.request import PDFTemplate, PDFFile
+from tenants.utils import tenant_cache_key
 from tenants.views import AdminMoveView
 
 
@@ -72,7 +73,7 @@ class CategoryCreateView(LocalAdminRequired, UniversalCreateView):
             return {"tenant": self.request.tenant, "filename": gettext("songbook")}
 
     def get_success_message(self, cleaned_data):
-        cache.delete(settings.CATEGORY_CACHE_KEY)
+        cache.delete(tenant_cache_key(self.request.tenant, settings.CATEGORY_CACHE_KEY))
         return super().get_success_message(cleaned_data)
 
 
@@ -87,7 +88,7 @@ class CategoryUpdateView(LocalAdminRequired, RegenerateViewMixin, UniversalUpdat
         response = super().post(request, *args, **kwargs)
         if self.regenerate and self.object.generate_pdf:
             request_pdf_regeneration(self.object)
-        cache.delete(settings.CATEGORY_CACHE_KEY)
+        cache.delete(tenant_cache_key(self.object.tenant, settings.CATEGORY_CACHE_KEY))
         return response
 
 
@@ -99,7 +100,7 @@ class CategoryDeleteView(LocalAdminRequired, UniversalDeleteView):
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
-        cache.delete(settings.CATEGORY_CACHE_KEY)
+        cache.delete(tenant_cache_key(self.object.tenant, settings.CATEGORY_CACHE_KEY))
         return response
 
 

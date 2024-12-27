@@ -24,7 +24,7 @@ def create_menus(tenant):
         CacheMenuItem(
             title=_("PDF"),
             url=reverse("backend:index"),
-            generate_function=distinct_requests,
+            generate_function=partial(distinct_requests, tenant),
             key=tenant_cache_key(tenant, settings.PDF_CACHE_KEY),
             timeout=60 * 60,
         ),
@@ -52,7 +52,7 @@ def create_menus(tenant):
         )
 
 
-def categories(tenant, request):
+def categories(tenant):
     """Returns MenuItems for all Categories"""
     items = [
         MenuItem(
@@ -67,7 +67,7 @@ def categories(tenant, request):
     return items
 
 
-def distinct_requests(request):
+def distinct_requests(tenant):
     """
     Not all databases can do DISTINCT ON, this is a replacement for the command below
     PDFRequest.objects.filter(file__isnull=False, status=Status.DONE).distinct("filename")[:5]
@@ -75,12 +75,12 @@ def distinct_requests(request):
     """
     data = []
     for model in [Category, ManualPDFTemplate]:
-        for template in model.objects.filter(tenant=request.tenant):
+        for template in model.objects.filter(tenant=tenant):
             file = template.latest_file
             if file and file.file:
                 data.append(MenuItem(file.name, file.file.url))
     # Without template
-    for file in PDFFile.objects.filter(tenant=request.tenant, status=Status.DONE, public=True, template=None):
+    for file in PDFFile.objects.filter(tenant=tenant, status=Status.DONE, public=True, template=None):
         if file.file:
             data.append(MenuItem(file.name, file.file.url))
     return data

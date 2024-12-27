@@ -5,7 +5,6 @@ from argparse import ArgumentParser
 from pathlib import Path
 
 from django.conf import settings
-from django.core.cache import cache
 from django.core.management import BaseCommand
 
 from category.models import Category
@@ -49,6 +48,5 @@ class Command(BaseCommand):
             logger.info("Scheduling generation for category %s from Tenant %s", category, category.tenant.name)
         objects = [generate_pdf_file(category) for category in queryset]
 
-        cache.delete(settings.PDF_CACHE_KEY)
         logger.info("Scheduled %i requests", len(objects))
         return
