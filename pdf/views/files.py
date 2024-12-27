@@ -15,6 +15,7 @@ from category.forms import NameForm
 from pdf.forms import PDFFileEditForm
 from pdf.models import Status
 from pdf.models.request import PDFFile, ManualPDFTemplate
+from tenants.utils import tenant_cache_key
 from tenants.views import AdminMoveView
 
 
@@ -37,7 +38,7 @@ class FileDeleteView(LocalAdminRequired, UniversalDeleteView):
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
-        cache.delete(settings.PDF_CACHE_KEY)
+        cache.delete(tenant_cache_key(self.object.tenant, settings.PDF_CACHE_KEY))
         return response
 
 
@@ -50,7 +51,7 @@ class FileUpdateView(LocalAdminRequired, UniversalUpdateView):
 
     def post(self, request, *args, **kwargs):
         response = super().post(request, *args, **kwargs)
-        cache.delete(settings.CATEGORY_CACHE_KEY)
+        cache.delete(tenant_cache_key(self.object.tenant, settings.PDF_CACHE_KEY))
         return response
 
 

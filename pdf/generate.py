@@ -11,6 +11,7 @@ from time import time
 
 import weasyprint
 from django.conf import settings
+from django.core.cache import cache
 from django.core.files import File
 from django.template.loader import render_to_string
 from django.urls import reverse
@@ -23,6 +24,7 @@ from weasyprint.logger import PROGRESS_LOGGER
 from category.models import Category
 from pdf.locales import changed_locale, lang_to_locale
 from pdf.models.request import Status, PDFFile, ManualPDFTemplate
+from tenants.utils import tenant_cache_key
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
@@ -85,6 +87,7 @@ def generate_pdf(pdf_file: PDFFile, template: AllowedTemplates):
             pdf_file.update_date = now()
 
             update_status(pdf_file, Status.DONE)
+            cache.delete(tenant_cache_key(pdf_file.tenant, settings.PDF_CACHE_KEY))
             logger.info("Done in %i seconds", pdf_file.time_elapsed)
             return True, timer.duration
     except Exception as exception:  # pylint: disable=broad-except
