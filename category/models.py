@@ -17,10 +17,14 @@ class Category(PDFTemplate):
 
     tenant = ForeignKey(Tenant, on_delete=CASCADE)
     name = CharField(verbose_name=_("Name"), max_length=100)
-    slug = SlugField(verbose_name=_("URL pattern"), max_length=25)
+    slug = SlugField(
+        verbose_name=_("URL Slug"),
+        help_text=_("URL Slug, under which the category should be accessible"),
+        max_length=25,
+    )
     generate_pdf = BooleanField(
         verbose_name=_("PDF generation"),
-        help_text=_("Should the PDF file be automatically generated when a song changes?"),
+        help_text=_("True, if the PDF file be automatically generated when a category or song changes?"),
     )
 
     def get_songs(self) -> Iterable[Tuple[int, "Song"]]:

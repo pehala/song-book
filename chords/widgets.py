@@ -1,3 +1,5 @@
+"""Common Widgets to be used across app"""
+
 from django.forms import Widget, TextInput
 from django.utils.safestring import mark_safe
 
