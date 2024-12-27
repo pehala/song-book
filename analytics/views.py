@@ -2,19 +2,18 @@
 
 from datetime import datetime, timedelta
 
-from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.db.models import Sum
 from django.http import HttpResponseBadRequest, HttpRequest, JsonResponse
 
 # Create your views here.
-from django.utils.decorators import method_decorator
 from django.utils.timezone import now
 from django.utils.translation import gettext_noop
 from django.views import View
 from django.views.generic import TemplateView
 
 from analytics.models import DayStatistic
+from backend.mixins import LocalAdminRequired
 
 
 def analytics(request, key):
@@ -40,8 +39,7 @@ class AnalyticsMixin(View):
         return result
 
 
-@method_decorator(login_required, name="dispatch")
-class AnalyticsShowView(TemplateView):
+class AnalyticsShowView(LocalAdminRequired, TemplateView):
     """Shows analytics graphs"""
 
     template_name = "analytics/show.html"
@@ -62,20 +60,19 @@ class AnalyticsShowView(TemplateView):
         return ctx
 
 
-@method_decorator(login_required, name="dispatch")
-class AnalyticsRestView(View):
+class AnalyticsRestView(LocalAdminRequired, View):
     """Returns analytics data for given dates and key"""
 
-    def get(self, request: HttpRequest, *args, **kwargs):
+    def post(self, request: HttpRequest, *args, **kwargs):
         """Handles GET requests"""
-        if "start_date" not in request.GET or "key" not in request.GET:
+        if "start_date" not in request.POST or "key" not in request.POST:
             return HttpResponseBadRequest()
-        start_date = datetime.fromtimestamp(int(request.GET["start_date"])).date()
-        if "end_date" in request.GET:
-            end_date = datetime.fromtimestamp(int(request.GET["end_date"])).date()
+        start_date = datetime.fromtimestamp(int(request.POST["start_date"])).date()
+        if "end_date" in request.POST:
+            end_date = datetime.fromtimestamp(int(request.POST["end_date"])).date()
         else:
             end_date = datetime.now().date()
-        key = request.GET["key"]
+        key = request.POST["key"]
         if len(key) > 0:
             days = DayStatistic.objects.filter(
                 date__gte=start_date, date__lte=end_date, key=key, tenant=self.request.tenant

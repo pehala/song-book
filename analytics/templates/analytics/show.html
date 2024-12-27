@@ -2,135 +2,143 @@
 {% load i18n %}
 
 {% block extra_head %}
-<script defer src="https://cdn.jsdelivr.net/npm/chart.js@3.8.0/dist/chart.min.js" integrity="sha256-cHVO4dqZfamRhWD7s4iXyaXWVK10odD+qp4xidFzqTI=" crossorigin="anonymous"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 {% endblock %}
 
 {% block header %}{% trans "Analytics" %}{% endblock %}
 {% block title %}{% trans "Analytics" %}{% endblock %}
 
 {% block framed_body %}
-    <div class="d-flex .flex-row">
-       <div class="col-auto">
-         <label class="visually-hidden" for="inlineFormInputGroup">{% trans "Keys" %}</label>
-         <div class="input-group mb-2">
-           <div class="input-group-prepend">
-             <div class="input-group-text">{% trans "Keys" %}</div>
-           </div>
-           <select id="keys" class="form-select">
-              <option value="" selected>{% trans "All" %}</option>
-              {% for key in keys %}
-              <option value="{{ key }}">{% trans key %}</option>
-              {% endfor %}
-            </select>
-         </div>
-       </div>
-       <div class="col-auto">
-         <label class="visually-hidden" for="inlineFormInputGroup">{% trans "Date Range" %}</label>
-         <div class="input-group mb-2">
-           <div class="input-group-prepend">
-             <div class="input-group-text">{% trans "Date Range" %}</div>
-           </div>
-           <select id="range" class="form-select">
-{#              <option value="{{ day|date:"U" }}" selected>{% trans "Day" %}</option>#}
-              <option value="{{ week|date:"U" }}" selected>{% trans "Week" %}</option>
-              <option value="{{ month|date:"U" }}">{% trans "Month" %}</option>
-              <option value="{{ year|date:"U" }}">{% trans "Year" %}</option>
-            </select>
-         </div>
-       </div>
+  <div class="row mb-2">
+    <div class="input-group me-2 col">
+      <label class="input-group-text" for="keys">{% trans "Keys" %}</label>
+      <select id="keys" class="form-select selects">
+        <option value="" selected>{% trans "All" %}</option>
+        {% for key in keys %}
+          <option value="{{ key }}">{% trans key %}</option>
+        {% endfor %}
+      </select>
     </div>
-    <canvas id="graph" width="400" height="300" aria-label="Graph" role="img"></canvas>
+    <div class="input-group col">
+      <label class="input-group-text" for="range">{% trans "Date Range" %}</label>
+      <select id="range" class="form-select pe-1 selects">
+        <option value="{{ week|date:"U" }}" selected>{% trans "Week" %}</option>
+        <option value="{{ month|date:"U" }}">{% trans "Month" %}</option>
+        <option value="{{ year|date:"U" }}">{% trans "Year" %}</option>
+      </select>
+    </div>
+  </div>
+  <canvas id="graph" width="400" height="300" aria-label="Graph" role="img"></canvas>
 
-    <script type="module">
-        const URL = "{% url "analytics:data" %}"
-        let canvas = null;
-        Date.prototype.addDays = function(days) {
-            const date = new Date(this.valueOf());
-            date.setDate(date.getDate() + days);
-            return date;
-        }
+  <script type="module">
+      const keys_select = document.getElementById('keys')
+      const range_select = document.getElementById('range')
+      let canvas = null;
+      Date.prototype.addDays = function (days) {
+          const date = new Date(this.valueOf());
+          date.setDate(date.getDate() + days);
+          return date;
+      }
 
-        function getDates(startDate, stopDate) {
-            const dateArray = [];
-            let currentDate = startDate;
-            while (currentDate <= stopDate) {
-                dateArray.push(new Date (currentDate).toISOString().substring(0,10));
-                currentDate = currentDate.addDays(1);
-            }
-            return dateArray;
-        }
+      function getDates(startDate, stopDate) {
+          const dateArray = [];
+          let currentDate = startDate;
+          while (currentDate <= stopDate) {
+              dateArray.push(new Date(currentDate).toISOString().substring(0, 10));
+              currentDate = currentDate.addDays(1);
+          }
+          return dateArray;
+      }
 
-        function generate_data(dates, data) {
-            let values = []
-            for (let date of dates) {
-                values.push(date in data ? data[date] : 0)
-            }
-            return values
-        }
-        const nullDupes = data => data.map((x, i) => data[i - 1] === x && data[i + 1] === x ? null : x);
-        function createChart(dates, values) {
-            if (canvas) {
-                canvas.destroy();
-            }
-            const data = {
-              labels: dates,
-              datasets: [{
-                spanGaps: true,
-                label: "{% trans "Analytics" %}",
-                data: nullDupes(values),
-                fill: false,
-                borderColor: 'rgb(75, 192, 192)',
-                tension: 0.01
-              }]
-            };
-            const config = {
-              type: 'line',
-              data: data,
-              options: {
-                  locale: "cs",
-                  scales: {
-                    y: {
-                        suggestedMax: Math.max.apply(this, values) + 5,
-                        ticks: {
-                            beginAtZero: true,
-                            stepSize: 1
-                        }
-                    }
-                }
+      function generate_data(dates, data) {
+          let values = []
+          for (let date of dates) {
+              values.push(date in data ? data[date] : 0)
+          }
+          return values
+      }
+
+      const nullDupes = data => data.map((x, i) => data[i - 1] === x && data[i + 1] === x ? null : x);
+
+      function createChart(dates, values) {
+          const suggestedMax = Math.max.apply(this, values) + 5
+          const data = nullDupes(values)
+          if (canvas) {
+              const labels = canvas.data.labels
+              labels.splice(0, labels.length)
+              labels.push(...dates)
+
+              const dataContainer = canvas.data.datasets[0].data
+              dataContainer.splice(0, dataContainer.length)
+              dataContainer.push(...data)
+              canvas.options.scales.y.suggestedMax = suggestedMax
+              canvas.update()
+          } else {
+              canvas = new Chart(document.getElementById("graph"), {
+                  type: 'line',
+                  normalized: true,
+                  data: {
+                      labels: dates,
+                      datasets: [{
+                          spanGaps: true,
+                          label: "{% trans "Hits" %}",
+                          data: data,
+                          fill: false,
+                          borderColor: 'rgb(75, 192, 192)',
+                          tension: 0.01
+                      }]
+                  },
+                  options: {
+                      locale: "{{ request.LANGUAGE_CODE }}",
+                      scales: {
+                          x: {
+                              grid: {
+                                  color: 'grey'
+                              }
+                          },
+                          y: {
+                              suggestedMax: suggestedMax,
+                              ticks: {
+                                  beginAtZero: true,
+                                  stepSize: 1
+                              },
+                              grid: {
+                                  color: 'grey',
+                              }
+                          }
+                      }
+                  }
+              });
+          }
+      }
+
+      async function redraw() {
+          const formData = new FormData();
+          const start_date = range_select.value
+          formData.append("key", keys_select.value);
+          formData.append("start_date", start_date);
+          await fetch("{% url "analytics:data" %}", {
+              method: "POST",
+              body: formData,
+              headers: {'X-CSRFToken': "{{ csrf_token }}"},
+              credentials: 'same-origin',
+          }).then(async (response) => {
+              if (response.ok) {
+                  const json = await response.json();
+                  const dates = getDates(new Date(parseInt(start_date) * 1e3), new Date(+new Date() + 86400000));
+                  const values = generate_data(dates, json);
+                  createChart(dates, values)
+                  // Display output in HTML page
+              } else {
+                  alert("Request failed, status code: " + response.status)
               }
-            };
-            canvas = new Chart(document.getElementById("graph"), config);
-        }
+          })
+      }
 
-        function redraw() {
-            const key = $('#keys').val()
-            const start_date = $('#range').val()
-            $.ajax(URL, {
-                data: {
-                    key: key,
-                    start_date: start_date
-                },
-                statusCode: {
-                    403: function() {
-                      alert( "No login" );
-                    },
-                    400: function() {
-                      alert( "Bad Data" );
-                    }
-                },
-                success: function (data, textStatus, jqXHR) {
-                    const dates = getDates(new Date(parseInt(start_date) * 1e3), new Date());
-                    const values = generate_data(dates, data);
-                    createChart(dates, values)
-                    console.log(dates);
-                    console.log(values);
-                }
-            })
-        }
-
-        $( "#keys" ).change(redraw);
-        $( "#range" ).change(redraw);
-        redraw();
-    </script>
+      Array.from(document.getElementsByClassName("selects")).forEach(function (element) {
+          element.addEventListener('change', redraw);
+      });
+      redraw();
+  </script>
 
 {% endblock %}
