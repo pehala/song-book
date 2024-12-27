@@ -18,5 +18,5 @@ class CacheMenuItem(MenuItem):
         if self.key in cache:
             return cache.get(self.key)
         children = self.generate_function(request)
-        cache.set(f"{request.tenant.id}-{self.key}", children, timeout=self.timeout)
+        cache.set(self.key, children, timeout=self.timeout)
         return children
