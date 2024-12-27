@@ -25,7 +25,7 @@ msgstr "Klíč"
 
 #: analytics/models.py:14
 msgid "Hits"
-msgstr "Kliknutí"
+msgstr "Návštěvy"
 
 #: analytics/templates/analytics/show.html:8
 #: analytics/templates/analytics/show.html:9
