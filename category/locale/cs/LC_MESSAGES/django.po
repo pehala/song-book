@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-25 21:59+0000\n"
+"POT-Creation-Date: 2024-12-27 20:29+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,17 +28,24 @@ msgid "Name"
 msgstr "Jméno"
 
 #: category/models.py:20 category/templates/category/list.html:13
-msgid "URL pattern"
+msgid "URL Slug"
 msgstr "URL vzor"
+
+#: category/models.py:20
+msgid "URL Slug, under which the category should be accessible"
+msgstr "Část URL, pod kterou bude kategorie dostupná"
 
 #: category/models.py:22 category/templates/category/list.html:16
 msgid "PDF generation"
 msgstr "Automatické Generování PDF"
 
 #: category/models.py:23
-msgid "Should the PDF file be automatically generated when a song changes?"
+msgid ""
+"True, if the PDF file be automatically generated when a category or song "
+"changes?"
 msgstr ""
-"Má být vygenerován pdf soubor když se nějaká písnička z kategorie změní?"
+"Zaškrknětě, pokud má být vygenerován PDF soubor když se kategorie nebo "
+"písnička změní?"
 
 #: category/models.py:33
 msgid "Category"

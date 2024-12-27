@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-01-26 14:31+0000\n"
+"POT-Creation-Date: 2024-12-27 20:27+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -23,42 +23,39 @@ msgstr ""
 msgid "Key"
 msgstr "Klíč"
 
-#: analytics/models.py:14
+#: analytics/models.py:14 analytics/templates/analytics/show.html:84
 msgid "Hits"
 msgstr "Návštěvy"
 
 #: analytics/templates/analytics/show.html:8
 #: analytics/templates/analytics/show.html:9
-#: analytics/templates/analytics/show.html:79
 msgid "Analytics"
 msgstr "Statistiky"
 
 #: analytics/templates/analytics/show.html:14
-#: analytics/templates/analytics/show.html:17
 msgid "Keys"
 msgstr "Klíče"
 
-#: analytics/templates/analytics/show.html:20
+#: analytics/templates/analytics/show.html:16
 msgid "All"
 msgstr "Vše"
 
-#: analytics/templates/analytics/show.html:28
-#: analytics/templates/analytics/show.html:31
+#: analytics/templates/analytics/show.html:23
 msgid "Date Range"
 msgstr "Rozsah"
 
-#: analytics/templates/analytics/show.html:35
+#: analytics/templates/analytics/show.html:25
 msgid "Week"
 msgstr "Týden"
 
-#: analytics/templates/analytics/show.html:36
+#: analytics/templates/analytics/show.html:26
 msgid "Month"
 msgstr "Měsíc"
 
-#: analytics/templates/analytics/show.html:37
+#: analytics/templates/analytics/show.html:27
 msgid "Year"
 msgstr "Rok"
 
-#: analytics/views.py:31
+#: analytics/views.py:30
 msgid "General"
 msgstr "Obecné"
