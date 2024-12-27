@@ -1,5 +1,7 @@
 """Module for menu items stored in cache"""
 
+from functools import partial
+
 from django.core.cache import cache
 from menu import MenuItem
 
@@ -15,8 +17,4 @@ class CacheMenuItem(MenuItem):
 
     def _callable(self, request):
         """Returns children from cache or generate new one"""
-        if self.key in cache:
-            return cache.get(self.key)
-        children = self.generate_function(request)
-        cache.set(self.key, children, timeout=self.timeout)
-        return children
+        return cache.get_or_set(self.key, partial(self.generate_function, request), timeout=self.timeout)
