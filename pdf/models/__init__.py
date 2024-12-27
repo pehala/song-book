@@ -1,7 +1,6 @@
 """Common classes for PDF"""
 
 from abc import abstractmethod
-from functools import lru_cache
 from typing import Iterable, Tuple, TYPE_CHECKING
 
 from django.conf import settings
