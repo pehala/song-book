@@ -4,14 +4,13 @@
 {% load i18n %}
 {% load types %}
 {% load django_bootstrap5 %}
-{% load sass_tags %}
 
 {% block title %} {% trans "Create new File Template" %} {% endblock %}
 {% block header %} {% trans "Create new File Template" %}  {% endblock %}
 {% block extra_head %}
 <script defer type="text/javascript" src="{% static "datatables/datatables.min.js" %}"></script>
 <script defer type="text/javascript" src="{% static "datatables/accent-neutralize.min.js" %}"></script>
-<link rel="stylesheet" type="text/css" href="{% sass_src 'datatables.sass' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'datatables.css' %}">
 <link rel="stylesheet" type="text/css" href="{% static "datatables/datatables.min.css" %}"/>
 {% endblock %}
 

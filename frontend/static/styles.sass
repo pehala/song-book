@@ -6,6 +6,7 @@ $absoluteBlack  : #000000
 $originalDark   : #212529
 $border-color: $bgHighlight
 
+// Bootstrap 5 var overrides
 [data-bs-theme="dark"]
   --bs-body-bg: #{$absoluteBlack}
 
@@ -23,6 +24,16 @@ $border-color: $bgHighlight
   --bs-dropdown-link-color: #{$colDefault}
   --bs-dropdown-link-hover-color: #{$colHighlight}
 
+.accordion-button:not(.collapsed)
+  background-color: var(--bs-accordion-btn-bg)
+  color: var(--bs-accordion-btn-color)
+  &:focus
+    box-shadow: var(--bs-accordion-btn-focus-box-shadow)
+
+.accordion-button:focus
+  box-shadow: none
+
+// Custom styles
 .chord
   font-weight: bold
   font-size: 100%
@@ -31,20 +42,6 @@ $border-color: $bgHighlight
 @media (min-width: 768px)
   .transposer
     max-width: 100px
-
-
-
-.main-div
-  margin: auto
-  width: 90%
-  text-align: center
-  border: 3px solid var(--bs-border-color)
-
-html, body
-  height: 100%
-
-.table .thead-dark th
-  background-color: $bgDefault
 
 .back-to-top
     cursor: pointer
@@ -66,25 +63,6 @@ hr
   background-color: var(--bs-border-color)
   height: 2px
 
-.languages
-  margin-right: 10px
-
-.bottomHR
-  margin-bottom: 10px
-
-.markdownx-preview
-  text-align: left
-  border: 1px solid #ced4da
-
-.wrap
-  min-height: 100%
-  height: auto
-  /* Negative indent footer by its height */
-  margin: 0 auto -60px
-  /* Pad bottom by footer height */
-  padding: 0 0 60px
-
-
 .custom-link
  color: $colDefault
  &:hover
@@ -93,11 +71,3 @@ hr
 .small-hr
   height: 1px
 
-.accordion-button:not(.collapsed)
-  background-color: var(--bs-accordion-btn-bg)
-  color: var(--bs-accordion-btn-color)
-  &:focus
-    box-shadow: var(--bs-accordion-btn-focus-box-shadow)
-
-.accordion-button:focus
-  box-shadow: none
