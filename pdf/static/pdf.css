@@ -1,0 +1,129 @@
+@font-face {
+     font-family: "Open Sans";
+     src: url(OpenSans-Regular.ttf);
+}
+ @font-face {
+     font-family: "Open Sans";
+     font-weight: bold;
+     src: url(OpenSans-Bold.ttf);
+}
+ @page {
+     @bottom-left {
+         content: counter(page);
+         font-size: 9pt;
+         height: 1cm;
+         text-align: center;
+         width: 1cm;
+    }
+     @bottom-center {
+         content: string(date);
+         font-size: 9pt;
+         height: 1cm;
+         vertical-align: middle;
+         width: 100%;
+    }
+     @top-center {
+         content: string(title);
+         font-size: 9pt;
+         height: 1cm;
+         vertical-align: middle;
+         width: 100%;
+    }
+     @bottom-right {
+         content: string(name);
+         font-size: 9pt;
+         height: 1cm;
+         vertical-align: middle;
+         width: 100%;
+    }
+}
+ .date {
+     string-set: date content();
+     text-align: center;
+     font-family: "Open Sans", serif;
+     font-size: 12pt;
+     break-after: avoid-page;
+     page-break-after: avoid;
+}
+ .right {
+     float: right;
+}
+ #cover {
+     page-break-before: avoid;
+     break-after: always;
+}
+ .contents-title {
+     break-after: avoid;
+     page-break-before: avoid;
+     font-size: 20pt;
+     font-weight: 400;
+     margin-bottom: 10pt;
+     margin-top: 10pt;
+     width: 100%;
+     text-align: center;
+}
+ .chord {
+     font-weight: bold;
+     font-size: 85%;
+     vertical-align: super;
+}
+ html {
+     font-family: "Open Sans", serif;
+     font-size: 10pt;
+}
+ .name {
+     string-set: name content();
+}
+ .title {
+     string-set: title content();
+     font-size: 28pt;
+     width: 100%;
+     text-align: center;
+}
+ h2 {
+     color: black;
+     font-weight: 400;
+     break-before: page;
+     font-size: 24pt;
+     string-set: heading content();
+     margin-bottom: 10pt;
+     margin-top: 0;
+}
+ h3 {
+     color: black;
+     bookmark-level: none;
+     font-weight: 300;
+     font-size: 15pt;
+}
+ h4 {
+     color: black;
+     font-weight: 400;
+}
+ a {
+     color: inherit;
+}
+ .text {
+     columns: 2;
+     column-gap: 1cm;
+     padding-top: 0;
+}
+ .text p {
+     text-align: justify;
+}
+ .contents-list {
+     list-style: none;
+     padding-left: 0;
+     columns: 2;
+     column-gap: 1cm;
+     column-rule-style: solid;
+     column-rule-width: 1px;
+     break-before: avoid;
+}
+ .contents-list li {
+     border-top: .25pt solid #c1c1c1;
+     margin: .25cm 0;
+     padding-top: .25cm;
+}
+ #contents {
+     padding-top: 1cm;
+}
