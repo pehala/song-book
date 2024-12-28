@@ -40,7 +40,7 @@ function isElementInViewPort(element) {
 }
 
 function betterScrollDown() {
-    let children = $(".song:visible p ")
+    let children = $(".song-text:visible p ")
     if (children.length === 0)
         return
 
