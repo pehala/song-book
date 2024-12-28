@@ -31,7 +31,6 @@ INSTALLED_APPS = [
     "analytics",
     "tenants",
     "django_bootstrap5",
-    "sass_processor",
     "markdownx",
     "menu",
     "django.contrib.admin",
@@ -83,7 +82,6 @@ TEMPLATES = [
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-    "sass_processor.finders.CssFinder",
 ]
 
 STORAGES = {

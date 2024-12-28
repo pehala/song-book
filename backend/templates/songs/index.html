@@ -1,6 +1,5 @@
 {% extends "base/index.html" %}
 {% load utils %}
-{% load sass_tags %}
 {% load static %}
 {% load i18n %}
 
@@ -18,7 +17,6 @@
     </script>
     <script type="module" src="{% static 'js/js.cookie.js' %}"></script>
     <script type="module" src="{% static 'js/Options.js' %}"></script>
-{#    <link rel="stylesheet" type="text/css" href="{% sass_src 'datatables.sass' %}">#}
 {%  endblock %}
 {% block extra_options %}
 <div class="me-2 mt-1 d-flex">

@@ -1,5 +1,4 @@
 {% load static %}
-{% load sass_tags %}
 {% load i18n %}
 
 <!DOCTYPE html>
@@ -18,7 +17,7 @@
               type="text/javascript"
               defer></script>
     <link rel="stylesheet" type="text/css" href="{% static 'icons/css/songs.css' %}">
-    <link rel="stylesheet" type="text/css" href="{% sass_src 'styles.sass' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
     {% block extra_head %} {% endblock %}
 </head>
 <body>

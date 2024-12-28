@@ -10,20 +10,15 @@ package-mode = false
 python = "^3.11"
 django = "^5"
 django_bootstrap5 = "*"
-dj-datatables-view = "*"
 django-debug-toolbar = "*"
 django-markdownx = ">=4.0.0b1"
 django-redis = "*"
 huey = "*"
-django-sass-processor = "*"
 django-simple-menu = "*"
 django-weasyprint = "*"
 weasyprint = "^63"
 Pillow = "*"
 mistune = ">3"
-netifaces = "*"
-django-compressor = "*"
-libsass = "*"
 django-polymorphic = {git = "https://github.com/jazzband/django-polymorphic.git", rev = "v4.0.0a"}
 
 [tool.poetry.group.production]
@@ -33,6 +28,7 @@ optional = true
 psycopg = {extras = ["binary", "pool"], version = "^3.1.10"}
 gunicorn = "*"
 gevent = "*"
+netifaces = "*"
 
 [tool.poetry.group.dev]
 optional = true
