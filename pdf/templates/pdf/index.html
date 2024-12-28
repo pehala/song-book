@@ -38,9 +38,7 @@
 <body>
     <article id="contents">
       <h1 class="title">{% if request.title %}{{ name }}{% endif %}</h1>
-      {% if request.show_date %}
-      <p class="date">{% now "d.m.Y" %}</p>
-      {% endif %}
+      <p class="date">{% if request.show_date %}{% now "d.m.Y" %}{% endif %}</p>
       <h3 class="contents-title name">{% trans "Table of Contents" %}</h3>
       <ul class="contents-list">
         {% for number,song in sorted_songs %}
