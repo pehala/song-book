@@ -88,7 +88,7 @@
                 <button class="btn btn-outline-secondary" type="button" data-target="id<%:number%>-input" onclick="subtract(event, this)"><i class="icon-minus"></i></button>
             </div>
             <%if capo > 0%><h5 class="ms-2">Capo <%:capo%> </h5> <%/if%>
-            <div class="text-wrap song-text" id="id<%:number%>-text">
+            <div class="text-wrap song-text pt-2 ps-2" id="id<%:number%>-text">
                 <%:text%>
             </div>
         </div>
@@ -103,9 +103,9 @@
            <label class="input-group-text" for="searchInput">{% trans "Search" %}</label>
            <input type="text" class="form-control" id="searchInput" placeholder="{% trans "Number, text or author" %}">
         </div>
-        <table id="datatable" class="accordion accordion-flush w-100 h-100 table table-borderless">
+        <table id="datatable" class="accordion accordion-flush">
             <thead class="d-none"></thead>
-            <tbody class="w-100 m-0"></tbody>
+            <tbody></tbody>
         </table>
         <button id="back-to-top" class="btn btn-primary btn-lg back-to-top" role="button" title="Click to return on the top page" data-bs-toggle="tooltip" data-bs-placement="left">
             <span class="icon-up-open"></span>
@@ -192,7 +192,10 @@
     $.views.settings.delimiters("<%", "%>");
     $.fn.DataTable.ext.pager.numbers_length = 5;
     $.templates("song", "#songTemplate")
-
+    // Fix Horizontal scrollbar
+    $.fn.DataTable.ext.classes.layout.row = ""
+    $.fn.DataTable.ext.classes.layout.cell = ""
+    
     let wakeLock = null;
     const requestWakeLock = async () => {
           wakeLock = await navigator.wakeLock
