@@ -1,0 +1,73 @@
+:root {
+     --chords-default-bg: #f9f9f9;
+     --chords-default-color: #7793f3;
+     --chords-highlight-bg: #c4c2bd;
+     --chords-highlight-color: #e81c1c;
+     --chords-border-color: var(--chords-highlight-bg);
+}
+ [data-bs-theme="dark"] {
+     --bs-body-bg: #000000;
+}
+ [data-bs-theme="dark"] .navbar {
+     background: #212529;
+}
+ .navbar {
+     --bs-navbar-color: var(--chords-default-color);
+     --bs-navbar-hover-color: var(--chords-highlight-color);
+     --bs-navbar-active-color: var(--chords-highlight-color);
+     --bs-navbar-brand-color: var(--chords-default-color);
+     --bs-navbar-brand-hover-color: var(--chords-highlight-color);
+}
+ .dropdown-menu {
+     --bs-dropdown-link-color: var(--chords-default-color);
+     --bs-dropdown-link-hover-color: var(--chords-highlight-color);
+}
+ .accordion-button:not(.collapsed) {
+     background-color: var(--bs-accordion-btn-bg);
+     color: var(--bs-accordion-btn-color);
+}
+ .accordion-button:not(.collapsed):focus {
+     box-shadow: var(--bs-accordion-btn-focus-box-shadow);
+}
+ .accordion-button:focus {
+     box-shadow: none;
+}
+ .chord {
+     font-weight: bold;
+     font-size: 100%;
+     vertical-align: super;
+}
+ @media (min-width: 768px) {
+     .transposer {
+         max-width: 100px;
+    }
+}
+ .back-to-top {
+     cursor: pointer;
+     position: fixed;
+     top: 20px;
+     right: 20px;
+     display: none;
+     z-index: 10;
+}
+ .scroll_button {
+     cursor: pointer;
+     position: fixed;
+     display: none;
+     bottom: 20px;
+     right: 20px;
+     z-index: 10;
+}
+ hr {
+     background-color: var(--bs-border-color);
+     height: 2px;
+}
+ .custom-link {
+     color: var(--chords-default-color);
+}
+ .custom-link:hover {
+     color: var(--chords-highlight-color);
+}
+ .small-hr {
+     height: 1px;
+}

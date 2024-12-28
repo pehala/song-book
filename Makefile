@@ -28,7 +28,6 @@ migrations:
 
 deploy: ## Deploys to production
 	$(MANAGE) migrate
-	$(MANAGE) compilescss
 	$(MANAGE) prerender
 	$(MANAGE) compilemessages
 	$(MANAGE) collectstatic --noinput
