@@ -1,24 +1,24 @@
 {% load i18n %}
 <div class="markdownx">
-    <div class="container">
-        <div class="row row-cols-1 row-cols-lg-2">
-          <div class="col">
-              {% include 'django/forms/widgets/textarea.html' %}
-              <div class="d-flex align-items-start flex-column mt-2">
-                  <h4 class="ps-3">{% trans "Help" %}:</h4>
-                  <ul class="list-group list-group-flush">
-                      <li class="list-group-item text-start"><code>{Ami}</code> - {% trans "Displays chord" %}</li>
-                      <li class="list-group-item text-start"><code>/N/</code> - {% trans "Adds N empty spaces" %}</li>
-                  </ul>
-              </div>
+    <div class="row row-cols-1 row-cols-lg-2">
+      <div class="col h-100">
+          {% include 'django/forms/widgets/textarea.html' %}
+      </div>
+      <div class="col">
+          <div class="d-lg-none">
+                <hr>
+                <h4>{% trans "Preview" %}</h4>
           </div>
-          <div class="col">
-              <div class="d-lg-none">
-                    <hr>
-                    <h4>{% trans "Preview" %}</h4>
-              </div>
-              <div class="markdownx-preview song-text rounded"></div>
-          </div>
-        </div>
+          <div class="markdownx-preview rounded border pt-2 ps-2"></div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="d-flex align-items-start flex-column mt-2">
+            <h4 class="ps-3">{% trans "Help" %}:</h4>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item text-start"><code>{Ami}</code> - {% trans "Displays chord" %}</li>
+                <li class="list-group-item text-start"><code>/N/</code> - {% trans "Adds N empty spaces" %}</li>
+            </ul>
+      </div>
     </div>
 </div>
