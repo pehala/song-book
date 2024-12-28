@@ -1,7 +1,7 @@
 {% load i18n %}
 <div class="markdownx">
     <div class="row row-cols-1 row-cols-lg-2">
-      <div class="col h-100">
+      <div class="col">
           {% include 'django/forms/widgets/textarea.html' %}
       </div>
       <div class="col">
@@ -9,7 +9,7 @@
                 <hr>
                 <h4>{% trans "Preview" %}</h4>
           </div>
-          <div class="markdownx-preview rounded border pt-2 ps-2"></div>
+          <div class="markdownx-preview rounded border pt-2 ps-2 h-100"></div>
       </div>
     </div>
     <div class="row">
