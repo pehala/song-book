@@ -52,7 +52,7 @@
         {% endwith %}
         <td>
           <div class="btn-group me-1">
-            <a href="{% url "category:edit" pk=category.id %}" class="btn btn-primary">{% trans "Edit" %}</a>
+            <a href="{% url "category:edit" pk=category.id %}" class="btn btn-primary"><i class="icon-edit"></i>{% trans "Edit" %}</a>
             <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
                     data-bs-toggle="dropdown" aria-expanded="false">
               <span class="visually-hidden">{% trans "Toggle Dropdown" %}</span>
@@ -61,17 +61,17 @@
               <li>
                 {% if category.filename %}
                   {% if category.has_scheduled_file %}
-                    <span class="dropdown-item text-secondary">{% trans "Already in queue" %}</span>
+                    <span class="dropdown-item text-secondary"><i class="icon-file-pdf"></i>{% trans "Already in queue" %}</span>
                   {% else %}
                     <a href="{% url "pdf:templates:generate" pk=category.id %}"
-                       class="dropdown-item text-primary">{% trans "Generate PDF" %}</a>
+                       class="dropdown-item text-primary"><i class="icon-file-pdf"></i>{% trans "Generate PDF" %}</a>
                   {% endif %}
                 {% else %}
-                  <span class="dropdown-item text-secondary">{% trans "Filename required for PDF generation" %}</span>
+                  <span class="dropdown-item text-secondary"><i class="icon-file-pdf"></i>{% trans "Filename required for PDF generation" %}</span>
                 {% endif %}
               </li>
               <li><a href="{% url "category:delete" pk=category.id %}"
-                     class="dropdown-item text-danger">{% trans "Delete" %}</a></li>
+                     class="dropdown-item text-danger"><i class="icon-trash-empty"></i>{% trans "Delete" %}</a></li>
             </ul>
           </div>
         </td>
