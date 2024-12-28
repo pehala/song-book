@@ -13,11 +13,8 @@
 
 {% block framed_body %}
   <p class="text-center fw-bold">{% trans "Please, choose song order and their numbers" %}</p>
-  <form method="post" action="{{ action }}">
+  <form method="post" action="{{ action }}" enctype="multipart/form-data">
     {% csrf_token %}
-    <div class="d-none">
-    {% bootstrap_form form %}
-    </div>
     {{ formset.management_form }}
     {{ formset.non_form_errors.as_ul }}
     <h4>{% trans "Song numbers" %}</h4>
@@ -36,8 +33,8 @@
 
     {% bootstrap_button _("Sort by name") button_type="button" button_class="btn-secondary" id="sort"%}
     {% bootstrap_button _("Finish") button_type="submit"%}
+    {{ form.media }}
   </form>
-  {{ form.media }}
 <script type="module">
     const sortable = $('#sortable')
     function reassign_numbers() {

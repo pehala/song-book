@@ -76,7 +76,7 @@ class TemplateNumberingMixin:
 
     PDFSongFormset = formset_factory(PDFSongForm, formset=BasePDFSongFormset, min_num=1, validate_min=True, extra=0)
 
-    def render_assign_template(self, form, formset=None, songs: Iterable[Song] | None = None):
+    def render_assign_template(self, pk=None, formset=None, songs: Iterable[Song] | None = None):
         """Renders assign template"""
         formset = formset or self.PDFSongFormset(
             prefix="songs",
@@ -84,13 +84,9 @@ class TemplateNumberingMixin:
                 {"name": song.name, "song_number": number, "song": song} for number, song in enumerate(songs, start=1)
             ],
         )
-        if "pk" in self.kwargs:
-            assign_url = reverse("pdf:templates:assign", kwargs={"pk": self.kwargs.get("pk")})
-        else:
-            assign_url = reverse("pdf:templates:assign")
-        return render(
-            self.request, "pdf/templates/assign.html", {"form": form, "formset": formset, "action": assign_url}
-        )
+        pk = pk or self.kwargs.get("pk")
+        assign_url = reverse("pdf:templates:assign", kwargs={"pk": pk})
+        return render(self.request, "pdf/templates/assign.html", {"formset": formset, "action": assign_url})
 
 
 class UpdateTemplateView(LocalAdminRequired, TemplateNumberingMixin, TemplateView):
@@ -135,36 +131,10 @@ class UpdateTemplateView(LocalAdminRequired, TemplateNumberingMixin, TemplateVie
         template_form = ManualTemplateForm(self.request.POST, request.FILES, prefix=self.PREFIX)
         songs_form = SongSelectionForm(self.request.POST, request.FILES, request=self.request)
         if template_form.is_valid() and songs_form.is_valid():
-            return self.render_assign_template(template_form, songs=songs_form.cleaned_data["songs"])
-        return self.render_to_response(self.get_context_data(template_form=template_form, songs_form=songs_form))
-
-
-class TemplateNumberSelectView(LocalAdminRequired, TemplateNumberingMixin, View):
-    """Assign song numbers for PDF request"""
-
-    PDFSongFormset = formset_factory(PDFSongForm, formset=BasePDFSongFormset, min_num=1, validate_min=True, extra=0)
-
-    def get(self, *args, **kwargs):
-        """Redirect back to the start of the process"""
-        if "pk" in self.kwargs:
-            return redirect(reverse("pdf:templates:edit", kwargs={"pk": self.kwargs.get("pk")}))
-        return redirect(reverse("pdf:templates:new"))
-
-    # pylint: disable=unused-argument
-    def post(self, template, *args, **kwargs):
-        """POST request method handler"""
-        form = ManualTemplateForm(self.request.POST, template.FILES, prefix="template")
-        formset = self.PDFSongFormset(self.request.POST, prefix="songs")
-        if form.is_valid() and formset.is_valid():
-            template = form.instance
+            template = template_form.instance
             template.tenant = self.request.tenant
             template.pdftemplate_ptr_id = self.kwargs.get("pk", None)
-            with transaction.atomic():
-                form.save()
-                template.songs.clear()
-                for form in formset:
-                    form.instance.request = template
-                    form.save()
+            template_form.save()
             if "pk" in self.kwargs:
                 messages.success(
                     self.request,
@@ -175,9 +145,33 @@ class TemplateNumberSelectView(LocalAdminRequired, TemplateNumberingMixin, View)
                     self.request,
                     _("File Template '%(name)s' was successfully created") % {"name": template.name},
                 )
-            return redirect("pdf:templates:list")
-        return self.form_invalid(form, formset)
+            return self.render_assign_template(pk=template_form.instance.pk, songs=songs_form.cleaned_data["songs"])
+        return self.render_to_response(self.get_context_data(template_form=template_form, songs_form=songs_form))
 
-    def form_invalid(self, form, formset):
-        """If the form is invalid, render the invalid form."""
-        return self.render_assign_template(form, formset)
+
+class TemplateNumberSelectView(LocalAdminRequired, TemplateNumberingMixin, View):
+    """Assign song numbers for PDF request"""
+
+    PDFSongFormset = formset_factory(PDFSongForm, formset=BasePDFSongFormset, min_num=1, validate_min=True, extra=0)
+
+    def get(self, *args, **kwargs):
+        """Redirect back to the start of the process"""
+        return redirect(reverse("pdf:templates:edit", kwargs={"pk": self.kwargs.get("pk")}))
+
+    # pylint: disable=unused-argument
+    def post(self, request, *args, **kwargs):
+        """POST request method handler"""
+        template = ManualPDFTemplate.objects.get(pk=self.kwargs["pk"])
+        formset = self.PDFSongFormset(self.request.POST, prefix="songs")
+        if formset.is_valid():
+            with transaction.atomic():
+                template.songs.clear()
+                for form in formset:
+                    form.instance.request = template
+                    form.save()
+            messages.success(
+                self.request,
+                _("Songs in File Template '%(name)s' were successfully updated") % {"name": template.name},
+            )
+            return redirect("pdf:templates:list")
+        return self.render_assign_template(formset)
