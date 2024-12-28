@@ -251,7 +251,7 @@
                     document.getElementById("spinner").classList.remove("d-none");
                 }
                 table = createDatatable(!value, document.getElementById("searchInput").value)
-            }, false)],
+            }, true)],
         ])
     const options = new Options(config)
     if (!canWakeLock()) {
