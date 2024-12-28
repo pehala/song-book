@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-28 18:54+0100\n"
+"POT-Creation-Date: 2024-12-28 18:59+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -183,7 +183,7 @@ msgstr "Upravit"
 
 #: backend/templates/songs/index.html:70
 #: category/templates/category/list.html:74
-#: pdf/templates/pdf/files/list.html:71
+#: pdf/templates/pdf/files/list.html:73
 #: pdf/templates/pdf/templates/list.html:83
 msgid "Delete"
 msgstr "Smazat"
@@ -599,6 +599,10 @@ msgstr "Sledovat"
 #: pdf/templates/pdf/files/list.html:68
 msgid "Generate Another"
 msgstr "Vygenerovat další"
+
+#: pdf/templates/pdf/files/list.html:70
+msgid "Edit Template"
+msgstr "Upravit Šablonu"
 
 #: pdf/templates/pdf/files/wait.html:6 pdf/templates/pdf/files/wait.html:7
 #, python-format

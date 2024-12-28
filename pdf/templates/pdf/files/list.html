@@ -66,6 +66,8 @@
                   {% if pdf.template %}
                     <a type="button" class="dropdown-item text-primary"
                        href="{% url "pdf:templates:generate" pk=pdf.template.pk %}">{% trans "Generate Another" %}</a>
+                    <a type="button" class="dropdown-item text-info"
+                       href="{% url "pdf:templates:edit" pk=pdf.template.pk %}">{% trans "Edit Template" %}</a>
                   {% endif %}                  
                   <a type="button" class="dropdown-item text-danger"
                      href="{% url "pdf:files:delete" pk=pdf.pk %}">{% trans "Delete" %}</a>
