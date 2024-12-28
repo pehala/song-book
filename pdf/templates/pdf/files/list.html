@@ -53,9 +53,9 @@
           <td>
             <div class="btn-group me-1">
               {% if pdf.finished %}
-                <a type="button" class="btn btn-primary" href="{% url "pdf:files:edit" pk=pdf.pk %}">{% trans "Edit" %}</a>
+                <a type="button" class="btn btn-primary" href="{% url "pdf:files:edit" pk=pdf.pk %}"><i class="icon-edit"></i>{% trans "Edit" %}</a>
               {% else %}
-                <a type="button" class="btn btn-info" href="{% url "pdf:files:wait" pk=pdf.pk %}">{% trans "See progress" %}</a>
+                <a type="button" class="btn btn-info" href="{% url "pdf:files:wait" pk=pdf.pk %}"><i class="icon-file-pdf"></i>{% trans "See progress" %}</a>
               {% endif %}
               <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
                       data-bs-toggle="dropdown" aria-expanded="false">
@@ -65,12 +65,12 @@
                 <li>
                   {% if pdf.template %}
                     <a type="button" class="dropdown-item text-primary"
-                       href="{% url "pdf:templates:generate" pk=pdf.template.pk %}">{% trans "Generate Another" %}</a>
+                       href="{% url "pdf:templates:generate" pk=pdf.template.pk %}"><i class="icon-file-pdf"></i>{% trans "Generate Another" %}</a>
                     <a type="button" class="dropdown-item text-info"
-                       href="{% url "pdf:templates:edit" pk=pdf.template.pk %}">{% trans "Edit Template" %}</a>
-                  {% endif %}                  
+                       href="{% url "pdf:templates:edit" pk=pdf.template.pk %}"><i class="icon-edit"></i>{% trans "Edit Template" %}</a>
+                  {% endif %}
                   <a type="button" class="dropdown-item text-danger"
-                     href="{% url "pdf:files:delete" pk=pdf.pk %}">{% trans "Delete" %}</a>
+                     href="{% url "pdf:files:delete" pk=pdf.pk %}"><i class="icon-trash-empty"></i>{% trans "Delete" %}</a>
                 </li>
               </ul>
             </div>
