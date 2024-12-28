@@ -71,3 +71,6 @@
  .small-hr {
      height: 1px;
 }
+ .markdownx-editor {
+    height: 100%;
+}
