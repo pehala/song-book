@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-27 20:43+0100\n"
+"POT-Creation-Date: 2024-12-28 18:54+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -121,7 +121,7 @@ msgstr "Účet"
 msgid "Name"
 msgstr "Jméno"
 
-#: backend/models.py:26
+#: backend/models.py:26 pdf/templates/pdf/index.html:52
 msgid "Capo"
 msgstr ""
 
@@ -155,48 +155,48 @@ msgstr "Písnička"
 msgid "Songs"
 msgstr "Písničky"
 
-#: backend/templates/songs/index.html:27
+#: backend/templates/songs/index.html:25
 msgid "Hide chords"
 msgstr "Skrýt akordy"
 
-#: backend/templates/songs/index.html:33
+#: backend/templates/songs/index.html:31
 msgid "Prevent sleep"
 msgstr "Zabránit uspání"
 
-#: backend/templates/songs/index.html:39
+#: backend/templates/songs/index.html:37
 msgid "Single page"
 msgstr "Bez stránek"
 
-#: backend/templates/songs/index.html:64
+#: backend/templates/songs/index.html:62
 #: category/templates/category/list.html:21
 #: pdf/templates/pdf/files/list.html:30
 #: pdf/templates/pdf/templates/list.html:36
 msgid "Actions"
 msgstr "Akce"
 
-#: backend/templates/songs/index.html:69
+#: backend/templates/songs/index.html:67
 #: category/templates/category/list.html:55
 #: pdf/templates/pdf/files/list.html:56
 #: pdf/templates/pdf/templates/list.html:73
 msgid "Edit"
 msgstr "Upravit"
 
-#: backend/templates/songs/index.html:72
+#: backend/templates/songs/index.html:70
 #: category/templates/category/list.html:74
 #: pdf/templates/pdf/files/list.html:71
 #: pdf/templates/pdf/templates/list.html:83
 msgid "Delete"
 msgstr "Smazat"
 
-#: backend/templates/songs/index.html:86
+#: backend/templates/songs/index.html:83
 msgid "Transpose"
 msgstr "Transponovat"
 
-#: backend/templates/songs/index.html:105
+#: backend/templates/songs/index.html:101
 msgid "Search"
 msgstr "Vyhledávání"
 
-#: backend/templates/songs/index.html:107
+#: backend/templates/songs/index.html:102
 msgid "Number, text or author"
 msgstr "Číslo, text nebo autor"
 
@@ -229,7 +229,7 @@ msgid "Category"
 msgstr "Kategorie"
 
 #: category/templates/category/list.html:14
-#: frontend/templates/base/index.html:82 pdf/models/__init__.py:54
+#: frontend/templates/base/index.html:81 pdf/models/__init__.py:54
 msgid "Language"
 msgstr "Jazyk"
 
@@ -332,7 +332,7 @@ msgstr "Zpátky domů"
 msgid "URL %(request_path)s does not exist."
 msgstr "URL %(request_path)s neexistuje."
 
-#: frontend/templates/base/error.html:8
+#: frontend/templates/base/error.html:7
 msgid "Not found"
 msgstr "Nenalezeno"
 
@@ -341,27 +341,27 @@ msgstr "Nenalezeno"
 msgid "Submit"
 msgstr "Odeslat"
 
-#: frontend/templates/base/index.html:38 tenants/models.py:44
+#: frontend/templates/base/index.html:37 tenants/models.py:44
 msgid "Logo"
 msgstr ""
 
-#: frontend/templates/base/index.html:72
+#: frontend/templates/base/index.html:71
 msgid "Options"
 msgstr "Možnosti"
 
-#: frontend/templates/base/index.html:101
+#: frontend/templates/base/index.html:100
 msgid "Version"
 msgstr "Verze"
 
-#: frontend/templates/base/index.html:102
+#: frontend/templates/base/index.html:101
 msgid "Git"
 msgstr ""
 
-#: frontend/templates/base/index.html:110
+#: frontend/templates/base/index.html:109
 msgid "Logged as"
 msgstr "Přihlášen jako"
 
-#: frontend/templates/base/index.html:112
+#: frontend/templates/base/index.html:111
 msgid "Log in"
 msgstr "Přihlásit se"
 
@@ -383,21 +383,21 @@ msgstr "Ne"
 msgid "Yes"
 msgstr "Ano"
 
-#: frontend/templates/markdownx/widget.html:8
+#: frontend/templates/markdownx/widget.html:10
+msgid "Preview"
+msgstr "Náhled"
+
+#: frontend/templates/markdownx/widget.html:17
 msgid "Help"
 msgstr "Nápověda"
 
-#: frontend/templates/markdownx/widget.html:10
+#: frontend/templates/markdownx/widget.html:19
 msgid "Displays chord"
 msgstr "Zobrazí akord"
 
-#: frontend/templates/markdownx/widget.html:11
+#: frontend/templates/markdownx/widget.html:20
 msgid "Adds N empty spaces"
 msgstr "Přidá N mezer"
-
-#: frontend/templates/markdownx/widget.html:18
-msgid "Preview"
-msgstr "Náhled"
 
 #: frontend/templates/registration/login.html:4
 #: frontend/templates/registration/login.html:5
@@ -649,7 +649,7 @@ msgstr "Postup"
 msgid "Back to all files"
 msgstr "Zpátky na seznam souborů"
 
-#: pdf/templates/pdf/index.html:45
+#: pdf/templates/pdf/index.html:42
 msgid "Table of Contents"
 msgstr "Obsah"
 
@@ -662,15 +662,15 @@ msgstr "Pořadí písniček"
 msgid "Please, choose song order and their numbers"
 msgstr "Zvolte prosím pořadí písniček a jejich čísla"
 
-#: pdf/templates/pdf/templates/assign.html:23
+#: pdf/templates/pdf/templates/assign.html:20
 msgid "Song numbers"
 msgstr "Čísla písniček"
 
-#: pdf/templates/pdf/templates/assign.html:37
+#: pdf/templates/pdf/templates/assign.html:34
 msgid "Sort by name"
 msgstr "Seřadit podle jména"
 
-#: pdf/templates/pdf/templates/assign.html:38
+#: pdf/templates/pdf/templates/assign.html:35
 msgid "Finish"
 msgstr "Dokončit"
 
@@ -682,12 +682,12 @@ msgstr "Přidat Šablonu"
 msgid "Generate"
 msgstr "Generovat"
 
+#: pdf/templates/pdf/templates/select.html:8
 #: pdf/templates/pdf/templates/select.html:9
-#: pdf/templates/pdf/templates/select.html:10
 msgid "Create new File Template"
 msgstr "Vytvořit novou Šablonu"
 
-#: pdf/templates/pdf/templates/select.html:26
+#: pdf/templates/pdf/templates/select.html:25
 msgid ""
 "Please enter file configuration option and select which songs you would like "
 "to include"
@@ -695,15 +695,15 @@ msgstr ""
 "Prosím vyplňte parametry PDF souboru a vyberte písničky, které má soubor "
 "obsahovat"
 
-#: pdf/templates/pdf/templates/select.html:93
+#: pdf/templates/pdf/templates/select.html:92
 msgid "Select All"
 msgstr "Vybrat všechny"
 
-#: pdf/templates/pdf/templates/select.html:100
+#: pdf/templates/pdf/templates/select.html:99
 msgid "Deselect all"
 msgstr "Zrušit výběr"
 
-#: pdf/templates/pdf/templates/select.html:105
+#: pdf/templates/pdf/templates/select.html:104
 msgid "Finish selecting"
 msgstr "Dokončit výběr"
 
@@ -717,15 +717,20 @@ msgstr "Jiný Soubor (%(id)s) for %(name)s je již ve frontě"
 msgid "Scheduled File (%(id)s) generation from template %(template)s"
 msgstr "Generování souboru (%(id)s) ze šablony %(template)s bylo naplánováno"
 
-#: pdf/views/templates.py:171
+#: pdf/views/templates.py:141
 #, python-format
 msgid "File Template '%(name)s' was successfully updated"
 msgstr "Šablona %(name)s byla úspěšně upravena"
 
-#: pdf/views/templates.py:176
+#: pdf/views/templates.py:146
 #, python-format
 msgid "File Template '%(name)s' was successfully created"
 msgstr "Šablona %(name)s byl úspěšně vytvořena"
+
+#: pdf/views/templates.py:174
+#, python-format
+msgid "Songs in File Template '%(name)s' were successfully updated"
+msgstr "Písničky Šablony %(name)s byly úspěšně upraveny"
 
 #: tenants/admin.py:21 tenants/models.py:58
 msgid "Tenant"
