@@ -1,13 +1,12 @@
 {% load i18n %}
-{% load sass_tags %}
-{% load cache %}
+{% load static %}
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <title>{{ name }}</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <link rel="stylesheet" type="text/css" href="{% sass_src 'pdf.sass' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'pdf.css' %}">
 </head>
 {% if request.image %}
 <style>
@@ -20,7 +19,7 @@
           @top-center { content: none; }
           @bottom-right { content: none; }
       }
-      .contents { break-after: avoid; page-break-before: always; }
+      .date { break-after: avoid; page-break-before: always; }
 </style>
 {% endif %}
 {% if link %}
@@ -38,23 +37,23 @@
 {% endif %}
 <body>
     <article id="contents">
-      <h1>{% if request.title %}{{ name }}{% endif %}</h1>
+      <h1 class="title">{% if request.title %}{{ name }}{% endif %}</h1>
       {% if request.show_date %}
       <p class="date">{% now "d.m.Y" %}</p>
       {% endif %}
-      <h3 class="contents name">{% trans "Table of Contents" %}</h3>
-      <ul>
-        {% for _,song in sorted_songs %}
-            <li><a href="#{{ song.id }}-title"></a></li>
+      <h3 class="contents-title name">{% trans "Table of Contents" %}</h3>
+      <ul class="contents-list">
+        {% for number,song in sorted_songs %}
+            <li><a href="#{{ song.id }}-title">{{ number }}. <span class="name">{{ song.name }}</span></a></li>
         {% endfor %}
       </ul>
     </article>
     {% for song_number, song in songs %}
         <article class="columns">
           <h2 id="{{ song.id }}-title">{{ song_number }}. <span class="name">{{ song.name }}</span></h2>
-          <h3>{{ song.author }} {% if song.capo > 0 %}<span class="right">Capo {{ song.capo }}</span> {% endif %}</h3>
+          <h3 class="">{{ song.author }} {% if song.capo > 0 %}<span class="right">Capo {{ song.capo }}</span> {% endif %}</h3>
 
-          <section>
+          <section class="text">
             {{ song.rendered_markdown|safe }}
           </section>
         </article>
