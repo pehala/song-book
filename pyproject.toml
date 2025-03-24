@@ -16,7 +16,7 @@ django-redis = "*"
 huey = "*"
 django-simple-menu = "*"
 django-weasyprint = "*"
-weasyprint = "^64"
+weasyprint = "^65"
 Pillow = "*"
 mistune = ">3"
 django-polymorphic = {git = "https://github.com/jazzband/django-polymorphic.git", rev = "v4.0.0a"}
