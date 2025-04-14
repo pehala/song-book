@@ -85,7 +85,7 @@
                 <input class="form-control transposer text-center" type="text" value="0" min="-11" max="11" step="1" data-target="id<%:number%>-text" id="id<%:number%>-input" disabled onchange="transpose(this)" placeholder="0"/>
                 <button class="btn btn-outline-secondary" type="button" data-target="id<%:number%>-input" onclick="subtract(event, this)"><i class="icon-minus"></i></button>
             </div>
-            <%if capo > 0%><h5 class="ms-2">Capo <%:capo%> </h5> <%/if%>
+            <%if capo > 0%><h5 class="ms-3">Capo <%:capo%> </h5> <%/if%>
             <div class="text-wrap song-text pt-2 ps-3" id="id<%:number%>-text">
                 <%:text%>
             </div>
