@@ -19,22 +19,26 @@
     <script type="module" src="{% static 'js/Options.js' %}"></script>
 {%  endblock %}
 {% block extra_options %}
+<div class="me-2 mt-1 form-floating">
+      <input type="number" value="1" min=1 class="form-control form-control-sm" id="columns" placeholder="{% trans "Columns" %}">
+      <label for="columns">{% trans "Columns" %}</label>
+</div>
 <div class="me-2 mt-1 d-flex">
     <div><input class="form-check-input ms-2" type="checkbox" value="" id="hideChords"></div>
     <div class="ms-auto">
-        <label class="form-check-label custom" for="hideChords">{% trans "Hide chords" %}</label>
+        <label class="form-check-label" for="hideChords">{% trans "Hide chords" %}</label>
     </div>
 </div>
 <div class="me-2 mt-1 d-flex">
     <div><input class="form-check-input ms-2" type="checkbox" value="" id="preventSleep"></div>
     <div class="ms-auto">
-        <label class="form-check-label custom" for="preventSleep">{% trans "Prevent sleep" %}</label>
+        <label class="form-check-label" for="preventSleep">{% trans "Prevent sleep" %}</label>
     </div>
 </div>
 <div class="me-2 mt-1 d-flex">
     <div><input class="form-check-input ms-2" type="checkbox" value="" id="onePage"></div>
     <div class="ms-auto">
-        <label class="form-check-label custom" for="onePage">{% trans "Single page" %}</label>
+        <label class="form-check-label" for="onePage">{% trans "Single page" %}</label>
     </div>
 </div>
 {% endblock %}
@@ -86,7 +90,7 @@
                 <button class="btn btn-outline-secondary" type="button" data-target="id<%:number%>-input" onclick="subtract(event, this)"><i class="icon-minus"></i></button>
             </div>
             <%if capo > 0%><h5 class="ms-3">Capo <%:capo%> </h5> <%/if%>
-            <div class="text-wrap song-text pt-2 ps-3" id="id<%:number%>-text">
+            <div class="text-wrap song-text pt-2 ps-3 pe-2 grid" id="id<%:number%>-text">
                 <%:text%>
             </div>
         </div>
@@ -113,8 +117,9 @@
         </button>
     </div>
     <script type="module">
-    import {Options, BooleanOption} from "{% static 'js/Options.js' %}"
+    import {Options, BooleanOption, PositiveIntegerOption} from "{% static 'js/Options.js' %}"
     const canWakeLock = () => 'wakeLock' in navigator;
+    const root = document.querySelector(':root');
 
     let table = null
     function createDatatable(paging, initialSearch) {
@@ -250,6 +255,9 @@
                 }
                 table = createDatatable(!value, document.getElementById("searchInput").value)
             }, true)],
+            ["columns", new PositiveIntegerOption(document.getElementById("columns"), function(value) {
+                 root.style.setProperty('--chords-grid-columns', value);
+            }, 1)],
         ])
     const options = new Options(config)
     if (!canWakeLock()) {

@@ -27,8 +27,8 @@ export class BooleanOption {
       return this.defaultValue
   }
 
-  allowedValues() {
-      return null
+  isAllowed(value) {
+      return typeof value == "boolean"
   }
 }
 
@@ -59,10 +59,43 @@ export class CheckboxOption {
       return this.defaultValue
   }
 
-  allowedValues() {
-        return Array.from(this.elements()).map(element => element.value)
+  isAllowed(value) {
+      return value in Array.from(this.elements()).map(element => element.value)
   }
 }
+
+export class PositiveIntegerOption {
+    constructor(input, callable, defaultValue) {
+    this.input = input
+    this.callable = callable;
+    this.defaultValue = defaultValue;
+  }
+
+  get() {
+      return this.input.value
+  }
+
+  set(value) {
+      this.input.setAttribute("value", value)
+  }
+
+  call(value) {
+      this.callable(value)
+  }
+
+  elements() {
+      return [this.input]
+  }
+
+  default() {
+      return this.defaultValue
+  }
+
+  isAllowed(value) {
+      return Number.isInteger(parseInt(value))
+  }
+}
+
 export class Options {
   constructor(options) {
     this.options = options
@@ -75,7 +108,7 @@ export class Options {
             })
         })
         let value = Cookies.get(name)
-        if ((value === undefined || value === "undefined") || (option.allowedValues() !== null && !(value in option.allowedValues()))) {
+        if ((value === undefined || value === "undefined") || (!option.isAllowed(value))) {
             value = option.default()
             Cookies.set(name, value, {SameSite: "Strict"})
         }
