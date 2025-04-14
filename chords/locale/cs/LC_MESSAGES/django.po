@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2024-12-28 18:59+0100\n"
+"POT-Creation-Date: 2025-04-14 22:31+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -155,48 +155,52 @@ msgstr "Písnička"
 msgid "Songs"
 msgstr "Písničky"
 
-#: backend/templates/songs/index.html:25
+#: backend/templates/songs/index.html:23 backend/templates/songs/index.html:24
+msgid "Columns"
+msgstr "Sloupce"
+
+#: backend/templates/songs/index.html:29
 msgid "Hide chords"
 msgstr "Skrýt akordy"
 
-#: backend/templates/songs/index.html:31
+#: backend/templates/songs/index.html:35
 msgid "Prevent sleep"
 msgstr "Zabránit uspání"
 
-#: backend/templates/songs/index.html:37
+#: backend/templates/songs/index.html:41
 msgid "Single page"
 msgstr "Bez stránek"
 
-#: backend/templates/songs/index.html:62
+#: backend/templates/songs/index.html:66
 #: category/templates/category/list.html:21
 #: pdf/templates/pdf/files/list.html:30
 #: pdf/templates/pdf/templates/list.html:36
 msgid "Actions"
 msgstr "Akce"
 
-#: backend/templates/songs/index.html:67
+#: backend/templates/songs/index.html:71
 #: category/templates/category/list.html:55
 #: pdf/templates/pdf/files/list.html:56
-#: pdf/templates/pdf/templates/list.html:73
+#: pdf/templates/pdf/templates/list.html:79
 msgid "Edit"
 msgstr "Upravit"
 
-#: backend/templates/songs/index.html:70
+#: backend/templates/songs/index.html:74
 #: category/templates/category/list.html:74
 #: pdf/templates/pdf/files/list.html:73
-#: pdf/templates/pdf/templates/list.html:83
+#: pdf/templates/pdf/templates/list.html:81
 msgid "Delete"
 msgstr "Smazat"
 
-#: backend/templates/songs/index.html:83
+#: backend/templates/songs/index.html:87
 msgid "Transpose"
 msgstr "Transponovat"
 
-#: backend/templates/songs/index.html:101
+#: backend/templates/songs/index.html:105
 msgid "Search"
 msgstr "Vyhledávání"
 
-#: backend/templates/songs/index.html:102
+#: backend/templates/songs/index.html:106
 msgid "Number, text or author"
 msgstr "Číslo, text nebo autor"
 
@@ -273,7 +277,7 @@ msgstr "Žádné soubory"
 
 #: category/templates/category/list.html:58
 #: pdf/templates/pdf/files/list.html:62
-#: pdf/templates/pdf/templates/list.html:76
+#: pdf/templates/pdf/templates/list.html:74
 msgid "Toggle Dropdown"
 msgstr "Otevřít menu"
 
