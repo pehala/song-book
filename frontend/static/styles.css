@@ -75,10 +75,11 @@
  .markdownx-editor {
     height: 100%;
 }
-
 .grid {
-  display: grid;
-  grid-template-columns: repeat(var(--chords-grid-columns), minmax(0, 1fr));
+  column-count: var(--chords-grid-columns);
   grid-column-gap: 5em;
   width: fit-content;
+}
+.grid p {
+      break-inside: avoid-column;
 }
