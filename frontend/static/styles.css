@@ -83,3 +83,6 @@
 .grid p {
       break-inside: avoid-column;
 }
+#content {
+    margin-bottom: 70px;
+}
