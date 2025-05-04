@@ -67,7 +67,7 @@
                     <a type="button" class="dropdown-item text-primary"
                        href="{% url "pdf:templates:generate" pk=pdf.template.pk %}"><i class="icon-file-pdf"></i>{% trans "Generate Another" %}</a>
                     <a type="button" class="dropdown-item text-info"
-                       href="{% url "pdf:templates:edit" pk=pdf.template.pk %}"><i class="icon-edit"></i>{% trans "Edit Template" %}</a>
+                       href="{% url "pdf:files:template_edit" pk=pdf.pk %}"><i class="icon-edit"></i>{% trans "Edit Template" %}</a>
                   {% endif %}
                   <a type="button" class="dropdown-item text-danger"
                      href="{% url "pdf:files:delete" pk=pdf.pk %}"><i class="icon-trash-empty"></i>{% trans "Delete" %}</a>

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-14 22:31+0200\n"
+"POT-Creation-Date: 2025-05-04 14:22+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -715,27 +715,32 @@ msgstr "Zrušit výběr"
 msgid "Finish selecting"
 msgstr "Dokončit výběr"
 
-#: pdf/views/templates.py:63
+#: pdf/views/files.py:97
+#, python-brace-format
+msgid "File {file.id} does not have a template"
+msgstr "Soubor {file.id} není vytvořený ze šablony"
+
+#: pdf/views/templates.py:65
 #, python-format
 msgid "Another file %(id)s for %(name)s is already in queue"
 msgstr "Jiný Soubor (%(id)s) for %(name)s je již ve frontě"
 
-#: pdf/views/templates.py:69
+#: pdf/views/templates.py:71
 #, python-format
 msgid "Scheduled File (%(id)s) generation from template %(template)s"
 msgstr "Generování souboru (%(id)s) ze šablony %(template)s bylo naplánováno"
 
-#: pdf/views/templates.py:141
+#: pdf/views/templates.py:143
 #, python-format
 msgid "File Template '%(name)s' was successfully updated"
 msgstr "Šablona %(name)s byla úspěšně upravena"
 
-#: pdf/views/templates.py:146
+#: pdf/views/templates.py:148
 #, python-format
 msgid "File Template '%(name)s' was successfully created"
 msgstr "Šablona %(name)s byl úspěšně vytvořena"
 
-#: pdf/views/templates.py:174
+#: pdf/views/templates.py:176
 #, python-format
 msgid "Songs in File Template '%(name)s' were successfully updated"
 msgstr "Písničky Šablony %(name)s byly úspěšně upraveny"

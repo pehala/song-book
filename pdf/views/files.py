@@ -3,8 +3,10 @@
 from django.conf import settings
 from django.core.cache import cache
 from django.db import transaction
-from django.http import JsonResponse
+from django.http import JsonResponse, Http404
+from django.shortcuts import redirect
 from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.views.generic import ListView, DetailView
 from django.views.generic.detail import SingleObjectMixin
@@ -94,3 +96,18 @@ class MovePDFTemplatesView(AdminMoveView):
             for request in requests:
                 request.tenant = target
             ManualPDFTemplate.objects.bulk_update(requests, ["tenant"])
+
+class FileTemplateEditView(LocalAdminRequired, SingleObjectMixin, View):
+    """Redirects to correct edit page based on the class of the template"""
+
+    model = PDFFile
+
+    def get(self, request, *args, **kwargs):
+        """Process GET request"""
+        file = self.get_object()
+        if file.template:
+            template = file.template
+            if isinstance(template, ManualPDFTemplate):
+                return redirect("pdf:templates:edit", pk=template.pk)
+            return redirect("category:edit", pk=template.pk)
+        return Http404(_(f"File {file.id} does not have a template"))
