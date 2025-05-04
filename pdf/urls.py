@@ -7,8 +7,8 @@ from pdf.views.files import (
     FileDeleteView,
     FileUpdateView,
     FileListView,
-    MovePDFTemplatesView,
-    WaitForFileView, FileTemplateEditView,
+    WaitForFileView,
+    FileTemplateEditView,
 )
 from pdf.views.templates import (
     UpdateTemplateView,
@@ -16,6 +16,7 @@ from pdf.views.templates import (
     TemplateDeleteView,
     TemplateNumberSelectView,
     GenerateFromTemplateView,
+    MovePDFTemplatesView,
 )
 
 template_patterns = [

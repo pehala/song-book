@@ -2,7 +2,6 @@
 
 from django.conf import settings
 from django.core.cache import cache
-from django.db import transaction
 from django.http import JsonResponse, Http404
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
@@ -13,12 +12,10 @@ from django.views.generic.detail import SingleObjectMixin
 
 from backend.generic import UniversalDeleteView, UniversalUpdateView
 from backend.mixins import LocalAdminRequired
-from category.forms import NameForm
 from pdf.forms import PDFFileEditForm
 from pdf.models import Status
 from pdf.models.request import PDFFile, ManualPDFTemplate
 from tenants.utils import tenant_cache_key
-from tenants.views import AdminMoveView
 
 
 class FileListView(LocalAdminRequired, ListView):
@@ -83,19 +80,6 @@ class RenderInfoView(View, SingleObjectMixin):
             }
         )
 
-
-class MovePDFTemplatesView(AdminMoveView):
-    """Moves Templates to a different Tenant"""
-
-    formset_form = NameForm
-    model = ManualPDFTemplate
-
-    def action(self, target, ids):
-        requests = ManualPDFTemplate.objects.filter(id__in=ids).distinct()
-        with transaction.atomic():
-            for request in requests:
-                request.tenant = target
-            ManualPDFTemplate.objects.bulk_update(requests, ["tenant"])
 
 class FileTemplateEditView(LocalAdminRequired, SingleObjectMixin, View):
     """Redirects to correct edit page based on the class of the template"""

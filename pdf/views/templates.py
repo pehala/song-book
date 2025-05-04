@@ -16,11 +16,13 @@ from django.views.generic.detail import SingleObjectMixin
 from backend.generic import UniversalDeleteView
 from backend.mixins import LocalAdminRequired
 from backend.models import Song
+from category.forms import NameForm
 from category.models import Category
 from pdf.forms import PDFSongForm, BasePDFSongFormset, ManualTemplateForm, SongSelectionForm
 from pdf.generate import AllowedTemplates, generate_pdf_file
 from pdf.models import PDFTemplate
 from pdf.models.request import ManualPDFTemplate
+from tenants.views import AdminMoveView
 
 
 class TemplateListView(LocalAdminRequired, ListView):
@@ -175,3 +177,17 @@ class TemplateNumberSelectView(LocalAdminRequired, TemplateNumberingMixin, View)
             )
             return redirect("pdf:templates:list")
         return self.render_assign_template(formset)
+
+
+class MovePDFTemplatesView(AdminMoveView):
+    """Moves Templates to a different Tenant"""
+
+    formset_form = NameForm
+    model = ManualPDFTemplate
+
+    def action(self, target, ids):
+        requests = ManualPDFTemplate.objects.filter(id__in=ids).distinct()
+        with transaction.atomic():
+            for request in requests:
+                request.tenant = target
+            ManualPDFTemplate.objects.bulk_update(requests, ["tenant"])
