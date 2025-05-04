@@ -8,7 +8,7 @@ from pdf.views.files import (
     FileUpdateView,
     FileListView,
     MovePDFTemplatesView,
-    WaitForFileView,
+    WaitForFileView, FileTemplateEditView,
 )
 from pdf.views.templates import (
     UpdateTemplateView,
@@ -33,6 +33,7 @@ file_patterns = [
     path("info/<int:pk>", RenderInfoView.as_view(), name="info"),
     path("delete/<int:pk>", FileDeleteView.as_view(), name="delete"),
     path("edit/<int:pk>", FileUpdateView.as_view(), name="edit"),
+    path("template/edit/<int:pk>", FileTemplateEditView.as_view(), name="template_edit"),
     path("", FileListView.as_view(), name="list"),
 ]
 
