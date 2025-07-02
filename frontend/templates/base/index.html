@@ -27,6 +27,7 @@
               defer></script>
     <link rel="stylesheet" type="text/css" href="{% static 'icons/css/songs.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
+    <script type="module" src="{% static "js/qr.mjs" %}"></script>
     {% block extra_head %} {% endblock %}
 </head>
 <body>
@@ -62,6 +63,9 @@
             </ul>
             <ul class="navbar-nav nav-right ms-1">
                 {% draw_menu "songbook-admin" %}
+            </ul>
+             <ul class="navbar-nav nav-right ms-1">
+                {% draw_menu "qr" %}
             </ul>
             {% block extra_nav %}{% endblock %}
                 <ul class="my-lg-0 navbar-nav navbar-right me-1">
@@ -113,6 +117,20 @@
 
         </div>
     </nav>
+    <div class="modal" tabindex="-1" id="qrModal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title text-center">{% trans "QR Code" %}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <img id="qr-code-img" alt="{% trans "QR Code" %}" src=""/>
+              <p class="text-center mb-0"><a id="qr-code-text"></a></p>
+          </div>
+        </div>
+      </div>
+    </div>
     {% bootstrap_messages %}
     {% block body %}
         Here should be your text
@@ -120,10 +138,31 @@
 </div>
 </body>
 <script type="module">
-$('#options').on('click', function(event){
-    // The event won't be propagated up to the document NODE and
-    // therefore delegated events won't be fired
-    event.stopPropagation();
-});
+    $('#options').on('click', function(event){
+        // The event won't be propagated up to the document NODE and
+        // therefore delegated events won't be fired
+        event.stopPropagation();
+    });
+    import QrCode from '{% static "js/qr.mjs" %}';
+    let theme = null
+
+    document.querySelector("[data-bs-target='#exampleModal']").addEventListener("click", function(event) {
+        const new_theme = document.documentElement.getAttribute('data-bs-theme');
+        if (new_theme !== theme) {
+            const data = window.location.href
+            const matrix = QrCode.generate(data);
+            const link = document.getElementById("qr-code-text")
+            link.innerText = data
+            link.href = data
+            document.getElementById("qr-code-img").src = QrCode.render("svg-uri", matrix, {
+                color: new_theme === "dark" ? "white" : "currentColor",
+                moduleRound: 1.0,
+                finderRound: 0.5,
+                module_size: 1,
+            });
+            theme = new_theme
+        }
+    });
+
 </script>
 </html>

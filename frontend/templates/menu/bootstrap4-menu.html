@@ -10,7 +10,7 @@
             {% if item.children %}
             <a href="{{ item.url }}" class="nav-link dropdown-toggle" id="{{ item.title }}" role="button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             {% else %}
-            <a href="{{ item.url }}" class="nav-link">
+            <a {% if item.modal %}data-bs-toggle="modal" data-bs-target="{{ item.modal }}"{% endif %} {% if item.url %}href="{{ item.url }}"{% endif %} class="nav-link">
             {% endif %}
                 {% if item.icon %}
                     <i class="icon-{{ item.icon }} icon-white"></i>&nbsp;

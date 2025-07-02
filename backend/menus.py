@@ -51,3 +51,9 @@ Menu.add_item(
     "account",
     MenuItem(_("Account"), reverse("login"), children=account_children, check=is_authenticated),
 )
+
+
+Menu.add_item(
+    "qr",
+    MenuItem(_("QR"), None, modal="#qrModal"),
+)
