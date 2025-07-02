@@ -146,7 +146,7 @@
     import QrCode from '{% static "js/qr.mjs" %}';
     let theme = null
 
-    document.querySelector("[data-bs-target='#exampleModal']").addEventListener("click", function(event) {
+    document.querySelector("[data-bs-target='#qrModal']").addEventListener("click", function(event) {
         const new_theme = document.documentElement.getAttribute('data-bs-theme');
         if (new_theme !== theme) {
             const data = window.location.href
