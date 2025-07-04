@@ -7,8 +7,7 @@
 
 {% block extra_head %}
     <script async src="{% static 'js/chords.js' %}"></script>
-    <script defer type="text/javascript" src="{% static "datatables/datatables.min.js" %}"></script>
-    <script defer type="text/javascript" src="{% static "datatables/accent-neutralize.min.js" %}"></script>
+    <script defer type="text/javascript" src="{% static 'js/simple-datatables.js' %}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsrender/1.0.15/jsrender.min.js"
             integrity="sha512-6heofwTnm0osmeEuz47jQLMVpAe2/ww+hZ4xvyv/kgedYO0b9mhNnsh8nUQZrmcdbaDkxrN+1K4SV6L+V4EH6Q=="
             crossorigin="anonymous"
@@ -45,12 +44,12 @@
 {% block body %}
     <script async>
         function show_scroll_button(event) {
-            const button = $("#scroll-down")
+            const button = document.getElementById("scroll-down");
             if (document.querySelector(".accordion-button:not(.collapsed)") !== null) {
-                button.show()
-                return
+                button.classList.remove("d-none")
+                return;
             }
-            button.hide()
+            button.classList.add("d-none")
         }
     </script>
     <script id="songTemplate" type="text/x-jsrender">
@@ -77,7 +76,7 @@
             </div>
         {% endif %}
         </div>
-        <div id="id<%:number%>" class="accordion-collapse collapse" data-bs-parent="#datatable">
+        <div id="id<%:number%>" class="accordion-collapse collapse <%if shown%>show<%/if%>" data-bs-parent="#datatable">
             <div class="input-group mb-3 mt-1">
                 <%if link%>
                     <a href="<%:link%>" class="btn btn-primary" role="button" aria-pressed="true">
@@ -100,19 +99,15 @@
           <span class="visually-hidden">Loading...</span>
         </div>
     </div>
-    <div class="d-none" id="content">
-        <div class="input-group">
-           <label class="input-group-text" for="searchInput">{% trans "Search" %}</label>
-           <input type="text" class="form-control" id="searchInput" placeholder="{% trans "Number, text or author" %}">
-        </div>
+    <div id="content">
         <table id="datatable" class="accordion accordion-flush">
             <thead class="d-none"></thead>
             <tbody></tbody>
         </table>
-        <button id="back-to-top" class="btn btn-primary btn-lg back-to-top" role="button" title="Click to return on the top page" data-bs-toggle="tooltip" data-bs-placement="left">
+        <button id="back-to-top" class="btn btn-primary btn-lg back-to-top d-none" role="button" title="Click to return on the top page" data-bs-toggle="tooltip" data-bs-placement="left">
             <span class="icon-up-open"></span>
         </button>
-        <button id="scroll-down" class="btn btn-primary btn-lg scroll_button" role="button" title="Click to scroll down" data-bs-placement="left">
+        <button id="scroll-down" class="btn btn-primary btn-lg scroll_button d-none" role="button" title="Click to scroll down" data-bs-placement="left" onclick="betterScrollDown()">
             <span class="icon-down-open"></span>
         </button>
     </div>
@@ -121,84 +116,107 @@
     const canWakeLock = () => 'wakeLock' in navigator;
     const root = document.querySelector(':root');
 
-    let table = null
-    function createDatatable(paging, initialSearch) {
-        const options = {
-            processing: true,
-            select: false,
-            paging: paging,
-            deferRender: true,
-            initComplete: function() {
-                document.getElementById("content").classList.remove("d-none");
-                document.getElementById("spinner").classList.add("d-none");
-            },
-            layout: {
-                topStart: null,
-                topEnd: null,
-                bottom: {
-                    paging: {
-                        firstLast: false,
-                    }
-                },
-                bottomStart: null,
-                bottomEnd: null,
-            },
-            columns: [
-                {
-                    data: 'number',
-                    visible: false,
-                    searchable: true,
-                },
-                {
-                    data: 'text',
-                    render: function ( data, type, row ) {
-                        {% if user.is_authenticated %}
-                        row["edit_url"] = baseEditUrl.replace("0", row.id)
-                        row["delete_url"] = baseDeleteUrl.replace("0", row.id)
-                        {% endif %}
-                        return $.render.song(row)
-                    },
-                    className: "accordion-item mt-1 ms-1 p-0",
-                    searchable: true,
-                },
-                {
-                    data: 'name',
-                    visible: false,
-                    searchable: true,
-                },
-                {
-                    data: 'author',
-                    visible: false,
-                    searchable: true,
-                }
-            ],
-            data: JSON.parse("{{ songs|escapejs }}"),
-            pageLength: 50,
-            // Workaround for incorrect page number
-            search: {
-                search: "",
-            },
-            {% datatables_language %}
-        }
-        if (initialSearch.length !== 0) {
-            options["search"] = {
-                "search": initialSearch
+    const data = JSON.parse("{{ songs|escapejs }}");
+    let obj = {
+        headings: Object.keys(data[0]),
+
+        // data array
+        data: []
+    };
+
+    // Loop over the objects to get the values
+    for ( let i = 0; i < data.length; i++ ) {
+
+        obj.data[i] = [];
+
+        for (let p in data[i]) {
+            if( data[i].hasOwnProperty(p) ) {
+                obj.data[i].push(data[i][p]);
             }
         }
-        return $('#datatable').DataTable(options);
     }
+    let table = null
+    window.jsrender.views.settings.delimiters("<%", "%>")
+    const template = window.jsrender.templates("#songTemplate")
     {% if user.is_authenticated %}
     const baseEditUrl = "{% url "chords:edit" pk="0" %}?next={{ request.path }}"
     const baseDeleteUrl = "{% url "chords:delete" pk="0" %}?next={{ request.path }}"
     {% endif %}
+    function createDatatable(paging) {
+        return new window.simpleDatatables.DataTable(document.getElementById("datatable"), {
+            data: obj,
+            classes: {
+                "table": "accordion accordion-flush datatable w-100",
+                "paginationList": "pagination",
+                "paginationListItem": "page-item",
+                "paginationListItemLink": "page-link",
+                "active": "active",
+            },
+            sortable: false,
+            hiddenHeader: true,
+            perPageSelect: false,
+            rowRender: function (rowValue, tr, index) {
+                const textarea = document.createElement("textarea");
+                textarea.innerHTML = rowValue.cells[7].data;
+                const number = rowValue.cells[6].text
+                const row = {
+                    "number": number,
+                    "name": rowValue.cells[1].data,
+                    "capo": rowValue.cells[2].text,
+                    "author": rowValue.cells[3].data,
+                    "link": rowValue.cells[4].text,
+                    "archived": rowValue.cells[5].text === "true",
+                    "id": rowValue.cells[0].text,
+                    "text": textarea.value,
+                    "shown": document.getElementById("id" + number)?.classList.contains("show") ?? false,
+                }
+                {% if user.is_authenticated %}
+                row["edit_url"] = baseEditUrl.replace("0", row.id)
+                row["delete_url"] = baseDeleteUrl.replace("0", row.id)
+                {% endif %}
+                return template.render(row)
+            },
+            columns: [
+                {
+                    select: 0,
+                    type: 'number',
+                    searchable: true,
+                },
+                {
+                    select: [3,4,5,6],
+                    hidden: true
+                },
+                {
+                    select: 7,
+                    type: 'string',
+                    searchable: true,
+                },
+                {
+                    select: 1,
+                    type: 'string',
+                    searchable: true,
+                },
+                {
+                    select: 3,
+                    type: 'string',
+                    searchable: true,
+                }
+            ],
+            paging: paging,
+            perPage: 50,
+            template: (options, dom) => `<div class='${options.classes.top}'>
+                <div class="input-group ${options.classes.search}">
+                   <label class="input-group-text" for="search">{% trans "Search" %}</label>
+                   <input type="search" class="form-control ${options.classes.input}" name="search" aria-controls="datatable" placeholder="{% trans "Number, text or author" %}">
+                </div>
+                <div class='${options.classes.container}'${options.scrollY.length ? ` style='height: ${options.scrollY}; overflow-Y: auto;'` : ""}></div>
+                <div class='${options.classes.bottom}'>
+                {#<div class='${options.classes.info}'></div>#}
+                <nav class='${options.classes.pagination}'></nav>
+            </div>`
+        });
+    }
 
-    $.views.settings.delimiters("<%", "%>");
-    $.fn.DataTable.ext.pager.numbers_length = 5;
-    $.templates("song", "#songTemplate")
-    // Fix Horizontal scrollbar
-    $.fn.DataTable.ext.classes.layout.row = ""
-    $.fn.DataTable.ext.classes.layout.cell = ""
-    
     let wakeLock = null;
     const requestWakeLock = async () => {
           wakeLock = await navigator.wakeLock
@@ -235,11 +253,14 @@
     let hidden = false
     function hideChords(value) {
         hidden = value
-        if (value) {
-            $(".chord").hide()
-        } else {
-            $(".chord").show()
-        }
+        document.querySelectorAll(".chord").forEach(el => {
+            if (value) {
+                el.classList.add("d-none")
+            } else {
+                el.classList.remove("d-none")
+            }
+        })
+
     }
 
     const config = new Map([
@@ -249,11 +270,22 @@
             }, false)],
             ["one_page", new BooleanOption(document.getElementById("onePage"), function(value) {
                 if (table) {
-                    table.destroy()
-                    document.getElementById("content").classList.add("d-none");
-                    document.getElementById("spinner").classList.remove("d-none");
+                    table.options.paging = !value
+                    table.update()
                 }
-                table = createDatatable(!value, document.getElementById("searchInput").value)
+                else {
+                    table = createDatatable(!value)
+                    table.on("datatable.init", () => {
+                        document.getElementById("content").classList.remove("d-none");
+                        document.getElementById("spinner").classList.add("d-none");
+                    })
+                    table.on("datatable.page", () => {
+                        hideChords(document.getElementById("hideChords").checked)
+                    })
+                    table.on("datatable.update", () => {
+                        hideChords(document.getElementById("hideChords").checked)
+                    })
+                }
             }, true)],
             ["columns", new PositiveIntegerOption(document.getElementById("columns"), function(value) {
                  root.style.setProperty('--chords-grid-columns', value);
@@ -267,41 +299,24 @@
         })
     }
     document.addEventListener('DOMContentLoaded', function () {
-         const back_to_top = $('#back-to-top')
-         $(window).scroll(function () {
-                if ($(this).scrollTop() > 50) {
-                    back_to_top.fadeIn();
-                } else {
-                    back_to_top.fadeOut();
-                }
-            });
+        const back_to_top = document.getElementById("back-to-top");
+        window.addEventListener('scroll', function (event) {
+            if (window.scrollY > 50) {
+                back_to_top.classList.remove("d-none");
+            } else {
+                back_to_top.classList.add("d-none");
+            }
+            event.stopPropagation()
+        });
         // scroll body to 0px on click
 
-        back_to_top.click(function () {
-            $('body,html').animate({
-                scrollTop: 0
-            }, 800);
-            return false;
-        });
-
-        $( "#scroll-down" ).click(function() {
-            betterScrollDown()
-        });
-
-        table.on( 'draw', function () {
-            if (hidden) {
-                $(".chord").hide()
-            } else {
-                $(".chord").show()
-            }
-
-        });
-
+        back_to_top.addEventListener("click", (function () {
+          window.scroll({
+            top: 0,
+            left: 0,
+            behavior: 'smooth'
+          });
+        }));
     });
-
-    document.getElementById("searchInput").addEventListener("input", function(event) {
-        table.search(event.target.value);
-        table.draw(false);
-    })
     </script>
 {% endblock %}
