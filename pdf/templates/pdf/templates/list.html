@@ -13,6 +13,11 @@
 {% endblock %}
 
 {% block extra_head %}
+  <script
+      src="{% static "js/jquery-3.7.1.min.js" %}"
+      type="text/javascript"
+      defer>
+  </script>
   <script defer type="text/javascript" src="{% static "datatables/datatables.min.js" %}"></script>
   <link rel="stylesheet" type="text/css" href="{% static "datatables/datatables.min.css" %}"/>
   <script type="module" src="{% static 'js/js.cookie.js' %}"></script>

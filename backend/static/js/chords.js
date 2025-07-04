@@ -40,7 +40,15 @@ function isElementInViewPort(element) {
 }
 
 function betterScrollDown() {
-    let children = $(".song-text:visible p ")
+    // Find all .song-text elements that are visible, then all their <p> children
+    let songTextBlocks = Array.from(document.querySelectorAll('.song-text'));
+    // Filter only visible elements
+    songTextBlocks = songTextBlocks.filter(el => el.offsetParent !== null);
+    let children = [];
+    songTextBlocks.forEach(block => {
+        children = children.concat(Array.from(block.querySelectorAll('p')));
+    });
+
     if (children.length === 0)
         return
 
@@ -57,9 +65,11 @@ function betterScrollDown() {
 
     if (scrollTo !== null && !last_visible) {
         console.log(scrollTo.getBoundingClientRect().top)
-        $('body,html').animate({
-            scrollTop: `+=${0.8 * scrollTo.getBoundingClientRect().top}`,
-        }, 800);
+        window.scrollBy({
+            top: 0.8 * scrollTo.getBoundingClientRect().top,
+            left: 0,
+            behavior: 'smooth'
+        });
     }
 
 }
