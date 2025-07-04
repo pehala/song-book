@@ -7,7 +7,7 @@
 
 {% block extra_head %}
     <script async src="{% static 'js/chords.js' %}"></script>
-    <script defer type="text/javascript" src="https://unpkg.com/simple-datatables@10.0.0/dist/umd/simple-datatables.js"></script>
+    <script defer type="text/javascript" src="{% static 'js/simple-datatables.js' %}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsrender/1.0.15/jsrender.min.js"
             integrity="sha512-6heofwTnm0osmeEuz47jQLMVpAe2/ww+hZ4xvyv/kgedYO0b9mhNnsh8nUQZrmcdbaDkxrN+1K4SV6L+V4EH6Q=="
             crossorigin="anonymous"
@@ -176,7 +176,6 @@
                 {
                     select: 0,
                     type: 'number',
-                    hidden: true,
                     searchable: true,
                 },
                 {
@@ -191,13 +190,11 @@
                 {
                     select: 1,
                     type: 'string',
-                    hidden: true,
                     searchable: true,
                 },
                 {
                     select: 3,
                     type: 'string',
-                    hidden: true,
                     searchable: true,
                 }
             ],
