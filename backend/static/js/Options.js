@@ -12,7 +12,7 @@ export class BooleanOption {
   }
 
   set(value) {
-      this.checkbox.checked = (value === "true")
+      this.checkbox.checked = (value === "true" || value === true)
   }
 
   call(value) {
@@ -28,7 +28,7 @@ export class BooleanOption {
   }
 
   isAllowed(value) {
-      return typeof value == "boolean"
+      return typeof value == "boolean" || value === "true" || value === "false"
   }
 }
 
