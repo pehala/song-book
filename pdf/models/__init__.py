@@ -4,13 +4,12 @@ from abc import abstractmethod
 from typing import Iterable, Tuple, TYPE_CHECKING
 
 from django.conf import settings
-from django.db.models import Model, BooleanField, CharField, ImageField, FloatField, TextChoices
+from django.db.models import BooleanField, CharField, ImageField, FloatField, TextChoices
 from django.db.models.signals import post_delete
 from django.utils.translation import gettext_lazy as _
 from polymorphic.models import PolymorphicModel
 
 from pdf.storage import file_cleanup
-from tenants.models import Tenant
 
 if TYPE_CHECKING:
     from backend.models import Song

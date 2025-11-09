@@ -74,7 +74,7 @@ class AllSongListView(BaseSongListView):
 
     def get_title(self):
         """Return title of this song set"""
-        return f'{_("All Songs")} | {self.request.tenant.display_name}'
+        return f"{_('All Songs')} | {self.request.tenant.display_name}"
 
 
 class IndexSongListView(RedirectView):

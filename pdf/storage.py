@@ -43,5 +43,5 @@ def file_cleanup(sender, **kwargs):
                 ):
                     try:
                         field.storage.delete(f.path)
-                    except:  # pylint: disable=bare-except
+                    except:  # noqa: E722
                         pass

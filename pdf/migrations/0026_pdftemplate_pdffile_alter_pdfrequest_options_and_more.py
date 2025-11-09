@@ -37,7 +37,6 @@ def migrate_pdffiles(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("backend", "0012_rename_prerendered_pdf_song_prerendered_and_more"),
         ("contenttypes", "0002_remove_content_type_name"),

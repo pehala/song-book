@@ -1,6 +1,6 @@
 .PHONY: commit-acceptance pylint black reformat pre-commit locale migrations deploy check-fuzzy run
 
-commit-acceptance: black pylint check-fuzzy
+commit-acceptance: ruff reformat check-fuzzy
 pre-commit: messages migrations reformat
 
 RUN = uv run
@@ -8,14 +8,11 @@ MANAGE = $(RUN) python manage.py
 
 SETTINGS ?= chords.settings.production
 
-pylint:
-	$(RUN) pylint backend/ chords/ pdf/ frontend/ category/ analytics/ tenants/ --django-settings-module=$(SETTINGS)
-
-black:
-	$(RUN) black --check . --diff
+ruff:
+	$(RUN) ruff check . --fix
 
 reformat:
-	$(RUN) black .
+	$(RUN) ruff format .
 
 check-fuzzy:
 	@ if [ ! -z "$$(msgattrib chords/locale/cs/LC_MESSAGES/django.po --only-fuzzy)" ]; then echo "chords/locale/cs/LC_MESSAGES/django.po contains fuzzy strings" && exit 1; fi

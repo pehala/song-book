@@ -2,7 +2,7 @@
 
 from typing import Iterable, Tuple, TYPE_CHECKING
 
-from django.db.models import CharField, SlugField, BooleanField, ForeignKey, CASCADE, Model
+from django.db.models import CharField, SlugField, BooleanField, ForeignKey, CASCADE
 from django.utils.translation import gettext_lazy as _
 
 from pdf.models import PDFTemplate
