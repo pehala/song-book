@@ -1,64 +1,59 @@
-[tool.poetry]
+[project]
 name = "chords"
 version = "0.1.0"
 description = "Song book written in Django, supporting offline viewing"
-authors = ["Petr Hála <phala@sprtovo.eu>"]
 readme = "README.md"
-package-mode = false
+authors = [{ name = "Petr Hála", email = "phala@sprtovo.eu" }]
+requires-python = ">=3.12"
 
-[tool.poetry.dependencies]
-python = "^3.11"
-django = "^5"
-django_bootstrap5 = "*"
-django-debug-toolbar = "*"
-django-markdownx = ">=4.0.0b1"
-django-redis = "*"
-huey = "*"
-django-simple-menu = "*"
-django-weasyprint = "*"
-weasyprint = "^66"
-Pillow = "*"
-mistune = ">3"
-django-polymorphic = {git = "https://github.com/jazzband/django-polymorphic.git", rev = "v4.0.0a"}
+dependencies = [
+  "django>=5",
+  "django_bootstrap5",
+  "django-debug-toolbar",
+  "django-markdownx>=4.0.0b1",
+  "django-redis",
+  "huey",
+  "django-simple-menu",
+  "django-weasyprint",
+  "weasyprint>=66",
+  "Pillow",
+  "mistune>3",
+  "django-polymorphic",
+]
 
-[tool.poetry.group.production]
-optional = true
+[dependency-groups]
+production = [
+  "psycopg[binary,pool]>=3.1.10",
+  "gunicorn",
+  "gevent",
+  "netifaces",
+]
+dev = [
+  "pylint",
+  "pylint-django",
+  "black",
+]
 
-[tool.poetry.group.production.dependencies]
-psycopg = {extras = ["binary", "pool"], version = "^3.1.10"}
-gunicorn = "*"
-gevent = "*"
-netifaces = "*"
-
-[tool.poetry.group.dev]
-optional = true
-
-[tool.poetry.group.dev.dependencies]
-pylint = "*"
-pylint-django = "*"
-black = "*"
+[tool.uv]
+default-groups = []
 
 [tool.black]
 line-length = 120
 
-# pylint
 [tool.pylint.FORMAT]
 max-line-length = 120
 
 [tool.pylint.DESIGN]
-min-public-methods=1
-max-parents=12
+min-public-methods = 1
+max-parents = 12
 disable = [
-    "duplicate-code", # reports false alarms AND can't be disabled locally; pylint issue #214
-    "fixme", # ignore TODOs
-    "redefined-outer-name",
-    "too-many-arguments",
-    "too-few-public-methods"]
+  "duplicate-code",
+  "fixme",
+  "redefined-outer-name",
+  "too-many-arguments",
+  "too-few-public-methods",
+]
 
 [tool.pylint.MAIN]
-ignore-patterns= "\\d{4}_.*?.py"
+ignore-patterns = "\\d{4}_.*?.py"
 load-plugins = "pylint_django"
-
-[build-system]
-requires = ["poetry-core"]
-build-backend = "poetry.core.masonry.api"

@@ -3,7 +3,7 @@
 commit-acceptance: black pylint check-fuzzy
 pre-commit: messages migrations reformat
 
-RUN = poetry run
+RUN = uv run
 MANAGE = $(RUN) python manage.py
 
 SETTINGS ?= chords.settings.production
