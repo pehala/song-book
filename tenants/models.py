@@ -2,7 +2,7 @@
 
 from django.contrib.auth import get_user_model
 from django.core.exceptions import ValidationError
-from django.db.models import Model, CharField, ManyToManyField, BooleanField, ImageField, URLField, ForeignKey, CASCADE
+from django.db.models import Model, CharField, ManyToManyField, BooleanField, ImageField, URLField
 from django.utils.translation import gettext_lazy as _
 
 

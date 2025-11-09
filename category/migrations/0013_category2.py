@@ -33,7 +33,6 @@ def recreate_categories(apps, schema_editor):
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("category", "0012_alter_category_link"),
         ("pdf", "0026_pdftemplate_pdffile_alter_pdfrequest_options_and_more"),

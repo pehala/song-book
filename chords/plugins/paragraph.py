@@ -7,9 +7,7 @@ import string
 
 PARAGRAPH = (
     # start with none punctuation, not number, not whitespace
-    r"(?:^[^\s\d"
-    + re.escape(string.punctuation)
-    + r"][^\n]*\n)+"
+    r"(?:^[^\s\d" + re.escape(string.punctuation) + r"][^\n]*\n)+"
 )
 
 __all__ = ["paragraph"]

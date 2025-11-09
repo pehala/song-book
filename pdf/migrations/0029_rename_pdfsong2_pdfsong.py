@@ -4,7 +4,6 @@ from django.db import migrations
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("backend", "0013_alter_song_categories"),
         ("pdf", "0028_delete_pdfrequest"),

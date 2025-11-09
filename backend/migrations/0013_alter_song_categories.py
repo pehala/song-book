@@ -4,7 +4,6 @@ from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
-
     dependencies = [
         ("backend", "0012_rename_prerendered_pdf_song_prerendered_and_more"),
         ("category", "0013_category2"),

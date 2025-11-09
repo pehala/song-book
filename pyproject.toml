@@ -29,31 +29,12 @@ production = [
   "netifaces",
 ]
 dev = [
-  "pylint",
-  "pylint-django",
-  "black",
+  "ruff"
 ]
 
 [tool.uv]
 default-groups = []
 
-[tool.black]
+[tool.ruff]
 line-length = 120
-
-[tool.pylint.FORMAT]
-max-line-length = 120
-
-[tool.pylint.DESIGN]
-min-public-methods = 1
-max-parents = 12
-disable = [
-  "duplicate-code",
-  "fixme",
-  "redefined-outer-name",
-  "too-many-arguments",
-  "too-few-public-methods",
-]
-
-[tool.pylint.MAIN]
-ignore-patterns = "\\d{4}_.*?.py"
-load-plugins = "pylint_django"
+target-version = "py312"
