@@ -20,7 +20,7 @@ This project aims to create a song book for storing, managing and viewing songs.
   * Set `TENANT_HOSTNAME` to the hostname that the site should use
 * Setup gunicorn or any other WSGI server
 * Setup Worker
-  * `poetry run python manage.py run_huey --worker-type process`
+  * `uv run python manage.py run_huey --worker-type process`
   * Responsible for async PDF generation
 * Setup NGINX or any other reverse proxy to expose the website
 
@@ -28,7 +28,7 @@ This project aims to create a song book for storing, managing and viewing songs.
 
 ## Dependencies
 
-* Python 3.9+
+* Python 3.12+
 * [gettext](https://www.gnu.org/software/gettext/)
     * Used for compiling locales
 * [Redis](https://redis.io/)
@@ -41,10 +41,10 @@ First clone the repository from GitHub and switch to the new directory:
     git clone https://github.com/pehala/song-book.git
     cd song-book
     
-Install pipenv and dependencies
+Install uv and dependencies
 
-    python -m pip install poetry
-    poetry install --with dev
+    pip install uv
+    uv sync --group dev
     
 Then simply initialize the website:
 
@@ -83,7 +83,7 @@ make worker
 
 ### FAQ
 
-1. `poetry install` throws 
+1. `uv sync` throws 
 
        ERROR: Couldn't install package: rcssmin
        Package installation failed...
