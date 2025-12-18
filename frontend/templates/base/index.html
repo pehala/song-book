@@ -26,6 +26,11 @@
     <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
     <script type="module" src="{% static "js/qr.mjs" %}"></script>
     {% block extra_head %} {% endblock %}
+    <style>
+        html, body {
+           overscroll-behavior:none !important;
+        }
+    </style>
 </head>
 <body>
 <div>
