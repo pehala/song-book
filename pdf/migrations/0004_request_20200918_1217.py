@@ -69,7 +69,7 @@ class Migration(migrations.Migration):
         migrations.AddConstraint(
             model_name="pdfrequest",
             constraint=models.CheckConstraint(
-                check=models.Q(("type", "MA"), ("category__isnull", False), _connector="OR"),
+                condition=models.Q(("type", "MA"), ("category__isnull", False), _connector="OR"),
                 name="automated_category_present",
             ),
         ),
