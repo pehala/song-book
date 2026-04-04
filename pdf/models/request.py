@@ -1,7 +1,7 @@
 """Models for PDF module"""
 
+from collections.abc import Iterable
 from datetime import datetime
-from typing import Iterable, Tuple
 
 from django.core.validators import MinValueValidator
 from django.db.models import (
@@ -47,7 +47,7 @@ class ManualPDFTemplate(PDFTemplate):
     songs = ManyToManyField(Song, through="PDFSong")
     name = CharField(_("Template Name"), help_text=_("Name of this template, only shown internally"), max_length=255)
 
-    def get_songs(self) -> Iterable[Tuple[int, "Song"]]:
+    def get_songs(self) -> Iterable[tuple[int, "Song"]]:
         """Returns all songs for PDFTemplate"""
         return [(pdf_song.song_number, pdf_song.song) for pdf_song in PDFSong.objects.filter(request=self)]
 

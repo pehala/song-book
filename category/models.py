@@ -1,6 +1,7 @@
 """Models"""
 
-from typing import Iterable, Tuple, TYPE_CHECKING
+from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 from django.db.models import CharField, SlugField, BooleanField, ForeignKey, CASCADE, UniqueConstraint
 from django.utils.translation import gettext_lazy as _
@@ -27,7 +28,7 @@ class Category(PDFTemplate):
         help_text=_("True, if the PDF file be automatically generated when a category or song changes?"),
     )
 
-    def get_songs(self) -> Iterable[Tuple[int, "Song"]]:
+    def get_songs(self) -> Iterable[tuple[int, "Song"]]:
         return list(enumerate(self.song_set.filter(archived=False), start=1))
 
     def __str__(self):

@@ -1,6 +1,6 @@
 """(Manual)PDFTemplate related views"""
 
-from typing import Iterable
+from collections.abc import Iterable
 
 from django.contrib import messages
 from django.db import transaction

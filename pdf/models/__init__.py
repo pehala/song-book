@@ -1,7 +1,8 @@
 """Common classes for PDF"""
 
 from abc import abstractmethod
-from typing import Iterable, Tuple, TYPE_CHECKING
+from collections.abc import Iterable
+from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.db.models import BooleanField, CharField, ImageField, FloatField, TextChoices
@@ -95,7 +96,7 @@ class PDFTemplate(PolymorphicModel):
         return file and not file.finished
 
     @abstractmethod
-    def get_songs(self) -> Iterable[Tuple[int, "Song"]]:
+    def get_songs(self) -> Iterable[tuple[int, "Song"]]:
         """
         Returns iterable of Song objects and their song number, that should be included in the PDF
         """
