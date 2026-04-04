@@ -2,7 +2,6 @@
 
 import hashlib
 import json
-from typing import Dict
 
 from django.conf import settings
 from django.core.cache import cache
@@ -22,7 +21,7 @@ from backend.generic import UniversalDeleteView, UniversalUpdateView, UniversalC
 from tenants.utils import tenant_cache_key
 
 
-def transform_song(song: Song, number: int) -> Dict:
+def transform_song(song: Song, number: int) -> dict:
     """Transforms song into a dict representation"""
     transformed = model_to_dict(song, ["id", "name", "capo", "author", "link", "archived"])
     transformed["number"] = number
