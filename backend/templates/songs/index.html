@@ -6,7 +6,7 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block extra_head %}
-    <script async src="{% static 'js/chords.js' %}"></script>
+    <script defer src="{% static 'js/chords.js' %}"></script>
     <script defer type="text/javascript" src="{% static 'js/simple-datatables.js' %}"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jsrender/1.0.15/jsrender.min.js"
             integrity="sha512-6heofwTnm0osmeEuz47jQLMVpAe2/ww+hZ4xvyv/kgedYO0b9mhNnsh8nUQZrmcdbaDkxrN+1K4SV6L+V4EH6Q=="
@@ -14,8 +14,6 @@
             referrerpolicy="no-referrer"
             defer>
     </script>
-    <script type="module" src="{% static 'js/js.cookie.js' %}"></script>
-    <script type="module" src="{% static 'js/Options.js' %}"></script>
 {%  endblock %}
 {% block extra_options %}
 <div class="ms-2 me-2 mt-1 form-floating">
@@ -42,7 +40,7 @@
 </div>
 {% endblock %}
 {% block body %}
-    <script async>
+    <script>
         function show_scroll_button(event) {
             const button = document.getElementById("scroll-down");
             if (document.querySelector(".accordion-button:not(.collapsed)") !== null) {
