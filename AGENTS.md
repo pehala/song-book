@@ -77,7 +77,14 @@ Structure:
 
 ## Conventions
 
-- No inline imports — all imports at top of file
+- No inline imports — all imports at top of file.  
+  **Exception:** `from tenants.menus import <anything>` must remain an inner
+  import in test functions.  `tenants/menus.py` executes
+  `Tenant.objects.all()` at module level (to pre-populate `simple_menu`
+  registries at startup); a top-level import in a test file triggers that
+  query during pytest collection, before the test database is open.
+  Document the exception with a comment referencing the module docstring
+  (see `tests/test_pdf/test_distinct_requests.py` for the pattern).
 - Each logical change in a separate git commit
 - Tests in a separate commit
 - `uv add --group dev <pkg>` for dev dependencies
