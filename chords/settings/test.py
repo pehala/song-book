@@ -22,3 +22,9 @@ STORAGES = {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
+
+# Run Huey tasks synchronously in the same process — no worker needed
+HUEY = {"immediate": True}
+
+# No delay for PDF scheduling in tests
+CATEGORY_PDF_DELAY = 0
