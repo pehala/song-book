@@ -116,7 +116,7 @@
     const canWakeLock = () => 'wakeLock' in navigator;
     const root = document.querySelector(':root');
 
-    const data = JSON.parse("{{ songs|escapejs }}");
+    const data = await fetch("{{ data_url }}").then(r => r.json());
     let obj = {
         headings: Object.keys(data[0]),
 
