@@ -97,7 +97,7 @@ class ETagJsonMixin:
 
     def etag_response(self, request, json_string):
         """Return a JSON response with ETag, or 304 if the client already has it."""
-        etag = f'"{hashlib.md5(json_string.encode()).hexdigest()}"'  # noqa: S324
+        etag = f'"{hashlib.blake2b(json_string.encode(), digest_size=16).hexdigest()}"'
         response = HttpResponse(json_string, content_type="application/json")
         response["ETag"] = etag
         response["Cache-Control"] = "no-cache"
