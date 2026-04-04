@@ -238,17 +238,8 @@
                 }
             }
     }
-    let hidden = false
     function hideChords(value) {
-        hidden = value
-        document.querySelectorAll(".chord").forEach(el => {
-            if (value) {
-                el.classList.add("d-none")
-            } else {
-                el.classList.remove("d-none")
-            }
-        })
-
+        root.classList.toggle("hide-chords", value);
     }
 
     const config = new Map([
@@ -266,12 +257,6 @@
                     table.on("datatable.init", () => {
                         document.getElementById("content").classList.remove("d-none");
                         document.getElementById("spinner").classList.add("d-none");
-                    })
-                    table.on("datatable.page", () => {
-                        hideChords(document.getElementById("hideChords").checked)
-                    })
-                    table.on("datatable.update", () => {
-                        hideChords(document.getElementById("hideChords").checked)
                     })
                 }
             }, true)],

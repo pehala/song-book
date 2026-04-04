@@ -37,7 +37,10 @@
      font-weight: bold;
      font-size: 100%;
      vertical-align: super;
-}
+ }
+ .hide-chords .chord {
+     display: none;
+ }
  @media (min-width: 768px) {
      .transposer {
          max-width: 100px;
