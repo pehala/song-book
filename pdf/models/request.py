@@ -17,6 +17,7 @@ from django.db.models import (
     PositiveIntegerField,
     BooleanField,
     SET_NULL,
+    UniqueConstraint,
 )
 from django.db.models.signals import post_delete
 from django.utils.translation import gettext_lazy as _
@@ -116,4 +117,6 @@ class PDFSong(Model):
     song_number = PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("Song number"))
 
     class Meta:
-        unique_together = ["song_number", "request", "song"]
+        constraints = [
+            UniqueConstraint(fields=["song_number", "request", "song"], name="pdfsong_number_request_song_uniq"),
+        ]
