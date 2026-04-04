@@ -57,6 +57,7 @@ MIDDLEWARE = [
     "backend.middleware.settings.SiteNameMiddleware",
     "tenants.middleware.RecognizeTenantMiddleware",
     "debug_toolbar.middleware.DebugToolbarMiddleware",
+    "django.middleware.csp.ContentSecurityPolicyMiddleware",
 ]
 
 ROOT_URLCONF = "chords.urls"
@@ -219,3 +220,32 @@ TENANT_HOSTNAME = "localhost"
 CATEGORY_PDF_DELAY = 30 * 60
 
 LOCALE_PATHS = ["chords/locale"]
+
+# Content Security Policy (Django 6.0) — enforced policy
+# Scripts: 'self' for local static files + CDNs used for Bootstrap, Chart.js, JsRender;
+#          'unsafe-inline' required for the many inline <script type="module"> blocks.
+# Styles: 'self' for local static files + cdn.jsdelivr.net for Bootstrap CSS;
+#         'unsafe-inline' required for inline <style> blocks (incl. WeasyPrint @page rules)
+#         and style= attributes used in templates.
+# Images: 'self' + data: URIs (QR code SVG is injected as data:).
+# Connect: 'self' for fetch() calls to JSON data endpoints and analytics REST view.
+# Fonts: 'self' for any self-hosted web fonts.
+# Frame ancestors: 'none' — this app is never embedded in iframes.
+SECURE_CSP = {
+    "default-src": ["'self'"],
+    "script-src": [
+        "'self'",
+        "'unsafe-inline'",
+        "cdn.jsdelivr.net",
+        "cdnjs.cloudflare.com",
+    ],
+    "style-src": [
+        "'self'",
+        "'unsafe-inline'",
+        "cdn.jsdelivr.net",
+    ],
+    "img-src": ["'self'", "data:"],
+    "connect-src": ["'self'"],
+    "font-src": ["'self'"],
+    "frame-ancestors": ["'none'"],
+}
