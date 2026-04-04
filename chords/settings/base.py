@@ -32,7 +32,7 @@ INSTALLED_APPS = [
     "tenants",
     "django_bootstrap5",
     "markdownx",
-    "menu",
+    "simple_menu",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",

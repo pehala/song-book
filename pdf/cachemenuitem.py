@@ -1,7 +1,7 @@
 """Module for menu items stored in cache"""
 
 from django.core.cache import cache
-from menu import MenuItem
+from simple_menu import MenuItem
 
 
 class CacheMenuItem(MenuItem):
