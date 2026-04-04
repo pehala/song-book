@@ -121,6 +121,16 @@ Examples:
 - `test: add pytest suite for songs JSON endpoints and cache invalidation`
 - `ci: add make test target and GitHub Actions test step`
 
+## Commit discipline
+
+- **Each logical change in a separate commit** — do not batch unrelated changes.
+- **Fixups must be squashed into the original commit**, not added as a new commit.
+  Use `git commit --amend` when the fixup targets HEAD, or stage the fix and
+  note which earlier commit it belongs to so a `git rebase -i` squash can be
+  performed by the user.
+- Never create a standalone commit whose only purpose is to undo or correct
+  something introduced in an earlier commit in the same session.
+
 ## Active branch
 
 `separate-songs-load` — improvement 7 (separate songs JSON endpoint with Redis caching).
