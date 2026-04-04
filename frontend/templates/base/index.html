@@ -51,7 +51,7 @@
             <ul class="navbar-nav nav-left ms-1">
                 {% draw_menu "files" use_tenant=True %}
             </ul>
-            {% if request.tenant.links.all|length > 0 %}
+            {% if request.tenant.links.all %}
             <ul class="navbar-nav nav-left ms-1">
                 {% draw_menu "links" use_tenant=True %}
             </ul>
@@ -137,7 +137,6 @@
         Here should be your text
     {% endblock %}
 </div>
-</body>
 <script type="module">
     document.getElementById("options").addEventListener('click', function(event){
         // The event won't be propagated up to the document NODE and
@@ -166,4 +165,5 @@
     });
 
 </script>
+</body>
 </html>
