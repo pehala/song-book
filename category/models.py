@@ -2,7 +2,7 @@
 
 from typing import Iterable, Tuple, TYPE_CHECKING
 
-from django.db.models import CharField, SlugField, BooleanField, ForeignKey, CASCADE
+from django.db.models import CharField, SlugField, BooleanField, ForeignKey, CASCADE, UniqueConstraint
 from django.utils.translation import gettext_lazy as _
 
 from pdf.models import PDFTemplate
@@ -36,4 +36,7 @@ class Category(PDFTemplate):
     class Meta:
         verbose_name = _("Category")
         verbose_name_plural = _("Categories")
-        unique_together = [["tenant", "slug"], ["tenant", "name"]]
+        constraints = [
+            UniqueConstraint(fields=["tenant", "slug"], name="category_tenant_slug_uniq"),
+            UniqueConstraint(fields=["tenant", "name"], name="category_tenant_name_uniq"),
+        ]
