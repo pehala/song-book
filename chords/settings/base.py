@@ -221,7 +221,8 @@ LOCALE_PATHS = ["chords/locale"]
 
 # Content Security Policy (Django 6.0) — enforced policy
 # Scripts: 'self' for local static files + CDNs used for Bootstrap, Chart.js, JsRender;
-#          'unsafe-inline' required for the many inline <script type="module"> blocks.
+#          'unsafe-inline' required for the many inline <script type="module"> blocks;
+#          'unsafe-eval' required by JsRender, which compiles templates via new Function().
 # Styles: 'self' for local static files + cdn.jsdelivr.net for Bootstrap CSS;
 #         'unsafe-inline' required for inline <style> blocks (incl. WeasyPrint @page rules)
 #         and style= attributes used in templates.
@@ -234,6 +235,7 @@ SECURE_CSP = {
     "script-src": [
         "'self'",
         "'unsafe-inline'",
+        "'unsafe-eval'",
         "cdn.jsdelivr.net",
         "cdnjs.cloudflare.com",
     ],
