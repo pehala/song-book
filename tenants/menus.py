@@ -77,7 +77,7 @@ def distinct_requests(tenant):
     for model in [Category, ManualPDFTemplate]:
         for template in model.objects.filter(tenant=tenant):
             file = template.latest_file
-            if file and file.file:
+            if file and file.file and file.status == Status.DONE and file.public:
                 data.append(MenuItem(file.name, file.file.url))
     # Without template
     for file in PDFFile.objects.filter(tenant=tenant, status=Status.DONE, public=True, template=None):
