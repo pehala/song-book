@@ -4,8 +4,8 @@ from django.conf import settings
 from django.core.cache import cache
 from django.db import transaction
 from django.db.models import Count, Q
-from django.http import Http404
-from django.urls import reverse_lazy
+from django.http import Http404, HttpResponse
+from django.urls import reverse_lazy, reverse
 from django.utils import translation
 from django.utils.translation import gettext_lazy as _, get_language, gettext
 from django.views.generic import ListView
@@ -14,6 +14,7 @@ from analytics.views import AnalyticsMixin
 from backend.generic import UniversalDeleteView, UniversalUpdateView, UniversalCreateView
 from backend.mixins import RegenerateViewMixin, LocalAdminRequired, PassRequestToFormMixin
 from backend.models import Song
+from backend.utils import invalidate_songs_cache
 from backend.views import BaseSongListView
 from category.forms import CategoryForm, NameForm
 from category.models import Category
@@ -42,6 +43,30 @@ class CategorySongsListView(BaseSongListView, AnalyticsMixin):
     def get_title(self):
         """Return title of this song set"""
         return f"{self.category_queryset().get().name} | {self.request.tenant.display_name}"
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context_data = super().get_context_data(object_list=object_list, **kwargs)
+        context_data["data_url"] = reverse("category:songs_data", kwargs={"slug": self.kwargs["slug"]})
+        return context_data
+
+
+class CategorySongsJsonView(CategorySongsListView):
+    """Returns songs JSON for a category, served from Redis cache"""
+
+    def get_cache_key(self):
+        base = tenant_cache_key(
+            self.request.tenant,
+            f"{settings.SONGS_CACHE_KEY}_{self.kwargs['slug']}",
+        )
+        return f"{base}_auth" if self.request.user.is_authenticated else base
+
+    def render_to_response(self, context, **kwargs):
+        key = self.get_cache_key()
+        cached = cache.get(key)
+        if cached is None:
+            cached = context["songs"]  # already a JSON string from get_context_data()
+            cache.set(key, cached, settings.CACHE_TIMEOUT)
+        return HttpResponse(cached, content_type="application/json")
 
 
 class CategoryListView(LocalAdminRequired, ListView):
@@ -103,6 +128,10 @@ class CategoryDeleteView(LocalAdminRequired, UniversalDeleteView):
     success_url = reverse_lazy("category:list")
 
     def post(self, request, *args, **kwargs):
+        category = self.get_object()
+        # Invalidate songs cache for all songs in this category before deletion
+        for song in category.song_set.all():
+            invalidate_songs_cache(song)
         response = super().post(request, *args, **kwargs)
         cache.delete(tenant_cache_key(self.object.tenant, settings.CATEGORY_CACHE_KEY))
         return response
