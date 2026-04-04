@@ -5,8 +5,10 @@ from email.utils import parsedate_to_datetime
 from functools import cache
 
 from django.conf import settings
+from django.core.cache import cache as django_cache
 
 from category.utils import request_pdf_regeneration
+from tenants.utils import tenant_cache_key
 
 
 def regenerate_pdf(song):
@@ -19,6 +21,16 @@ def regenerate_prerender(song):
     """Regenerates prerendered html for song"""
     if settings.USE_PRERENDERED_MARKDOWN:
         song.prerender()
+
+
+def invalidate_songs_cache(song):
+    """Invalidates songs JSON cache for every tenant/category the song belongs to"""
+    for category in song.categories.all():
+        tenant = category.tenant
+        django_cache.delete(tenant_cache_key(tenant, f"{settings.SONGS_CACHE_KEY}_ALL"))
+        django_cache.delete(tenant_cache_key(tenant, f"{settings.SONGS_CACHE_KEY}_ALL_auth"))
+        django_cache.delete(tenant_cache_key(tenant, f"{settings.SONGS_CACHE_KEY}_{category.slug}"))
+        django_cache.delete(tenant_cache_key(tenant, f"{settings.SONGS_CACHE_KEY}_{category.slug}_auth"))
 
 
 @cache
