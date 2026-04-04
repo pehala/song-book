@@ -41,9 +41,8 @@
 {% endblock %}
 {% block body %}
     <script>
-        const scrollDownButton = document.getElementById("scroll-down");
         function show_scroll_button(event) {
-            scrollDownButton.classList.toggle("d-none",
+            document.getElementById("scroll-down").classList.toggle("d-none",
                 document.querySelector(".accordion-button:not(.collapsed)") === null);
         }
     </script>
@@ -112,15 +111,44 @@
     const root = document.querySelector(':root');
 
     const data = await fetch("{{ data_url }}").then(r => r.json());
-    const obj = {
-        headings: Object.keys(data[0]),
-        data: data.map(Object.values),
-    };
+    // Column index map — keeps rowRender and columns config in sync with
+    // the field order produced by transform_song() in backend/views.py.
+    // text_plain (8) is a client-side-only column: plain text stripped from
+    // the HTML in text (7), used as the search target instead of raw HTML.
+    const COLS = Object.freeze({
+        id:         0,
+        name:       1,
+        capo:       2,
+        author:     3,
+        link:       4,
+        archived:   5,
+        number:     6,
+        text:       7,
+        text_plain: 8,
+    });
+
     const decodeTextarea = document.createElement("textarea");
     function decodeHtml(str) {
         decodeTextarea.innerHTML = str;
         return decodeTextarea.value;
     }
+    function stripHtml(str) {
+        decodeTextarea.innerHTML = str;
+        return decodeTextarea.innerText;
+    }
+
+    // Append a plain-text column used only for searching (text_plain).
+    // The raw HTML column (text) is kept for rendering but marked hidden
+    // so simple-datatables excludes it from the search index.
+    const obj = {
+        headings: [...Object.keys(data[0]), "text_plain"],
+        data: data.map(song => {
+            const values = Object.values(song);
+            values.push(stripHtml(song.text));
+            return values;
+        }),
+    };
+
     let table = null
     window.jsrender.views.settings.delimiters("<%", "%>")
     const template = window.jsrender.templates("#songTemplate")
@@ -142,17 +170,17 @@
             hiddenHeader: true,
             perPageSelect: false,
             rowRender: function (rowValue, tr, index) {
-                const number = rowValue.cells[6].text
+                const number = rowValue.cells[COLS.number].text
                 const row = {
-                    "number": number,
-                    "name": rowValue.cells[1].data,
-                    "capo": rowValue.cells[2].text,
-                    "author": rowValue.cells[3].data,
-                    "link": rowValue.cells[4].text,
-                    "archived": rowValue.cells[5].text === "true",
-                    "id": rowValue.cells[0].text,
-                    "text": decodeHtml(rowValue.cells[7].data),
-                    "shown": document.getElementById("id" + number)?.classList.contains("show") ?? false,
+                    "number":   number,
+                    "name":     rowValue.cells[COLS.name].data,
+                    "capo":     rowValue.cells[COLS.capo].text,
+                    "author":   rowValue.cells[COLS.author].data,
+                    "link":     rowValue.cells[COLS.link].text,
+                    "archived": rowValue.cells[COLS.archived].text === "true",
+                    "id":       rowValue.cells[COLS.id].text,
+                    "text":     decodeHtml(rowValue.cells[COLS.text].data),
+                    "shown":    document.getElementById("id" + number)?.classList.contains("show") ?? false,
                 }
                 {% if user.is_authenticated %}
                 row["edit_url"] = baseEditUrl.replace("0", row.id)
@@ -161,31 +189,14 @@
                 return template.render(row)
             },
             columns: [
-                {
-                    select: 0,
-                    type: 'number',
-                    hidden: true,
-                },
-                {
-                    select: 1,
-                    type: 'string',
-                },
-                {
-                    select: 3,
-                    type: 'string',
-                },
-                {
-                    select: [4,5],
-                    hidden: true,
-                },
-                {
-                    select: 6,
-                    type: "number",
-                },
-                {
-                    select: 7,
-                    type: 'string',
-                },
+                { select: COLS.id,                      type: 'number', hidden: true },
+                { select: COLS.name,                    type: 'string' },
+                { select: COLS.capo,                    hidden: true, searchable: false },
+                { select: COLS.author,                  type: 'string' },
+                { select: [COLS.link, COLS.archived],   hidden: true },
+                { select: COLS.number,                  type: 'number' },
+                { select: COLS.text,                    hidden: true, type: 'string' },
+                { select: COLS.text_plain,              type: 'string' },
             ],
             paging: paging,
             perPage: 50,
