@@ -10,6 +10,7 @@ from django.db.models import (
     ManyToManyField,
     TextField,
     BooleanField,
+    Value,
 )
 from django.utils.translation import gettext_lazy as _
 from markdownx.models import MarkdownxField
@@ -23,7 +24,7 @@ class Song(Model):
 
     name = CharField(verbose_name=_("Name"), max_length=100)
     date = DateField(auto_now_add=True, editable=False)
-    capo = PositiveSmallIntegerField(verbose_name=_("Capo"), default=0)
+    capo = PositiveSmallIntegerField(verbose_name=_("Capo"), db_default=Value(0))
     author = CharField(verbose_name=_("Author"), max_length=100, null=True, blank=True)
     link = URLField(verbose_name=_("Youtube Link"), null=True, blank=True)
     categories = ManyToManyField(Category, verbose_name=_("Categories"))
