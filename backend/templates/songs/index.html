@@ -119,6 +119,10 @@
         headings: Object.keys(data[0]),
         data: data.map(Object.values),
     };
+    const domParser = new DOMParser();
+    function decodeHtml(str) {
+        return domParser.parseFromString(str, 'text/html').body.innerHTML;
+    }
     let table = null
     window.jsrender.views.settings.delimiters("<%", "%>")
     const template = window.jsrender.templates("#songTemplate")
@@ -140,8 +144,6 @@
             hiddenHeader: true,
             perPageSelect: false,
             rowRender: function (rowValue, tr, index) {
-                const textarea = document.createElement("textarea");
-                textarea.innerHTML = rowValue.cells[7].data;
                 const number = rowValue.cells[6].text
                 const row = {
                     "number": number,
@@ -151,7 +153,7 @@
                     "link": rowValue.cells[4].text,
                     "archived": rowValue.cells[5].text === "true",
                     "id": rowValue.cells[0].text,
-                    "text": textarea.value,
+                    "text": decodeHtml(rowValue.cells[7].data),
                     "shown": document.getElementById("id" + number)?.classList.contains("show") ?? false,
                 }
                 {% if user.is_authenticated %}
