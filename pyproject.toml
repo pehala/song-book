@@ -29,11 +29,18 @@ production = [
   "netifaces",
 ]
 dev = [
-  "ruff"
+  "pytest>=9.0.2",
+  "pytest-django>=4.12.0",
+  "ruff",
 ]
 
 [tool.uv]
 default-groups = []
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "chords.settings.test"
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
 
 [tool.ruff]
 line-length = 120
