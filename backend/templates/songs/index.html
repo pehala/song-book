@@ -116,9 +116,10 @@
         headings: Object.keys(data[0]),
         data: data.map(Object.values),
     };
-    const domParser = new DOMParser();
+    const decodeTextarea = document.createElement("textarea");
     function decodeHtml(str) {
-        return domParser.parseFromString(str, 'text/html').body.innerHTML;
+        decodeTextarea.innerHTML = str;
+        return decodeTextarea.value;
     }
     let table = null
     window.jsrender.views.settings.delimiters("<%", "%>")
@@ -204,16 +205,13 @@
 
     let wakeLock = null;
     const requestWakeLock = async () => {
-          wakeLock = await navigator.wakeLock
-                .request('screen')
-                .catch(err => console.error('Failed to lock wake state with reason:', err.message))
-    
-          console.log("Screen WakeLock turned on")
-    
-          // listen for our release event
-          wakeLock.onrelease = function(ev) {
-            console.log("Screen WakeLock released")
-          }
+        try {
+            wakeLock = await navigator.wakeLock.request('screen');
+            wakeLock.onrelease = () => console.log("Screen WakeLock released");
+            console.log("Screen WakeLock turned on");
+        } catch (err) {
+            console.error('Failed to lock wake state with reason:', err.message);
+        }
     }
     const handleVisibilityChange = () => {
         if (wakeLock !== null && document.visibilityState === 'visible') {
