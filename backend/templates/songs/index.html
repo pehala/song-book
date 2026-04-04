@@ -41,13 +41,10 @@
 {% endblock %}
 {% block body %}
     <script>
+        const scrollDownButton = document.getElementById("scroll-down");
         function show_scroll_button(event) {
-            const button = document.getElementById("scroll-down");
-            if (document.querySelector(".accordion-button:not(.collapsed)") !== null) {
-                button.classList.remove("d-none")
-                return;
-            }
-            button.classList.add("d-none")
+            scrollDownButton.classList.toggle("d-none",
+                document.querySelector(".accordion-button:not(.collapsed)") === null);
         }
     </script>
     <script id="songTemplate" type="text/x-jsrender">
