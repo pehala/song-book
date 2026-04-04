@@ -1,6 +1,6 @@
 """Analytics views"""
 
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone as dt_timezone
 
 from django.db import transaction
 from django.db.models import Sum
@@ -52,11 +52,11 @@ class AnalyticsShowView(LocalAdminRequired, TemplateView):
             .values_list("key", flat=True)
             .distinct()
         )
-        ctx["now"] = datetime.now().date()
-        ctx["week"] = (datetime.now() - timedelta(days=6)).date()
-        # ctx["day"] = (datetime.now() - timedelta(days=1)).date()
-        ctx["month"] = (datetime.now() - timedelta(days=30)).date()
-        ctx["year"] = (datetime.now() - timedelta(days=360)).date()
+        ctx["now"] = now().date()
+        ctx["week"] = (now() - timedelta(days=6)).date()
+        # ctx["day"] = (now() - timedelta(days=1)).date()
+        ctx["month"] = (now() - timedelta(days=30)).date()
+        ctx["year"] = (now() - timedelta(days=360)).date()
         return ctx
 
 
@@ -67,11 +67,11 @@ class AnalyticsRestView(LocalAdminRequired, View):
         """Handles GET requests"""
         if "start_date" not in request.POST or "key" not in request.POST:
             return HttpResponseBadRequest()
-        start_date = datetime.fromtimestamp(int(request.POST["start_date"])).date()
+        start_date = datetime.fromtimestamp(int(request.POST["start_date"]), tz=dt_timezone.utc).date()
         if "end_date" in request.POST:
-            end_date = datetime.fromtimestamp(int(request.POST["end_date"])).date()
+            end_date = datetime.fromtimestamp(int(request.POST["end_date"]), tz=dt_timezone.utc).date()
         else:
-            end_date = datetime.now().date()
+            end_date = now().date()
         key = request.POST["key"]
         if len(key) > 0:
             days = DayStatistic.objects.filter(

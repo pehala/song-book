@@ -1,9 +1,9 @@
 """Models for PDF module"""
 
 from collections.abc import Iterable
-from datetime import datetime
 
 from django.core.validators import MinValueValidator
+from django.utils.timezone import now
 from django.db.models import (
     Model,
     DateTimeField,
@@ -37,7 +37,7 @@ class RequestType(TextChoices):
 
 def upload_path(instance, filename):
     """Returns upload path for this request"""
-    return datetime.now().strftime(f"pdfs/{instance.tenant_id}/%y%m%d/{filename}")
+    return now().strftime(f"pdfs/{instance.tenant_id}/%y%m%d/{filename}")
 
 
 class ManualPDFTemplate(PDFTemplate):
