@@ -76,11 +76,14 @@ def generate_pdf(pdf_file: PDFFile, template: AllowedTemplates):
                 PROGRESS_LOGGER.setLevel(logging.INFO)
                 log_filter = ProgressFilter(pdf_file)
                 PROGRESS_LOGGER.addFilter(log_filter)
-                weasyprint.HTML(
-                    string=string,
-                    url_fetcher=django_url_fetcher,
-                    base_url=get_base_url(),
-                ).write_pdf(tmp_file, optimize_images=True)
+                with tempfile.NamedTemporaryFile(mode="w", suffix=".html") as html_tmp:
+                    html_tmp.write(string)
+                    html_tmp.flush()
+                    weasyprint.HTML(
+                        filename=html_tmp.name,
+                        url_fetcher=django_url_fetcher,
+                        base_url=get_base_url(),
+                    ).write_pdf(tmp_file, optimize_images=True)
                 PROGRESS_LOGGER.removeFilter(log_filter)
             pdf_file.file.save(rel_path, File(tmp_file, name=rel_path))
             pdf_file.time_elapsed = ceil(timer.duration)
@@ -115,7 +118,6 @@ def generate_pdf_file(template: AllowedTemplates, delay: int = 0):
         public=template.public,
         filename=template.filename,
     )
-    file.save()
     generate_pdf_job.schedule(kwargs={"file": file, "template": template}, eta=scheduled_time)
 
     # queue = get_queue("default")

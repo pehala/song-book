@@ -77,7 +77,14 @@ Structure:
 
 ## Conventions
 
-- No inline imports — all imports at top of file
+- No inline imports — all imports at top of file.  
+  **Exception:** `from tenants.menus import <anything>` must remain an inner
+  import in test functions.  `tenants/menus.py` executes
+  `Tenant.objects.all()` at module level (to pre-populate `simple_menu`
+  registries at startup); a top-level import in a test file triggers that
+  query during pytest collection, before the test database is open.
+  Document the exception with a comment referencing the module docstring
+  (see `tests/test_pdf/test_distinct_requests.py` for the pattern).
 - Each logical change in a separate git commit
 - Tests in a separate commit
 - `uv add --group dev <pkg>` for dev dependencies
@@ -113,6 +120,16 @@ Examples:
 - `perf(frontend): fetch songs JSON async instead of embedding in HTML`
 - `test: add pytest suite for songs JSON endpoints and cache invalidation`
 - `ci: add make test target and GitHub Actions test step`
+
+## Commit discipline
+
+- **Each logical change in a separate commit** — do not batch unrelated changes.
+- **Fixups must be squashed into the original commit**, not added as a new commit.
+  Use `git commit --amend` when the fixup targets HEAD, or stage the fix and
+  note which earlier commit it belongs to so a `git rebase -i` squash can be
+  performed by the user.
+- Never create a standalone commit whose only purpose is to undo or correct
+  something introduced in an earlier commit in the same session.
 
 ## Active branch
 

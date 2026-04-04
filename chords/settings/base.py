@@ -203,12 +203,6 @@ CATEGORY_CACHE_KEY = "CATEGORIES"
 SONGS_CACHE_KEY = "SONGS"
 PDF_INCLUDE_LINK = ""
 
-RQ_QUEUES = {
-    "default": {
-        "USE_REDIS_CACHE": "default",
-    },
-}
-
 # Default Tenant, only used on migration
 TENANT_NAME = "Default"
 TENANT_HOSTNAME = "localhost"

@@ -3,6 +3,7 @@
 from functools import partial
 
 from django.conf import settings
+from django.db.models import Prefetch
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.urls import reverse
@@ -73,11 +74,16 @@ def distinct_requests(tenant):
     PDFRequest.objects.filter(file__isnull=False, status=Status.DONE).distinct("filename")[:5]
 
     """
+    latest_files_prefetch = Prefetch(
+        "pdffile_set",
+        queryset=PDFFile.objects.order_by("-update_date"),
+        to_attr="prefetched_files",
+    )
     data = []
     for model in [Category, ManualPDFTemplate]:
-        for template in model.objects.filter(tenant=tenant):
-            file = template.latest_file
-            if file and file.file:
+        for template in model.objects.filter(tenant=tenant).prefetch_related(latest_files_prefetch):
+            file = template.prefetched_files[0] if template.prefetched_files else None
+            if file and file.file and file.status == Status.DONE and file.public:
                 data.append(MenuItem(file.name, file.file.url))
     # Without template
     for file in PDFFile.objects.filter(tenant=tenant, status=Status.DONE, public=True, template=None):

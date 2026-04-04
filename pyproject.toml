@@ -41,6 +41,9 @@ default-groups = []
 DJANGO_SETTINGS_MODULE = "chords.settings.test"
 python_files = ["test_*.py"]
 python_functions = ["test_*"]
+markers = [
+  "slow: marks tests as slow (real WeasyPrint rendering); deselect with -m 'not slow'",
+]
 
 [tool.ruff]
 line-length = 120

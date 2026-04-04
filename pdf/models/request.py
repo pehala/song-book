@@ -49,7 +49,10 @@ class ManualPDFTemplate(PDFTemplate):
 
     def get_songs(self) -> Iterable[tuple[int, "Song"]]:
         """Returns all songs for PDFTemplate"""
-        return [(pdf_song.song_number, pdf_song.song) for pdf_song in PDFSong.objects.filter(request=self)]
+        return [
+            (pdf_song.song_number, pdf_song.song)
+            for pdf_song in PDFSong.objects.filter(request=self).select_related("song")
+        ]
 
     class Meta:
         verbose_name = _("File Template")

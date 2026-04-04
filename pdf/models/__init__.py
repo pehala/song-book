@@ -90,10 +90,10 @@ class PDFTemplate(PolymorphicModel):
         """Returns latest generated file for this template"""
         return self.pdffile_set.first()
 
-    def has_scheduled_file(self):
+    def has_scheduled_file(self) -> bool:
         """True, if the latest file created from this template is scheduled to be generated"""
         file = self.latest_file
-        return file and not file.finished
+        return bool(file and not file.finished)
 
     @abstractmethod
     def get_songs(self) -> Iterable[tuple[int, "Song"]]:
