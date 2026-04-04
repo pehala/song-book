@@ -28,3 +28,6 @@ jobs:
       - name: Acceptance check
         run: |
           make commit-acceptance
+      - name: Run tests
+        run: |
+          make test
