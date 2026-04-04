@@ -2,7 +2,7 @@
 
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from menu import Menu, MenuItem
+from simple_menu import Menu, MenuItem
 
 from backend.auth import is_localadmin
 from pdf.models.request import ManualPDFTemplate, PDFFile
