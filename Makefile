@@ -1,4 +1,4 @@
-.PHONY: commit-acceptance pylint black reformat pre-commit locale migrations deploy check-fuzzy run
+.PHONY: commit-acceptance pylint black reformat pre-commit locale migrations deploy check-fuzzy run test
 
 commit-acceptance: ruff reformat check-fuzzy
 pre-commit: messages migrations reformat
@@ -32,6 +32,9 @@ deploy: ## Deploys to production
 init: ## Initializes project for development
 	cp chords/settings/production.py.tpl chords/settings/production.py
 	$(MANAGE) migrate
+
+test: ## Runs the test suite
+	uv run --group dev pytest tests/
 
 run: ## Runs the development server
 	$(MANAGE) runserver --settings $(SETTINGS)
