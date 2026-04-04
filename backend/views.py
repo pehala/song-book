@@ -1,5 +1,6 @@
 """Views for backend app"""
 
+import hashlib
 import json
 from typing import Dict
 
@@ -9,6 +10,7 @@ from django.core.serializers.json import DjangoJSONEncoder
 from django.forms import model_to_dict
 from django.http import HttpResponse
 from django.urls import reverse_lazy, reverse
+from django.utils.cache import get_conditional_response
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView, RedirectView
 
@@ -86,8 +88,24 @@ class AllSongListView(BaseSongListView):
         return context_data
 
 
-class AllSongsJsonView(AllSongListView):
-    """Returns songs JSON for /all, served from Redis cache"""
+class ETagJsonMixin:
+    """Mixin that adds ETag-based client-side caching to a JSON view.
+
+    Uses Django's get_conditional_response to return 304 Not Modified when
+    the client's If-None-Match header matches the ETag of the cached content.
+    """
+
+    def etag_response(self, request, json_string):
+        """Return a JSON response with ETag, or 304 if the client already has it."""
+        etag = f'"{hashlib.md5(json_string.encode()).hexdigest()}"'  # noqa: S324
+        response = HttpResponse(json_string, content_type="application/json")
+        response["ETag"] = etag
+        response["Cache-Control"] = "no-cache"
+        return get_conditional_response(request, etag=etag, response=response)
+
+
+class AllSongsJsonView(ETagJsonMixin, AllSongListView):
+    """Returns songs JSON for /all, served from Redis cache with ETag support"""
 
     def get_cache_key(self):
         base = tenant_cache_key(self.request.tenant, f"{settings.SONGS_CACHE_KEY}_ALL")
@@ -99,7 +117,7 @@ class AllSongsJsonView(AllSongListView):
         if cached is None:
             cached = context["songs"]  # already a JSON string from get_context_data()
             cache.set(key, cached, settings.CACHE_TIMEOUT)
-        return HttpResponse(cached, content_type="application/json")
+        return self.etag_response(self.request, cached)
 
 
 class IndexSongListView(RedirectView):

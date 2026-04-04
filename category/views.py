@@ -4,7 +4,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.db import transaction
 from django.db.models import Count, Q
-from django.http import Http404, HttpResponse
+from django.http import Http404
 from django.urls import reverse_lazy, reverse
 from django.utils import translation
 from django.utils.translation import gettext_lazy as _, get_language, gettext
@@ -15,7 +15,7 @@ from backend.generic import UniversalDeleteView, UniversalUpdateView, UniversalC
 from backend.mixins import RegenerateViewMixin, LocalAdminRequired, PassRequestToFormMixin
 from backend.models import Song
 from backend.utils import invalidate_songs_cache
-from backend.views import BaseSongListView
+from backend.views import BaseSongListView, ETagJsonMixin
 from category.forms import CategoryForm, NameForm
 from category.models import Category
 from category.utils import request_pdf_regeneration
@@ -50,8 +50,8 @@ class CategorySongsListView(BaseSongListView, AnalyticsMixin):
         return context_data
 
 
-class CategorySongsJsonView(CategorySongsListView):
-    """Returns songs JSON for a category, served from Redis cache"""
+class CategorySongsJsonView(ETagJsonMixin, CategorySongsListView):
+    """Returns songs JSON for a category, served from Redis cache with ETag support"""
 
     def get_cache_key(self):
         base = tenant_cache_key(
@@ -66,7 +66,7 @@ class CategorySongsJsonView(CategorySongsListView):
         if cached is None:
             cached = context["songs"]  # already a JSON string from get_context_data()
             cache.set(key, cached, settings.CACHE_TIMEOUT)
-        return HttpResponse(cached, content_type="application/json")
+        return self.etag_response(self.request, cached)
 
 
 class CategoryListView(LocalAdminRequired, ListView):
