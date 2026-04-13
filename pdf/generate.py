@@ -17,7 +17,7 @@ from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils import translation
 from django.utils.timezone import now
-from django_weasyprint.utils import django_url_fetcher
+from django_weasyprint.utils import DjangoURLFetcher
 from huey.contrib.djhuey import task
 from weasyprint.logger import PROGRESS_LOGGER
 
@@ -78,7 +78,7 @@ def generate_pdf(pdf_file: PDFFile, template: AllowedTemplates):
                 PROGRESS_LOGGER.addFilter(log_filter)
                 weasyprint.HTML(
                     string=string,
-                    url_fetcher=django_url_fetcher,
+                    url_fetcher=DjangoURLFetcher(),
                     base_url=get_base_url(),
                 ).write_pdf(tmp_file, optimize_images=True)
                 PROGRESS_LOGGER.removeFilter(log_filter)
