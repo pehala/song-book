@@ -23,7 +23,7 @@ dependencies = [
 
 [dependency-groups]
 production = [
-  "psycopg[binary,pool]>=3.1.10",
+  "psycopg[binary,pool]>=3.3.3",
   "gunicorn",
   "gevent",
   "netifaces",
