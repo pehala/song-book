@@ -17,7 +17,7 @@ dependencies = [
   "django-weasyprint",
   "weasyprint>=68.1",
   "Pillow",
-  "mistune>=3.2.0",
+  "mistune>=3.2.1",
   "django-polymorphic",
 ]
 
