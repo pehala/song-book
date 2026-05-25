@@ -10,7 +10,7 @@ dependencies = [
   "django>=6.0.5",
   "django_bootstrap5",
   "django-debug-toolbar",
-  "django-markdownx>=4.0.9",
+  "django-markdownx>=4.0.11",
   "django-redis",
   "huey",
   "django-simple-menu",
