@@ -15,7 +15,7 @@ dependencies = [
   "huey",
   "django-simple-menu",
   "django-weasyprint",
-  "weasyprint>=68.1",
+  "weasyprint>=69.0",
   "Pillow",
   "mistune>=3.2.1",
   "django-polymorphic",
