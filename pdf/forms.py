@@ -39,7 +39,8 @@ class PDFFileEditForm(ModelForm):
 class SongSelectionForm(Form):
     """Song selection form"""
 
-    songs = ModelMultipleChoiceField(required=True, queryset=Song.objects.all(), widget=NoopWidget)
+    # Not required on the field itself, so that clean() can report the error in its own words
+    songs = ModelMultipleChoiceField(required=False, queryset=Song.objects.all(), widget=NoopWidget)
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")

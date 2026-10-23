@@ -47,6 +47,15 @@ def test_deleting_a_record_without_a_file_is_harmless(tenant):
     assert not PDFFile.objects.filter(pk=file.pk).exists()
 
 
+def test_cleanup_ignores_records_whose_file_is_gone(tenant):
+    """A record pointing at a file that is no longer there deletes cleanly"""
+    file = PDFFile.objects.create(tenant=tenant, filename="songbook", update_date=now(), file="pdfs/missing.pdf")
+
+    file.delete()
+
+    assert not PDFFile.objects.filter(pk=file.pk).exists()
+
+
 def test_cleanup_survives_a_failing_storage(stored_file, monkeypatch):
     """A storage that refuses to delete does not break the deletion"""
 

@@ -49,8 +49,16 @@ def test_selection_accepts_songs(tenant_request, song):
 
 
 def test_selection_rejects_an_empty_choice(tenant_request, song):
-    """A template has to print something"""
-    form = SongSelectionForm(QueryDict("songs="), request=tenant_request)
+    """A template has to print something, and says so in its own words"""
+    form = SongSelectionForm(QueryDict(""), request=tenant_request)
+
+    assert not form.is_valid()
+    assert form.errors.as_data()["__all__"][0].code == "no_songs"
+
+
+def test_selection_rejects_an_unknown_song(tenant_request, song):
+    """A submitted value that is not a song of this tenant is refused"""
+    form = SongSelectionForm(QueryDict("songs=999999"), request=tenant_request)
 
     assert not form.is_valid()
 
