@@ -1,6 +1,6 @@
 """Forms for category app"""
 
-from django.forms import ModelForm, IntegerField, Form, HiddenInput, ModelChoiceField, CharField
+from django.forms import CharField, Form, HiddenInput, IntegerField, ModelChoiceField, ModelForm
 from django.urls import reverse
 
 from category.models import Category

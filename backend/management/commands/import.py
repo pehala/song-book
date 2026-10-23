@@ -1,4 +1,4 @@
-"""Management command for importing Songs"""
+"""Management command for importing Songs"""  # noqa: N999
 
 import json
 import logging

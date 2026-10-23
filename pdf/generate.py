@@ -23,7 +23,7 @@ from weasyprint.logger import PROGRESS_LOGGER
 
 from category.models import Category
 from pdf.locales import changed_locale, lang_to_locale
-from pdf.models.request import Status, PDFFile, ManualPDFTemplate
+from pdf.models.request import ManualPDFTemplate, PDFFile, Status
 from tenants.utils import tenant_cache_key
 
 logger = logging.getLogger(__name__)
@@ -90,7 +90,7 @@ def generate_pdf(pdf_file: PDFFile, template: AllowedTemplates):
             cache.delete(tenant_cache_key(pdf_file.tenant, settings.PDF_CACHE_KEY))
             logger.info("Done in %i seconds", pdf_file.time_elapsed)
             return True, timer.duration
-    except Exception as exception:  # pylint: disable=broad-except
+    except Exception as exception:  # noqa: BLE001
         logger.error("Request failed: %s", str(exception))
         update_status(pdf_file, Status.FAILED)
         return False, timer.duration

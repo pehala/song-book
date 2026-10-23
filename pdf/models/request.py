@@ -3,23 +3,23 @@
 from collections.abc import Iterable
 
 from django.core.validators import MinValueValidator
-from django.utils.timezone import now
 from django.db.models import (
-    Model,
-    DateTimeField,
-    IntegerField,
-    FileField,
-    CharField,
-    TextChoices,
-    ManyToManyField,
-    ForeignKey,
     CASCADE,
-    PositiveIntegerField,
-    BooleanField,
     SET_NULL,
+    BooleanField,
+    CharField,
+    DateTimeField,
+    FileField,
+    ForeignKey,
+    IntegerField,
+    ManyToManyField,
+    Model,
+    PositiveIntegerField,
+    TextChoices,
     UniqueConstraint,
 )
 from django.db.models.signals import post_delete
+from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
 
 from backend.models import Song
@@ -47,7 +47,7 @@ class ManualPDFTemplate(PDFTemplate):
     songs = ManyToManyField(Song, through="PDFSong")
     name = CharField(_("Template Name"), help_text=_("Name of this template, only shown internally"), max_length=255)
 
-    def get_songs(self) -> Iterable[tuple[int, "Song"]]:
+    def get_songs(self) -> Iterable[tuple[int, Song]]:
         """Returns all songs for PDFTemplate"""
         return [(pdf_song.song_number, pdf_song.song) for pdf_song in PDFSong.objects.filter(request=self)]
 

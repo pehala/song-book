@@ -1,6 +1,6 @@
 """Common Widgets to be used across app"""
 
-from django.forms import Widget, TextInput
+from django.forms import TextInput, Widget
 from django.utils.safestring import mark_safe
 
 
@@ -38,8 +38,7 @@ class AppendWidget(TextInput):
         context = self.get_context(name, value, attrs)
         field = self._render(self.template_name, context, renderer)
         return mark_safe(
-            '<div class="input-group mb-3">%(field)s<span class="input-group-text">%(data)s</span></div>'
-            % {"field": field, "data": self.data}
+            f'<div class="input-group mb-3">{field}<span class="input-group-text">{self.data}</span></div>'
         )
 
 
@@ -56,6 +55,5 @@ class PrependWidget(TextInput):
         context = self.get_context(name, value, attrs)
         field = self._render(self.template_name, context, renderer)
         return mark_safe(
-            '<div class="input-group mb-3"><span class="input-group-text">%(data)s</span>%(field)s</div>'
-            % {"field": field, "data": self.data}
+            f'<div class="input-group mb-3"><span class="input-group-text">{self.data}</span>{field}</div>'
         )

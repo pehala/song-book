@@ -43,5 +43,5 @@ def datatables_language(context):
     """Returns language option for currently specified language"""
     if context.request.LANGUAGE_CODE == "cs":
         url = static("datatables/cs.json")
-        return mark_safe("language: {url: '%s'}," % url)
+        return mark_safe(f"language: {{url: '{url}'}},")
     return mark_safe("")

@@ -2,19 +2,19 @@
 
 from django.core.exceptions import ValidationError
 from django.forms import (
-    ModelForm,
-    CharField,
     BaseFormSet,
-    HiddenInput,
+    CharField,
     Form,
+    HiddenInput,
     IntegerField,
+    ModelForm,
     ModelMultipleChoiceField,
 )
 from django.utils.translation import gettext_lazy as _
 
 from backend.models import Song
-from chords.widgets import NoopWidget, AppendWidget
-from pdf.models.request import PDFSong, ManualPDFTemplate, PDFFile
+from chords.widgets import AppendWidget, NoopWidget
+from pdf.models.request import ManualPDFTemplate, PDFFile, PDFSong
 
 
 class ManualTemplateForm(ModelForm):

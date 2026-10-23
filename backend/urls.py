@@ -3,12 +3,12 @@
 from django.urls import path
 
 from backend.views import (
-    SongCreateView,
-    SongUpdateView,
-    SongDeleteView,
-    IndexSongListView,
     AllSongListView,
     AllSongsJsonView,
+    IndexSongListView,
+    SongCreateView,
+    SongDeleteView,
+    SongUpdateView,
 )
 
 urlpatterns = [

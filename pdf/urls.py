@@ -1,22 +1,22 @@
 """Url configuration for PDF app"""
 
-from django.urls import path, include
+from django.urls import include, path
 
 from pdf.views.files import (
-    RenderInfoView,
     FileDeleteView,
-    FileUpdateView,
     FileListView,
-    WaitForFileView,
     FileTemplateEditView,
+    FileUpdateView,
+    RenderInfoView,
+    WaitForFileView,
 )
 from pdf.views.templates import (
-    UpdateTemplateView,
-    TemplateListView,
-    TemplateDeleteView,
-    TemplateNumberSelectView,
     GenerateFromTemplateView,
     MovePDFTemplatesView,
+    TemplateDeleteView,
+    TemplateListView,
+    TemplateNumberSelectView,
+    UpdateTemplateView,
 )
 
 template_patterns = [
