@@ -4,7 +4,7 @@ from pathlib import Path
 
 import pytest
 from django.conf import settings
-from django.core.management import CommandError, call_command
+from django.core.management import call_command
 
 from pdf.models.request import PDFFile
 
@@ -48,16 +48,11 @@ def test_media_directory_is_created(printed_category, tenant):
     assert (Path(settings.MEDIA_ROOT) / settings.PDF_FILE_DIR).is_dir()
 
 
-@pytest.mark.xfail(
-    raises=CommandError,
-    strict=True,
-    reason=(
-        "The tenants argument uses nargs='+', so it is required even though the help "
-        "text promises that omitting it considers all tenants. It should be nargs='*'."
-    ),
-)
-def test_running_without_tenants_covers_all_of_them(printed_category):
+def test_running_without_tenants_covers_all_of_them(printed_category, make_category, other_tenant):
     """Without tenant ids every tenant is printed"""
+    foreign = make_category(other_tenant, name="Foreign", slug="foreign", generate_pdf=True)
+
     call_command("generate_pdf")
 
     assert PDFFile.objects.filter(template=printed_category).exists()
+    assert PDFFile.objects.filter(template=foreign).exists()
