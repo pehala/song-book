@@ -185,6 +185,10 @@ LOGGING = {
 
 # Custom settings
 SITE_NAME = "Songbook"
+# Version shown in the menu (YYYY/MM/DD of the last commit) and short commit sha; read from git when unset.
+# The container image sets both at build time because it ships without git.
+BUILD_DATE = os.getenv("BUILD_DATE")
+BUILD_REVISION = os.getenv("BUILD_REVISION")
 PDF_FILE_DIR = "pdfs"
 CACHE_TIMEOUT = 86400
 

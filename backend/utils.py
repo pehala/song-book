@@ -35,7 +35,9 @@ def invalidate_songs_cache(song):
 
 @cache
 def get_version():
-    """Returns currently used version e.g. date of the last commit"""
+    """Returns currently used version e.g. date of the last commit, taken from BUILD_DATE when it is set"""
+    if settings.BUILD_DATE:
+        return settings.BUILD_DATE
     date = parsedate_to_datetime(
         subprocess.check_output(["git", "--no-pager", "log", "-1", "--format='%aD'"]).decode("ascii").strip()
     )
@@ -44,5 +46,7 @@ def get_version():
 
 @cache
 def get_git_revision():
-    """Returns sha of the latest revision"""
+    """Returns sha of the latest revision, taken from BUILD_REVISION when it is set"""
+    if settings.BUILD_REVISION:
+        return settings.BUILD_REVISION
     return subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).decode("ascii").strip()

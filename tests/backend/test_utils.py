@@ -7,7 +7,7 @@ from django.core.cache import cache
 from django.urls import reverse
 
 from backend.models import Song
-from backend.utils import invalidate_songs_cache, regenerate_prerender
+from backend.utils import get_git_revision, get_version, invalidate_songs_cache, regenerate_prerender
 from chords.settings.base import SONGS_CACHE_KEY
 from tenants.utils import tenant_cache_key
 
@@ -83,3 +83,24 @@ def test_regenerate_prerender_is_a_noop_when_disabled(settings, song):
 
     song.refresh_from_db()
     assert song.prerendered is None
+
+
+@pytest.fixture
+def clear_version_cache():
+    """Both version helpers memoize their result for the whole process"""
+    get_version.cache_clear()
+    get_git_revision.cache_clear()
+    yield
+    get_version.cache_clear()
+    get_git_revision.cache_clear()
+
+
+@pytest.mark.usefixtures("clear_version_cache")
+def test_build_settings_take_precedence_over_git(settings, monkeypatch):
+    """With BUILD_DATE/BUILD_REVISION set, as in the container image, git is never run"""
+    settings.BUILD_DATE = "2026/10/23"
+    settings.BUILD_REVISION = "abc1234"
+    monkeypatch.setattr("backend.utils.subprocess.check_output", pytest.fail)
+
+    assert get_version() == "2026/10/23"
+    assert get_git_revision() == "abc1234"
