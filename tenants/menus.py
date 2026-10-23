@@ -90,7 +90,6 @@ for tenant in Tenant.objects.all().prefetch_related("links"):
     create_menus(tenant)
 
 
-# pylint: disable=unused-argument
 @receiver(post_save, sender=Tenant)
 def generate_menus(sender, instance, created, **kwargs):
     """Generates a menu for new tenants"""

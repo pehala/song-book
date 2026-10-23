@@ -13,7 +13,6 @@ class AdminSongForm(ModelForm):
 
     class Meta:
         model = Song
-        # pylint: disable=modelform-uses-exclude
         exclude = ["prerendered"]
 
 

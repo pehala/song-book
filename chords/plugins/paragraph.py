@@ -13,7 +13,6 @@ PARAGRAPH = (
 __all__ = ["paragraph"]
 
 
-# pylint: disable=unused-argument
 def parse_paragraph(block, m, state):
     """Parse paragraph"""
     text = m.group(0)

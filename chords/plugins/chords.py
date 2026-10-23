@@ -5,7 +5,6 @@ from mistune import InlineState
 CHORD_RE = r"\{(?!\s)(?P<chords>.+?)(?!\s)\}"
 
 
-# pylint: disable=unused-argument
 def parse_chords(inline, m, state: InlineState):
     """Parses tag"""
     text = m.group("chords")
