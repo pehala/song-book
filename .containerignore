@@ -1,0 +1,17 @@
+.git
+.github
+.idea
+.venv
+venv
+**/__pycache__
+*.py[cod]
+*.mo
+db.sqlite3
+chords/static
+chords/media
+chords/settings/production.py
+tests
+deploy/quadlets
+deploy/nginx
+deploy/selinux
+deploy/user-tmpfiles.d
