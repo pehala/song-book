@@ -39,7 +39,7 @@ class CategorySongsListView(BaseSongListView, AnalyticsMixin):
         slug = self.kwargs["slug"]
         if not self.category_queryset().exists():
             raise Http404(_("Category with url /%(slug)s does not exist") % {"slug": slug})
-        return super().get_queryset().filter(categories__slug=slug)
+        return super().get_queryset().filter(categories__slug=slug, categories__tenant=self.request.tenant)
 
     def get_title(self):
         """Return title of this song set"""
