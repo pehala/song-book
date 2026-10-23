@@ -20,11 +20,42 @@ The recommended way is the container image with Podman quadlets, described in [d
   * Generate `SECRET_KEY` unique for this site (https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-SECRET_KEY)
   * Override both `CACHES` and `DATABASES` to point to your Redis and PostgreSQL (or other DB engine) respectively
   * Set `TENANT_HOSTNAME` to the hostname that the site should use
+  * Keep `DEBUG = False`: besides the debug pages, `DEBUG` makes Django emit unhashed static URLs, and the
+    10-year cache on `/static/` would then serve stale files after every deploy
+  * Keep `USE_PRERENDERED_MARKDOWN = True` (and `USE_DYNAMIC_PRERENDER = True` as a safety net) so songs are
+    rendered once on save instead of on every request; `make deploy` runs `prerender` for existing rows
 * Setup gunicorn or any other WSGI server
 * Setup Worker
   * `uv run python manage.py run_huey --worker-type process`
   * Responsible for async PDF generation
-* Setup NGINX or any other reverse proxy to expose the website
+* Setup NGINX or any other reverse proxy to expose the website (see below)
+
+## nginx
+
+Compression happens in nginx only; the app never sets `Content-Encoding`. Static files are pre-compressed at deploy
+time (`brotli --quality=11`) and served as-is; dynamic responses (HTML, the songs JSON) are compressed on the fly.
+Brotli level 9 is the sweet spot for the ~850 KB songs JSON: levels 10–11 save another 10 KB but cost 10–25× the
+CPU per uncached response. With `DEBUG = False` Django no longer serves `/media/`, so nginx must.
+
+```nginx
+# dynamic responses from gunicorn
+brotli on; brotli_comp_level 9;
+brotli_types text/html text/css application/javascript application/json image/svg+xml application/manifest+json;
+gzip on; gzip_vary on; gzip_comp_level 6;
+gzip_types text/html text/css application/javascript application/json image/svg+xml application/manifest+json;
+
+# content-hashed static files, pre-compressed by the deploy script
+location /static/ {
+    brotli_static on; expires max;
+    add_header Cache-Control "public, max-age=31536000, immutable";
+    add_header Vary Accept-Encoding;
+}
+
+# tenant icons and generated PDFs
+location /media/ { expires 30d; add_header Cache-Control "public"; }
+```
+
+`add_header` inside a `location` replaces inherited headers, so repeat any global ones there.
 
 # Developing
 
