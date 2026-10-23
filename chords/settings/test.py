@@ -4,7 +4,7 @@ from chords.settings.base import *  # noqa: F403
 
 SECRET_KEY = "test-secret-key-not-for-production"
 
-ALLOWED_HOSTS = ["localhost", "testserver"]
+ALLOWED_HOSTS = ["localhost", "other.localhost", "testserver"]
 
 CACHES = {
     "default": {
