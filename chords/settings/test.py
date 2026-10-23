@@ -28,3 +28,8 @@ HUEY = {"immediate": True}
 
 # Keep the production-style delay so editing songs in tests never renders a PDF inline
 CATEGORY_PDF_DELAY = 30 * 60
+
+# The default PBKDF2 hasher runs 1.5M iterations, around 200 ms per user created, and
+# almost every test creates one. The tests sign in through force_login(), never through
+# a password, so hash strength buys nothing here.
+PASSWORD_HASHERS = ["django.contrib.auth.hashers.MD5PasswordHasher"]
