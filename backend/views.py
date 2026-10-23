@@ -3,13 +3,16 @@
 import hashlib
 
 from django.conf import settings
-from django.http import HttpResponse
+from django.contrib.messages import get_messages
+from django.http import HttpResponse, JsonResponse
+from django.middleware.csrf import get_token
 from django.urls import reverse, reverse_lazy
 from django.utils.cache import get_conditional_response
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.views.generic import RedirectView, TemplateView
 
+from backend.auth import is_localadmin
 from backend.forms import SongForm
 from backend.generic import UniversalCreateView, UniversalDeleteView, UniversalUpdateView
 from backend.mixins import LocalAdminRequired, PassRequestToFormMixin, RegenerateViewMixin
@@ -115,6 +118,29 @@ class SongsApiView(ETagJsonMixin, View):
         include_archived = request.user.is_superuser
         payload = cached_songs_payload(request.tenant, include_archived)
         return self.etag_response(request, payload, private=include_archived)
+
+
+class MeView(View):
+    """
+    Describes the signed in user to the reader, which cannot know it from the cached shell.
+
+    Pending messages are handed over here, since the shell has no place to render them.
+    """
+
+    def get(self, request, *args, **kwargs):
+        get_token(request)
+        user = request.user
+        response = JsonResponse(
+            {
+                "auth": user.is_authenticated,
+                "username": user.get_username() if user.is_authenticated else None,
+                "localadmin": is_localadmin(request),
+                "superuser": user.is_superuser,
+                "messages": [{"level": message.level_tag, "text": str(message)} for message in get_messages(request)],
+            }
+        )
+        response["Cache-Control"] = "private, no-store"
+        return response
 
 
 class IndexSongListView(RedirectView):
