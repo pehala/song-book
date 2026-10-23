@@ -1,12 +1,16 @@
-"""Shared pytest fixtures for songs JSON endpoint tests."""
+"""Shared pytest fixtures for the whole test suite."""
 
 import pytest
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.test import Client
+from django.utils.timezone import now
+from huey.contrib.djhuey import HUEY
 
 from backend.models import Song
 from category.models import Category
+from pdf.models import Status
+from pdf.models.request import ManualPDFTemplate, PDFFile, PDFSong
 from tenants.models import Tenant
 
 
@@ -15,6 +19,21 @@ def clear_cache():
     cache.clear()
     yield
     cache.clear()
+
+
+@pytest.fixture(autouse=True)
+def flush_huey():
+    """Keeps tasks enqueued by one test from leaking into the next one"""
+    HUEY.storage.flush_all()
+    yield
+    HUEY.storage.flush_all()
+
+
+@pytest.fixture(autouse=True)
+def media_root(settings, tmp_path):
+    """Redirects uploads and generated PDFs away from the source tree"""
+    settings.MEDIA_ROOT = str(tmp_path)
+    return tmp_path
 
 
 @pytest.fixture
@@ -33,27 +52,88 @@ def tenant(db):
 
 
 @pytest.fixture
-def category(tenant):
-    return Category.objects.create(
-        tenant=tenant,
-        name="Test Category",
-        slug="test-cat",
-        generate_pdf=False,
+def other_tenant(db):
+    """A second Tenant, used to prove that data does not leak between them"""
+    return Tenant.objects.create(
+        hostname="other.localhost",
+        name="Other",
+        display_name="Other Songbook",
+        index_redirect="/all",
     )
 
 
 @pytest.fixture
-def song(category):
-    s = Song.objects.create(name="Test Song", text="{Ami}Hello {C}World")
-    s.categories.add(category)
-    return s
+def make_category(db):
+    """Factory for Categories, defaults are enough to generate a PDF from"""
+
+    def factory(tenant, **kwargs):
+        kwargs.setdefault("name", "Test Category")
+        kwargs.setdefault("slug", "test-cat")
+        kwargs.setdefault("generate_pdf", False)
+        kwargs.setdefault("filename", "songbook")
+        kwargs.setdefault("locale", "en")
+        return Category.objects.create(tenant=tenant, **kwargs)
+
+    return factory
 
 
 @pytest.fixture
-def archived_song(category):
-    s = Song.objects.create(name="Archived Song", text="x", archived=True)
-    s.categories.add(category)
-    return s
+def category(tenant, make_category):
+    return make_category(tenant)
+
+
+@pytest.fixture
+def other_category(other_tenant, make_category):
+    return make_category(other_tenant, name="Other Category", slug="other-cat")
+
+
+@pytest.fixture
+def make_song(db):
+    """Factory for Songs, optionally attached to categories"""
+
+    def factory(*categories, **kwargs):
+        kwargs.setdefault("name", "Test Song")
+        kwargs.setdefault("text", "{Ami}Hello {C}World")
+        song = Song.objects.create(**kwargs)
+        song.categories.add(*categories)
+        return song
+
+    return factory
+
+
+@pytest.fixture
+def song(category, make_song):
+    return make_song(category)
+
+
+@pytest.fixture
+def archived_song(category, make_song):
+    return make_song(category, name="Archived Song", text="x", archived=True)
+
+
+@pytest.fixture
+def manual_template(tenant, song):
+    """A ManualPDFTemplate holding a single numbered song"""
+    template = ManualPDFTemplate.objects.create(
+        tenant=tenant,
+        name="Manual Template",
+        filename="manual",
+        locale="en",
+    )
+    PDFSong.objects.create(request=template, song=song, song_number=1)
+    return template
+
+
+@pytest.fixture
+def pdf_file(tenant, category):
+    """A PDFFile awaiting generation, created from the category template"""
+    return PDFFile.objects.create(
+        tenant=tenant,
+        template=category,
+        filename="songbook",
+        status=Status.QUEUED,
+        update_date=now(),
+    )
 
 
 @pytest.fixture
@@ -68,6 +148,13 @@ def staff_user(tenant):
     user = User.objects.create_user(username="staff", password="pass")
     tenant.admins.add(user)
     return user
+
+
+@pytest.fixture
+def plain_user(db):
+    """A logged in user without any administrative rights"""
+    User = get_user_model()
+    return User.objects.create_user(username="plain", password="pass")
 
 
 @pytest.fixture
@@ -86,4 +173,11 @@ def superuser_client(superuser):
 def staff_client(staff_user):
     c = Client(HTTP_HOST="localhost")
     c.force_login(staff_user)
+    return c
+
+
+@pytest.fixture
+def plain_client(plain_user):
+    c = Client(HTTP_HOST="localhost")
+    c.force_login(plain_user)
     return c
