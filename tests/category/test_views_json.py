@@ -9,6 +9,7 @@ from django.urls import reverse
 from backend.models import Song
 from category.models import Category
 from chords.settings.base import SONGS_CACHE_KEY
+from tenants.models import Tenant
 from tenants.utils import tenant_cache_key
 
 pytestmark = pytest.mark.django_db
@@ -63,3 +64,28 @@ def test_category_cache_populated_after_request(anon_client, song, tenant):
     anon_client.get(url)
     key = tenant_cache_key(tenant, f"{SONGS_CACHE_KEY}_test-cat")
     assert cache.get(key) is not None
+
+
+def test_same_slug_on_other_tenant_excluded(anon_client, song, tenant):
+    """A song in another tenant's category with the same slug does not leak into the response."""
+    other_tenant = Tenant.objects.create(hostname="other.localhost", name="Other", display_name="Other")
+    other_cat = Category.objects.create(tenant=other_tenant, name="Other Test", slug="test-cat", generate_pdf=False)
+    leaked = Song.objects.create(name="Leaked Song", text="l")
+    leaked.categories.add(other_cat)
+
+    url = reverse("category:songs_data", kwargs={"slug": "test-cat"})
+    response = anon_client.get(url)
+    data = json.loads(response.content)
+    names = [s["name"] for s in data]
+    assert "Leaked Song" not in names
+    assert "Test Song" in names
+
+
+def test_only_songs_of_this_category_are_listed(anon_client, category, song, make_category, make_song):
+    """Songs of a sibling category are not shown"""
+    other = make_category(category.tenant, name="Sibling", slug="sibling")
+    make_song(other, name="Sibling Song")
+
+    data = json.loads(anon_client.get(reverse("category:songs_data", kwargs={"slug": category.slug})).content)
+
+    assert [entry["name"] for entry in data] == ["Test Song"]

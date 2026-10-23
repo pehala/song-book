@@ -102,14 +102,15 @@ def test_update_with_changes_invalidates_songs_cache(staff_client, anon_client, 
     assert songs_cache(tenant) is None
 
 
-def test_update_without_changes_keeps_songs_cache(staff_client, anon_client, tenant, category, song):
-    """Resubmitting identical data does not trigger regeneration"""
+def test_update_without_changes_schedules_no_pdf(staff_client, make_category, make_song, tenant):
+    """Resubmitting identical data does not trigger PDF regeneration"""
+    category = make_category(tenant, name="Printed", slug="printed", generate_pdf=True)
+    song = make_song(category, name="Same", text="{C}same")
     unchanged = song_payload(category, name=song.name, text=song.text, capo=song.capo)
-    prime_songs_cache(anon_client)
 
     staff_client.post(reverse("backend:edit", kwargs={"pk": song.pk}), unchanged)
 
-    assert songs_cache(tenant) is not None
+    assert not PDFFile.objects.filter(template=category).exists()
 
 
 def test_update_page_shows_title(staff_client, song):

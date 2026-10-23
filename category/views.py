@@ -5,6 +5,7 @@ from django.core.cache import cache
 from django.db import transaction
 from django.db.models import Count, Q
 from django.http import Http404
+from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils import translation
 from django.utils.translation import get_language, gettext
@@ -12,11 +13,11 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 
 from analytics.views import AnalyticsMixin
+from backend.cache import invalidate_tenant_songs_cache
 from backend.generic import UniversalCreateView, UniversalDeleteView, UniversalUpdateView
 from backend.mixins import LocalAdminRequired, PassRequestToFormMixin, RegenerateViewMixin
 from backend.models import Song
-from backend.utils import invalidate_songs_cache
-from backend.views import BaseSongListView, ETagJsonMixin
+from backend.views import BaseSongListView, BaseSongsJsonView
 from category.forms import CategoryForm, NameForm
 from category.models import Category
 from category.utils import request_pdf_regeneration
@@ -25,49 +26,41 @@ from tenants.utils import tenant_cache_key
 from tenants.views import AdminMoveView
 
 
-class CategorySongsListView(BaseSongListView, AnalyticsMixin):
+class CategorySongsListView(AnalyticsMixin, BaseSongListView):
     """Shows all songs in a category"""
 
     def get_key(self):
         return self.kwargs["slug"]
 
-    def category_queryset(self):
-        """Returns queryset for this category"""
-        return Category.objects.filter(slug=self.kwargs["slug"], tenant=self.request.tenant)
-
-    def get_queryset(self):
-        slug = self.kwargs["slug"]
-        if not self.category_queryset().exists():
-            raise Http404(_("Category with url /%(slug)s does not exist") % {"slug": slug})
-        return super().get_queryset().filter(categories__slug=slug)
+    def get(self, request, *args, **kwargs):
+        self.category = get_object_or_404(Category, slug=self.kwargs["slug"], tenant=request.tenant)
+        return super().get(request, *args, **kwargs)
 
     def get_title(self):
         """Return title of this song set"""
-        return f"{self.category_queryset().get().name} | {self.request.tenant.display_name}"
+        return f"{self.category.name} | {self.request.tenant.display_name}"
 
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context_data = super().get_context_data(object_list=object_list, **kwargs)
-        context_data["data_url"] = reverse("category:songs_data", kwargs={"slug": self.kwargs["slug"]})
-        return context_data
+    def get_data_url(self):
+        return reverse("category:songs_data", kwargs={"slug": self.kwargs["slug"]})
 
 
-class CategorySongsJsonView(ETagJsonMixin, CategorySongsListView):
+class CategorySongsJsonView(BaseSongsJsonView):
     """Returns songs JSON for a category, served from Redis cache with ETag support"""
+
+    def get(self, request, *args, **kwargs):
+        if not Category.objects.filter(slug=self.kwargs["slug"], tenant=request.tenant).exists():
+            raise Http404(_("Category with url /%(slug)s does not exist") % {"slug": self.kwargs["slug"]})
+        return super().get(request, *args, **kwargs)
 
     def get_cache_key(self):
         base = tenant_cache_key(
             self.request.tenant,
             f"{settings.SONGS_CACHE_KEY}_{self.kwargs['slug']}",
         )
-        return f"{base}_auth" if self.request.user.is_authenticated else base
+        return f"{base}_archived" if self.request.user.is_superuser else base
 
-    def render_to_response(self, context, **kwargs):
-        key = self.get_cache_key()
-        cached = cache.get(key)
-        if cached is None:
-            cached = context["songs"]  # already a JSON string from get_context_data()
-            cache.set(key, cached, settings.CACHE_TIMEOUT)
-        return self.etag_response(self.request, cached)
+    def get_queryset(self):
+        return Song.objects.filter(categories__slug=self.kwargs["slug"], categories__tenant=self.request.tenant)
 
 
 class CategoryListView(LocalAdminRequired, ListView):
@@ -102,10 +95,6 @@ class CategoryCreateView(LocalAdminRequired, PassRequestToFormMixin, UniversalCr
                 "locale": self.request.LANGUAGE_CODE,
             }
 
-    def get_success_message(self, cleaned_data):
-        cache.delete(tenant_cache_key(self.request.tenant, settings.CATEGORY_CACHE_KEY))
-        return super().get_success_message(cleaned_data)
-
 
 class CategoryUpdateView(LocalAdminRequired, PassRequestToFormMixin, RegenerateViewMixin, UniversalUpdateView):
     """Updates category"""
@@ -118,7 +107,6 @@ class CategoryUpdateView(LocalAdminRequired, PassRequestToFormMixin, RegenerateV
         response = super().post(request, *args, **kwargs)
         if self.regenerate and self.object.generate_pdf:
             request_pdf_regeneration(self.object)
-        cache.delete(tenant_cache_key(self.object.tenant, settings.CATEGORY_CACHE_KEY))
         return response
 
 
@@ -127,15 +115,6 @@ class CategoryDeleteView(LocalAdminRequired, UniversalDeleteView):
 
     model = Category
     success_url = reverse_lazy("category:list")
-
-    def post(self, request, *args, **kwargs):
-        category = self.get_object()
-        # Invalidate songs cache for all songs in this category before deletion
-        for song in category.song_set.all():
-            invalidate_songs_cache(song)
-        response = super().post(request, *args, **kwargs)
-        cache.delete(tenant_cache_key(self.object.tenant, settings.CATEGORY_CACHE_KEY))
-        return response
 
 
 class CategoryMoveView(AdminMoveView):
@@ -150,6 +129,8 @@ class CategoryMoveView(AdminMoveView):
         songs = Song.objects.filter(categories__id__in=ids).distinct()
         # Categories are PDFTemplates themselves, so only their files have to follow them
         files = PDFFile.objects.filter(template_id__in=ids)
+        # bulk_update sends no signals, so the lists of the source tenants are cleared by hand
+        source_tenants = {category.tenant for category in categories.select_related("tenant")}
         with transaction.atomic():
             for category in categories:
                 category.tenant = target
@@ -172,3 +153,6 @@ class CategoryMoveView(AdminMoveView):
                     song.save()
                     song.categories.set(to_remove)
                     song.save()
+        for tenant in source_tenants | {target}:
+            invalidate_tenant_songs_cache(tenant)
+            cache.delete(tenant_cache_key(tenant, settings.CATEGORY_CACHE_KEY))
