@@ -1,26 +1,73 @@
-"""Views of the reader: the service worker and the web app manifest"""
+"""Views of the reader: the shell, the service worker and the web app manifest"""
 
 import hashlib
 import json
+from pathlib import Path
 
 from django.conf import settings
-from django.http import JsonResponse
+from django.contrib.staticfiles import finders
+from django.http import HttpResponse, JsonResponse
+from django.template.loader import render_to_string
 from django.templatetags.static import static
 from django.urls import reverse
-from django.utils.cache import add_never_cache_headers
+from django.utils.cache import add_never_cache_headers, get_conditional_response
+from django.views import View
 from django.views.generic import TemplateView
 
-# Static files the service worker stores when it installs, so the reader works offline from the first reload
-PRECACHE = ["app/vendor/preact-htm.module.js"]
+from tenants.bootstrap import bootstrap_payload
+
+# The reader's modules, the entry point first, and its stylesheet. The shell preloads the modules and the
+# service worker stores all of them when it installs, so the reader works offline from the first reload.
+ENTRY = "app/app.js"
+MODULES = [ENTRY, "app/songs.js", "app/store.js", "app/i18n.js", "app/qr.js", "app/vendor/preact-htm.module.js"]
+STYLESHEET = "app/app.css"
+ASSETS = [*MODULES, STYLESHEET]
 
 SHELL_URL = "/"
 THEME_COLOR = "#7793f3"
 BACKGROUND_COLOR = "#f9f9f9"
 
 
-def precache_urls():
+def modules_digest(urls):
+    """Short digest of what the reader consists of: the hashed urls, and in development the files themselves"""
+    digest = hashlib.blake2b(json.dumps(urls).encode(), digest_size=6)
+    if settings.DEBUG:  # static files are not hashed in development, so their urls never change
+        for path in ASSETS:
+            digest.update(Path(finders.find(path)).read_bytes())
+    return digest.hexdigest()
+
+
+def asset_urls():
     """Urls of the static files the reader consists of"""
-    return [static(path) for path in PRECACHE]
+    return [static(path) for path in ASSETS]
+
+
+class ShellView(View):
+    """
+    The page every reader route is served with.
+
+    It holds nothing that depends on the user, the session or the language, so it is cached by the
+    service worker and by ETag; the client draws the route from the bootstrap and the songs.
+    """
+
+    def get(self, request, slug=None):
+        """Renders the shell; a slug that is no category of the tenant gets the same page with status 404"""
+        tenant = request.tenant
+        body = render_to_string(
+            "shell.html",
+            {
+                "boot": bootstrap_payload(tenant),
+                "modules": [static(path) for path in MODULES],
+                "entry": static(ENTRY),
+                "stylesheet": static(STYLESHEET),
+            },
+        )
+        known = slug is None or tenant.category_set.filter(slug=slug).exists()
+        response = HttpResponse(body, status=200 if known else 404)
+        etag = f'"{hashlib.blake2b(body.encode(), digest_size=16).hexdigest()}"'
+        response["ETag"] = etag
+        response["Cache-Control"] = "no-cache"
+        return get_conditional_response(request, etag=etag, response=response)
 
 
 class ServiceWorkerView(TemplateView):
@@ -36,10 +83,9 @@ class ServiceWorkerView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        urls = precache_urls()
+        urls = asset_urls()
         tenant = self.request.tenant
-        digest = hashlib.blake2b(json.dumps(urls).encode(), digest_size=6).hexdigest()
-        context["cache_name"] = f"shell-{tenant.id}-{digest}"
+        context["cache_name"] = f"shell-{tenant.id}-{modules_digest(urls)}"
         context["precache"] = json.dumps(urls)
         context["shell_url"] = SHELL_URL
         context["static_url"] = settings.STATIC_URL
