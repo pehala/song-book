@@ -17,10 +17,14 @@ class CacheMenuItem(MenuItem):
         self.timeout = timeout
         super().__init__(children=self.children_for, **kwargs)
 
+    def children_of(self, tenant):
+        """Returns children of the tenant from cache or generates new ones"""
+        key = tenant_cache_key(tenant, self.cache_key)
+        return cache.get_or_set(key, partial(self.generate_function, tenant), timeout=self.timeout)
+
     def children_for(self, request):
-        """Returns children of the request's tenant from cache or generates new ones"""
-        key = tenant_cache_key(request.tenant, self.cache_key)
-        return cache.get_or_set(key, partial(self.generate_function, request.tenant), timeout=self.timeout)
+        """Returns children of the request's tenant"""
+        return self.children_of(request.tenant)
 
 
 class HideWhenEmptyCacheMenuItem(CacheMenuItem):
