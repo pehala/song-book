@@ -219,7 +219,6 @@ dev = [
 production = [
     { name = "gevent" },
     { name = "gunicorn" },
-    { name = "netifaces" },
     { name = "psycopg", extra = ["binary", "pool"] },
 ]
 
@@ -249,7 +248,6 @@ dev = [
 production = [
     { name = "gevent" },
     { name = "gunicorn" },
-    { name = "netifaces" },
     { name = "psycopg", extras = ["binary", "pool"], specifier = ">=3.3.4" },
 ]
 
@@ -716,12 +714,6 @@ sdist = { url = "https://files.pythonhosted.org/packages/96/eb/749a4e69bf7396e75
 wheels = [
     { url = "https://files.pythonhosted.org/packages/2c/f7/021d590d52c1ac28e3290311776854c6a1c927fa3fb4b25ce74caf937a3d/mistune-3.4.0-py3-none-any.whl", hash = "sha256:d03cec4c8620f21517a996d82d14f3b59c30d79bda2cc6c56bd32b839f18ce6b", size = 70398, upload-time = "2026-10-19T10:44:26.751Z" },
 ]
-
-[[package]]
-name = "netifaces"
-version = "0.11.0"
-source = { registry = "https://pypi.org/simple" }
-sdist = { url = "https://files.pythonhosted.org/packages/a6/91/86a6eac449ddfae239e93ffc1918cf33fd9bab35c04d1e963b311e347a73/netifaces-0.11.0.tar.gz", hash = "sha256:043a79146eb2907edf439899f262b3dfe41717d34124298ed281139a8b93ca32", size = 30106, upload-time = "2021-05-31T08:33:02.506Z" }
 
 [[package]]
 name = "packaging"

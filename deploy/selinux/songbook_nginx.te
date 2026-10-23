@@ -1,0 +1,23 @@
+# Lets a host nginx (httpd_t) use what the songbook containers share through :z volumes:
+# connect to the gunicorn socket and read static files and PDFs labelled container_file_t.
+#
+# checkmodule -M -m -o songbook_nginx.mod songbook_nginx.te
+# semodule_package -o songbook_nginx.pp -m songbook_nginx.mod
+# semodule -i songbook_nginx.pp
+
+module songbook_nginx 1.0;
+
+require {
+    type httpd_t;
+    type container_t;
+    type container_file_t;
+    class dir { getattr open read search };
+    class file { getattr open read map };
+    class sock_file { getattr write };
+    class unix_stream_socket connectto;
+}
+
+allow httpd_t container_file_t:dir { getattr open read search };
+allow httpd_t container_file_t:file { getattr open read map };
+allow httpd_t container_file_t:sock_file { getattr write };
+allow httpd_t container_t:unix_stream_socket connectto;

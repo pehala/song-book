@@ -13,6 +13,8 @@ This project aims to create a song book for storing, managing and viewing songs.
 
 # Running in production
 
+The recommended way is the container image with Podman quadlets, described in [docs/DEPLOY.md](docs/DEPLOY.md). To run it without containers:
+
 * Override any setting you want in `chords/settings/production.py`
   * Set `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS` to actual domain you want the site to exist on
   * Generate `SECRET_KEY` unique for this site (https://docs.djangoproject.com/en/dev/ref/settings/#std:setting-SECRET_KEY)

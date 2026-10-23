@@ -1,10 +1,12 @@
-.PHONY: commit-acceptance pylint black reformat pre-commit locale migrations deploy check-fuzzy run test coverage
+.PHONY: commit-acceptance pylint black reformat pre-commit locale migrations deploy check-fuzzy run test coverage \
+	image migrate prerender cache_clear compilemessages collectstatic compress_static export_static start worker
 
 commit-acceptance: ruff reformat check-fuzzy
 pre-commit: messages migrations reformat
 
-RUN = uv run
-MANAGE = $(RUN) python manage.py
+# The container image sets RUN empty: its virtualenv is already on PATH and it has no uv
+RUN ?= uv run
+MANAGE ?= $(RUN) python manage.py
 
 SETTINGS ?= chords.settings.production
 
@@ -23,11 +25,45 @@ messages:
 migrations:
 	$(MANAGE) makemigrations
 
-deploy: ## Deploys to production
-	$(MANAGE) migrate
+deploy: migrate prerender compilemessages collectstatic ## Deploys to production
+
+migrate: ## Applies database migrations
+	$(MANAGE) migrate --noinput
+
+prerender: ## Prerenders markdown of every song
 	$(MANAGE) prerender
+
+cache_clear: ## Clears the Django cache (Huey's queue lives in another Redis db and stays)
+	$(MANAGE) shell -c "from django.core.cache import cache; cache.clear()"
+
+compilemessages: ## Compiles translations
 	$(MANAGE) compilemessages
+
+collectstatic: ## Collects and fingerprints static files into chords/static
 	$(MANAGE) collectstatic --noinput
+
+# Lets nginx serve them with brotli_static/gzip_static instead of compressing on every request.
+# Fonts, images and woff2 are already compressed.
+compress_static: ## Writes maximally compressed .br and .gz siblings of collected static files
+	find chords/static -type f -size +1k -regextype posix-extended \
+		-regex '.*\.(css|js|mjs|json|svg|txt|map|ttf|otf|eot|ico|html|xml)$$' \
+		-exec brotli -k -f -Z {} + \
+		-exec gzip -k -f -9 {} +
+
+# Older fingerprinted files in the target are kept, so pages still open in browsers keep working
+export_static: ## Copies collected static files to STATIC_EXPORT_DIR for nginx
+	$(if $(STATIC_EXPORT_DIR),,$(error STATIC_EXPORT_DIR is not set))
+	set -o pipefail; cd chords/static && tar -cf - -- * | tar -C $(STATIC_EXPORT_DIR) -xf - --no-same-owner
+
+start: ## Runs gunicorn as configured for the container image
+	$(RUN) gunicorn --config deploy/gunicorn.conf.py
+
+IMAGE ?= localhost/songbook:latest
+
+image: ## Builds the container image (see docs/DEPLOY.md)
+	podman build -t $(IMAGE) \
+		--build-arg BUILD_DATE=$$(git log -1 --format=%ad --date=format:%Y/%m/%d) \
+		--build-arg BUILD_REVISION=$$(git rev-parse --short HEAD) .
 
 init: ## Initializes project for development
 	cp chords/settings/production.py.tpl chords/settings/production.py
