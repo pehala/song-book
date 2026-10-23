@@ -126,27 +126,28 @@ def song_categories_changed(sender, instance, action, reverse, pk_set, **kwargs)
 
 @receiver(pre_save, sender=Category)
 def category_pre_save(sender, instance, **kwargs):
-    """Remember the previous slug and tenant so their lists can be cleared too"""
-    instance.previous = None
+    """Remember the previous tenant so its payload and menu can be cleared too"""
+    instance.previous_tenant_id = None
     if instance.pk:
-        instance.previous = Category.objects.filter(pk=instance.pk).values_list("slug", "tenant_id").first()
+        instance.previous_tenant_id = (
+            Category.objects.filter(pk=instance.pk).values_list("tenant_id", flat=True).first()
+        )
 
 
 @receiver(post_save, sender=Category)
 def category_saved(sender, instance, **kwargs):
-    """A created, renamed or moved category changes the menu and the song lists"""
-    previous = getattr(instance, "previous", None)
-    extra_slugs = (previous[0],) if previous and previous[0] != instance.slug else ()
-    invalidate_tenant_songs_cache(instance.tenant, extra_slugs=extra_slugs)
-    cache.delete(tenant_cache_key(instance.tenant, settings.CATEGORY_CACHE_KEY))
-    if previous and previous[1] != instance.tenant_id:
-        old_tenant = Tenant.objects.get(pk=previous[1])
-        invalidate_tenant_songs_cache(old_tenant, extra_slugs=(previous[0],))
-        cache.delete(tenant_cache_key(old_tenant, settings.CATEGORY_CACHE_KEY))
+    """A created, renamed or moved category changes the menu and the songs payload"""
+    tenants = {instance.tenant}
+    previous_tenant_id = getattr(instance, "previous_tenant_id", None)
+    if previous_tenant_id and previous_tenant_id != instance.tenant_id:
+        tenants.add(Tenant.objects.get(pk=previous_tenant_id))
+    for tenant in tenants:
+        invalidate_tenant_songs_cache(tenant)
+        cache.delete(tenant_cache_key(tenant, settings.CATEGORY_CACHE_KEY))
 
 
 @receiver(post_delete, sender=Category)
 def category_deleted(sender, instance, **kwargs):
-    """A deleted category changes the menu and the song lists"""
-    invalidate_tenant_songs_cache(instance.tenant, extra_slugs=(instance.slug,))
+    """A deleted category changes the menu and the songs payload"""
+    invalidate_tenant_songs_cache(instance.tenant)
     cache.delete(tenant_cache_key(instance.tenant, settings.CATEGORY_CACHE_KEY))
