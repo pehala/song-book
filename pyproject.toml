@@ -30,6 +30,7 @@ production = [
 ]
 dev = [
   "pytest>=9.0.3",
+  "pytest-cov>=7.1.0",
   "pytest-django>=4.12.0",
   "ruff",
 ]
@@ -43,6 +44,26 @@ python_files = ["test_*.py"]
 python_functions = ["test_*"]
 markers = [
   "slow: marks tests as slow (real WeasyPrint rendering); deselect with -m 'not slow'",
+]
+
+[tool.coverage.run]
+source = ["analytics", "backend", "category", "chords", "frontend", "pdf", "tenants"]
+branch = true
+omit = [
+  "*/migrations/*",
+  "*/apps.py",
+  "chords/settings/production.py",
+  "chords/wsgi.py",
+]
+
+[tool.coverage.report]
+show_missing = true
+skip_covered = true
+exclude_also = [
+  "if TYPE_CHECKING:",
+  "if settings.DEBUG:",
+  "@(abc\\.)?abstractmethod",
+  "raise NotImplementedError",
 ]
 
 [tool.ruff]

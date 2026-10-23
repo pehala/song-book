@@ -1,4 +1,4 @@
-.PHONY: commit-acceptance pylint black reformat pre-commit locale migrations deploy check-fuzzy run test
+.PHONY: commit-acceptance pylint black reformat pre-commit locale migrations deploy check-fuzzy run test coverage
 
 commit-acceptance: ruff reformat check-fuzzy
 pre-commit: messages migrations reformat
@@ -35,6 +35,9 @@ init: ## Initializes project for development
 
 test: ## Runs the test suite
 	uv run --group dev pytest tests/
+
+coverage: ## Runs the test suite and reports coverage
+	uv run --group dev pytest tests/ --cov
 
 run: ## Runs the development server
 	$(MANAGE) runserver --settings $(SETTINGS)
