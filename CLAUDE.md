@@ -154,6 +154,11 @@ inline instead of running `make worker`.
 - All imports at the top of the file; no inline imports. In `backend/utils.py` the stdlib
   `functools.cache` is imported, so Django's cache is aliased:
   `from django.core.cache import cache as django_cache`.
+- Comments and docstrings describe what the code does now — never the previous behaviour, the
+  change being made or why it differs from before. That belongs in the commit message.
+- Do not add new `_`-prefixed methods unless something genuinely must stay internal; give the
+  method a public name, or make it a module-level function. The same goes for reading protected
+  members of other objects (`_meta`, `_base_manager`) when a public API exists.
 - Every user-visible string goes through `gettext_lazy`/`gettext_noop`. Czech is the default
   language; `make check-fuzzy` fails the build if `chords/locale/cs/LC_MESSAGES/django.po`
   contains fuzzy entries, so run `make messages` and resolve them.
