@@ -30,7 +30,6 @@ class Command(BaseCommand):
             help="Tenants IDs for which generate pdfs, if none specified, all tenants are considered",
         )
 
-    # pylint: disable=too-many-locals
     def handle(self, *args, **options):
         Path(f"{settings.MEDIA_ROOT}/{settings.PDF_FILE_DIR}").mkdir(parents=True, exist_ok=True)
         tenants = set(options["tenants"])

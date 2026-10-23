@@ -4,8 +4,6 @@ from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 
 from backend.auth import is_localadmin, is_superadmin
 
-# pylint: disable=no-member
-
 
 class RegenerateViewMixin:
     """Mixin which tell you if the object changed or not"""

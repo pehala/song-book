@@ -7,8 +7,6 @@ from django.views.generic import CreateView, DeleteView, UpdateView
 
 from backend.mixins import RedirectToNextMixin
 
-# pylint: disable=no-member
-
 
 class UniversalView(RedirectToNextMixin):
     """Mixing for rest of the classes, simplifies object identifier and verbose name retrieval"""

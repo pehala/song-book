@@ -5,7 +5,6 @@ from mistune import InlineState
 SPACES_RE = r"\/(?P<spacers>\d+)\/"
 
 
-# pylint: disable=unused-argument
 def parse_chords(inline, m, state: InlineState):
     """Parses tag"""
     text = m.group("spacers")

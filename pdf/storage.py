@@ -20,7 +20,6 @@ class DateOverwriteStorage(FileSystemStorage):
         return path
 
 
-# pylint: disable=protected-access
 def file_cleanup(sender, **kwargs):
     """
     File cleanup callback used to emulate the old delete

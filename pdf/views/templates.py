@@ -54,7 +54,6 @@ class GenerateFromTemplateView(LocalAdminRequired, View, SingleObjectMixin):
 
     model = PDFTemplate
 
-    # pylint: disable=unused-argument
     def get(self, request, pk):
         """Processes the request"""
         obj: AllowedTemplates = self.get_object()
@@ -160,7 +159,6 @@ class TemplateNumberSelectView(LocalAdminRequired, TemplateNumberingMixin, View)
         """Redirect back to the start of the process"""
         return redirect(reverse("pdf:templates:edit", kwargs={"pk": self.kwargs.get("pk")}))
 
-    # pylint: disable=unused-argument
     def post(self, request, *args, **kwargs):
         """POST request method handler"""
         template = ManualPDFTemplate.objects.get(pk=self.kwargs["pk"])

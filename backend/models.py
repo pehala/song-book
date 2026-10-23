@@ -82,6 +82,5 @@ class Song(Model):
             self.text,
         ]
         if hasattr(self, "song_number"):
-            # pylint: disable=no-member
             values.append(self.song_number)
         return hash(frozenset(values))
