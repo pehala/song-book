@@ -2,7 +2,6 @@
 
 import hashlib
 
-from django.conf import settings
 from django.contrib.messages import get_messages
 from django.http import HttpResponse, JsonResponse
 from django.middleware.csrf import get_token
@@ -15,9 +14,8 @@ from backend.forms import SongForm
 from backend.generic import UniversalCreateView, UniversalDeleteView, UniversalUpdateView
 from backend.mixins import LocalAdminRequired, PassRequestToFormMixin, RegenerateViewMixin
 from backend.models import Song
-from backend.songs import cached_json, cached_songs_payload, songs_to_json, visible_songs
+from backend.songs import cached_songs_payload
 from backend.utils import regenerate_pdf
-from tenants.utils import tenant_cache_key
 
 
 class ETagJsonMixin:
@@ -34,45 +32,6 @@ class ETagJsonMixin:
         response["ETag"] = etag
         response["Cache-Control"] = "private, no-cache" if private else "no-cache"
         return get_conditional_response(request, etag=etag, response=response)
-
-
-class BaseSongsJsonView(ETagJsonMixin, View):
-    """
-    Serves a songs JSON list from the cache.
-
-    The cache is consulted before any song is loaded or rendered, so cache hits
-    and 304 responses cost a single cache lookup.
-    """
-
-    def get_cache_key(self):
-        """Returns cache key for this list and user"""
-        raise NotImplementedError
-
-    def get_queryset(self):
-        """Returns songs to serialize on a cache miss"""
-        raise NotImplementedError
-
-    def include_archived(self):
-        """Archived songs are only shown to superusers"""
-        return self.request.user.is_superuser
-
-    def build(self):
-        """Serializes the queryset; called only on a cache miss"""
-        return songs_to_json(visible_songs(self.get_queryset(), self.include_archived()))
-
-    def get(self, request, *args, **kwargs):
-        return self.etag_response(request, cached_json(self.get_cache_key(), self.build))
-
-
-class AllSongsJsonView(BaseSongsJsonView):
-    """Returns songs JSON for /all, served from Redis cache with ETag support"""
-
-    def get_cache_key(self):
-        base = tenant_cache_key(self.request.tenant, f"{settings.SONGS_CACHE_KEY}_ALL")
-        return f"{base}_archived" if self.request.user.is_superuser else base
-
-    def get_queryset(self):
-        return Song.objects.filter(categories__tenant=self.request.tenant).distinct()
 
 
 class SongsApiView(ETagJsonMixin, View):

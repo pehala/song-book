@@ -3,17 +3,14 @@
 import json
 
 import pytest
-from django.conf import settings
 from django.core.cache import cache
 from django.urls import reverse
 
+from backend.cache import songs_payload_key
 from backend.models import Song
 from pdf.models.request import PDFFile
-from tenants.utils import tenant_cache_key
 
 pytestmark = pytest.mark.django_db
-
-ALL_SONGS_KEY = f"{settings.SONGS_CACHE_KEY}_ALL"
 
 
 def pending_messages(client):
@@ -37,11 +34,11 @@ def song_payload(category, **overrides):
 
 def prime_songs_cache(client):
     """Fills the anonymous songs JSON cache so its invalidation becomes observable"""
-    client.get(reverse("chords:all_data"))
+    client.get(reverse("chords:songs_api"))
 
 
 def songs_cache(tenant):
-    return cache.get(tenant_cache_key(tenant, ALL_SONGS_KEY))
+    return cache.get(songs_payload_key(tenant, False))
 
 
 def test_create_adds_song(staff_client, category):
