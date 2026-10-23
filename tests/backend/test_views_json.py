@@ -122,3 +122,31 @@ def test_staff_request_shares_public_cache_key(staff_client, song, archived_song
     assert "Archived Song" not in names
     assert cache.get(tenant_cache_key(tenant, f"{SONGS_CACHE_KEY}_ALL")) is not None
     assert cache.get(tenant_cache_key(tenant, f"{SONGS_CACHE_KEY}_ALL_archived")) is None
+
+
+def test_cache_hit_does_not_load_songs(anon_client, song):
+    """Once primed, the endpoint answers from the cache without touching the songs table."""
+    anon_client.get(ALL_DATA_URL)
+    Song.objects.all().delete()
+
+    response = anon_client.get(ALL_DATA_URL)
+    data = json.loads(response.content)
+    names = [s["name"] for s in data]
+    assert "Test Song" in names
+
+
+def test_archived_songs_are_numbered_last(superuser_client, song, archived_song):
+    """Superusers see archived songs, but only after the active ones"""
+    data = json.loads(superuser_client.get(ALL_DATA_URL).content)
+
+    numbers = {entry["name"]: entry["number"] for entry in data}
+    assert numbers["Test Song"] < numbers["Archived Song"]
+
+
+def test_songs_of_other_tenants_are_not_listed(anon_client, song, other_category, make_song):
+    """Songs reachable only through another tenant's category stay hidden"""
+    make_song(other_category, name="Foreign Song")
+
+    names = [entry["name"] for entry in json.loads(anon_client.get(ALL_DATA_URL).content)]
+    assert "Foreign Song" not in names
+    assert "Test Song" in names

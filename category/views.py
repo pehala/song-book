@@ -5,6 +5,7 @@ from django.core.cache import cache
 from django.db import transaction
 from django.db.models import Count, Q
 from django.http import Http404
+from django.shortcuts import get_object_or_404
 from django.urls import reverse, reverse_lazy
 from django.utils import translation
 from django.utils.translation import get_language, gettext
@@ -16,7 +17,7 @@ from backend.generic import UniversalCreateView, UniversalDeleteView, UniversalU
 from backend.mixins import LocalAdminRequired, PassRequestToFormMixin, RegenerateViewMixin
 from backend.models import Song
 from backend.utils import invalidate_songs_cache
-from backend.views import BaseSongListView, ETagJsonMixin
+from backend.views import BaseSongListView, BaseSongsJsonView
 from category.forms import CategoryForm, NameForm
 from category.models import Category
 from category.utils import request_pdf_regeneration
@@ -25,34 +26,31 @@ from tenants.utils import tenant_cache_key
 from tenants.views import AdminMoveView
 
 
-class CategorySongsListView(BaseSongListView, AnalyticsMixin):
+class CategorySongsListView(AnalyticsMixin, BaseSongListView):
     """Shows all songs in a category"""
 
     def get_key(self):
         return self.kwargs["slug"]
 
-    def category_queryset(self):
-        """Returns queryset for this category"""
-        return Category.objects.filter(slug=self.kwargs["slug"], tenant=self.request.tenant)
-
-    def get_queryset(self):
-        slug = self.kwargs["slug"]
-        if not self.category_queryset().exists():
-            raise Http404(_("Category with url /%(slug)s does not exist") % {"slug": slug})
-        return super().get_queryset().filter(categories__slug=slug, categories__tenant=self.request.tenant)
+    def get(self, request, *args, **kwargs):
+        self.category = get_object_or_404(Category, slug=self.kwargs["slug"], tenant=request.tenant)
+        return super().get(request, *args, **kwargs)
 
     def get_title(self):
         """Return title of this song set"""
-        return f"{self.category_queryset().get().name} | {self.request.tenant.display_name}"
+        return f"{self.category.name} | {self.request.tenant.display_name}"
 
-    def get_context_data(self, *, object_list=None, **kwargs):
-        context_data = super().get_context_data(object_list=object_list, **kwargs)
-        context_data["data_url"] = reverse("category:songs_data", kwargs={"slug": self.kwargs["slug"]})
-        return context_data
+    def get_data_url(self):
+        return reverse("category:songs_data", kwargs={"slug": self.kwargs["slug"]})
 
 
-class CategorySongsJsonView(ETagJsonMixin, CategorySongsListView):
+class CategorySongsJsonView(BaseSongsJsonView):
     """Returns songs JSON for a category, served from Redis cache with ETag support"""
+
+    def get(self, request, *args, **kwargs):
+        if not Category.objects.filter(slug=self.kwargs["slug"], tenant=request.tenant).exists():
+            raise Http404(_("Category with url /%(slug)s does not exist") % {"slug": self.kwargs["slug"]})
+        return super().get(request, *args, **kwargs)
 
     def get_cache_key(self):
         base = tenant_cache_key(
@@ -61,13 +59,8 @@ class CategorySongsJsonView(ETagJsonMixin, CategorySongsListView):
         )
         return f"{base}_archived" if self.request.user.is_superuser else base
 
-    def render_to_response(self, context, **kwargs):
-        key = self.get_cache_key()
-        cached = cache.get(key)
-        if cached is None:
-            cached = context["songs"]  # already a JSON string from get_context_data()
-            cache.set(key, cached, settings.CACHE_TIMEOUT)
-        return self.etag_response(self.request, cached)
+    def get_queryset(self):
+        return Song.objects.filter(categories__slug=self.kwargs["slug"], categories__tenant=self.request.tenant)
 
 
 class CategoryListView(LocalAdminRequired, ListView):

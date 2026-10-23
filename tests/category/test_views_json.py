@@ -79,3 +79,13 @@ def test_same_slug_on_other_tenant_excluded(anon_client, song, tenant):
     names = [s["name"] for s in data]
     assert "Leaked Song" not in names
     assert "Test Song" in names
+
+
+def test_only_songs_of_this_category_are_listed(anon_client, category, song, make_category, make_song):
+    """Songs of a sibling category are not shown"""
+    other = make_category(category.tenant, name="Sibling", slug="sibling")
+    make_song(other, name="Sibling Song")
+
+    data = json.loads(anon_client.get(reverse("category:songs_data", kwargs={"slug": category.slug})).content)
+
+    assert [entry["name"] for entry in data] == ["Test Song"]

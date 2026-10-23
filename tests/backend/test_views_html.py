@@ -1,7 +1,5 @@
 """Tests for the song listing pages."""
 
-import json
-
 import pytest
 from django.test import RequestFactory
 from django.urls import reverse
@@ -51,21 +49,8 @@ def test_base_title_is_the_tenant_display_name(tenant):
     assert view.get_title() == tenant.display_name
 
 
-def test_archived_songs_are_numbered_last(superuser_client, song, archived_song):
-    """Superusers see archived songs, but only after the active ones"""
-    response = superuser_client.get(reverse("chords:all"))
-
-    songs = json.loads(response.context["songs"])
-    numbers = {entry["name"]: entry["number"] for entry in songs}
-    assert numbers["Test Song"] < numbers["Archived Song"]
-
-
-def test_songs_of_other_tenants_are_not_listed(anon_client, song, other_category, make_song):
-    """Songs reachable only through another tenant's category stay hidden"""
-    make_song(other_category, name="Foreign Song")
-
+def test_page_carries_no_songs(anon_client, song):
+    """The page is a shell; the songs come from the JSON endpoint only"""
     response = anon_client.get(reverse("chords:all"))
 
-    names = [entry["name"] for entry in json.loads(response.context["songs"])]
-    assert "Foreign Song" not in names
-    assert "Test Song" in names
+    assert "songs" not in response.context

@@ -1,7 +1,5 @@
 """Tests for the per-category song listing page."""
 
-import json
-
 import pytest
 from django.urls import reverse
 
@@ -47,15 +45,11 @@ def test_page_points_at_json_endpoint(anon_client, category, song):
     assert response.context["data_url"] == reverse("category:songs_data", kwargs={"slug": category.slug})
 
 
-def test_only_songs_of_this_category_are_listed(anon_client, category, song, make_category, make_song):
-    """Songs of a sibling category are not shown"""
-    other = make_category(category.tenant, name="Sibling", slug="sibling")
-    make_song(other, name="Sibling Song")
-
+def test_page_carries_no_songs(anon_client, category, song):
+    """The page is a shell; the songs come from the JSON endpoint only"""
     response = anon_client.get(url_for(category))
 
-    names = [entry["name"] for entry in json.loads(response.context["songs"])]
-    assert names == ["Test Song"]
+    assert "songs" not in response.context
 
 
 def test_visit_is_counted(anon_client, category, song):
@@ -71,3 +65,11 @@ def test_repeated_visits_accumulate(anon_client, category, song):
     anon_client.get(url_for(category))
 
     assert DayStatistic.objects.get(key=category.slug).hits == 2
+
+
+def test_json_fetch_is_not_counted_again(anon_client, category, song):
+    """The page's own JSON request does not add a second hit"""
+    anon_client.get(url_for(category))
+    anon_client.get(reverse("category:songs_data", kwargs={"slug": category.slug}))
+
+    assert DayStatistic.objects.get(key=category.slug).hits == 1
