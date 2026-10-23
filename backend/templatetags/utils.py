@@ -6,16 +6,13 @@ from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
 from backend import utils
-from tenants.utils import tenant_cache_key
 
 register = template.Library()
 
 
 @register.inclusion_tag("menu/bootstrap4-menu.html", takes_context=True)
-def draw_menu(context, key, use_tenant=False):
+def draw_menu(context, key):
     """Draws menu"""
-    if use_tenant:
-        key = tenant_cache_key(context.request.tenant, key)
     return {"menu": context["menus"][key]}
 
 

@@ -46,3 +46,10 @@ def distinct_requests(tenant):
         if file.file:
             data.append(MenuItem(file.name, file.file.url))
     return data
+
+
+def link_items(tenant):
+    """Returns MenuItems for all Links of the Tenant"""
+    return [
+        MenuItem(link.display_name, url=link.link, skip_translate=True, new_tab=True) for link in tenant.links.all()
+    ]

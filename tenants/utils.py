@@ -1,6 +1,9 @@
 """Utility methods"""
 
-from tenants.models import Tenant
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from tenants.models import Tenant
 
 
 def tenant_cache_key(tenant: Tenant, key):

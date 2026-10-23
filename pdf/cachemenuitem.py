@@ -1,18 +1,31 @@
 """Module for menu items stored in cache"""
 
+from functools import partial
+
 from django.core.cache import cache
 from simple_menu import MenuItem
 
+from tenants.utils import tenant_cache_key
+
 
 class CacheMenuItem(MenuItem):
-    """MenuItem that has dynamic children stored in cache"""
+    """MenuItem whose children are generated per tenant and stored in cache"""
 
-    def __init__(self, generate_function, key, timeout, **kwargs):
+    def __init__(self, generate_function, cache_key, timeout, **kwargs):
         self.generate_function = generate_function
-        self.key = key
+        self.cache_key = cache_key
         self.timeout = timeout
-        super().__init__(children=self._callable, **kwargs)
+        super().__init__(children=self.children_for, **kwargs)
 
-    def _callable(self, request):
-        """Returns children from cache or generate new one"""
-        return cache.get_or_set(self.key, self.generate_function, timeout=self.timeout)
+    def children_for(self, request):
+        """Returns children of the request's tenant from cache or generates new ones"""
+        key = tenant_cache_key(request.tenant, self.cache_key)
+        return cache.get_or_set(key, partial(self.generate_function, request.tenant), timeout=self.timeout)
+
+
+class HideWhenEmptyCacheMenuItem(CacheMenuItem):
+    """CacheMenuItem that is hidden when the tenant has no children"""
+
+    def check(self, request):
+        """Visible only when there is at least one child"""
+        self.visible = bool(self.children_for(request))
