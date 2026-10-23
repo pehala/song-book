@@ -133,3 +133,12 @@ def test_page_leaves_messages_for_the_api(staff_client, song):
 
     assert response.status_code == 200
     assert len(json.loads(staff_client.get(reverse("chords:me")).content)["messages"]) == 1
+
+
+def test_policy_allows_no_eval_and_no_foreign_origin_for_the_reader(anon_client, tenant):
+    """The reader needs nothing but its own files, so the page is served with the policy the admin pages share"""
+    policy = anon_client.get("/")["Content-Security-Policy"]
+
+    assert "'unsafe-eval'" not in policy
+    assert "cdnjs.cloudflare.com" not in policy
+    assert "worker-src 'self'" in policy
