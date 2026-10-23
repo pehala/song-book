@@ -174,7 +174,7 @@ class TemplateNumberSelectView(LocalAdminRequired, TemplateNumberingMixin, View)
                 _("Songs in File Template '%(name)s' were successfully updated") % {"name": template.name},
             )
             return redirect("pdf:templates:list")
-        return self.render_assign_template(formset)
+        return self.render_assign_template(formset=formset)
 
 
 class MovePDFTemplatesView(AdminMoveView):

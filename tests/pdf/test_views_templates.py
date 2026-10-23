@@ -142,15 +142,6 @@ def test_assigning_numbers_stores_the_songs(staff_client, manual_template, song,
     assert manual_template.get_songs() == [(1, song), (2, second)]
 
 
-@pytest.mark.xfail(
-    raises=TypeError,
-    strict=True,
-    reason=(
-        "TemplateNumberSelectView.post calls render_assign_template(formset), but the "
-        "first positional parameter is pk, so the formset is dropped and the view "
-        "rebuilds one from songs=None."
-    ),
-)
 def test_duplicate_song_numbers_are_rejected(staff_client, manual_template, pdf_song_entry, make_song, pdf_category):
     """Two songs cannot share a position in the booklet"""
     second = make_song(pdf_category, name="Second Song")
@@ -162,6 +153,8 @@ def test_duplicate_song_numbers_are_rejected(staff_client, manual_template, pdf_
 
     assert response.status_code == 200
     assert "pdf/templates/assign.html" in [template.name for template in response.templates]
+    assert response.context["formset"].non_form_errors()
+    assert manual_template.get_songs() == [(1, pdf_song_entry.song)]
 
 
 def test_opening_the_numbering_page_directly_redirects(staff_client, manual_template):
