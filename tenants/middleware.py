@@ -1,11 +1,21 @@
 """Middleware for Tenants"""
 
+from functools import partial
 from urllib.parse import urlparse
 
 from django.conf import settings
 from django.http import Http404
+from django.utils.functional import SimpleLazyObject
 
 from tenants.models import Tenant
+
+
+def with_localadmin(request, user):
+    """Marks whether the user administers the request's tenant; reading the user is deferred until it is needed"""
+    user.is_localadmin = (
+        user.is_authenticated and request.tenant.admins.filter(id=user.id).exists() or user.is_superuser
+    )
+    return user
 
 
 class RecognizeTenantMiddleware:
@@ -22,11 +32,7 @@ class RecognizeTenantMiddleware:
             if not query_set.exists():
                 raise Http404(f"Unable to find Tenant for hostname {hostname}")
             request.tenant = query_set.first()
-            request.user.is_localadmin = (
-                request.user.is_authenticated
-                and request.tenant.admins.filter(id=request.user.id).exists()
-                or request.user.is_superuser
-            )
+            request.user = SimpleLazyObject(partial(with_localadmin, request, request.user))
         except Http404:
             if settings.DEBUG:
                 request.tenant = Tenant.objects.first()

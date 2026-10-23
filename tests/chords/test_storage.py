@@ -15,8 +15,8 @@ def test_module_imports_are_rewritten():
 
 
 @pytest.mark.django_db
-def test_collectstatic_hashes_module_import(tmp_path):
-    """collectstatic produces an Options.js whose js.cookie import points at the hashed file."""
+def test_collectstatic_hashes_module_imports(tmp_path):
+    """collectstatic produces an app.js whose static and dynamic imports point at hashed files."""
     storages = {
         "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
         "staticfiles": {"BACKEND": "chords.storage.ManifestStorage"},
@@ -25,7 +25,12 @@ def test_collectstatic_hashes_module_import(tmp_path):
     with override_settings(STORAGES=storages, STATIC_ROOT=str(static_root)):
         call_command("collectstatic", interactive=False, verbosity=0)
         manifest = json.loads((static_root / "staticfiles.json").read_text())["paths"]
-        hashed_options = static_root / manifest["js/Options.js"]
-        hashed_cookie = manifest["js/js.cookie.js"].rsplit("/", 1)[-1]
-        assert hashed_cookie != "js.cookie.js"
-        assert f'from "./{hashed_cookie}"' in hashed_options.read_text()
+        hashed_app = (static_root / manifest["app/app.js"]).read_text()
+        hashed_qr_module = (static_root / manifest["app/qr.js"]).read_text()
+        hashed_songs = manifest["app/songs.js"].rsplit("/", 1)[-1]
+        hashed_qr = manifest["js/qr.mjs"].rsplit("/", 1)[-1]
+        hashed_vendor = manifest["app/vendor/preact-htm.module.js"].rsplit("/", 1)[-1]
+        assert hashed_songs != "songs.js"
+        assert f'from "./{hashed_songs}"' in hashed_app
+        assert f'from "./vendor/{hashed_vendor}"' in hashed_app
+        assert f'import("../js/{hashed_qr}")' in hashed_qr_module

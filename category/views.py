@@ -5,43 +5,23 @@ from django.core.cache import cache
 from django.db import transaction
 from django.db.models import Count, Q
 from django.http import Http404
-from django.shortcuts import get_object_or_404
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 from django.utils import translation
 from django.utils.translation import get_language, gettext
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 
-from analytics.views import AnalyticsMixin
 from backend.cache import invalidate_tenant_songs_cache
 from backend.generic import UniversalCreateView, UniversalDeleteView, UniversalUpdateView
 from backend.mixins import LocalAdminRequired, PassRequestToFormMixin, RegenerateViewMixin
 from backend.models import Song
-from backend.views import BaseSongListView, BaseSongsJsonView
+from backend.views import BaseSongsJsonView
 from category.forms import CategoryForm, NameForm
 from category.models import Category
 from category.utils import request_pdf_regeneration
 from pdf.models.request import PDFFile
 from tenants.utils import tenant_cache_key
 from tenants.views import AdminMoveView
-
-
-class CategorySongsListView(AnalyticsMixin, BaseSongListView):
-    """Shows all songs in a category"""
-
-    def get_key(self):
-        return self.kwargs["slug"]
-
-    def get(self, request, *args, **kwargs):
-        self.category = get_object_or_404(Category, slug=self.kwargs["slug"], tenant=request.tenant)
-        return super().get(request, *args, **kwargs)
-
-    def get_title(self):
-        """Return title of this song set"""
-        return f"{self.category.name} | {self.request.tenant.display_name}"
-
-    def get_data_url(self):
-        return reverse("category:songs_data", kwargs={"slug": self.kwargs["slug"]})
 
 
 class CategorySongsJsonView(BaseSongsJsonView):
