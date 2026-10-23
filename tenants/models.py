@@ -90,3 +90,10 @@ def invalidate_links_menu_on_assignment(sender, instance, action, reverse, pk_se
 def invalidate_links_menu_on_edit(sender, instance, **kwargs):
     """Drops the cached links menu of the tenants using the edited link"""
     clear_links_menu(Tenant.objects.filter(links=instance))
+
+
+# pylint: disable=unused-argument
+@receiver(post_save, sender=Tenant)
+def invalidate_categories_menu(sender, instance, **kwargs):
+    """Drops the cached categories menu, which depends on the tenant's `all_songs_category`"""
+    cache.delete(tenant_cache_key(instance, settings.CATEGORY_CACHE_KEY))

@@ -62,6 +62,16 @@ def test_links_menu_follows_assignment_and_edits(tenant, other_tenant):
     assert process(tenant, "links") == []
 
 
+def test_categories_menu_follows_all_songs_category_flag(tenant):
+    tenant.all_songs_category = True
+    tenant.save()
+    assert "All Songs" in [str(title) for title in child_titles(tenant, "songbook")]
+
+    tenant.all_songs_category = False
+    tenant.save()
+    assert "All Songs" not in [str(title) for title in child_titles(tenant, "songbook")]
+
+
 def test_links_list_is_rendered_only_with_links(tenant, client):
     html = client.get("/all", HTTP_HOST="localhost").content.decode()
     assert "See Also" not in html
