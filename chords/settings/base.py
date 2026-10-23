@@ -228,6 +228,7 @@ LOCALE_PATHS = ["chords/locale"]
 # Images: 'self' + data: URIs (QR code SVG is injected as data:).
 # Connect: 'self' for fetch() calls to JSON data endpoints and analytics REST view.
 # Fonts: 'self' for any self-hosted web fonts.
+# Workers: 'self' for the reader's service worker.
 # Frame ancestors: 'none' — this app is never embedded in iframes.
 SECURE_CSP = {
     "default-src": ["'self'"],
@@ -246,5 +247,6 @@ SECURE_CSP = {
     "img-src": ["'self'", "data:"],
     "connect-src": ["'self'"],
     "font-src": ["'self'"],
+    "worker-src": ["'self'"],
     "frame-ancestors": ["'none'"],
 }
