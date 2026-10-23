@@ -10,7 +10,6 @@ from django.http import Http404, HttpRequest, HttpResponse, HttpResponseBadReque
 # Create your views here.
 from django.utils.decorators import method_decorator
 from django.utils.timezone import now
-from django.utils.translation import gettext_noop
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
@@ -25,21 +24,6 @@ def analytics(request, key):
         statistic, _ = DayStatistic.objects.get_or_create(key=key, date=now(), tenant=request.tenant)
         statistic.hits += 1
         statistic.save()
-
-
-class AnalyticsMixin(View):
-    """Mixin for gathering number of hits per day analytics"""
-
-    KEY = gettext_noop("General")
-
-    def get_key(self):
-        """Returns Key to be used in analytics"""
-        return self.KEY
-
-    def dispatch(self, request, *args, **kwargs):
-        result = super().dispatch(request, *args, **kwargs)
-        analytics(request, self.get_key())
-        return result
 
 
 ALL_SONGS_KEY = "all"

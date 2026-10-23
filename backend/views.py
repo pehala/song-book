@@ -6,11 +6,9 @@ from django.conf import settings
 from django.contrib.messages import get_messages
 from django.http import HttpResponse, JsonResponse
 from django.middleware.csrf import get_token
-from django.urls import reverse, reverse_lazy
+from django.urls import reverse_lazy
 from django.utils.cache import get_conditional_response
-from django.utils.translation import gettext_lazy as _
 from django.views import View
-from django.views.generic import RedirectView, TemplateView
 
 from backend.auth import is_localadmin
 from backend.forms import SongForm
@@ -20,36 +18,6 @@ from backend.models import Song
 from backend.songs import cached_json, cached_songs_payload, songs_to_json, visible_songs
 from backend.utils import regenerate_pdf
 from tenants.utils import tenant_cache_key
-
-
-class BaseSongListView(TemplateView):
-    """Renders the song list page; the songs themselves are fetched by the page from a JSON endpoint"""
-
-    template_name = "songs/index.html"
-
-    def get_title(self):
-        """Return title of this song set"""
-        return self.request.tenant.display_name
-
-    def get_data_url(self):
-        """Return URL of the JSON endpoint the page should fetch"""
-        raise NotImplementedError
-
-    def get_context_data(self, **kwargs):
-        context_data = super().get_context_data(**kwargs)
-        context_data["title"] = self.get_title()
-        context_data["data_url"] = self.get_data_url()
-        return context_data
-
-
-class AllSongListView(BaseSongListView):
-    """Shows all songs for this specific tenant"""
-
-    def get_title(self):
-        return f"{_('All Songs')} | {self.request.tenant.display_name}"
-
-    def get_data_url(self):
-        return reverse("chords:all_data")
 
 
 class ETagJsonMixin:
@@ -141,13 +109,6 @@ class MeView(View):
         )
         response["Cache-Control"] = "private, no-store"
         return response
-
-
-class IndexSongListView(RedirectView):
-    """Shows first available category"""
-
-    def get_redirect_url(self, *args, **kwargs):
-        return self.request.tenant.index_redirect
 
 
 class SongCreateView(LocalAdminRequired, PassRequestToFormMixin, UniversalCreateView):

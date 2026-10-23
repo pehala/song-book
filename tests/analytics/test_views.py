@@ -9,7 +9,6 @@ from django.urls import reverse
 from django.utils.timezone import now
 
 from analytics.models import DayStatistic
-from analytics.views import AnalyticsMixin
 
 pytestmark = pytest.mark.django_db
 
@@ -92,11 +91,6 @@ def test_other_tenants_data_is_not_returned(staff_client, other_tenant):
     response = staff_client.post(DATA_URL, {"start_date": timestamp(days_ago=1), "key": "rock"})
 
     assert json.loads(response.content) == {}
-
-
-def test_views_without_their_own_key_are_counted_as_general():
-    """A view that does not name itself is recorded under the default key"""
-    assert AnalyticsMixin().get_key() == "General"
 
 
 def hit_url(key):
