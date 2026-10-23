@@ -26,7 +26,6 @@ production = [
   "psycopg[binary,pool]>=3.3.4",
   "gunicorn",
   "gevent",
-  "netifaces",
 ]
 dev = [
   "pytest>=9.0.3",
