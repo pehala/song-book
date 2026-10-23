@@ -92,3 +92,4 @@ poetry.lock
 #Python virtual environment
 venv/
 
+test-results/

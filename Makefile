@@ -1,4 +1,4 @@
-.PHONY: commit-acceptance pylint black reformat pre-commit locale migrations deploy check-fuzzy run test coverage \
+.PHONY: commit-acceptance pylint black reformat pre-commit locale migrations deploy check-fuzzy run test coverage e2e \
 	image migrate prerender cache_clear compilemessages collectstatic compress_static export_static start worker
 
 commit-acceptance: ruff reformat check-fuzzy
@@ -71,6 +71,9 @@ init: ## Initializes project for development
 
 test: ## Runs the test suite
 	uv run --group dev pytest tests/
+
+e2e: ## Runs the browser tests of the reader (needs: uv run playwright install --with-deps chromium)
+	uv run --group dev pytest tests/e2e -m e2e --tracing retain-on-failure
 
 coverage: ## Runs the test suite and reports coverage
 	uv run --group dev pytest tests/ --cov
