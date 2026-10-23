@@ -5,6 +5,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.urls import reverse
 
+from backend.cache import songs_payload_key
 from category.models import Category
 from pdf.models.request import PDFFile
 from tenants.utils import tenant_cache_key
@@ -142,9 +143,9 @@ def test_delete_drops_the_menu_cache(staff_client, tenant, category):
 
 
 def test_delete_invalidates_songs_cache(staff_client, anon_client, tenant, category, song):
-    """The JSON of the songs that were in the category is evicted"""
-    anon_client.get(reverse("chords:all_data"))
-    key = tenant_cache_key(tenant, f"{settings.SONGS_CACHE_KEY}_ALL")
+    """The payload of the songs that were in the category is evicted"""
+    anon_client.get(reverse("chords:songs_api"))
+    key = songs_payload_key(tenant, False)
     assert cache.get(key) is not None
 
     staff_client.post(reverse("category:delete", kwargs={"pk": category.pk}))

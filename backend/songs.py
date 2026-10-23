@@ -1,4 +1,4 @@
-"""Builds the songs JSON payloads served to the browser and keeps them in the cache"""
+"""Builds the songs payload served to the browser and keeps it in the cache"""
 
 import json
 from collections.abc import Callable, Iterable
@@ -14,16 +14,11 @@ from backend.models import Song
 from category.models import Category
 
 
-def transform_song(song: Song, number: int, with_categories: bool = False) -> dict:
-    """
-    Transforms song into a dict representation.
-
-    With with_categories the slugs of the categories prefetched into `tenant_categories` are added as `cats`.
-    """
+def transform_song(song: Song, number: int) -> dict:
+    """Transforms song into a dict; its categories must be prefetched into `tenant_categories`"""
     transformed = model_to_dict(song, ["id", "name", "capo", "author", "link", "archived"])
     transformed["number"] = number
-    if with_categories:
-        transformed["cats"] = [category.slug for category in song.tenant_categories]
+    transformed["cats"] = [category.slug for category in song.tenant_categories]
     transformed["text"] = song.rendered_markdown
     return transformed
 
@@ -35,9 +30,9 @@ def visible_songs(queryset: QuerySet, include_archived: bool) -> QuerySet:
     return queryset.filter(archived=False)
 
 
-def songs_to_json(songs: Iterable[Song], with_categories: bool = False) -> str:
+def songs_to_json(songs: Iterable[Song]) -> str:
     """
-    Serializes songs into the JSON list consumed by the song list page.
+    Serializes songs into the JSON list consumed by the reader.
 
     Songs are numbered 1..N in queryset order; archived songs are moved to the end
     and keep counting, so numbers are stable for the public part of the list.
@@ -50,11 +45,11 @@ def songs_to_json(songs: Iterable[Song], with_categories: bool = False) -> str:
         if song.archived:
             archived.append(song)
             continue
-        result.append(transform_song(song, number, with_categories))
+        result.append(transform_song(song, number))
         number += 1
 
     for song in archived:
-        result.append(transform_song(song, number, with_categories))
+        result.append(transform_song(song, number))
         number += 1
 
     return json.dumps(result, cls=DjangoJSONEncoder)
@@ -69,7 +64,7 @@ def build_songs_payload(tenant, include_archived: bool) -> str:
             Prefetch("categories", queryset=Category.objects.filter(tenant=tenant), to_attr="tenant_categories")
         )
     )
-    return songs_to_json(visible_songs(songs, include_archived), with_categories=True)
+    return songs_to_json(visible_songs(songs, include_archived))
 
 
 def cached_songs_payload(tenant, include_archived: bool) -> str:
