@@ -13,15 +13,26 @@ def test_str_contains_name_and_id(song):
 
 
 def test_hash_is_stable_for_the_same_song(song):
-    """Hashing the same instance twice gives the same value"""
+    """Hashing the same song twice gives the same value"""
     assert hash(song) == hash(song)
 
 
-def test_hash_includes_song_number_when_present(song):
-    """A song numbered for a PDF hashes differently from the plain one"""
-    plain = hash(song)
+def test_equal_songs_hash_equally(song):
+    """Two instances of one row are interchangeable as set members or dict keys"""
+    reloaded = Song.objects.get(pk=song.pk)
+
+    assert reloaded == song
+    assert hash(reloaded) == hash(song)
+
+
+def test_hash_identifies_the_row_not_its_contents(song):
+    """Editing a song in memory does not move it in a set"""
+    before = hash(song)
+
+    song.name = "Renamed"
     song.song_number = 3
-    assert hash(song) != plain
+
+    assert hash(song) == before
 
 
 def test_prerender_stores_html(song):
