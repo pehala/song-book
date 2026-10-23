@@ -70,17 +70,3 @@ class Song(Model):
         verbose_name = _("Song")
         verbose_name_plural = _("Songs")
         ordering = ["date", "id"]
-
-    def __hash__(self):
-        values = [
-            self.name,
-            self.date,
-            self.capo,
-            self.author,
-            self.link,
-            self.categories,
-            self.text,
-        ]
-        if hasattr(self, "song_number"):
-            values.append(self.song_number)
-        return hash(frozenset(values))

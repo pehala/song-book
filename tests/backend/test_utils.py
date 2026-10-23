@@ -7,7 +7,7 @@ from django.core.cache import cache
 from django.urls import reverse
 
 from backend.models import Song
-from backend.utils import invalidate_songs_cache
+from backend.utils import invalidate_songs_cache, regenerate_prerender
 from chords.settings.base import SONGS_CACHE_KEY
 from tenants.utils import tenant_cache_key
 
@@ -63,3 +63,23 @@ def test_new_song_visible_after_cache_invalidation(anon_client, song, category):
     data = json.loads(response.content)
     names = [s["name"] for s in data]
     assert "Brand New Song" in names
+
+
+def test_regenerate_prerender_fills_the_field(settings, song):
+    """With prerendering enabled a saved song gets its html refreshed"""
+    settings.USE_PRERENDERED_MARKDOWN = True
+
+    regenerate_prerender(song)
+
+    song.refresh_from_db()
+    assert "chord" in song.prerendered
+
+
+def test_regenerate_prerender_is_a_noop_when_disabled(settings, song):
+    """With prerendering disabled nothing is stored"""
+    settings.USE_PRERENDERED_MARKDOWN = False
+
+    regenerate_prerender(song)
+
+    song.refresh_from_db()
+    assert song.prerendered is None

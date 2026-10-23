@@ -20,7 +20,7 @@ from backend.views import BaseSongListView, ETagJsonMixin
 from category.forms import CategoryForm, NameForm
 from category.models import Category
 from category.utils import request_pdf_regeneration
-from pdf.models.request import PDFFile, PDFTemplate
+from pdf.models.request import PDFFile
 from tenants.utils import tenant_cache_key
 from tenants.views import AdminMoveView
 
@@ -148,17 +148,15 @@ class CategoryMoveView(AdminMoveView):
         """What should happen on POST with data from forms"""
         categories = Category.objects.filter(id__in=ids)
         songs = Song.objects.filter(categories__id__in=ids).distinct()
-        requests = PDFTemplate.objects.filter(category_id__in=ids).distinct()
+        # Categories are PDFTemplates themselves, so only their files have to follow them
+        files = PDFFile.objects.filter(template_id__in=ids)
         with transaction.atomic():
             for category in categories:
                 category.tenant = target
-            for request in requests:
-                request.tenant = target
-                for file in request.files:
-                    file.tenant = target
-                PDFFile.objects.bulk_update(request.files, ["tenant"])
+            for file in files:
+                file.tenant = target
             Category.objects.bulk_update(categories, ["tenant"])
-            PDFTemplate.objects.bulk_update(requests, ["tenant"])
+            PDFFile.objects.bulk_update(files, ["tenant"])
             for song in songs:
                 to_keep = []
                 to_remove = []

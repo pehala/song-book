@@ -25,7 +25,7 @@ class Command(BaseCommand):
             "tenants",
             metavar="Tenants",
             type=int,
-            nargs="+",
+            nargs="*",
             default=[],
             help="Tenants IDs for which generate pdfs, if none specified, all tenants are considered",
         )

@@ -38,6 +38,12 @@ def test_distinct_requests_shows_orphan_public_done_file(tenant, make_pdf_file):
     assert len(distinct_requests(tenant)) == 1
 
 
+def test_distinct_requests_hides_orphan_file_without_bytes(tenant, make_pdf_file):
+    """An orphaned DONE row whose file was never written has nothing to link to."""
+    make_pdf_file(None, status=Status.DONE)
+    assert distinct_requests(tenant) == []
+
+
 def test_distinct_requests_hides_private_files(tenant, pdf_category, make_pdf_file):
     """Files with public=False are excluded from the menu."""
     make_pdf_file(pdf_category, status=Status.DONE, public=False, file=FAKE_PATH)
