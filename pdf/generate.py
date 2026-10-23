@@ -115,7 +115,6 @@ def generate_pdf_file(template: AllowedTemplates, delay: int = 0):
         public=template.public,
         filename=template.filename,
     )
-    file.save()
     generate_pdf_job.schedule(kwargs={"file": file, "template": template}, eta=scheduled_time)
 
     # queue = get_queue("default")

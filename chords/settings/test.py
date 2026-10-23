@@ -22,3 +22,9 @@ STORAGES = {
         "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
     },
 }
+
+# Run Huey tasks synchronously in the same process — no worker needed
+HUEY = {"immediate": True}
+
+# Keep the production-style delay so editing songs in tests never renders a PDF inline
+CATEGORY_PDF_DELAY = 30 * 60
