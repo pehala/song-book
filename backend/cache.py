@@ -6,12 +6,20 @@ from django.core.cache import cache
 from tenants.utils import tenant_cache_key
 
 
+def songs_payload_key(tenant, include_archived):
+    """Cache key of the combined songs payload of a tenant"""
+    key = tenant_cache_key(tenant, settings.SONGS_CACHE_KEY)
+    return f"{key}_archived" if include_archived else key
+
+
 def invalidate_tenant_songs_cache(tenant, extra_slugs=()):
     """
-    Invalidates every songs JSON cache entry of a tenant: the "all" list and each category list.
+    Invalidates every songs JSON cache entry of a tenant: the combined payload, the "all" list and each category list.
 
     extra_slugs lets callers clear lists of slugs that no longer exist (renamed or deleted categories).
     """
+    for archived in (False, True):
+        cache.delete(songs_payload_key(tenant, archived))
     slugs = [*tenant.category_set.values_list("slug", flat=True), *extra_slugs]
     for name in ["ALL", *slugs]:
         key = tenant_cache_key(tenant, f"{settings.SONGS_CACHE_KEY}_{name}")
