@@ -46,16 +46,16 @@ class AdminMoveView(SuperAdminRequired, TemplateView):
 
         return initial
 
-    def get_context_data(self, **kwargs):
-        """Appends Form and Formset"""
+    def get_context_data(self, form=None, formset=None, **kwargs):
+        """Appends Form and Formset, reusing the submitted ones so errors are shown"""
         context = super().get_context_data(**kwargs)
 
         initial = {}
         if "pk" in self.request.GET:
             initial = self.initial(self.request.GET.getlist("pk"))
 
-        context["form"] = self.form_class()
-        context["formset"] = self.formset_class(initial=initial)
+        context["form"] = form or self.form_class()
+        context["formset"] = formset or self.formset_class(initial=initial)
         context["source_verbose_name_plural"] = self.model._meta.verbose_name_plural
         context["target_verbose_name"] = Tenant._meta.verbose_name
         return context
@@ -69,7 +69,7 @@ class AdminMoveView(SuperAdminRequired, TemplateView):
             ids = [inline_form.cleaned_data["pk"] for inline_form in formset]
             self.action(tenant, ids)
             return redirect("admin:index")
-        return self.render_to_response(self.get_context_data(**kwargs))
+        return self.render_to_response(self.get_context_data(form=form, formset=formset, **kwargs))
 
     @abc.abstractmethod
     def action(self, target, ids):

@@ -54,11 +54,7 @@ def test_page_names_the_models_involved(superuser_client, category):
 
 
 def test_invalid_submission_moves_nothing(superuser_client, category, tenant, other_tenant):
-    """A submission without a target tenant redisplays the page and changes nothing
-
-    Note: the view rebuilds an unbound form for the response, so the validation
-    errors are not shown back to the user.
-    """
+    """A submission without a target tenant redisplays the page and changes nothing"""
     data = move_payload(other_tenant, category)
     data["tenant"] = ""
 
@@ -67,6 +63,16 @@ def test_invalid_submission_moves_nothing(superuser_client, category, tenant, ot
     assert response.status_code == 200
     category.refresh_from_db()
     assert category.tenant == tenant
+
+
+def test_invalid_submission_shows_the_errors(superuser_client, category, other_tenant):
+    """The user is told what was wrong with the submission"""
+    data = move_payload(other_tenant, category)
+    data["tenant"] = ""
+
+    response = superuser_client.post(MOVE_URL, data)
+
+    assert response.context["form"].errors
 
 
 def test_move_reassigns_the_category(superuser_client, category, other_tenant):
