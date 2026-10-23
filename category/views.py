@@ -13,10 +13,10 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 
 from analytics.views import AnalyticsMixin
+from backend.cache import invalidate_tenant_songs_cache
 from backend.generic import UniversalCreateView, UniversalDeleteView, UniversalUpdateView
 from backend.mixins import LocalAdminRequired, PassRequestToFormMixin, RegenerateViewMixin
 from backend.models import Song
-from backend.utils import invalidate_songs_cache
 from backend.views import BaseSongListView, BaseSongsJsonView
 from category.forms import CategoryForm, NameForm
 from category.models import Category
@@ -95,10 +95,6 @@ class CategoryCreateView(LocalAdminRequired, PassRequestToFormMixin, UniversalCr
                 "locale": self.request.LANGUAGE_CODE,
             }
 
-    def get_success_message(self, cleaned_data):
-        cache.delete(tenant_cache_key(self.request.tenant, settings.CATEGORY_CACHE_KEY))
-        return super().get_success_message(cleaned_data)
-
 
 class CategoryUpdateView(LocalAdminRequired, PassRequestToFormMixin, RegenerateViewMixin, UniversalUpdateView):
     """Updates category"""
@@ -111,7 +107,6 @@ class CategoryUpdateView(LocalAdminRequired, PassRequestToFormMixin, RegenerateV
         response = super().post(request, *args, **kwargs)
         if self.regenerate and self.object.generate_pdf:
             request_pdf_regeneration(self.object)
-        cache.delete(tenant_cache_key(self.object.tenant, settings.CATEGORY_CACHE_KEY))
         return response
 
 
@@ -120,15 +115,6 @@ class CategoryDeleteView(LocalAdminRequired, UniversalDeleteView):
 
     model = Category
     success_url = reverse_lazy("category:list")
-
-    def post(self, request, *args, **kwargs):
-        category = self.get_object()
-        # Invalidate songs cache for all songs in this category before deletion
-        for song in category.song_set.all():
-            invalidate_songs_cache(song)
-        response = super().post(request, *args, **kwargs)
-        cache.delete(tenant_cache_key(self.object.tenant, settings.CATEGORY_CACHE_KEY))
-        return response
 
 
 class CategoryMoveView(AdminMoveView):
@@ -143,6 +129,8 @@ class CategoryMoveView(AdminMoveView):
         songs = Song.objects.filter(categories__id__in=ids).distinct()
         # Categories are PDFTemplates themselves, so only their files have to follow them
         files = PDFFile.objects.filter(template_id__in=ids)
+        # bulk_update sends no signals, so the lists of the source tenants are cleared by hand
+        source_tenants = {category.tenant for category in categories.select_related("tenant")}
         with transaction.atomic():
             for category in categories:
                 category.tenant = target
@@ -165,3 +153,6 @@ class CategoryMoveView(AdminMoveView):
                     song.save()
                     song.categories.set(to_remove)
                     song.save()
+        for tenant in source_tenants | {target}:
+            invalidate_tenant_songs_cache(tenant)
+            cache.delete(tenant_cache_key(tenant, settings.CATEGORY_CACHE_KEY))

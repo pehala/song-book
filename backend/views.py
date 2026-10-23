@@ -15,7 +15,7 @@ from backend.generic import UniversalCreateView, UniversalDeleteView, UniversalU
 from backend.mixins import LocalAdminRequired, PassRequestToFormMixin, RegenerateViewMixin
 from backend.models import Song
 from backend.songs import cached_json, songs_to_json, visible_songs
-from backend.utils import invalidate_songs_cache, regenerate_pdf, regenerate_prerender
+from backend.utils import regenerate_pdf
 from tenants.utils import tenant_cache_key
 
 
@@ -120,8 +120,6 @@ class SongCreateView(LocalAdminRequired, PassRequestToFormMixin, UniversalCreate
 
     def get_success_url(self):
         regenerate_pdf(self.object)
-        regenerate_prerender(self.object)
-        invalidate_songs_cache(self.object)
         return super().get_success_url()
 
 
@@ -141,8 +139,6 @@ class SongUpdateView(
         response = super().post(request, *args, **kwargs)
         if self.regenerate:
             regenerate_pdf(self.object)
-            regenerate_prerender(self.object)
-            invalidate_songs_cache(self.object)
         return response
 
 
@@ -153,7 +149,5 @@ class SongDeleteView(LocalAdminRequired, UniversalDeleteView):
     success_url = reverse_lazy("backend:index")
 
     def post(self, request, *args, **kwargs):
-        song = self.get_object()
-        regenerate_pdf(song)
-        invalidate_songs_cache(song)
+        regenerate_pdf(self.get_object())
         return super().post(request, *args, **kwargs)

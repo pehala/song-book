@@ -6,7 +6,6 @@ import pytest
 from django.core.cache import cache
 from django.urls import reverse
 
-from backend.models import Song
 from chords.settings.base import SONGS_CACHE_KEY
 from tenants.utils import tenant_cache_key
 
@@ -100,18 +99,14 @@ def test_superuser_request_uses_separate_cache_key(superuser_client, song, tenan
     assert cache.get(anon_key) is None
 
 
-def test_second_request_served_from_cache(anon_client, song, category):
-    """A song added after the cache is primed does not appear in the cached response."""
-    anon_client.get(ALL_DATA_URL)
-
-    # Add a new song after caching — should not appear in cached response
-    late = Song.objects.create(name="Late Song", text="y")
-    late.categories.add(category)
+def test_response_served_from_cache(anon_client, song, tenant):
+    """Whatever sits under the cache key is served as-is; the database is not consulted."""
+    key = tenant_cache_key(tenant, f"{SONGS_CACHE_KEY}_ALL")
+    cache.set(key, json.dumps([{"name": "From Cache"}]))
 
     response = anon_client.get(ALL_DATA_URL)
     data = json.loads(response.content)
-    names = [s["name"] for s in data]
-    assert "Late Song" not in names
+    assert [s["name"] for s in data] == ["From Cache"]
 
 
 def test_staff_request_shares_public_cache_key(staff_client, song, archived_song, tenant):
@@ -122,17 +117,6 @@ def test_staff_request_shares_public_cache_key(staff_client, song, archived_song
     assert "Archived Song" not in names
     assert cache.get(tenant_cache_key(tenant, f"{SONGS_CACHE_KEY}_ALL")) is not None
     assert cache.get(tenant_cache_key(tenant, f"{SONGS_CACHE_KEY}_ALL_archived")) is None
-
-
-def test_cache_hit_does_not_load_songs(anon_client, song):
-    """Once primed, the endpoint answers from the cache without touching the songs table."""
-    anon_client.get(ALL_DATA_URL)
-    Song.objects.all().delete()
-
-    response = anon_client.get(ALL_DATA_URL)
-    data = json.loads(response.content)
-    names = [s["name"] for s in data]
-    assert "Test Song" in names
 
 
 def test_archived_songs_are_numbered_last(superuser_client, song, archived_song):

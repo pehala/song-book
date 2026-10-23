@@ -56,3 +56,14 @@ def test_import_rejects_unknown_category(tmp_path, db):
 
     with pytest.raises(Category.DoesNotExist):
         call_command("import", str(source), category=999999)
+
+
+def test_import_prerenders_when_enabled(settings, category, tmp_path):
+    """With prerendering on, imported songs arrive with their html already rendered"""
+    settings.USE_PRERENDERED_MARKDOWN = True
+    source = tmp_path / "songs.json"
+    source.write_text(json.dumps([{"name": "Imported", "text": "{C}one"}]), encoding="UTF-8")
+
+    call_command("import", str(source), category=category.id)
+
+    assert '<span class="chord">C</span>' in Song.objects.get(name="Imported").prerendered

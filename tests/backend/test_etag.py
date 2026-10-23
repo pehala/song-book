@@ -3,7 +3,7 @@
 import pytest
 from django.urls import reverse
 
-from backend.utils import invalidate_songs_cache
+from backend.cache import invalidate_songs_cache
 
 pytestmark = pytest.mark.django_db
 

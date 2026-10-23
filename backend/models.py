@@ -1,6 +1,7 @@
 """Models for backend app"""
 
 from django.conf import settings
+from django.core.cache import cache
 from django.db.models import (
     BooleanField,
     CharField,
@@ -12,11 +13,16 @@ from django.db.models import (
     URLField,
     Value,
 )
+from django.db.models.signals import m2m_changed, post_delete, post_save, pre_delete, pre_save
+from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from markdownx.models import MarkdownxField
 
+from backend.cache import invalidate_songs_cache, invalidate_tenant_songs_cache, song_tenants
 from category.models import Category
 from chords.markdown import RENDERER
+from tenants.models import Tenant
+from tenants.utils import tenant_cache_key
 
 
 class Song(Model):
@@ -55,7 +61,7 @@ class Song(Model):
         self.prerendered = html
 
         if save:
-            self.save()
+            self.save(update_fields=["prerendered"])
         return html
 
     @property
@@ -70,3 +76,77 @@ class Song(Model):
         verbose_name = _("Song")
         verbose_name_plural = _("Songs")
         ordering = ["date", "id"]
+
+
+@receiver(pre_save, sender=Song)
+def song_pre_save(sender, instance, update_fields, **kwargs):
+    """Keeps the prerendered html in step with the text on every full save (views, admin, scripts)"""
+    if settings.USE_PRERENDERED_MARKDOWN and update_fields is None:
+        instance.prerender(save=False)
+
+
+@receiver(post_save, sender=Song)
+def song_saved(sender, instance, **kwargs):
+    """A saved song changes every list it is in"""
+    invalidate_songs_cache(instance)
+
+
+@receiver(pre_delete, sender=Song)
+def song_pre_delete(sender, instance, **kwargs):
+    """Remember the tenants before the category links are gone"""
+    instance.tenants_before_delete = song_tenants(instance)
+
+
+@receiver(post_delete, sender=Song)
+def song_deleted(sender, instance, **kwargs):
+    """A deleted song changes every list it was in"""
+    for tenant in getattr(instance, "tenants_before_delete", ()):
+        invalidate_tenant_songs_cache(tenant)
+
+
+@receiver(m2m_changed, sender=Song.categories.through)
+def song_categories_changed(sender, instance, action, reverse, pk_set, **kwargs):
+    """
+    Category membership changed: lists of both the old and the new categories are stale.
+
+    pre_remove/pre_clear run while the old links still exist, post_add once the new ones do,
+    so the current links always name every affected tenant.
+    """
+    if action not in ("pre_remove", "pre_clear", "post_add"):
+        return
+    if reverse:
+        tenants = {instance.tenant}
+    else:
+        tenants = song_tenants(instance)
+        if pk_set:
+            tenants.update(Tenant.objects.filter(category__pk__in=pk_set))
+    for tenant in tenants:
+        invalidate_tenant_songs_cache(tenant)
+
+
+@receiver(pre_save, sender=Category)
+def category_pre_save(sender, instance, **kwargs):
+    """Remember the previous slug and tenant so their lists can be cleared too"""
+    instance.previous = None
+    if instance.pk:
+        instance.previous = Category.objects.filter(pk=instance.pk).values_list("slug", "tenant_id").first()
+
+
+@receiver(post_save, sender=Category)
+def category_saved(sender, instance, **kwargs):
+    """A created, renamed or moved category changes the menu and the song lists"""
+    previous = getattr(instance, "previous", None)
+    extra_slugs = (previous[0],) if previous and previous[0] != instance.slug else ()
+    invalidate_tenant_songs_cache(instance.tenant, extra_slugs=extra_slugs)
+    cache.delete(tenant_cache_key(instance.tenant, settings.CATEGORY_CACHE_KEY))
+    if previous and previous[1] != instance.tenant_id:
+        old_tenant = Tenant.objects.get(pk=previous[1])
+        invalidate_tenant_songs_cache(old_tenant, extra_slugs=(previous[0],))
+        cache.delete(tenant_cache_key(old_tenant, settings.CATEGORY_CACHE_KEY))
+
+
+@receiver(post_delete, sender=Category)
+def category_deleted(sender, instance, **kwargs):
+    """A deleted category changes the menu and the song lists"""
+    invalidate_tenant_songs_cache(instance.tenant, extra_slugs=(instance.slug,))
+    cache.delete(tenant_cache_key(instance.tenant, settings.CATEGORY_CACHE_KEY))
