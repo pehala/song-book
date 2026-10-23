@@ -25,6 +25,7 @@ make run                            # dev server (SETTINGS=chords.settings.produ
 make worker                         # Huey worker for PDF generation
 make test                           # uv run --group dev pytest tests/
 make coverage                       # the same, with a branch coverage report
+make e2e                            # Playwright tests of the reader (needs `uv run playwright install --with-deps chromium`)
 make commit-acceptance              # what CI gates on: ruff --fix + ruff format + check-fuzzy
 make migrations                     # makemigrations
 make messages                       # makemessages -l cs
@@ -36,15 +37,16 @@ make help                           # all targets
 Single test / subset:
 
 ```bash
-uv run --group dev pytest tests/backend/test_etag.py::test_all_songs_response_has_etag -v
+uv run --group dev pytest tests/backend/test_etag.py::test_response_has_etag -v
 uv run --group dev pytest tests/ -k cache
-uv run --group dev pytest tests/ -m "not slow"    # skip the real WeasyPrint renders
+uv run --group dev pytest tests/ -m "not slow and not e2e"    # skip the real WeasyPrint renders
 ```
 
 Management commands: `uv run python manage.py <cmd>` — notably `prerender`,
 `clear_prerender`, `import -c <category_id> <file.json>`, `generate_pdf`, `run_huey`.
 
-CI (`.github/workflows/songbook.yml`) runs `make init`, `make commit-acceptance`, `make test`.
+CI (`.github/workflows/songbook.yml`) runs `make init`, `make commit-acceptance`, `make test`, and in a second job
+installs Chromium and runs `make e2e`.
 
 ## Settings
 
@@ -84,12 +86,12 @@ One deployment serves several songbooks, told apart by `Host` header.
 
 | App | Contains |
 |---|---|
-| `backend` | `Song`, the song list/JSON views, generic CRUD base views, auth helpers, mixins, management commands |
-| `category` | `Category` (a **subclass of `pdf.PDFTemplate`**), category list/JSON views |
+| `backend` | `Song`, the songs payload, `/api/me` and song CRUD views, generic CRUD base views, auth helpers, mixins, management commands |
+| `category` | `Category` (a **subclass of `pdf.PDFTemplate`**), category admin views |
 | `pdf` | `PDFTemplate`/`ManualPDFTemplate`/`PDFFile`/`PDFSong`, WeasyPrint generation, Huey tasks |
 | `tenants` | `Tenant`, `Link`, the hostname middleware, tenant admin/move views |
-| `analytics` | `DayStatistic` per tenant/key/day, `AnalyticsMixin` that counts hits on a view |
-| `frontend` | no models — base templates (`base/index.html`, `base/frame.html`, `base/verbs/*`), global CSS, icon font |
+| `analytics` | `DayStatistic` per tenant/key/day, the `analytics()` counter and the `HitView` beacon |
+| `frontend` | no models — the reader (`ShellView`, `ServiceWorkerView`, `ManifestView`, `shell.html`, `static/app/*`) and the Bootstrap base templates of the admin pages (`base/index.html`, `base/frame.html`, `base/verbs/*`), global CSS, icon font |
 
 Cross-app glue worth knowing before editing:
 
@@ -99,9 +101,10 @@ Cross-app glue worth knowing before editing:
   by `backend/auth.py`.
 - **Navigation** is built from `*/menus.py` via `django-simple-menu`; `check=` callables are the
   auth predicates from `backend/auth.py`.
-- **URLs**: `backend.urls` is mounted at `^` (so `/all`, `/all/data`, `/add`, `/edit/<pk>`),
-  categories at `/categories/<slug>` and `/categories/<slug>/data`, plus `/pdf/`, `/analytics/`,
-  `/tenants/`, `/admin/`.
+- **URLs**: `backend.urls` is mounted at `^` (so `/`, `/all`, `/api/songs`, `/api/me`, `/add`,
+  `/edit/<pk>`), `frontend.urls` serves `/sw.js` and `/manifest.webmanifest`, categories live at
+  `/categories/<slug>`, plus `/pdf/`, `/analytics/` (including `POST /analytics/hit/<key>`), `/tenants/`,
+  `/admin/`. `/`, `/all` and `/categories/<slug>` all route to `frontend.views.ShellView`.
 
 ## Song rendering pipeline
 
@@ -118,35 +121,66 @@ column, controlled by two settings:
 
 `make deploy` runs `manage.py prerender` to fill the column for every song.
 
-## Songs JSON + caching
+## The reader
 
-The page shell (`backend/templates/songs/index.html`) ships no song data; an ES module `fetch`es
-`{{ data_url }}` and feeds simple-datatables + JsRender.
+The reader (song list, search, category switching, song view) is a Preact + htm single page app
+with no build step. Everything else (CRUD, PDF, analytics, login, `/admin/`) keeps its Django
+templates and Bootstrap from the CDN.
 
-- `AllSongsJsonView` (`chords:all_data`) and `CategorySongsJsonView` (`category:songs_data`)
-  are plain `View`s on `BaseSongsJsonView`: they look the JSON **string** up in the cache first
-  and only on a miss build it through `backend/songs.py` (`visible_songs` → `songs_to_json` →
-  `cached_json`). A hit or a 304 costs one cache read. The HTML list views (`AllSongListView`,
-  `CategorySongsListView`) are `TemplateView`s that pass only `title` and `data_url`.
-- Cache keys per tenant: `{id}-SONGS_ALL`, `{id}-SONGS_ALL_archived`, `{id}-SONGS_{slug}`,
-  `{id}-SONGS_{slug}_archived`. The `_archived` variant is chosen by `is_superuser`, the only
-  users who see archived songs; tenant admins share the public entry.
-- Invalidation is signal-driven. Receivers at the bottom of `backend/models.py` clear every list
-  of the affected tenants on `Song` save/delete, on `Song.categories` membership changes
-  (captured on `pre_remove`/`pre_clear`, so the old categories are covered) and on `Category`
-  save/delete (including the previous slug and tenant), plus the `CATEGORY_CACHE_KEY` menu entry.
-  The helpers are in `backend/cache.py`: `invalidate_tenant_songs_cache(tenant, extra_slugs=())`
-  and the per-song wrapper `invalidate_songs_cache(song)`. Views do **not** invalidate by hand;
-  the one exception is `CategoryMoveView`, whose `bulk_update` sends no signals.
+- `ShellView` serves **one** page, `frontend/templates/shell.html`, for `/`, `/all` and
+  `/categories/<slug>`: inline CSS (`shell/style.css`), an SVG sprite, `modulepreload` links, a
+  `preload` of `/api/songs` and the tenant's bootstrap JSON in `<script id="boot">`
+  (`tenants/bootstrap.py: bootstrap_payload`, built from the entries the navigation menus keep in the
+  cache, so menu invalidation covers it). It reads no user, session, message, CSRF or language, so
+  there is no `Vary: Cookie`; it gets an ETag and `Cache-Control: no-cache`. An unknown category slug
+  gets the same body with status 404. Keep it that way: the service worker serves one cached copy to
+  every route and every user. `RecognizeTenantMiddleware` resolves `is_localadmin` lazily for the
+  same reason.
+- Modules are in `frontend/static/app/` (`app.js` entry, `songs.js`, `store.js`, `i18n.js`, `qr.js`,
+  `vendor/preact-htm.module.js`) and listed once in `frontend.views.MODULES`, which feeds the
+  preload links and the service worker's precache. A new module must be added there. Keep modules
+  free of import cycles (hashing needs a DAG) and `import()` out of modules with nested template
+  literals: `ManifestStorage` cannot see past them, which is why `qr.js` exists.
+- `/api/me` (`MeView`) is the only place that knows the user: `auth`, `username`, `localadmin`,
+  `superuser`, plus the pending `django.contrib.messages`, which it drains; the CRUD views still redirect
+  to the shell and the toast arrives through here. It is `private, no-store` and sets the CSRF cookie.
+- The client keeps UI options in `localStorage` (`theme`, `lang`, `columns`, `hide_chords`,
+  `prevent_sleep`; `theme` keeps the key the Bootstrap pages use), fetches songs through `store.js`
+  (Cache API entry `songs`: draw the stored list, revalidate, replace it when the ETag changed; deleted
+  on logout) and reports each route with `navigator.sendBeacon` to `HitView`, which only accepts
+  same-origin requests for `all` or a slug of the tenant.
+- `ServiceWorkerView` renders `frontend/templates/sw.js` per tenant: the cache name hashes the precached
+  urls and carries the tenant id, the shell is cache-first with background ETag revalidation
+  (`ignoreVary`), `/static/*`, the manifest and the logo are cache-first, everything else (including
+  `/api/*`) goes to the network. A new worker waits; the page shows a toast and sends `skipWaiting`.
+  Reader routes in `sw.js` (`READER`) must stay in step with the URLconf.
+
+## Songs payload + caching
+
+`GET /api/songs` (`SongsApiView`, `chords:songs_api`) returns every song of the tenant as one JSON
+list with the slugs of its categories in `cats`; the browser filters it per route and numbers the list
+itself (non-archived songs first, archived ones appended).
+
+- It looks the JSON **string** up in the cache first and only on a miss builds it through
+  `backend/songs.py` (`cached_songs_payload` → `build_songs_payload` → `songs_to_json`, with a
+  tenant-filtered `Prefetch` of the categories). A hit or a 304 costs one cache read.
+  `transform_song()` fixes the field order of each row.
+- Cache keys per tenant: `{id}-SONGS` and `{id}-SONGS_archived` (`songs_payload_key`). The
+  `_archived` variant is chosen by `is_superuser`, the only users who see archived songs, and is served
+  `private`; tenant admins share the public entry.
+- Invalidation is signal-driven. Receivers at the bottom of `backend/models.py` clear both variants for
+  the affected tenants on `Song` save/delete, on `Song.categories` membership changes (captured on
+  `pre_remove`/`pre_clear`, so the old categories are covered) and on `Category` save/delete
+  (including the previous tenant), plus the `CATEGORY_CACHE_KEY` menu entry. The helpers are in
+  `backend/cache.py`: `invalidate_tenant_songs_cache(tenant)` and the per-song wrapper
+  `invalidate_songs_cache(song)`. Views do **not** invalidate by hand; the one exception is
+  `CategoryMoveView`, whose `bulk_update` sends no signals.
 - A `pre_save` receiver refreshes `prerendered` on every full `save()` while
   `USE_PRERENDERED_MARKDOWN` is on (a save with `update_fields` skips it), so admin edits and
   scripts cannot leave it stale; `bulk_create` sends no signals, so `manage.py import` prerenders
   before it.
 - `ETagJsonMixin` hashes the cached JSON (blake2b) into an ETag and returns 304 via
   `get_conditional_response`, with `Cache-Control: no-cache`.
-- `transform_song()` in `backend/songs.py` fixes the field order of each row. The `COLS` map in
-  `songs/index.html` mirrors that order by index — change one, change the other.
-- Song numbering: non-archived songs are numbered first, archived ones appended afterwards.
 
 ## PDF generation
 
@@ -199,7 +233,7 @@ to the service user); containers have `Network=none` and talk over unix sockets 
 ## Tests
 
 `tests/` is a pytest-django suite split per app (`tests/backend/`, `tests/category/`,
-`tests/pdf/`, `tests/tenants/`, `tests/chords/`, `tests/analytics/`), plus two suite-wide
+`tests/pdf/`, `tests/tenants/`, `tests/chords/`, `tests/analytics/`, `tests/frontend/`), plus two suite-wide
 modules: `tests/test_url_permissions.py`, a parametrized matrix asserting login redirect, 403
 and allowed access for every URL in the project, and `tests/test_menus.py`. Each directory is a
 package — the `__init__.py` files are what keep same-named modules such as
@@ -216,6 +250,13 @@ tenant, so tests look categories up by slug rather than assume the fixture is th
 `tests/backend/test_signals.py` covers the signal-driven invalidation and prerender-on-save;
 `tests/chords/test_storage.py` runs a real `collectstatic` into a `tmp_path` to check that hashed
 modules import hashed modules.
+
+`tests/e2e/` drives the reader in Chromium through Playwright (pytest-playwright against pytest-django's
+`live_server`) and is excluded from the default run by `addopts = "-m 'not e2e'"`; `make e2e` runs it.
+Its `library` fixture builds a two-category songbook, `sign_in(user)` puts a session cookie into the
+browser, and `DJANGO_ALLOW_ASYNC_UNSAFE` is set so the test thread can use the ORM next to Playwright's
+event loop. The live server shares one in-memory SQLite database, so wait for the page to go idle before
+writing from the test. There is no JS unit test runner: behaviour of the client is covered here.
 
 It runs on SQLite against `chords.settings.test`; production uses PostgreSQL and Redis, so
 anything cache- or tenant-related is exercised through LocMemCache here. Those test settings run
