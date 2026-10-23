@@ -8,9 +8,9 @@ from category.views import (
     CategoryListView,
     CategoryMoveView,
     CategorySongsJsonView,
-    CategorySongsListView,
     CategoryUpdateView,
 )
+from frontend.views import ShellView
 
 urlpatterns = [
     path("", CategoryListView.as_view(), name="list"),
@@ -19,5 +19,5 @@ urlpatterns = [
     path("delete/<int:pk>", CategoryDeleteView.as_view(), name="delete"),
     path("move", CategoryMoveView.as_view(), name="move"),
     path("<str:slug>/data", CategorySongsJsonView.as_view(), name="songs_data"),
-    path("<str:slug>", CategorySongsListView.as_view(), name="index"),
+    path("<str:slug>", ShellView.as_view(), name="index"),
 ]

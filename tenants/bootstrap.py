@@ -14,6 +14,8 @@ def named_urls():
         "login": reverse("login"),
         "logout": reverse("logout"),
         "setlang": reverse("set_language"),
+        "all": reverse("backend:all"),
+        "sw": reverse("frontend:sw"),
         "songs": reverse("chords:songs_api"),
         "me": reverse("chords:me"),
         "hit": reverse("analytics:hit", kwargs={"key": "0"}),

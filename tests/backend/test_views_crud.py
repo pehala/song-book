@@ -1,5 +1,7 @@
 """Tests for creating, updating and deleting songs."""
 
+import json
+
 import pytest
 from django.conf import settings
 from django.core.cache import cache
@@ -12,6 +14,11 @@ from tenants.utils import tenant_cache_key
 pytestmark = pytest.mark.django_db
 
 ALL_SONGS_KEY = f"{settings.SONGS_CACHE_KEY}_ALL"
+
+
+def pending_messages(client):
+    """The messages the reader receives from /api/me after the redirect"""
+    return json.loads(client.get(reverse("chords:me")).content)["messages"]
 
 
 def song_payload(category, **overrides):
@@ -58,10 +65,9 @@ def test_create_invalidates_songs_cache(staff_client, anon_client, tenant, categ
 
 def test_create_shows_success_message(staff_client, category):
     """The user is told that the song was created"""
-    response = staff_client.post(reverse("backend:add"), song_payload(category), follow=True)
+    staff_client.post(reverse("backend:add"), song_payload(category))
 
-    messages = [str(message) for message in response.context["messages"]]
-    assert any("Created Song" in message for message in messages)
+    assert any("Created Song" in message["text"] for message in pending_messages(staff_client))
 
 
 def test_create_invalid_form_is_redisplayed(staff_client, category):
@@ -146,10 +152,9 @@ def test_delete_invalidates_songs_cache(staff_client, anon_client, tenant, song)
 
 def test_delete_shows_success_message(staff_client, song):
     """The user is told that the song was deleted"""
-    response = staff_client.post(reverse("backend:delete", kwargs={"pk": song.pk}), follow=True)
+    staff_client.post(reverse("backend:delete", kwargs={"pk": song.pk}))
 
-    messages = [str(message) for message in response.context["messages"]]
-    assert any("Test Song" in message for message in messages)
+    assert any("Test Song" in message["text"] for message in pending_messages(staff_client))
 
 
 def test_saving_schedules_pdf_for_generating_categories(staff_client, make_category, tenant):
