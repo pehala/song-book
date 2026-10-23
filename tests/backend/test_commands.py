@@ -6,6 +6,7 @@ import pytest
 from django.core.management import call_command
 
 from backend.models import Song
+from category.models import Category
 
 pytestmark = pytest.mark.django_db
 
@@ -53,5 +54,5 @@ def test_import_rejects_unknown_category(tmp_path, db):
     source = tmp_path / "songs.json"
     source.write_text("[]", encoding="UTF-8")
 
-    with pytest.raises(Exception):
+    with pytest.raises(Category.DoesNotExist):
         call_command("import", str(source), category=999999)
