@@ -403,7 +403,7 @@ when the client's `Accept-Encoding` allows, falling back to the plain file. Do n
 lookup already wins. Images, `woff`/`woff2` fonts and PDFs are already compressed and are skipped.
 
 **Dynamic responses: compressed by nginx, not by Django.** The page shell is small; the response that
-matters is the songs JSON (`/all/data`, `/categories/<slug>/data`), which carries every song's
+matters is the songs JSON (`/api/songs`), which carries every song's
 rendered HTML and is very repetitive — it typically shrinks 5–10×. Use moderate levels
 (`brotli_comp_level 4–6`, `gzip_comp_level 4–6`): higher levels cost a lot of CPU for a few percent.
 Keep Django's `GZipMiddleware` off; compressing in nginx keeps gunicorn workers free.
@@ -416,8 +416,8 @@ downgrades the ETag to a weak one (`W/"…"`); Django compares `If-None-Match` w
 still works. Check it after deploying:
 
 ```bash
-etag=$(curl -sI -H 'Accept-Encoding: br' https://songs.example.org/all/data | grep -i '^etag' | cut -d' ' -f2- | tr -d '\r')
-curl -s -o /dev/null -w '%{http_code}\n' -H 'Accept-Encoding: br' -H "If-None-Match: $etag" https://songs.example.org/all/data
+etag=$(curl -sI -H 'Accept-Encoding: br' https://songs.example.org/api/songs | grep -i '^etag' | cut -d' ' -f2- | tr -d '\r')
+curl -s -o /dev/null -w '%{http_code}\n' -H 'Accept-Encoding: br' -H "If-None-Match: $etag" https://songs.example.org/api/songs
 # expect 304
 ```
 
