@@ -78,11 +78,11 @@ def test_categories_menu_follows_all_songs_category_flag(tenant):
 
 
 def test_links_list_is_rendered_only_with_links(tenant, client):
-    html = client.get("/all", HTTP_HOST="localhost").content.decode()
+    html = client.get("/accounts/login/", HTTP_HOST="localhost").content.decode()
     assert "See Also" not in html
     lists_without_links = html.count("navbar-nav nav-left")
 
     tenant.links.add(Link.objects.create(link="https://example.com", display_name="Example"))
-    html = client.get("/all", HTTP_HOST="localhost").content.decode()
+    html = client.get("/accounts/login/", HTTP_HOST="localhost").content.decode()
     assert "See Also" in html
     assert html.count("navbar-nav nav-left") == lists_without_links + 1
