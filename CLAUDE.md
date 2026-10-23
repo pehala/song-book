@@ -24,6 +24,7 @@ make init                           # cp production.py.tpl -> production.py, the
 make run                            # dev server (SETTINGS=chords.settings.production, needs Redis)
 make worker                         # Huey worker for PDF generation
 make test                           # uv run --group dev pytest tests/
+make coverage                       # the same, with a branch coverage report
 make commit-acceptance              # what CI gates on: ruff --fix + ruff format + check-fuzzy
 make migrations                     # makemigrations
 make messages                       # makemessages -l cs
@@ -34,8 +35,9 @@ make help                           # all targets
 Single test / subset:
 
 ```bash
-uv run --group dev pytest tests/test_etag.py::test_all_songs_response_has_etag -v
+uv run --group dev pytest tests/backend/test_etag.py::test_all_songs_response_has_etag -v
 uv run --group dev pytest tests/ -k cache
+uv run --group dev pytest tests/ -m "not slow"    # skip the real WeasyPrint renders
 ```
 
 Management commands: `uv run python manage.py <cmd>` — notably `prerender`,
@@ -171,7 +173,27 @@ inline instead of running `make worker`.
 
 ## Tests
 
-`tests/` is a flat pytest-django suite (`conftest.py` provides `tenant`, `category`, `song`,
-`archived_song`, `superuser`/`staff_user` and the matching `Client` fixtures, plus an autouse
-cache clear). It runs on SQLite against `chords.settings.test`; production uses PostgreSQL and
-Redis, so anything cache- or tenant-related is exercised through LocMemCache here.
+`tests/` is a pytest-django suite split per app (`tests/backend/`, `tests/category/`,
+`tests/pdf/`, `tests/tenants/`, `tests/chords/`, `tests/analytics/`), plus two suite-wide
+modules: `tests/test_url_permissions.py`, a parametrized matrix asserting login redirect, 403
+and allowed access for every URL in the project, and `tests/test_menus.py`. Each directory is a
+package — the `__init__.py` files are what keep same-named modules such as
+`backend/test_models.py` and `category/test_models.py` from colliding.
+
+`tests/conftest.py` provides the shared fixtures: `tenant`/`other_tenant`, `category`, `song`,
+`archived_song`, the `make_category`/`make_song` factories, `manual_template`, `pdf_file`,
+`superuser`/`staff_user`/`plain_user` and the matching `Client` fixtures. Three autouse fixtures
+clear the cache, flush the task queue and point `MEDIA_ROOT` at a `tmp_path`, so generated PDFs
+and uploads never reach the source tree. `tests/pdf/conftest.py` adds the PDF-only fixtures and
+overrides `manual_template` and `media_root` for that directory; fixtures used by a single
+module live in that module.
+
+It runs on SQLite against `chords.settings.test`; production uses PostgreSQL and Redis, so
+anything cache- or tenant-related is exercised through LocMemCache here. Those test settings run
+Huey with `immediate=True`, so a task scheduled without a delay renders inline — tests that do
+not want a real PDF use the `mock_weasyprint` fixture, and the few that do are marked `slow`
+(`pytest -m "not slow"` skips them). Passwords are hashed with MD5 there: the default PBKDF2
+hasher costs ~200 ms per user and the tests sign in with `force_login()`.
+
+Coverage is configured in `pyproject.toml` (branch coverage, migrations/`apps.py`/`wsgi.py` and
+the uncommitted `production.py` omitted) and currently sits at 100%; `make coverage` reports it.
