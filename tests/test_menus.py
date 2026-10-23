@@ -58,6 +58,11 @@ def test_links_menu_follows_assignment_and_edits(tenant, other_tenant):
 
     link.tenant_set.add(tenant)
     assert child_titles(tenant, "links") == ["Renamed"]
+    link.tenant_set.clear()
+    assert process(tenant, "links") == []
+
+    tenant.links.add(link)
+    assert child_titles(tenant, "links") == ["Renamed"]
     link.delete()
     assert process(tenant, "links") == []
 
