@@ -86,7 +86,8 @@ class Migration(migrations.Migration):
                     "title",
                     models.CharField(
                         blank=True,
-                        help_text="Name to be used on the title page of the PDF, usually only this or Title image should be used",
+                        help_text="Name to be used on the title page of the PDF, usually only this or Title image "
+                        "should be used",
                         max_length=100,
                         verbose_name="Title",
                     ),

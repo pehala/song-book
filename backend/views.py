@@ -8,16 +8,16 @@ from django.core.cache import cache
 from django.core.serializers.json import DjangoJSONEncoder
 from django.forms import model_to_dict
 from django.http import HttpResponse
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.cache import get_conditional_response
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView, RedirectView
 
 from backend.forms import SongForm
-from backend.mixins import RegenerateViewMixin, PassRequestToFormMixin, LocalAdminRequired
+from backend.generic import UniversalCreateView, UniversalDeleteView, UniversalUpdateView
+from backend.mixins import LocalAdminRequired, PassRequestToFormMixin, RegenerateViewMixin
 from backend.models import Song
-from backend.utils import regenerate_pdf, regenerate_prerender, invalidate_songs_cache
-from backend.generic import UniversalDeleteView, UniversalUpdateView, UniversalCreateView
+from backend.utils import invalidate_songs_cache, regenerate_pdf, regenerate_prerender
 from tenants.utils import tenant_cache_key
 
 

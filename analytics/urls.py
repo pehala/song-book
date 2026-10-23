@@ -2,7 +2,7 @@
 
 from django.urls import path
 
-from analytics.views import AnalyticsShowView, AnalyticsRestView
+from analytics.views import AnalyticsRestView, AnalyticsShowView
 
 urlpatterns = [
     path("", AnalyticsShowView.as_view(), name="index"),

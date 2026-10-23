@@ -1,6 +1,6 @@
 """Forms for backend app"""
 
-from django.forms import ModelForm, ModelMultipleChoiceField, CheckboxSelectMultiple
+from django.forms import CheckboxSelectMultiple, ModelForm, ModelMultipleChoiceField
 
 from backend.models import Song
 from category.models import Category

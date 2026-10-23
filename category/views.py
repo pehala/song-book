@@ -5,21 +5,22 @@ from django.core.cache import cache
 from django.db import transaction
 from django.db.models import Count, Q
 from django.http import Http404
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse, reverse_lazy
 from django.utils import translation
-from django.utils.translation import gettext_lazy as _, get_language, gettext
+from django.utils.translation import get_language, gettext
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 
 from analytics.views import AnalyticsMixin
-from backend.generic import UniversalDeleteView, UniversalUpdateView, UniversalCreateView
-from backend.mixins import RegenerateViewMixin, LocalAdminRequired, PassRequestToFormMixin
+from backend.generic import UniversalCreateView, UniversalDeleteView, UniversalUpdateView
+from backend.mixins import LocalAdminRequired, PassRequestToFormMixin, RegenerateViewMixin
 from backend.models import Song
 from backend.utils import invalidate_songs_cache
 from backend.views import BaseSongListView, ETagJsonMixin
 from category.forms import CategoryForm, NameForm
 from category.models import Category
 from category.utils import request_pdf_regeneration
-from pdf.models.request import PDFTemplate, PDFFile
+from pdf.models.request import PDFFile, PDFTemplate
 from tenants.utils import tenant_cache_key
 from tenants.views import AdminMoveView
 

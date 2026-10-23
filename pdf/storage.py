@@ -1,5 +1,6 @@
 """Storages for the PDF application"""
 
+import contextlib
 import os
 from pathlib import Path
 
@@ -41,7 +42,5 @@ def file_cleanup(sender, **kwargs):
                     and os.path.exists(f.path)
                     and not m.filter(**{f"{field.name}__exact": True}).exclude(pk=inst._get_pk_val())
                 ):
-                    try:
+                    with contextlib.suppress(Exception):
                         field.storage.delete(f.path)
-                    except:  # noqa: E722
-                        pass

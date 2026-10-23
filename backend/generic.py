@@ -3,7 +3,7 @@
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
 from django.utils.translation import gettext_lazy as _
-from django.views.generic import DeleteView, UpdateView, CreateView
+from django.views.generic import CreateView, DeleteView, UpdateView
 
 from backend.mixins import RedirectToNextMixin
 

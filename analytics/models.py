@@ -1,6 +1,6 @@
 """Analytics models"""
 
-from django.db.models import Model, CharField, IntegerField, DateField, ForeignKey, CASCADE, Value
+from django.db.models import CASCADE, CharField, DateField, ForeignKey, IntegerField, Model, Value
 from django.utils.translation import gettext_lazy as _
 
 from tenants.models import Tenant

@@ -9,7 +9,7 @@ from django.views.generic import TemplateView
 
 from backend.generic import UniversalUpdateView
 from backend.mixins import LocalAdminRequired, SuperAdminRequired
-from tenants.forms import UserTenantForm, ChooseTenantForm
+from tenants.forms import ChooseTenantForm, UserTenantForm
 from tenants.models import Tenant
 
 

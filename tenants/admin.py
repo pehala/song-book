@@ -2,13 +2,13 @@
 
 from django.conf import settings
 from django.contrib import admin
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 from category.models import Category
-from tenants.forms import TenantForm, LinkForm
-from tenants.models import Tenant, Link
+from tenants.forms import LinkForm, TenantForm
+from tenants.models import Link, Tenant
 
 
 @admin.register(Tenant)

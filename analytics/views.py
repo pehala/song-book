@@ -1,10 +1,10 @@
 """Analytics views"""
 
-from datetime import datetime, timedelta, timezone as dt_timezone
+from datetime import UTC, datetime, timedelta
 
 from django.db import transaction
 from django.db.models import Sum
-from django.http import HttpResponseBadRequest, HttpRequest, JsonResponse
+from django.http import HttpRequest, HttpResponseBadRequest, JsonResponse
 
 # Create your views here.
 from django.utils.timezone import now
@@ -67,9 +67,9 @@ class AnalyticsRestView(LocalAdminRequired, View):
         """Handles GET requests"""
         if "start_date" not in request.POST or "key" not in request.POST:
             return HttpResponseBadRequest()
-        start_date = datetime.fromtimestamp(int(request.POST["start_date"]), tz=dt_timezone.utc).date()
+        start_date = datetime.fromtimestamp(int(request.POST["start_date"]), tz=UTC).date()
         if "end_date" in request.POST:
-            end_date = datetime.fromtimestamp(int(request.POST["end_date"]), tz=dt_timezone.utc).date()
+            end_date = datetime.fromtimestamp(int(request.POST["end_date"]), tz=UTC).date()
         else:
             end_date = now().date()
         key = request.POST["key"]

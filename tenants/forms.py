@@ -1,8 +1,8 @@
 """Tenant forms"""
 
-from django.forms import ModelForm, CharField, Form, ModelChoiceField
+from django.forms import CharField, Form, ModelChoiceField, ModelForm
 
-from tenants.models import Tenant, Link
+from tenants.models import Link, Tenant
 
 
 class TenantForm(ModelForm):

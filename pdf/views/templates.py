@@ -7,7 +7,7 @@ from django.db import transaction
 from django.db.models import Count
 from django.forms import formset_factory
 from django.shortcuts import redirect, render
-from django.urls import reverse_lazy, reverse
+from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.views.generic import ListView, TemplateView
@@ -18,7 +18,7 @@ from backend.mixins import LocalAdminRequired
 from backend.models import Song
 from category.forms import NameForm
 from category.models import Category
-from pdf.forms import PDFSongForm, BasePDFSongFormset, ManualTemplateForm, SongSelectionForm
+from pdf.forms import BasePDFSongFormset, ManualTemplateForm, PDFSongForm, SongSelectionForm
 from pdf.generate import AllowedTemplates, generate_pdf_file
 from pdf.models import PDFTemplate
 from pdf.models.request import ManualPDFTemplate

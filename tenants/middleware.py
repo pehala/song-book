@@ -1,6 +1,7 @@
 """Middleware for Tenants"""
 
 from urllib.parse import urlparse
+
 from django.conf import settings
 from django.http import Http404
 
@@ -26,10 +27,10 @@ class RecognizeTenantMiddleware:
                 and request.tenant.admins.filter(id=request.user.id).exists()
                 or request.user.is_superuser
             )
-        except Http404 as exception:
+        except Http404:
             if settings.DEBUG:
                 request.tenant = Tenant.objects.first()
             else:
-                raise exception
+                raise
         response = self.get_response(request)
         return response

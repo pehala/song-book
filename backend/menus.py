@@ -2,7 +2,7 @@
 
 from django.urls import reverse
 from django.utils.translation import gettext_noop as _
-from simple_menu import MenuItem, Menu
+from simple_menu import Menu, MenuItem
 
 from backend.auth import is_authenticated, is_localadmin, is_superadmin
 from backend.models import Song

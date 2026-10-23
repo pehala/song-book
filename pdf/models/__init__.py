@@ -5,7 +5,7 @@ from collections.abc import Iterable
 from typing import TYPE_CHECKING
 
 from django.conf import settings
-from django.db.models import BooleanField, CharField, ImageField, FloatField, TextChoices
+from django.db.models import BooleanField, CharField, FloatField, ImageField, TextChoices
 from django.db.models.signals import post_delete
 from django.utils.translation import gettext_lazy as _
 from polymorphic.models import PolymorphicModel
@@ -14,6 +14,7 @@ from pdf.storage import file_cleanup
 
 if TYPE_CHECKING:
     from backend.models import Song
+
     from .request import PDFFile
 
 
@@ -86,7 +87,7 @@ class PDFTemplate(PolymorphicModel):
     )
 
     @property
-    def latest_file(self) -> "PDFFile":
+    def latest_file(self) -> PDFFile:
         """Returns latest generated file for this template"""
         return self.pdffile_set.first()
 
@@ -96,12 +97,12 @@ class PDFTemplate(PolymorphicModel):
         return file and not file.finished
 
     @abstractmethod
-    def get_songs(self) -> Iterable[tuple[int, "Song"]]:
+    def get_songs(self) -> Iterable[tuple[int, Song]]:
         """
         Returns iterable of Song objects and their song number, that should be included in the PDF
         """
 
-    def copy_options(self, options: "PDFTemplate"):
+    def copy_options(self, options: PDFTemplate):
         """Copy all options from another PDFOptions object"""
         self.filename = options.filename
         self.locale = options.locale

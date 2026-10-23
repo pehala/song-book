@@ -2,19 +2,19 @@
 
 from django.conf import settings
 from django.core.cache import cache
-from django.http import JsonResponse, Http404
+from django.http import Http404, JsonResponse
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views import View
-from django.views.generic import ListView, DetailView
+from django.views.generic import DetailView, ListView
 from django.views.generic.detail import SingleObjectMixin
 
 from backend.generic import UniversalDeleteView, UniversalUpdateView
 from backend.mixins import LocalAdminRequired
 from pdf.forms import PDFFileEditForm
 from pdf.models import Status
-from pdf.models.request import PDFFile, ManualPDFTemplate
+from pdf.models.request import ManualPDFTemplate, PDFFile
 from tenants.utils import tenant_cache_key
 
 
@@ -94,4 +94,4 @@ class FileTemplateEditView(LocalAdminRequired, SingleObjectMixin, View):
             if isinstance(template, ManualPDFTemplate):
                 return redirect("pdf:templates:edit", pk=template.pk)
             return redirect("category:edit", pk=template.pk)
-        return Http404(_(f"File {file.id} does not have a template"))
+        return Http404(_("File %(id)s does not have a template") % {"id": file.id})

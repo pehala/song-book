@@ -6,7 +6,7 @@ from django.db import migrations, models
 def migrate_locales(apps, schema_editor):
     Song = apps.get_model("backend", "Song")
     Category = apps.get_model("category", "Category")
-    locales = map(lambda x: x["locale"], Song.objects.values("locale").distinct())
+    locales = (x["locale"] for x in Song.objects.values("locale").distinct())
     for locale in locales:
         category = Category(name=locale, generate_pdf=True, slug=locale, locale=locale)
         category.save()
