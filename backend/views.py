@@ -14,7 +14,7 @@ from backend.forms import SongForm
 from backend.generic import UniversalCreateView, UniversalDeleteView, UniversalUpdateView
 from backend.mixins import LocalAdminRequired, PassRequestToFormMixin, RegenerateViewMixin
 from backend.models import Song
-from backend.songs import cached_json, songs_to_json, visible_songs
+from backend.songs import cached_json, cached_songs_payload, songs_to_json, visible_songs
 from backend.utils import regenerate_pdf
 from tenants.utils import tenant_cache_key
 
@@ -56,12 +56,12 @@ class ETagJsonMixin:
     the client's If-None-Match header matches the ETag of the cached content.
     """
 
-    def etag_response(self, request, json_string):
-        """Return a JSON response with ETag, or 304 if the client already has it."""
+    def etag_response(self, request, json_string, private=False):
+        """Return a JSON response with ETag, or 304 if the client already has it; private ones skip shared caches"""
         etag = f'"{hashlib.blake2b(json_string.encode(), digest_size=16).hexdigest()}"'
         response = HttpResponse(json_string, content_type="application/json")
         response["ETag"] = etag
-        response["Cache-Control"] = "no-cache"
+        response["Cache-Control"] = "private, no-cache" if private else "no-cache"
         return get_conditional_response(request, etag=etag, response=response)
 
 
@@ -102,6 +102,19 @@ class AllSongsJsonView(BaseSongsJsonView):
 
     def get_queryset(self):
         return Song.objects.filter(categories__tenant=self.request.tenant).distinct()
+
+
+class SongsApiView(ETagJsonMixin, View):
+    """
+    Serves every song of the tenant with the slugs of its categories, so the browser can filter by category itself.
+
+    Superusers get the variant with archived songs, which only they may cache.
+    """
+
+    def get(self, request, *args, **kwargs):
+        include_archived = request.user.is_superuser
+        payload = cached_songs_payload(request.tenant, include_archived)
+        return self.etag_response(request, payload, private=include_archived)
 
 
 class IndexSongListView(RedirectView):
