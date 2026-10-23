@@ -3,7 +3,6 @@
 from django.urls import path
 
 from backend.views import (
-    AllSongsJsonView,
     MeView,
     SongCreateView,
     SongDeleteView,
@@ -20,5 +19,4 @@ urlpatterns = [
     path("all", ShellView.as_view(), name="all"),
     path("api/me", MeView.as_view(), name="me"),
     path("api/songs", SongsApiView.as_view(), name="songs_api"),
-    path("all/data", AllSongsJsonView.as_view(), name="all_data"),
 ]
