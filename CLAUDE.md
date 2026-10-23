@@ -123,10 +123,9 @@ The page shell (`backend/templates/songs/index.html`) ships no song data; an ES 
 
 - `AllSongsJsonView` (`chords:all_data`) and `CategorySongsJsonView` (`category:songs_data`)
   build the list in `get_context_data` (already a JSON **string**), then serve it from cache.
-- Cache keys per tenant: `{id}-SONGS_ALL`, `{id}-SONGS_ALL_auth`, `{id}-SONGS_{slug}`,
-  `{id}-SONGS_{slug}_auth`. Caveat: the `_auth` split keys on `is_authenticated`, while archived
-  songs are only included for `is_superuser` — a logged-in non-superuser and a superuser share
-  the `_auth` entry.
+- Cache keys per tenant: `{id}-SONGS_ALL`, `{id}-SONGS_ALL_archived`, `{id}-SONGS_{slug}`,
+  `{id}-SONGS_{slug}_archived`. The `_archived` variant is chosen by `is_superuser`, the only
+  users who see archived songs; tenant admins share the public entry.
 - `invalidate_songs_cache(song)` (`backend/utils.py`) walks `song.categories.all()` and deletes
   all four variants per category. **Any view that creates, edits, deletes or re-categorizes a
   song must call it** — `SongCreateView`/`SongUpdateView`/`SongDeleteView` and
