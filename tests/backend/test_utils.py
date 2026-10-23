@@ -30,10 +30,10 @@ def test_invalidate_clears_anon_all_key(anon_client, song, tenant):
     assert cache.get(key) is None
 
 
-def test_invalidate_clears_auth_all_key(staff_client, song, tenant):
-    """invalidate_songs_cache deletes the authenticated /all cache key."""
-    staff_client.get(ALL_DATA_URL)
-    key = tenant_cache_key(tenant, f"{SONGS_CACHE_KEY}_ALL_auth")
+def test_invalidate_clears_archived_all_key(superuser_client, song, tenant):
+    """invalidate_songs_cache deletes the superuser (archived-inclusive) /all cache key."""
+    superuser_client.get(ALL_DATA_URL)
+    key = tenant_cache_key(tenant, f"{SONGS_CACHE_KEY}_ALL_archived")
     assert cache.get(key) is not None
 
     invalidate_songs_cache(song)

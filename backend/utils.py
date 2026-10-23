@@ -28,9 +28,9 @@ def invalidate_songs_cache(song):
     for category in song.categories.all():
         tenant = category.tenant
         django_cache.delete(tenant_cache_key(tenant, f"{settings.SONGS_CACHE_KEY}_ALL"))
-        django_cache.delete(tenant_cache_key(tenant, f"{settings.SONGS_CACHE_KEY}_ALL_auth"))
+        django_cache.delete(tenant_cache_key(tenant, f"{settings.SONGS_CACHE_KEY}_ALL_archived"))
         django_cache.delete(tenant_cache_key(tenant, f"{settings.SONGS_CACHE_KEY}_{category.slug}"))
-        django_cache.delete(tenant_cache_key(tenant, f"{settings.SONGS_CACHE_KEY}_{category.slug}_auth"))
+        django_cache.delete(tenant_cache_key(tenant, f"{settings.SONGS_CACHE_KEY}_{category.slug}_archived"))
 
 
 @cache

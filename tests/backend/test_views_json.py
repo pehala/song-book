@@ -84,19 +84,19 @@ def test_cache_populated_after_first_request(anon_client, song, tenant):
     assert cache.get(key) is not None
 
 
-def test_anonymous_and_auth_cache_keys_differ(tenant):
-    """Anonymous and authenticated requests use distinct cache keys."""
+def test_anonymous_and_archived_cache_keys_differ(tenant):
+    """Public and superuser (archived-inclusive) responses use distinct cache keys."""
     anon_key = tenant_cache_key(tenant, f"{SONGS_CACHE_KEY}_ALL")
-    auth_key = tenant_cache_key(tenant, f"{SONGS_CACHE_KEY}_ALL_auth")
-    assert anon_key != auth_key
+    archived_key = tenant_cache_key(tenant, f"{SONGS_CACHE_KEY}_ALL_archived")
+    assert anon_key != archived_key
 
 
-def test_authenticated_request_uses_separate_cache_key(staff_client, song, tenant):
-    """Authenticated request populates the _auth key and leaves the anon key empty."""
-    staff_client.get(ALL_DATA_URL)
-    auth_key = tenant_cache_key(tenant, f"{SONGS_CACHE_KEY}_ALL_auth")
+def test_superuser_request_uses_separate_cache_key(superuser_client, song, tenant):
+    """Superuser request populates the _archived key and leaves the public key empty."""
+    superuser_client.get(ALL_DATA_URL)
+    archived_key = tenant_cache_key(tenant, f"{SONGS_CACHE_KEY}_ALL_archived")
     anon_key = tenant_cache_key(tenant, f"{SONGS_CACHE_KEY}_ALL")
-    assert cache.get(auth_key) is not None
+    assert cache.get(archived_key) is not None
     assert cache.get(anon_key) is None
 
 
@@ -112,3 +112,13 @@ def test_second_request_served_from_cache(anon_client, song, category):
     data = json.loads(response.content)
     names = [s["name"] for s in data]
     assert "Late Song" not in names
+
+
+def test_staff_request_shares_public_cache_key(staff_client, song, archived_song, tenant):
+    """A tenant admin who is not a superuser sees the public list and fills the public key only."""
+    response = staff_client.get(ALL_DATA_URL)
+    data = json.loads(response.content)
+    names = [s["name"] for s in data]
+    assert "Archived Song" not in names
+    assert cache.get(tenant_cache_key(tenant, f"{SONGS_CACHE_KEY}_ALL")) is not None
+    assert cache.get(tenant_cache_key(tenant, f"{SONGS_CACHE_KEY}_ALL_archived")) is None

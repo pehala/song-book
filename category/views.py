@@ -59,7 +59,7 @@ class CategorySongsJsonView(ETagJsonMixin, CategorySongsListView):
             self.request.tenant,
             f"{settings.SONGS_CACHE_KEY}_{self.kwargs['slug']}",
         )
-        return f"{base}_auth" if self.request.user.is_authenticated else base
+        return f"{base}_archived" if self.request.user.is_superuser else base
 
     def render_to_response(self, context, **kwargs):
         key = self.get_cache_key()
