@@ -17,11 +17,11 @@ jobs:
         uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
-          cache-dependency-glob: "**/pyproject.toml"
+          cache-dependency-glob: "uv.lock"
       - name: Install dependencies
         run: |
           uv python install
-          uv sync --group dev
+          uv sync --locked --group dev
       - name: Try initializing the repo
         run: |
           make init
