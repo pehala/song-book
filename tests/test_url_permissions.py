@@ -52,6 +52,7 @@ PUBLIC_URLS = [
     url("chords:index"),
     url("chords:all"),
     url("chords:all_data"),
+    url("chords:songs_api"),
     url("category:index", "slug"),
     url("category:songs_data", "slug"),
     url("pdf:files:wait", "pdf_file"),
