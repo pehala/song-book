@@ -1,9 +1,15 @@
 """Tenant models"""
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core.cache import cache
 from django.core.exceptions import ValidationError
 from django.db.models import BooleanField, CharField, ImageField, ManyToManyField, Model, URLField
+from django.db.models.signals import m2m_changed, post_save, pre_delete
+from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
+
+from tenants.utils import tenant_cache_key
 
 
 def only_png(value):
@@ -57,3 +63,30 @@ class Tenant(Model):
     class Meta:
         verbose_name = _("Tenant")
         verbose_name_plural = _("Tenants")
+
+
+def clear_links_menu(tenants):
+    """Deletes the cached links menu of the given tenants"""
+    cache.delete_many([tenant_cache_key(tenant, settings.LINKS_CACHE_KEY) for tenant in tenants])
+
+
+# pylint: disable=unused-argument
+@receiver(m2m_changed, sender=Tenant.links.through)
+def invalidate_links_menu_on_assignment(sender, instance, action, reverse, pk_set, **kwargs):
+    """Drops the cached links menu of every tenant whose links changed"""
+    if action not in ("post_add", "post_remove", "post_clear"):
+        return
+    if not reverse:
+        clear_links_menu([instance])
+    elif pk_set:
+        clear_links_menu(Tenant.objects.filter(pk__in=pk_set))
+    else:
+        clear_links_menu(Tenant.objects.all())
+
+
+# pylint: disable=unused-argument
+@receiver(post_save, sender=Link)
+@receiver(pre_delete, sender=Link)
+def invalidate_links_menu_on_edit(sender, instance, **kwargs):
+    """Drops the cached links menu of the tenants using the edited link"""
+    clear_links_menu(Tenant.objects.filter(links=instance))

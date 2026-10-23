@@ -46,16 +46,16 @@
         {% generate_menu %}
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav nav-left ms-1">
-                {% draw_menu "songbook" use_tenant=True %}
+                {% draw_menu "songbook" %}
             </ul>
             <ul class="navbar-nav nav-left ms-1">
-                {% draw_menu "files" use_tenant=True %}
+                {% draw_menu "files" %}
             </ul>
-            {% if request.tenant.links.all %}
+            {% if menus.links %}
             <ul class="navbar-nav nav-left ms-1">
-                {% draw_menu "links" use_tenant=True %}
+                {% draw_menu "links" %}
             </ul>
-            {% endif%}
+            {% endif %}
             <ul class="navbar-nav nav-right ms-auto ps-1">
                 {% draw_menu "pdf" %}
             </ul>
