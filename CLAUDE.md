@@ -164,7 +164,7 @@ inline instead of running `make worker`.
   contains fuzzy entries, so run `make messages` and resolve them.
 - ruff, line length 120, target `py314` (`.python-version` is 3.14).
 - Dev dependencies: `uv add --group dev <pkg>`.
-- One logical change per commit, tests in their own commit.
+- One logical change per commit.
 - Conventional Commits for commits and PR titles: `type(scope): summary` — types `feat`, `fix`,
   `perf`, `refactor`, `test`, `docs`, `ci`, `chore`; scopes `backend`, `frontend`, `category`,
   `tenants`, `pdf`, `ci`, `settings`.
