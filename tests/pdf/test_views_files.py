@@ -139,15 +139,6 @@ def test_template_edit_redirects_to_the_manual_template(staff_client, tenant, ma
     assert response["Location"] == reverse("pdf:templates:edit", kwargs={"pk": manual_template.pk})
 
 
-@pytest.mark.xfail(
-    raises=TypeError,
-    strict=True,
-    reason=(
-        "FileTemplateEditView returns the Http404 instead of raising it, so Django "
-        "hands the exception object to the response middleware and the request dies "
-        "with a TypeError instead of a 404."
-    ),
-)
 def test_template_edit_without_a_template(staff_client, tenant):
     """A file whose template is gone answers with a 404
 

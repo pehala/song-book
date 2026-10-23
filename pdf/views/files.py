@@ -94,4 +94,4 @@ class FileTemplateEditView(LocalAdminRequired, SingleObjectMixin, View):
             if isinstance(template, ManualPDFTemplate):
                 return redirect("pdf:templates:edit", pk=template.pk)
             return redirect("category:edit", pk=template.pk)
-        return Http404(_("File %(id)s does not have a template") % {"id": file.id})
+        raise Http404(_("File %(id)s does not have a template") % {"id": file.id})
