@@ -27,6 +27,7 @@ urlpatterns = [
     path("categories/", include(("category.urls", "category"), namespace="category")),
     path("analytics/", include(("analytics.urls", "analytics"), namespace="analytics")),
     path("tenants/", include(("tenants.urls", "tenants"), namespace="tenants")),
+    path("", include(("frontend.urls", "frontend"), namespace="frontend")),
     re_path(r"^", include(("backend.urls", "backend"), namespace="chords")),
     path("admin/", admin.site.urls),
 ]
