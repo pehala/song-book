@@ -6,7 +6,7 @@ import {hit, inlinedJson, loadSongs} from "./store.js";
 
 const boot = inlinedJson("boot");
 if (!boot) {
-    document.getElementById("app").textContent = translator(detectLanguage())("bootFailed");
+    document.getElementById("app").textContent = translator(detectLanguage(), {})("The page could not be loaded");
     throw new Error("The inlined bootstrap is missing or malformed");
 }
 const urls = boot.urls;
@@ -50,7 +50,7 @@ function App() {
     const [openId, setOpenId] = useState(null);
     const [scrolled, setScrolled] = useState(false);
     const site = useSiteHeader({boot});
-    const {t, toast} = site;
+    const {_, toast} = site;
     const route = useMemo(() => parseRoute(path), [path]);
 
     const navigate = useCallback(to => {
@@ -84,7 +84,7 @@ function App() {
         if (route.kind !== "missing") {
             hit(urls.hit, route.key);
         }
-        const name = route.kind === "category" ? route.category.name : route.kind === "all" ? t("allSongs") : t("notFound");
+        const name = route.kind === "category" ? route.category.name : route.kind === "all" ? _("All songs") : _("Not found");
         document.title = `${name} | ${boot.name}`;
     }, [route.key]);
 
@@ -94,8 +94,8 @@ function App() {
         }
         let reloadRequested = false;
         const offer = worker =>
-            toast(t("updateAvailable"), {
-                label: t("reload"),
+            toast(_("A new version is available"), {
+                label: _("Reload"),
                 run: () => {
                     reloadRequested = true;
                     worker.postMessage("skipWaiting");
@@ -128,25 +128,25 @@ function App() {
 
     let content;
     if (route.kind === "missing") {
-        content = html`<p class="empty">${t("categoryMissing")} <${Link} to=${boot.index} onNavigate=${navigate}>${t("home")}<//></p>`;
+        content = html`<p class="empty">${_("This category does not exist.")} <${Link} to=${boot.index} onNavigate=${navigate}>${_("Back to homepage")}<//></p>`;
     } else if (songs === null) {
         content = failed
-            ? html`<p class="empty">${t("loadFailed")} <button class="sb-btn" onClick=${load}>${t("retry")}</button></p>`
-            : html`<div class="spinner" role="status" aria-label=${t("loading")}></div>`;
+            ? html`<p class="empty">${_("The songs could not be loaded")} <button class="sb-btn" onClick=${load}>${_("Try again")}</button></p>`
+            : html`<div class="spinner" role="status" aria-label=${_("Loading…")}></div>`;
     } else {
         content = html`
             <div class="search">
-                <label for="search">${t("search")}</label>
-                <input id="search" type="search" placeholder=${t("searchHint")} value=${query} onInput=${event => setQuery(event.target.value)} />
+                <label for="search">${_("Search")}</label>
+                <input id="search" type="search" placeholder=${_("Number, text or author")} value=${query} onInput=${event => setQuery(event.target.value)} />
             </div>
-            <${SongList} rows=${visible} openId=${openId} setOpen=${setOpenId} me=${site.me} urls=${urls} t=${t} />`;
+            <${SongList} rows=${visible} openId=${openId} setOpen=${setOpenId} me=${site.me} urls=${urls} _=${_} />`;
     }
 
     return html`
         <${SiteHeader} site=${site} navigate=${navigate} />
         <main>${content}</main>
-        ${scrolled && html`<button class="sb-btn sb-primary fab" style="top:20px" title=${t("top")} aria-label=${t("top")} onClick=${() => scrollTo({top: 0, behavior: scrollBehavior()})}><${Icon} name="up" /></button>`}
-        ${openId !== null && html`<button class="sb-btn sb-primary fab" style="bottom:20px" title=${t("down")} aria-label=${t("down")} onClick=${scrollDown}><${Icon} name="down" /></button>`}`;
+        ${scrolled && html`<button class="sb-btn sb-primary fab" style="top:20px" title=${_("Back to top")} aria-label=${_("Back to top")} onClick=${() => scrollTo({top: 0, behavior: scrollBehavior()})}><${Icon} name="up" /></button>`}
+        ${openId !== null && html`<button class="sb-btn sb-primary fab" style="bottom:20px" title=${_("Scroll down")} aria-label=${_("Scroll down")} onClick=${scrollDown}><${Icon} name="down" /></button>`}`;
 }
 
 const root = document.getElementById("app");
