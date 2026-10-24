@@ -138,6 +138,7 @@ function App() {
             <div class="search">
                 <label for="search">${_("Search")}</label>
                 <input id="search" type="search" placeholder=${_("Number, text or author")} value=${query} onInput=${event => setQuery(event.target.value)} />
+                ${query.trim() && html`<output class="count" for="search">${visible.length} / ${rows.length}</output>`}
             </div>
             <${SongList} rows=${visible} openId=${openId} setOpen=${setOpenId} me=${site.me} urls=${urls} _=${_} />`;
     }
