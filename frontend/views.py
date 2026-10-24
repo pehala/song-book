@@ -32,7 +32,7 @@ MODULES = [
 # Draws the header on the pages the server renders
 SITE_ENTRY = "app/site.js"
 # Draw the content of some of the pages the server renders, through what page.js shares
-PAGE_ENTRIES = ["app/progress.js"]
+PAGE_ENTRIES = ["app/progress.js", "app/analytics.js"]
 PAGE_MODULES = ["app/page.js", *PAGE_ENTRIES]
 STYLESHEETS = ["app/header.css", "app/app.css"]
 ASSETS = [*MODULES, SITE_ENTRY, *PAGE_MODULES, *STYLESHEETS]

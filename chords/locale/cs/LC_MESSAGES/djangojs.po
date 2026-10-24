@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-24 05:54-0500\n"
+"POT-Creation-Date: 2026-10-24 05:57-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,9 +19,50 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
-#: frontend/static/app/app.js:87 frontend/static/app/header.js:145
+#: frontend/static/app/analytics.js:13 frontend/static/app/app.js:87
+#: frontend/static/app/header.js:145
 msgid "All songs"
 msgstr "Všechno"
+
+#: frontend/static/app/analytics.js:36
+msgid "Hits"
+msgstr "Návštěvy"
+
+#: frontend/static/app/analytics.js:50
+msgid "Hits per day"
+msgstr "Návštěvy po dnech"
+
+#: frontend/static/app/analytics.js:75
+msgid "Week"
+msgstr "Týden"
+
+#: frontend/static/app/analytics.js:76
+msgid "Month"
+msgstr "Měsíc"
+
+#: frontend/static/app/analytics.js:77
+msgid "Year"
+msgstr "Rok"
+
+#: frontend/static/app/analytics.js:81
+msgid "The statistics could not be loaded"
+msgstr "Statistiky se nepodařilo načíst"
+
+#: frontend/static/app/analytics.js:83
+msgid "The chart could not be loaded"
+msgstr "Graf se nepodařilo načíst"
+
+#: frontend/static/app/analytics.js:90
+msgid "Keys"
+msgstr "Klíče"
+
+#: frontend/static/app/analytics.js:92
+msgid "All"
+msgstr "Vše"
+
+#: frontend/static/app/analytics.js:97
+msgid "Date range"
+msgstr "Rozsah"
 
 #: frontend/static/app/app.js:87
 msgid "Not found"
