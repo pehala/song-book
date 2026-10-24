@@ -16,18 +16,26 @@ from backend.models import Song
 from backend.songs import build_songs_delta, cached_songs_payload
 from backend.utils import regenerate_pdf
 
+SIZE_HEADER = "X-Songs-Size"
+
 
 class ETagJsonMixin:
-    """Mixin that adds ETag-based client-side caching to a JSON view.
+    """Mixin that adds ETag-based client-side caching to a JSON view, with its uncompressed size in `X-Songs-Size`.
 
     Uses Django's get_conditional_response to return 304 Not Modified when
     the client's If-None-Match header matches the ETag of the cached content.
     """
 
+    def json_response(self, json_string):
+        """Return a JSON response that tells its uncompressed size"""
+        response = HttpResponse(json_string, content_type="application/json")
+        response[SIZE_HEADER] = len(response.content)
+        return response
+
     def etag_response(self, request, json_string, private=False):
         """Return a JSON response with ETag, or 304 if the client already has it; private ones skip shared caches"""
         etag = f'"{hashlib.blake2b(json_string.encode(), digest_size=16).hexdigest()}"'
-        response = HttpResponse(json_string, content_type="application/json")
+        response = self.json_response(json_string)
         response["ETag"] = etag
         response["Cache-Control"] = "private, no-cache" if private else "no-cache"
         return get_conditional_response(request, etag=etag, response=response)
@@ -48,10 +56,7 @@ class SongsApiView(ETagJsonMixin, View):
         since = request.GET.get("since", "")
         if response.status_code == 304 or not since.isdecimal() or len(since) > 10:
             return response
-        delta = HttpResponse(
-            build_songs_delta(request.tenant, include_archived, int(since), response["ETag"]),
-            content_type="application/json",
-        )
+        delta = self.json_response(build_songs_delta(request.tenant, include_archived, int(since), response["ETag"]))
         delta["Cache-Control"] = "private, no-store" if include_archived else "no-store"
         return delta
 
