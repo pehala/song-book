@@ -44,7 +44,7 @@ def test_worker_precaches_the_shell_and_the_static_files(anon_client, tenant):
     source = worker(anon_client)
 
     assert static("app/vendor/preact-htm.module.js") in array(source, "PRECACHE")
-    for path in ("app/app.css", "app/header.css", "app/site.js", "app/chrome.js"):
+    for path in ("app/app.css", "app/header.css", "app/site.js", "app/header.js"):
         assert static(path) in array(source, "PRECACHE")
     assert 'const SHELL = "/";' in source
 
