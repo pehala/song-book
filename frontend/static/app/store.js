@@ -11,40 +11,100 @@ async function open() {
     }
 }
 
+// The delta is asked for from this long before the stored copy's Date: an edit's updated_at is set
+// before the edit is committed, so a copy fetched in between has a later Date and lacks the edit
+const SYNC_MARGIN = 60;
+
+// The stored list brought up to date with a delta from the server, or null when the delta does not fit it
+export function mergeDelta(songs, delta) {
+    const byId = new Map(songs.map(song => [song.id, song]));
+    const listed = new Set(delta.ids);
+    if (delta.changed.some(song => !listed.has(song.id))) {
+        return null;
+    }
+    for (const song of delta.changed) {
+        byId.set(song.id, song);
+    }
+    const merged = delta.ids.map((id, index) => byId.has(id) && {...byId.get(id), number: index + 1});
+    return merged.every(Boolean) ? merged : null;
+}
+
+// Asks for what changed since the stored copy when its ETag and Date are known, for the whole list otherwise.
+// Sending If-None-Match makes the browser pass a 304 on instead of answering it from its own cache.
+function fetchSongs(url, stored) {
+    const etag = stored?.headers.get("ETag");
+    const date = Date.parse(stored?.headers.get("Date"));
+    if (!etag || Number.isNaN(date)) {
+        return fetch(url);
+    }
+    const since = Math.max(0, Math.floor(date / 1000) - SYNC_MARGIN);
+    return fetch(`${url}?since=${since}`, {headers: {"If-None-Match": etag}});
+}
+
 // Calls onSongs with the stored list straight away, then with the fresh one if it differs.
-// The response says `no-cache`, so the browser revalidates it by ETag itself: an unchanged list
-// costs a 304, and the ETag shows that the stored copy is still current.
+// An unchanged list costs a 304, a changed one only the songs that changed; a delta that does not
+// fit the stored list falls back to the whole list.
 // Resolves when the network answered or failed with a stored copy to fall back on, rejects otherwise.
 export async function loadSongs(url, onSongs) {
     const cache = await open();
     let stored = null;
+    let list = null;
     try {
         stored = (await cache?.match(url, {ignoreVary: true})) ?? null;
         if (stored) {
-            onSongs(await stored.clone().json());
+            list = await stored.clone().json();
+            onSongs(list);
         }
     } catch {
         stored = null;
+        list = null;
     }
     let response;
     try {
-        response = await fetch(url);
+        response = await fetchSongs(url, stored);
     } catch (error) {
         if (stored) {
             return;
         }
         throw error;
     }
+    if (response.status === 304) {
+        return;
+    }
     if (!response.ok) {
         throw new Error(`${response.status}`);
     }
-    if (stored && stored.headers.get("ETag") === response.headers.get("ETag")) {
+    const copy = response.clone();
+    const body = await response.json();
+    if (Array.isArray(body)) {
+        onSongs(body);
+        await store(cache, url, copy);
         return;
     }
-    const copy = response.clone();
-    onSongs(await response.json());
+    const merged = list && mergeDelta(list, body);
+    if (merged) {
+        onSongs(merged);
+        await store(cache, url, new Response(JSON.stringify(merged), {
+            headers: {
+                "Content-Type": "application/json",
+                "ETag": body.etag,
+                "Date": new Date(body.now * 1000).toUTCString(),
+            },
+        }));
+        return;
+    }
+    const whole = await fetch(url);
+    if (!whole.ok) {
+        throw new Error(`${whole.status}`);
+    }
+    const wholeCopy = whole.clone();
+    onSongs(await whole.json());
+    await store(cache, url, wholeCopy);
+}
+
+async function store(cache, url, response) {
     try {
-        await cache?.put(url, copy);
+        await cache?.put(url, response);
     } catch {
         // storage is full or blocked; the list is shown anyway
     }
