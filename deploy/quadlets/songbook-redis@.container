@@ -1,16 +1,17 @@
+# Template: `systemctl --user start songbook-redis@<instance>` starts an instance; %i is its name. See docs/DEPLOY.md.
 [Unit]
-Description=Songbook Valkey (cache and Huey queue)
+Description=Songbook Valkey (cache and Huey queue), instance %i
 
 [Container]
-ContainerName=songbook-redis
+ContainerName=songbook-redis-%i
 Image=docker.io/valkey/valkey:8
 Network=none
-# TCP disabled; only this user's containers can reach $XDG_RUNTIME_DIR/songbook/redis.
+# TCP disabled; only this instance's containers can reach $XDG_RUNTIME_DIR/songbook/<instance>/redis.
 # Cache keys carry a TTL and Huey keys do not, so volatile-lru evicts cache entries but never queued jobs.
 Exec=valkey-server --port 0 --unixsocket /run/redis/redis.sock --unixsocketperm 700 \
     --save 60 1 --maxmemory 256mb --maxmemory-policy volatile-lru
-Volume=songbook-redis.volume:/data
-Volume=%t/songbook/redis:/run/redis:z
+Volume=songbook-redis-%i:/data
+Volume=%t/songbook/%i/redis:/run/redis:z
 # The image's valkey user (UID 999) is this host user, so everything it writes is owned by it
 UserNS=keep-id:uid=999,gid=999
 HealthCmd=valkey-cli -s /run/redis/redis.sock ping
