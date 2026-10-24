@@ -13,7 +13,7 @@ from django.test import Client
 from django.urls import reverse
 from PIL import Image
 
-from frontend.views import ASSETS, ENTRY, MODULES, SITE_ENTRY, STYLESHEETS
+from frontend.views import ASSETS, ENTRY, MODULES, PAGE_ENTRIES, PAGE_MODULES, SITE_ENTRY, STYLESHEETS
 
 pytestmark = pytest.mark.django_db
 
@@ -140,7 +140,7 @@ def test_every_asset_is_a_static_file(path):
 
 def test_assets_are_the_modules_the_entries_and_the_styles():
     """The list the worker precaches covers everything the pages load"""
-    assert [*MODULES, SITE_ENTRY, *STYLESHEETS] == ASSETS
+    assert [*MODULES, SITE_ENTRY, *PAGE_MODULES, *STYLESHEETS] == ASSETS
     assert MODULES[0] == ENTRY
 
 
@@ -148,8 +148,8 @@ def test_every_module_is_reachable_from_an_entry():
     """A listed module that nothing imports is dead weight in the precache"""
     root = Path(__file__).parents[2] / "frontend/static"
     sources = {path: (root / path).read_text() for path in ASSETS if path.endswith((".js", ".mjs"))}
-    imported = {ENTRY, SITE_ENTRY}
-    pending = [ENTRY, SITE_ENTRY]
+    imported = {ENTRY, SITE_ENTRY, *PAGE_ENTRIES}
+    pending = [ENTRY, SITE_ENTRY, *PAGE_ENTRIES]
     while pending:
         current = pending.pop()
         for relative in re.findall(r'from "(\.[^"]+)"', sources[current]):
