@@ -1,5 +1,6 @@
-# Template: `systemctl --user start songbook-worker@<instance>` starts an instance; %i is its name. See docs/DEPLOY.md.
+# Template of one songbook unit; %i is the instance name, started through songbook@<instance>.target. See docs/DEPLOY.md.
 [Unit]
+PartOf=songbook@%i.target
 Description=Songbook Huey worker (PDF generation), instance %i
 # songbook-web is only ready after it has migrated the database
 Requires=songbook-web@%i.service songbook-postgres@%i.service songbook-redis@%i.service
