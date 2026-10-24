@@ -31,6 +31,8 @@ DATABASES = {
         "NAME": os.environ.get("POSTGRES_DB", "songbook"),
         "USER": os.environ.get("POSTGRES_USER", "songbook"),
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD", ""),
+        # The port is part of the socket's file name (.s.PGSQL.<port>); empty means PostgreSQL's default, 5432
+        "PORT": os.environ.get("POSTGRES_PORT", ""),
         "CONN_MAX_AGE": 60,
         "CONN_HEALTH_CHECKS": True,
     }
