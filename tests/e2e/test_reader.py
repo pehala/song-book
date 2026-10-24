@@ -1,8 +1,10 @@
 """Browser tests of the reader: routing, search, song view, options and the service worker."""
 
 import json
+from pathlib import Path
 from urllib.parse import urlsplit
 
+from django.contrib.staticfiles import finders
 from playwright.sync_api import expect
 
 from analytics.models import DayStatistic
@@ -453,3 +455,24 @@ def test_new_version_is_offered_and_installed_on_request(page, library, monkeypa
     expect(songs(page)).to_have_count(3)
     page.wait_for_function("caches.keys().then(names => names.filter(name => name.startsWith('shell-')).length === 1)")
     assert set(shell_caches(page)).isdisjoint(before)
+
+
+def test_edited_file_is_offered_as_a_new_version_in_development(page, library, settings, monkeypatch, tmp_path):
+    """With static files unhashed, changing a reader file still makes the browser offer the update"""
+    settings.DEBUG = True
+    stylesheet = tmp_path / "header.css"
+    stylesheet.write_text(Path(finders.find("app/header.css")).read_text())
+    find = finders.find
+    monkeypatch.setattr(
+        "frontend.views.finders.find", lambda path: stylesheet if path == "app/header.css" else find(path)
+    )
+    page.goto("/categories/cs")
+    page.evaluate("navigator.serviceWorker.ready")
+    page.reload()
+    expect(songs(page)).to_have_count(3)
+    page.wait_for_function("navigator.serviceWorker.controller !== null")
+
+    stylesheet.write_text(stylesheet.read_text() + "\n/* edited */\n")
+    page.reload()
+
+    expect(page.get_by_text("A new version is available")).to_be_visible()
