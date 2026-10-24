@@ -4,7 +4,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.http import Http404, JsonResponse
 from django.shortcuts import redirect
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.views.generic import DetailView, ListView
@@ -55,11 +55,19 @@ class FileUpdateView(LocalAdminRequired, UniversalUpdateView):
 
 
 class WaitForFileView(DetailView):
-    """Shows wait page for PDF generation"""
+    """Shows wait page for PDF generation; the browser polls `RenderInfoView` and draws the progress"""
 
     model = PDFFile
     context_object_name = "pdf"
     template_name = "pdf/files/wait.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["page"] = {
+            "filename": self.object.filename,
+            "info": reverse("pdf:files:info", kwargs={"pk": self.object.pk}),
+        }
+        return context
 
 
 class RenderInfoView(View, SingleObjectMixin):
@@ -74,6 +82,7 @@ class RenderInfoView(View, SingleObjectMixin):
         return JsonResponse(
             {
                 "ready": ready,
+                "failed": pdf_file.status == Status.FAILED,
                 "progress": pdf_file.progress,
                 "link": pdf_file.file.url if ready else None,
                 "scheduled_at": pdf_file.scheduled_at,

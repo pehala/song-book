@@ -102,13 +102,36 @@ def test_wait_page_shows_the_file(anon_client, pdf_file):
     assert response.context["pdf"] == pdf_file
 
 
+def test_wait_page_tells_the_browser_what_to_poll(anon_client, pdf_file):
+    """The progress is drawn in the browser from the file's info"""
+    response = anon_client.get(reverse("pdf:files:wait", kwargs={"pk": pdf_file.pk}))
+
+    assert response.context["page"] == {
+        "filename": pdf_file.filename,
+        "info": reverse("pdf:files:info", kwargs={"pk": pdf_file.pk}),
+    }
+    assert b'<script id="page-data" type="application/json">' in response.content
+
+
 def test_info_reports_a_pending_file(anon_client, pdf_file):
     """An unfinished file has no download link yet"""
     response = anon_client.get(reverse("pdf:files:info", kwargs={"pk": pdf_file.pk}))
 
     data = json.loads(response.content)
     assert data["ready"] is False
+    assert data["failed"] is False
     assert data["link"] is None
+
+
+def test_info_reports_a_failed_file(anon_client, pdf_file):
+    """A file that failed to render ends the polling"""
+    pdf_file.status = Status.FAILED
+    pdf_file.save()
+
+    data = json.loads(anon_client.get(reverse("pdf:files:info", kwargs={"pk": pdf_file.pk})).content)
+
+    assert data["failed"] is True
+    assert data["ready"] is False
 
 
 def test_info_reports_a_finished_file(anon_client, finished_file):
