@@ -29,15 +29,16 @@ RunInit=true
 ReadOnly=true
 NoNewPrivileges=true
 DropCapability=ALL
-# Healthy once gunicorn accepts connections, i.e. after the migrations; the worker waits for it.
-# A stale socket from the previous run refuses connections, so it does not count.
-HealthCmd=python -c "import socket; socket.socket(socket.AF_UNIX).connect('/run/gunicorn/gunicorn.sock')"
+# Healthy once gunicorn has created its socket, i.e. after the migrations; the worker waits for it.
+# The socket of the previous run is removed before every start, so it does not count.
+HealthCmd=test -S /run/gunicorn/gunicorn.sock
 HealthInterval=30s
-HealthStartupCmd=python -c "import socket; socket.socket(socket.AF_UNIX).connect('/run/gunicorn/gunicorn.sock')"
+HealthStartupCmd=test -S /run/gunicorn/gunicorn.sock
 HealthStartupInterval=2s
 Notify=healthy
 
 [Service]
+ExecStartPre=-/bin/rm -f %h/nginx/%i/gunicorn/gunicorn.sock
 Restart=always
 SuccessExitStatus=143
 # Migrations run before the socket opens
