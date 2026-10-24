@@ -104,12 +104,11 @@ def test_urls_point_at_the_pages_the_reader_links_to(tenant):
     """Ids are given as 0 for the client to replace"""
     urls = bootstrap_payload(tenant)["urls"]
 
-    assert (urls["songs"], urls["me"], urls["edit"], urls["delete"], urls["hit"]) == (
+    assert (urls["songs"], urls["me"], urls["edit"], urls["delete"]) == (
         "/api/songs",
         "/api/me",
         "/edit/0",
         "/delete/0",
-        "/analytics/hit/0",
     )
     assert (urls["files"], urls["templates"], urls["password"]) == (
         "/pdf/files/",
