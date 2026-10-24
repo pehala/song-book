@@ -102,6 +102,17 @@ export async function loadSongs(url, onSongs) {
     await store(cache, url, wholeCopy);
 }
 
+// Downloads the whole list again, past every cache, and replaces the stored copy
+export async function reloadSongs(url, onSongs) {
+    const response = await fetch(url, {cache: "reload"});
+    if (!response.ok) {
+        throw new Error(`${response.status}`);
+    }
+    const copy = response.clone();
+    onSongs(await response.json());
+    await store(await open(), url, copy);
+}
+
 async function store(cache, url, response) {
     try {
         await cache?.put(url, response);

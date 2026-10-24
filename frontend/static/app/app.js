@@ -2,7 +2,7 @@ import {html, render, useCallback, useEffect, useMemo, useState} from "./vendor/
 import {SiteHeader, Icon, Link, closeDropdowns, useSiteHeader} from "./header.js";
 import {SongList, filterRows, routeRows} from "./songs.js";
 import {detectLanguage, translator} from "./i18n.js";
-import {hit, inlinedJson, loadSongs} from "./store.js";
+import {hit, inlinedJson, loadSongs, reloadSongs} from "./store.js";
 
 const boot = inlinedJson("boot");
 if (!boot) {
@@ -66,6 +66,12 @@ function App() {
     }, []);
 
     useEffect(load, []);
+
+    const reload = useCallback(() => {
+        reloadSongs(urls.songs, setSongs)
+            .then(() => toast(_("The songs were reloaded")))
+            .catch(() => toast(_("The songs could not be loaded"), null, "error"));
+    }, [_, toast]);
 
     useEffect(() => {
         const onPop = () => setPath(location.pathname);
@@ -144,7 +150,7 @@ function App() {
     }
 
     return html`
-        <${SiteHeader} site=${site} navigate=${navigate} />
+        <${SiteHeader} site=${site} navigate=${navigate} onReload=${reload} />
         <main>${content}</main>
         ${scrolled && html`<button class="sb-btn sb-primary fab" style="top:20px" title=${_("Back to top")} aria-label=${_("Back to top")} onClick=${() => scrollTo({top: 0, behavior: scrollBehavior()})}><${Icon} name="up" /></button>`}
         ${openId !== null && html`<button class="sb-btn sb-primary fab" style="bottom:20px" title=${_("Scroll down")} aria-label=${_("Scroll down")} onClick=${scrollDown}><${Icon} name="down" /></button>`}`;
