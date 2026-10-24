@@ -21,7 +21,7 @@ from tenants.bootstrap import bootstrap_payload
 ENTRY = "app/app.js"
 MODULES = [
     ENTRY,
-    "app/chrome.js",
+    "app/header.js",
     "app/i18n.js",
     "app/options.js",
     "app/songs.js",
