@@ -160,7 +160,7 @@ user, so each one upgrades, restarts and is backed up on its own.
 For a server that runs several apps: one PostgreSQL installed on the host serves them all, each with
 its own role and database, while this app keeps its private [Valkey](https://valkey.io/) for cache and
 queue (a Redis-compatible server that django-redis and Huey use unchanged). The socket paths come from
-`POSTGRES_SOCKET_DIR` and `REDIS_SOCKET`, whose defaults are what these steps use. Do the steps below
+`POSTGRES_SOCKET_DIR`, `POSTGRES_PORT` (the number in the socket's file name, for a server that runs several clusters) and `REDIS_SOCKET`, whose defaults are what these steps use. Do the steps below
 in place of the ones they replace, and skip `songbook-postgres@` and the `songbook-db-password-<instance>` secret.
 The instances then share the one PostgreSQL server and differ in their database, `POSTGRES_DB` in
 `~/.config/songbook/<instance>.env`.
