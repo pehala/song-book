@@ -7,6 +7,7 @@ from django.urls import reverse_lazy
 from django.utils.cache import get_conditional_response
 from django.views import View
 
+from analytics.views import ALL_SONGS_KEY, analytics
 from backend.forms import SongForm
 from backend.generic import UniversalCreateView, UniversalDeleteView, UniversalUpdateView
 from backend.me import me_payload
@@ -40,6 +41,7 @@ class SongsApiView(ETagJsonMixin, View):
     """
 
     def get(self, request, *args, **kwargs):
+        analytics(request, ALL_SONGS_KEY)
         include_archived = request.user.is_superuser
         payload = cached_songs_payload(request.tenant, include_archived)
         response = self.etag_response(request, payload, private=include_archived)
