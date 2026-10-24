@@ -2,7 +2,7 @@ import {html, render, useCallback, useEffect, useMemo, useRef, useState} from ".
 import {SiteHeader, Icon, Link, closeDropdowns, useSiteHeader} from "./header.js";
 import {SongList, filterRows, routeRows} from "./songs.js";
 import {detectLanguage, translator} from "./i18n.js";
-import {inlinedJson, loadSongs, remainingSeconds} from "./store.js";
+import {inlinedJson, loadSongs, reloadSongs, remainingSeconds} from "./store.js";
 
 const boot = inlinedJson("boot");
 if (!boot) {
@@ -69,6 +69,21 @@ function App() {
     }, []);
 
     useEffect(load, []);
+
+    const reloading = useRef(false);
+    const reload = useCallback(() => {
+        if (reloading.current) {
+            return;
+        }
+        reloading.current = true;
+        reloadSongs(urls.songs, setSongs, setProgress)
+            .then(() => toast(_("The songs were reloaded")))
+            .catch(() => toast(_("The songs could not be loaded"), null, "error"))
+            .finally(() => {
+                reloading.current = false;
+                setProgress(null);
+            });
+    }, [_, toast]);
 
     useEffect(() => {
         const onPop = () => setPath(location.pathname);
@@ -144,7 +159,7 @@ function App() {
     }
 
     return html`
-        <${SiteHeader} site=${site} navigate=${navigate} />
+        <${SiteHeader} site=${site} navigate=${navigate} onReload=${reload} />
         ${songs !== null && progress && html`<${Progress} progress=${progress} label=${_("Updating songs…")} retryLabel=${_("Fetching the whole list…")} />`}
         <main>${content}</main>
         ${scrolled && html`<button class="sb-btn sb-primary fab" style="top:20px" title=${_("Back to top")} aria-label=${_("Back to top")} onClick=${() => scrollTo({top: 0, behavior: scrollBehavior()})}><${Icon} name="up" /></button>`}
