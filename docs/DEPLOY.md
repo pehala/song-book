@@ -133,6 +133,125 @@ podman exec -it songbook-web python manage.py createsuperuser
 - **Read-only containers.** The app containers run with `ReadOnly=true`, no capabilities and
   `NoNewPrivileges`; only `/tmp`, the media directory and the socket directories are writable.
 
+## Variant: shared PostgreSQL, Valkey in a container
+
+For a server that runs several apps: one PostgreSQL installed on the host serves them all, each with
+its own role and database, while this app keeps a private cache and queue in its own container. The
+`songbook-redis` unit already is one Redis per app; here it runs [Valkey](https://valkey.io/), a
+drop-in replacement that django-redis and Huey use unchanged. Nothing else in the app changes: the
+socket paths come from `POSTGRES_SOCKET_DIR` and `REDIS_SOCKET`, whose defaults are what these steps
+use. Do the steps below in place of the ones they replace, and skip `songbook-postgres` and the
+`songbook-db-password` secret.
+
+Valkey is a private cache and queue rather than a shared service on purpose: Redis has no
+multi-tenancy (databases do not isolate, and eviction policy, `maxmemory` and persistence are global),
+and this app needs `volatile-lru` so that eviction never drops queued Huey jobs. A Redis instance costs
+a few MB, so there is nothing to gain from sharing it.
+
+```
+ songbook-web ──┬── /run/postgresql/.s.PGSQL.5432 ──> postgresql.service (host, shared)
+ songbook-worker┴── redis/redis.sock ────────────────> songbook-redis (Valkey, private)
+```
+
+**1. Create the role and database (as root).** Install PostgreSQL from your distribution if it is not
+there yet. The role carries the name of the host user, which matters in the next step:
+
+```bash
+runuser -u postgres -- psql <<'SQL'
+CREATE ROLE songbook LOGIN;
+CREATE DATABASE songbook OWNER songbook;
+SQL
+```
+
+**2. Authentication.** The containers run with `UserNS=keep-id`, so a connection through the socket
+reaches PostgreSQL as the host user `songbook`, and `peer` authentication maps it to the role of the
+same name without a password. Distributions ship `local all all peer` in `pg_hba.conf`, so this works
+without any change; no secret is needed, which is why the units below drop it. Check as `songbook`:
+
+```bash
+psql --host /run/postgresql songbook --command 'SELECT current_user'
+```
+
+If your `pg_hba.conf` does not use `peer` for `local` connections, or the role must have a password
+for another reason, create it (`CREATE ROLE songbook LOGIN PASSWORD '…'`), add
+`local songbook songbook scram-sha-256` above the catch-all rule, and keep the
+`songbook-db-password` secret and the `Secret=` line in both units.
+
+**3. SELinux (as root).** A container may not connect to PostgreSQL's socket by default. Install
+[`deploy/selinux/songbook_postgres.te`](../deploy/selinux/songbook_postgres.te) like the nginx module in
+[Permissions and SELinux](#permissions-and-selinux):
+
+```bash
+cd deploy/selinux
+checkmodule -M -m -o songbook_postgres.mod songbook_postgres.te
+semodule_package -o songbook_postgres.pp -m songbook_postgres.mod
+semodule -i songbook_postgres.pp
+```
+
+The directory is mounted without `:z`: relabelling `/run/postgresql` would change it for every other
+client of the server.
+
+**4. Edit the units** after installing them as in [step 4](#4-install-the-units), and remove the ones
+that are not used:
+
+```bash
+rm ~/.config/containers/systemd/songbook-postgres.*
+```
+
+In `songbook-redis.container`, run Valkey; the unit name, the socket directory and the volume stay as
+they are:
+
+```ini
+Image=docker.io/valkey/valkey:8
+Exec=valkey-server --port 0 --unixsocket /run/redis/redis.sock --unixsocketperm 700 \
+    --save 60 1 --maxmemory 256mb --maxmemory-policy volatile-lru
+HealthCmd=valkey-cli -s /run/redis/redis.sock ping
+HealthStartupCmd=valkey-cli -s /run/redis/redis.sock ping
+```
+
+In `songbook-web.container` and `songbook-worker.container`:
+
+- `Requires=` and `After=` list only `songbook-redis.service`. A user unit cannot order itself after
+  the system's `postgresql.service`.
+- delete the `Secret=songbook-db-password,…` line;
+- replace `Volume=%t/songbook/postgres:/run/postgresql:z` with `Volume=/run/postgresql:/run/postgresql`
+  (on Debian `/var/run/postgresql` is the same directory).
+
+In `songbook-web.container` only, wait for PostgreSQL to have created its socket, so that a boot where
+the user's units win the race does not burn through the restart limit:
+
+```ini
+[Service]
+ExecStartPre=/bin/sh -c 'until test -S /run/postgresql/.s.PGSQL.5432; do sleep 1; done'
+```
+
+The existing `TimeoutStartSec=900` bounds the wait. The worker starts after web is healthy, which is
+after the database was reachable.
+
+**5. Pull and start:**
+
+```bash
+podman pull docker.io/valkey/valkey:8 ghcr.io/pehala/song-book:latest
+systemctl --user daemon-reload
+systemctl --user start songbook-web songbook-worker
+```
+
+The rest of this guide applies with these differences:
+
+- **Backups** run on the host instead of through `podman exec`:
+  `pg_dump --format=custom songbook > songbook.dump` as `songbook`, or as `postgres` for
+  `pg_dumpall` across all apps.
+- **Migrating an existing deployment:** its step 2 has no `songbook-postgres` to start; just do not
+  start web before the restore, for the same reason. Restore into the empty database with
+  `pg_restore --host /run/postgresql --dbname songbook --no-owner --no-privileges --single-transaction
+  --exit-on-error ~/songbook.dump` as `songbook` (after a failed restore, `DROP DATABASE songbook` and
+  create it again), and run the tenant query of its step 5 with `psql --host /run/postgresql songbook`.
+- **Switching an existing Redis volume to Valkey:** Valkey may not read the snapshot Redis 8 wrote.
+  If `songbook-redis` fails to start on it, `podman volume rm songbook-redis`: the cache refills and
+  queued PDF generations are lost, which can be started again from the PDF pages.
+- **PostgreSQL upgrades and restarts** now affect every app on the server, and web retries until the
+  socket is back thanks to `Restart=always`.
+
 ## 5. Upgrade
 
 ```bash
