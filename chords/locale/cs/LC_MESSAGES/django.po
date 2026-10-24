@@ -241,7 +241,7 @@ msgstr "Zpátky domů"
 msgid "URL %(request_path)s does not exist."
 msgstr "URL %(request_path)s neexistuje."
 
-#: frontend/templates/base/error.html:7
+#: frontend/templates/base/error.html:8
 msgid "Not found"
 msgstr "Nenalezeno"
 
