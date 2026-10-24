@@ -36,7 +36,7 @@ def test_landing_page_is_drawn_from_the_shell(page, library):
 
     expect(page).to_have_url(page.url.split("/", 3)[0] + "//" + urlsplit(page.url).netloc + "/categories/cs")
     expect(songs(page)).to_have_count(3)
-    expect(page.locator("header .brand")).to_have_text(library.display_name)
+    expect(page.locator("header .sb-brand")).to_have_text(library.display_name)
     expect(page).to_have_title(f"Česky | {library.display_name}")
 
 
@@ -234,10 +234,10 @@ def test_theme_is_applied_and_remembered(page, library):
 
     page.get_by_role("button", name="Dark").click()
 
-    expect(page.locator("html")).to_have_attribute("data-theme", "dark")
+    expect(page.locator("html")).to_have_attribute("data-bs-theme", "dark")
     assert page.evaluate("localStorage.getItem('theme')") == "dark"
     page.reload()
-    expect(page.locator("html")).to_have_attribute("data-theme", "dark")
+    expect(page.locator("html")).to_have_attribute("data-bs-theme", "dark")
 
 
 def test_language_can_be_switched(page, library):
@@ -258,14 +258,14 @@ def test_dropdown_closes_on_escape_and_outside_click(page, library):
     """Only one menu is open and it goes away when asked"""
     page.goto("/categories/cs")
     open_menu(page, "Options")
-    expect(page.locator("details.dd[open]")).to_have_count(1)
+    expect(page.locator("details.sb-dd[open]")).to_have_count(1)
 
     page.keyboard.press("Escape")
-    expect(page.locator("details.dd[open]")).to_have_count(0)
+    expect(page.locator("details.sb-dd[open]")).to_have_count(0)
 
     open_menu(page, "Categories")
     page.get_by_label("Search").click()
-    expect(page.locator("details.dd[open]")).to_have_count(0)
+    expect(page.locator("details.sb-dd[open]")).to_have_count(0)
 
 
 def test_qr_code_dialog(page, library):

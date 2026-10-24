@@ -3,7 +3,7 @@
 from django.urls import reverse
 
 from backend.utils import get_git_revision, get_version
-from tenants.menus import CATEGORIES_ITEM, FILES_ITEM, LINKS_ITEM
+from tenants.menus import CATEGORIES_MENU, FILES_MENU, LINKS_MENU
 
 SCHEMA_VERSION = 1
 
@@ -47,11 +47,11 @@ def bootstrap_payload(tenant):
         "all_songs": tenant.all_songs_category,
         "categories": [
             {"slug": item.category_slug, "name": item.title}
-            for item in CATEGORIES_ITEM.children_of(tenant)
+            for item in CATEGORIES_MENU.children_of(tenant)
             if hasattr(item, "category_slug")
         ],
-        "pdfs": [{"name": item.title, "url": item.url} for item in FILES_ITEM.children_of(tenant)],
-        "links": [{"name": item.title, "url": item.url} for item in LINKS_ITEM.children_of(tenant)],
+        "pdfs": [{"name": item.title, "url": item.url} for item in FILES_MENU.children_of(tenant)],
+        "links": [{"name": item.title, "url": item.url} for item in LINKS_MENU.children_of(tenant)],
         "urls": named_urls(),
         "version": get_version(),
         "rev": get_git_revision(),

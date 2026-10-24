@@ -91,7 +91,7 @@ One deployment serves several songbooks, told apart by `Host` header.
 | `pdf` | `PDFTemplate`/`ManualPDFTemplate`/`PDFFile`/`PDFSong`, WeasyPrint generation, Huey tasks |
 | `tenants` | `Tenant`, `Link`, the hostname middleware, tenant admin/move views |
 | `analytics` | `DayStatistic` per tenant/key/day, the `analytics()` counter and the `HitView` beacon |
-| `frontend` | no models — the reader (`ShellView`, `ServiceWorkerView`, `ManifestView`, `shell.html`, `static/app/*`) and the Bootstrap base templates of the admin pages (`base/index.html`, `base/frame.html`, `base/verbs/*`), global CSS, icon font |
+| `frontend` | no models — the reader (`ShellView`, `ServiceWorkerView`, `ManifestView`, `shell.html`, `static/app/*`, the header context processor) and the Bootstrap base templates of the admin pages (`base/index.html`, `base/frame.html`, `base/verbs/*`), global CSS, icon font |
 
 Cross-app glue worth knowing before editing:
 
@@ -99,8 +99,8 @@ Cross-app glue worth knowing before editing:
   `backend/generic.py` (success messages, `?next=` redirect, `base/verbs/*.html` templates).
   Access control is `LocalAdminRequired` / `SuperAdminRequired` from `backend/mixins.py`, backed
   by `backend/auth.py`.
-- **Navigation** is built from `*/menus.py` via `django-simple-menu`; `check=` callables are the
-  auth predicates from `backend/auth.py`.
+- **Navigation** is drawn client-side by the shared header from the tenant's bootstrap (`tenants/bootstrap.py`),
+  whose categories, PDFs and links come from the cached menus in `tenants/menus.py`.
 - **URLs**: `backend.urls` is mounted at `^` (so `/`, `/all`, `/api/songs`, `/api/me`, `/add`,
   `/edit/<pk>`), `frontend.urls` serves `/sw.js` and `/manifest.webmanifest`, categories live at
   `/categories/<slug>`, plus `/pdf/`, `/analytics/` (including `POST /analytics/hit/<key>`), `/tenants/`,
@@ -127,8 +127,16 @@ The reader (song list, search, category switching, song view) is a Preact + htm 
 with no build step. Everything else (CRUD, PDF, analytics, login, `/admin/`) keeps its Django
 templates and Bootstrap from the CDN.
 
+- The header (`chrome.js`: `Header`, `Toasts`, `QrDialog`, `useChrome`) is one Preact component used twice: by the
+  reader and, through `site.js`, by every Bootstrap page. `base/index.html` has an empty `#site-header`, the
+  `boot` and `me` JSON (from `frontend.context_processors.header`, evaluated only when printed) and loads
+  `site.js`; the Python-side menus are gone, so a menu entry is added in `chrome.js` only. Header markup and
+  `header.css` use `sb-` prefixed classes so they cannot clash with Bootstrap, and the theme is the
+  `data-bs-theme` attribute on `<html>` (set early by an inline script, then by `options.js`), which both
+  Bootstrap and the reader's CSS follow. Pages the server renders (`server: true`) take their language from
+  `<html lang>`, change it by POSTing `setlang` and reloading, and leave out the options that need songs.
 - `ShellView` serves **one** page, `frontend/templates/shell.html`, for `/`, `/all` and
-  `/categories/<slug>`: inline CSS (`shell/style.css`), an SVG sprite, `modulepreload` links, a
+  `/categories/<slug>`: the stylesheets as `<link>`s (`STYLESHEETS`), an SVG sprite, `modulepreload` links, a
   `preload` of `/api/songs` and the tenant's bootstrap JSON in `<script id="boot">`
   (`tenants/bootstrap.py: bootstrap_payload`, built from the entries the navigation menus keep in the
   cache, so menu invalidation covers it). It reads no user, session, message, CSRF or language, so
@@ -136,9 +144,10 @@ templates and Bootstrap from the CDN.
   gets the same body with status 404. Keep it that way: the service worker serves one cached copy to
   every route and every user. `RecognizeTenantMiddleware` resolves `is_localadmin` lazily for the
   same reason.
-- Modules are in `frontend/static/app/` (`app.js` entry, `songs.js`, `store.js`, `i18n.js`, `qr.js`,
-  `vendor/preact-htm.module.js`) and listed once in `frontend.views.MODULES`, which feeds the
-  preload links and the service worker's precache. A new module must be added there. Keep modules
+- Modules are in `frontend/static/app/` (`app.js` entry, `site.js` entry for server pages, `chrome.js`, `options.js`, `songs.js`, `store.js`,
+  `i18n.js`, `qr.js`, `vendor/preact-htm.module.js`, `header.css`, `app.css`) and listed once in
+  `frontend.views` (`MODULES`, `SITE_ENTRY`, `STYLESHEETS`), which feeds the preload links and the service
+  worker's precache. A new file must be added there. Keep modules
   free of import cycles (hashing needs a DAG) and `import()` out of modules with nested template
   literals: `ManifestStorage` cannot see past them, which is why `qr.js` exists.
 - `/api/me` (`MeView`) is the only place that knows the user: `auth`, `username`, `localadmin`,
@@ -220,6 +229,8 @@ to the service user); containers have `Network=none` and talk over unix sockets 
 - Do not add new `_`-prefixed methods unless something genuinely must stay internal; give the
   method a public name, or make it a module-level function. The same goes for reading protected
   members of other objects (`_meta`, `_base_manager`) when a public API exists.
+- The reader's own strings are in `frontend/static/app/i18n.js`, outside the gettext catalogue;
+  `tests/frontend/test_i18n.py` keeps the Czech and English key sets equal.
 - Every user-visible string goes through `gettext_lazy`/`gettext_noop`. Czech is the default
   language; `make check-fuzzy` fails the build if `chords/locale/cs/LC_MESSAGES/django.po`
   contains fuzzy entries, so run `make messages` and resolve them.
