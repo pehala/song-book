@@ -187,26 +187,38 @@ main {
 }
 
 .song-text {
-    padding: 1rem;
+    padding: 1rem 0;
     column-count: var(--chords-grid-columns);
     column-gap: 5em;
     width: fit-content;
     max-width: 100%;
     font-size: 1.0625rem;
-    line-height: 1.9;
+    line-height: 1.7;
 }
 
 .song-text p {
     break-inside: avoid-column;
 }
 
+.song-text ruby {
+    ruby-position: over;
+    ruby-align: start;
+}
+
 .chord {
     font-size: .95em;
     font-weight: 700;
     color: var(--accent);
+}
+
+span.chord {
     position: relative;
     top: -.5em;
     line-height: 0;
+}
+
+rt.chord {
+    line-height: 1.2;
 }
 
 .hide-chords .chord {
