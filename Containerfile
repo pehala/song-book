@@ -2,7 +2,7 @@
 #   migrate prerender cache_clear export_static start    (web)
 #   worker                                              (Huey worker)
 # Build: make image
-# Deployment with Podman quadlets is described in docs/DEPLOY.md.
+# Deployment with Podman quadlets is described in deploy/DEPLOY.md.
 
 FROM docker.io/library/python:3.14-slim-trixie AS base
 
