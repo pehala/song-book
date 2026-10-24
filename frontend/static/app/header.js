@@ -33,7 +33,7 @@ function Dropdown({label, children}) {
 }
 
 // `server` pages are rendered by Django: their language is changed by the server, and leaving is a page load
-export function useChrome({boot, initialMe = null, server = false}) {
+export function useSiteHeader({boot, initialMe = null, server = false}) {
     const urls = boot.urls;
     const options = useOptions({server});
     const t = useMemo(() => translator(options.lang), [options.lang]);
@@ -122,8 +122,8 @@ export function useChrome({boot, initialMe = null, server = false}) {
     return {boot, server, t, me, options: {...options, setLang}, toasts, toast, dismiss, logout, showQr, qr, setQr};
 }
 
-function Header({chrome, navigate}) {
-    const {boot, t, me, options, server, showQr, logout} = chrome;
+function Header({site, navigate}) {
+    const {boot, t, me, options, server, showQr, logout} = site;
     const urls = boot.urls;
     const [menuOpen, setMenuOpen] = useState(false);
     const go = to => {
@@ -200,8 +200,8 @@ function Header({chrome, navigate}) {
         </header>`;
 }
 
-function Toasts({chrome}) {
-    const {t, toasts, dismiss} = chrome;
+function Toasts({site}) {
+    const {t, toasts, dismiss} = site;
     return html`
         <div class="sb-toasts" role="status">
             ${toasts.map(
@@ -215,8 +215,8 @@ function Toasts({chrome}) {
         </div>`;
 }
 
-function QrDialog({chrome}) {
-    const {t, qr, setQr} = chrome;
+function QrDialog({site}) {
+    const {t, qr, setQr} = site;
     const dialog = useRef(null);
     useEffect(() => {
         if (qr && !dialog.current.open) {
@@ -231,6 +231,6 @@ function QrDialog({chrome}) {
         </dialog>`;
 }
 
-export function Chrome({chrome, navigate}) {
-    return html`<${Header} chrome=${chrome} navigate=${navigate} /><${Toasts} chrome=${chrome} /><${QrDialog} chrome=${chrome} />`;
+export function SiteHeader({site, navigate}) {
+    return html`<${Header} site=${site} navigate=${navigate} /><${Toasts} site=${site} /><${QrDialog} site=${site} />`;
 }

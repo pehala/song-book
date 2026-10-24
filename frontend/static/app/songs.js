@@ -1,4 +1,4 @@
-import {Icon} from "./chrome.js";
+import {Icon} from "./header.js";
 import {html, useEffect, useMemo, useState} from "./vendor/preact-htm.module.js";
 
 // Czech names: H is the natural B, B is B flat
