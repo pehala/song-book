@@ -1,5 +1,5 @@
 import {html, render, useCallback, useEffect, useMemo, useState} from "./vendor/preact-htm.module.js";
-import {Chrome, Icon, Link, closeDropdowns, useChrome} from "./chrome.js";
+import {SiteHeader, Icon, Link, closeDropdowns, useSiteHeader} from "./header.js";
 import {SongList, filterRows, routeRows} from "./songs.js";
 import {detectLanguage, translator} from "./i18n.js";
 import {hit, inlinedJson, loadSongs} from "./store.js";
@@ -45,8 +45,8 @@ function App() {
     const [query, setQuery] = useState("");
     const [openId, setOpenId] = useState(null);
     const [scrolled, setScrolled] = useState(false);
-    const chrome = useChrome({boot});
-    const {t, toast} = chrome;
+    const site = useSiteHeader({boot});
+    const {t, toast} = site;
     const route = useMemo(() => parseRoute(path), [path]);
 
     const navigate = useCallback(to => {
@@ -135,11 +135,11 @@ function App() {
                 <label for="search">${t("search")}</label>
                 <input id="search" type="search" placeholder=${t("searchHint")} value=${query} onInput=${event => setQuery(event.target.value)} />
             </div>
-            <${SongList} rows=${visible} openId=${openId} setOpen=${setOpenId} me=${chrome.me} urls=${urls} t=${t} />`;
+            <${SongList} rows=${visible} openId=${openId} setOpen=${setOpenId} me=${site.me} urls=${urls} t=${t} />`;
     }
 
     return html`
-        <${Chrome} chrome=${chrome} navigate=${navigate} />
+        <${SiteHeader} site=${site} navigate=${navigate} />
         <main>${content}</main>
         ${scrolled && html`<button class="sb-btn sb-primary fab" style="top:20px" title=${t("top")} aria-label=${t("top")} onClick=${() => scrollTo({top: 0, behavior: "smooth"})}><${Icon} name="up" /></button>`}
         ${openId !== null && html`<button class="sb-btn sb-primary fab" style="bottom:20px" title=${t("down")} aria-label=${t("down")} onClick=${scrollDown}><${Icon} name="down" /></button>`}`;

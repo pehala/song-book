@@ -26,7 +26,7 @@ def test_collectstatic_hashes_module_imports(tmp_path):
         call_command("collectstatic", interactive=False, verbosity=0)
         manifest = json.loads((static_root / "staticfiles.json").read_text())["paths"]
         hashed_app = (static_root / manifest["app/app.js"]).read_text()
-        hashed_chrome = (static_root / manifest["app/chrome.js"]).read_text()
+        hashed_chrome = (static_root / manifest["app/header.js"]).read_text()
         hashed_songs = manifest["app/songs.js"].rsplit("/", 1)[-1]
         hashed_qr = manifest["app/vendor/qr.mjs"].rsplit("/", 1)[-1]
         hashed_vendor = manifest["app/vendor/preact-htm.module.js"].rsplit("/", 1)[-1]

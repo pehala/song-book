@@ -127,10 +127,11 @@ The reader (song list, search, category switching, song view) is a Preact + htm 
 with no build step. Everything else (CRUD, PDF, analytics, login, `/admin/`) keeps its Django
 templates and Bootstrap from the CDN.
 
-- The header (`chrome.js`: `Header`, `Toasts`, `QrDialog`, `useChrome`) is one Preact component used twice: by the
+- The header (`header.js`: `SiteHeader`, which draws the bar, the notices and the QR dialog from the state of
+  `useSiteHeader`) is one Preact component used twice: by the
   reader and, through `site.js`, by every Bootstrap page. `base/index.html` has an empty `#site-header`, the
   `boot` and `me` JSON (from `frontend.context_processors.header`, evaluated only when printed) and loads
-  `site.js`; the Python-side menus are gone, so a menu entry is added in `chrome.js` only. Header markup and
+  `site.js`; the Python-side menus are gone, so a menu entry is added in `header.js` only. Header markup and
   `header.css` use `sb-` prefixed classes so they cannot clash with Bootstrap, and the theme is the
   `data-bs-theme` attribute on `<html>` (set early by an inline script, then by `options.js`), which both
   Bootstrap and the reader's CSS follow. Pages the server renders (`server: true`) take their language from
@@ -144,7 +145,7 @@ templates and Bootstrap from the CDN.
   gets the same body with status 404. Keep it that way: the service worker serves one cached copy to
   every route and every user. `RecognizeTenantMiddleware` resolves `is_localadmin` lazily for the
   same reason.
-- Modules are in `frontend/static/app/` (`app.js` entry, `site.js` entry for server pages, `chrome.js`, `options.js`, `songs.js`, `store.js`,
+- Modules are in `frontend/static/app/` (`app.js` entry, `site.js` entry for server pages, `header.js`, `options.js`, `songs.js`, `store.js`,
   `i18n.js`, `vendor/preact-htm.module.js`, `vendor/qr.mjs`, `header.css`, `app.css`) and listed once in
   `frontend.views` (`MODULES`, `SITE_ENTRY`, `STYLESHEETS`), which feeds the preload links and the service
   worker's precache. A new file must be added there. Keep modules
