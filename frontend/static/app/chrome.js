@@ -2,7 +2,7 @@
 import {html, useCallback, useEffect, useMemo, useRef, useState} from "./vendor/preact-htm.module.js";
 import {LANGUAGES, translator} from "./i18n.js";
 import {useOptions} from "./options.js";
-import {renderQr} from "./qr.js";
+import QrCode from "./vendor/qr.mjs";
 import {csrfToken, deleteSongs, fetchMe} from "./store.js";
 
 export function Icon({name}) {
@@ -108,9 +108,15 @@ export function useChrome({boot, initialMe = null, server = false}) {
         }
     }, [server, t, toast]);
 
-    const showQr = useCallback(async () => {
+    const showQr = useCallback(() => {
         const dark = document.documentElement.dataset.bsTheme === "dark";
-        setQr({src: await renderQr(location.href, dark), url: location.href});
+        const src = QrCode.render("svg-uri", QrCode.generate(location.href), {
+            color: dark ? "white" : "currentColor",
+            moduleRound: 1.0,
+            finderRound: 0.5,
+            module_size: 1,
+        });
+        setQr({src, url: location.href});
     }, []);
 
     return {boot, server, t, me, options: {...options, setLang}, toasts, toast, dismiss, logout, showQr, qr, setQr};
