@@ -168,10 +168,12 @@ function App() {
     } else {
         content = html`
             <div class="search">
-                <label for="search">${_("Search")}</label>
-                <input id="search" type="search" placeholder=${_("Number, text or author")} value=${query} onInput=${event => setQuery(event.target.value)} />
-                ${query.trim() && html`<output class="count" for="search">${visible.length} / ${rows.length}</output>`}
-                <button class="sb-btn" title=${_("Random song")} aria-label=${_("Random song")} disabled=${visible.length === 0} onClick=${openRandom}><${Icon} name="shuffle" /></button>
+                <div class="input-group">
+                    <label class="addon" for="search">${_("Search")}</label>
+                    <input id="search" type="search" placeholder=${_("Number, text or author")} value=${query} onInput=${event => setQuery(event.target.value)} />
+                    ${query.trim() && html`<output class="addon count" for="search">${visible.length} / ${rows.length}</output>`}
+                    <button class="sb-btn" title=${_("Random song")} aria-label=${_("Random song")} disabled=${visible.length === 0} onClick=${openRandom}><${Icon} name="shuffle" /></button>
+                </div>
             </div>
             <${SongList} rows=${visible} openId=${openId} setOpen=${setOpenId} me=${site.me} urls=${urls} _=${_} />`;
     }
