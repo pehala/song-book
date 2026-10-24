@@ -7,7 +7,6 @@ from urllib.parse import urlsplit
 from django.contrib.staticfiles import finders
 from playwright.sync_api import expect
 
-from analytics.models import DayStatistic
 from frontend.views import ASSETS
 
 
@@ -306,27 +305,6 @@ def test_menu_lists_links_and_pdfs_only_when_there_are_some(page, library):
 
     expect(page.locator("summary", has_text="See also")).to_have_count(0)
     expect(page.locator("summary", has_text="PDF")).to_have_count(0)
-
-
-def recorded_hits(page, key):
-    """The hits of a key, once the beacon has arrived"""
-    for _ in range(50):
-        statistic = DayStatistic.objects.filter(key=key).first()
-        if statistic:
-            return statistic.hits
-        page.wait_for_timeout(100)
-    return 0
-
-
-def test_visits_are_counted(page, library):
-    """Each route drawn reports itself to the statistics"""
-    page.goto("/categories/cs")
-    expect(songs(page)).to_have_count(3)
-    go_to_category(page, "English")
-    expect(songs(page)).to_have_count(2)
-
-    assert recorded_hits(page, "cs") == 1
-    assert recorded_hits(page, "en") == 1
 
 
 def test_messages_of_the_server_are_shown(page, library):

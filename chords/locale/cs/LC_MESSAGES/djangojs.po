@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-24 06:45-0500\n"
+"POT-Creation-Date: 2026-10-24 06:55-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
-#: frontend/static/app/analytics.js:13 frontend/static/app/app.js:87
+#: frontend/static/app/analytics.js:13 frontend/static/app/app.js:84
 #: frontend/static/app/header.js:149
 msgid "All songs"
 msgstr "Všechno"
@@ -64,51 +64,51 @@ msgstr "Vše"
 msgid "Date range"
 msgstr "Rozsah"
 
-#: frontend/static/app/app.js:87
+#: frontend/static/app/app.js:84
 msgid "Not found"
 msgstr "Nenalezeno"
 
-#: frontend/static/app/app.js:97
+#: frontend/static/app/app.js:94
 msgid "A new version is available"
 msgstr "Je dostupná nová verze"
 
-#: frontend/static/app/app.js:98
+#: frontend/static/app/app.js:95
 msgid "Reload"
 msgstr "Načíst znovu"
 
-#: frontend/static/app/app.js:131
+#: frontend/static/app/app.js:128
 msgid "This category does not exist."
 msgstr "Tato kategorie neexistuje."
 
-#: frontend/static/app/app.js:131
+#: frontend/static/app/app.js:128
 msgid "Back to homepage"
 msgstr "Zpátky domů"
 
-#: frontend/static/app/app.js:134
+#: frontend/static/app/app.js:131
 msgid "The songs could not be loaded"
 msgstr "Písničky se nepodařilo načíst"
 
-#: frontend/static/app/app.js:134
+#: frontend/static/app/app.js:131
 msgid "Try again"
 msgstr "Zkusit znovu"
 
-#: frontend/static/app/app.js:135
+#: frontend/static/app/app.js:132
 msgid "Loading…"
 msgstr "Načítání…"
 
-#: frontend/static/app/app.js:139
+#: frontend/static/app/app.js:136
 msgid "Search"
 msgstr "Vyhledávání"
 
-#: frontend/static/app/app.js:140
+#: frontend/static/app/app.js:137
 msgid "Number, text or author"
 msgstr "Číslo, text nebo autor"
 
-#: frontend/static/app/app.js:149
+#: frontend/static/app/app.js:146
 msgid "Back to top"
 msgstr "Nahoru"
 
-#: frontend/static/app/app.js:150
+#: frontend/static/app/app.js:147
 msgid "Scroll down"
 msgstr "Posunout dolů"
 

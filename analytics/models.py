@@ -1,6 +1,6 @@
 """Analytics models"""
 
-from django.db.models import CASCADE, CharField, DateField, ForeignKey, IntegerField, Model, Value
+from django.db.models import CASCADE, CharField, DateField, ForeignKey, IntegerField, Model, UniqueConstraint, Value
 from django.utils.translation import gettext_lazy as _
 
 from tenants.models import Tenant
@@ -13,3 +13,6 @@ class DayStatistic(Model):
     key = CharField(verbose_name=_("Key"), max_length=25)
     hits = IntegerField(verbose_name=_("Hits"), db_default=Value(0))
     date = DateField(auto_now_add=True, editable=False)
+
+    class Meta:
+        constraints = [UniqueConstraint(fields=["tenant", "key", "date"], name="unique_statistic_per_day")]

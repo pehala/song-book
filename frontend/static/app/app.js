@@ -2,7 +2,7 @@ import {html, render, useCallback, useEffect, useMemo, useState} from "./vendor/
 import {SiteHeader, Icon, Link, closeDropdowns, useSiteHeader} from "./header.js";
 import {SongList, filterRows, routeRows} from "./songs.js";
 import {detectLanguage, translator} from "./i18n.js";
-import {hit, inlinedJson, loadSongs} from "./store.js";
+import {inlinedJson, loadSongs} from "./store.js";
 
 const boot = inlinedJson("boot");
 if (!boot) {
@@ -81,9 +81,6 @@ function App() {
     useEffect(() => {
         setQuery("");
         setOpenId(null);
-        if (route.kind !== "missing") {
-            hit(urls.hit, route.key);
-        }
         const name = route.kind === "category" ? route.category.name : route.kind === "all" ? _("All songs") : _("Not found");
         document.title = `${name} | ${boot.name}`;
     }, [route.key]);
