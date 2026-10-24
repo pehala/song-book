@@ -36,7 +36,7 @@ function Dropdown({label, children}) {
 export function useSiteHeader({boot, initialMe = null, server = false}) {
     const urls = boot.urls;
     const options = useOptions({server});
-    const t = useMemo(() => translator(options.lang), [options.lang]);
+    const _ = useMemo(() => translator(options.lang, boot.i18n), [options.lang]);
     const [me, setMe] = useState(initialMe);
     const [toasts, setToasts] = useState([]);
     const [qr, setQr] = useState(null);
@@ -97,7 +97,7 @@ export function useSiteHeader({boot, initialMe = null, server = false}) {
         try {
             await fetch(urls.logout, {method: "POST", headers: {"X-CSRFToken": csrfToken()}, redirect: "manual"});
         } catch {
-            toast(t("logoutFailed"), null, "error");
+            toast(_("Signing out failed"), null, "error");
             return;
         }
         await deleteSongs(urls.songs);
@@ -106,7 +106,7 @@ export function useSiteHeader({boot, initialMe = null, server = false}) {
         } else {
             location.reload();
         }
-    }, [server, t, toast]);
+    }, [server, _, toast]);
 
     const showQr = useCallback(() => {
         const dark = document.documentElement.dataset.bsTheme === "dark";
@@ -119,11 +119,11 @@ export function useSiteHeader({boot, initialMe = null, server = false}) {
         setQr({src, url: location.href});
     }, []);
 
-    return {boot, server, t, me, options: {...options, setLang}, toasts, toast, dismiss, logout, showQr, qr, setQr};
+    return {boot, server, _, me, options: {...options, setLang}, toasts, toast, dismiss, logout, showQr, qr, setQr};
 }
 
 function Header({site, navigate}) {
-    const {boot, t, me, options, server, showQr, logout} = site;
+    const {boot, _, me, options, server, showQr, logout} = site;
     const urls = boot.urls;
     const [menuOpen, setMenuOpen] = useState(false);
     const go = to => {
@@ -136,72 +136,72 @@ function Header({site, navigate}) {
             <${Link} class="sb-brand" to=${boot.index} onNavigate=${go}>
                 ${boot.icon && html`<img src=${boot.icon} alt="" />`}${boot.name}
             <//>
-            <button class="sb-btn sb-burger" aria-label=${t("menu")} aria-expanded=${menuOpen} onClick=${() => setMenuOpen(!menuOpen)}><${Icon} name="menu" /></button>
+            <button class="sb-btn sb-burger" aria-label=${_("Menu")} aria-expanded=${menuOpen} onClick=${() => setMenuOpen(!menuOpen)}><${Icon} name="menu" /></button>
             <nav class=${"sb-menu" + (menuOpen ? " open" : "")}>
-                <${Dropdown} label=${t("categories")}>
+                <${Dropdown} label=${_("Categories")}>
                     ${boot.categories.map(
                         category => html`<${Link} key=${category.slug} to=${urls.categories + category.slug} onNavigate=${go} aria-current=${current(urls.categories + category.slug)}>${category.name}<//>`
                     )}
-                    ${boot.all_songs && html`<${Link} to=${urls.all} onNavigate=${go} aria-current=${current(urls.all)}>${t("allSongs")}<//>`}
+                    ${boot.all_songs && html`<${Link} to=${urls.all} onNavigate=${go} aria-current=${current(urls.all)}>${_("All songs")}<//>`}
                 <//>
-                ${boot.pdfs.length > 0 && html`<${Dropdown} label=${t("pdf")}>${boot.pdfs.map(file => html`<a key=${file.url} href=${file.url}>${file.name}</a>`)}<//>`}
-                ${boot.links.length > 0 && html`<${Dropdown} label=${t("seeAlso")}>${boot.links.map(link => html`<a key=${link.url} href=${link.url} target="_blank" rel="noopener">${link.name}</a>`)}<//>`}
+                ${boot.pdfs.length > 0 && html`<${Dropdown} label=${_("PDF")}>${boot.pdfs.map(file => html`<a key=${file.url} href=${file.url}>${file.name}</a>`)}<//>`}
+                ${boot.links.length > 0 && html`<${Dropdown} label=${_("See also")}>${boot.links.map(link => html`<a key=${link.url} href=${link.url} target="_blank" rel="noopener">${link.name}</a>`)}<//>`}
                 <span class="sb-gap"></span>
                 ${me?.localadmin && html`
-                    <${Dropdown} label=${t("songs")}>
-                        <a href=${urls.add}>${t("addSong")}</a>
-                        <a href=${urls.categories}>${t("manageCategories")}</a>
+                    <${Dropdown} label=${_("Songs")}>
+                        <a href=${urls.add}>${_("Add song")}</a>
+                        <a href=${urls.categories}>${_("Categories")}</a>
                     <//>
-                    <${Dropdown} label=${t("files")}>
-                        <a href=${urls.files}>${t("generatedFiles")}</a>
-                        <a href=${urls.templates}>${t("templates")}</a>
+                    <${Dropdown} label=${_("Files")}>
+                        <a href=${urls.files}>${_("Generated files")}</a>
+                        <a href=${urls.templates}>${_("Templates")}</a>
                     <//>
-                    <${Dropdown} label=${t("admin")}>
-                        <a href=${urls.analytics}>${t("analytics")}</a>
-                        <a href=${urls.tenant}>${t("editSongbook")}</a>
-                        ${me.superuser && html`<a href=${urls.admin}>${t("djangoAdmin")}</a>`}
+                    <${Dropdown} label=${_("Admin")}>
+                        <a href=${urls.analytics}>${_("Analytics")}</a>
+                        <a href=${urls.tenant}>${_("Edit songbook")}</a>
+                        ${me.superuser && html`<a href=${urls.admin}>${_("Django admin")}</a>`}
                     <//>`}
-                <${Dropdown} label=${t("options")}>
+                <${Dropdown} label=${_("Options")}>
                     <label>
-                        ${t("language")}
+                        ${_("Language")}
                         <select value=${options.lang} onChange=${event => options.setLang(event.target.value)}>
                             ${LANGUAGES.map(([code, name]) => html`<option key=${code} value=${code}>${name}</option>`)}
                         </select>
                     </label>
-                    <div class="sb-row" role="group" aria-label=${t("theme")}>
-                        ${[["light", "sun"], ["dark", "moon"], ["auto", "auto"]].map(
-                            ([name, icon]) => html`<button key=${name} class="sb-btn" title=${t(name)} aria-label=${t(name)} aria-pressed=${options.theme === name} onClick=${() => options.setTheme(name)}><${Icon} name=${icon} /></button>`
+                    <div class="sb-row" role="group" aria-label=${_("Theme")}>
+                        ${[["light", "sun", _("Light")], ["dark", "moon", _("Dark")], ["auto", "auto", _("Auto")]].map(
+                            ([name, icon, label]) => html`<button key=${name} class="sb-btn" title=${label} aria-label=${label} aria-pressed=${options.theme === name} onClick=${() => options.setTheme(name)}><${Icon} name=${icon} /></button>`
                         )}
                     </div>
                     ${!server && html`
                         <label>
-                            ${t("columns")}
+                            ${_("Columns")}
                             <input type="number" min="1" max="9" value=${options.columns} onInput=${event => options.setColumns(Math.max(1, parseInt(event.target.value, 10) || 1))} />
                         </label>
-                        <label>${t("hideChords")}<input type="checkbox" checked=${options.hideChords} onChange=${event => options.setHideChords(event.target.checked)} /></label>
+                        <label>${_("Hide chords")}<input type="checkbox" checked=${options.hideChords} onChange=${event => options.setHideChords(event.target.checked)} /></label>
                         <label>
-                            ${t("preventSleep")}
+                            ${_("Prevent sleep")}
                             <input type="checkbox" checked=${options.preventSleep} disabled=${!("wakeLock" in navigator)} onChange=${event => options.setPreventSleep(event.target.checked)} />
                         </label>`}
                     <div class="sb-sep"></div>
-                    <div class="sb-meta"><span>${t("version")}</span><span>${boot.version}</span></div>
-                    <div class="sb-meta"><span>${t("git")}</span><span>${boot.rev}</span></div>
+                    <div class="sb-meta"><span>${_("Version")}</span><span>${boot.version}</span></div>
+                    <div class="sb-meta"><span>${_("Git")}</span><span>${boot.rev}</span></div>
                 <//>
                 ${me?.auth
                     ? html`
-                        <${Dropdown} label=${t("account")}>
-                            <span>${t("loggedAs")} <b>${me.username}</b></span>
-                            <a href=${urls.password}>${t("changePassword")}</a>
-                            <button class="sb-link" onClick=${logout}>${t("logout")}</button>
+                        <${Dropdown} label=${_("Account")}>
+                            <span>${_("Logged as")} <b>${me.username}</b></span>
+                            <a href=${urls.password}>${_("Change password")}</a>
+                            <button class="sb-link" onClick=${logout}>${_("Log out")}</button>
                         <//>`
-                    : me && html`<a class="sb-btn" href=${urls.login + "?next=" + encodeURIComponent(location.pathname)}>${t("login")}</a>`}
-                <button class="sb-btn" onClick=${showQr}>${t("qr")}</button>
+                    : me && html`<a class="sb-btn" href=${urls.login + "?next=" + encodeURIComponent(location.pathname)}>${_("Log in")}</a>`}
+                <button class="sb-btn" onClick=${showQr}>${_("QR")}</button>
             </nav>
         </header>`;
 }
 
 function Toasts({site}) {
-    const {t, toasts, dismiss} = site;
+    const {_, toasts, dismiss} = site;
     return html`
         <div class="sb-toasts" role="status">
             ${toasts.map(
@@ -209,14 +209,14 @@ function Toasts({site}) {
                     <div class=${"sb-toast sb-toast-" + toast.level} key=${toast.id}>
                         <span>${toast.text}</span>
                         ${toast.action && html`<button class="sb-btn" onClick=${toast.action.run}>${toast.action.label}</button>`}
-                        <button class="sb-btn" aria-label=${t("close")} onClick=${() => dismiss(toast.id)}>×</button>
+                        <button class="sb-btn" aria-label=${_("Close")} onClick=${() => dismiss(toast.id)}>×</button>
                     </div>`
             )}
         </div>`;
 }
 
 function QrDialog({site}) {
-    const {t, qr, setQr} = site;
+    const {_, qr, setQr} = site;
     const dialog = useRef(null);
     useEffect(() => {
         if (qr && !dialog.current.open) {
@@ -225,9 +225,9 @@ function QrDialog({site}) {
     }, [qr]);
     return html`
         <dialog class="sb-dialog" ref=${dialog} onClose=${() => setQr(null)}>
-            <h2>${t("qrCode")}</h2>
-            ${qr && html`<img src=${qr.src} alt=${t("qrCode")} /><p><a href=${qr.url}>${qr.url}</a></p>`}
-            <form method="dialog"><button class="sb-btn">${t("close")}</button></form>
+            <h2>${_("QR code")}</h2>
+            ${qr && html`<img src=${qr.src} alt=${_("QR code")} /><p><a href=${qr.url}>${qr.url}</a></p>`}
+            <form method="dialog"><button class="sb-btn">${_("Close")}</button></form>
         </dialog>`;
 }
 
