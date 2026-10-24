@@ -62,6 +62,10 @@ MEDIA_ROOT = os.environ["MEDIA_ROOT"]
 TENANT_HOSTNAME = os.environ.get("TENANT_HOSTNAME", TENANT_HOSTNAME)  # noqa: F405
 SITE_NAME = os.environ.get("SITE_NAME", SITE_NAME)  # noqa: F405
 
+# Dotted path of the renderer of the songs, e.g. chords.markdown.RUBY_RENDERER; the preview of the editor follows it
+SONG_RENDERER = os.environ.get("SONG_RENDERER", SONG_RENDERER)  # noqa: F405
+MARKDOWNX_MARKDOWNIFY_FUNCTION = SONG_RENDERER
+
 # The web container prerenders every song on start (make prerender); edits re-render the edited song
 USE_PRERENDERED_MARKDOWN = True
 USE_DYNAMIC_PRERENDER = True
