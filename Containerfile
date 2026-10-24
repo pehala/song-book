@@ -52,6 +52,9 @@ RUN SECRET_KEY=build-only make compilemessages collectstatic compress_static
 
 FROM base
 
+# Links the package on ghcr.io to the repository
+LABEL org.opencontainers.image.source="https://github.com/pehala/song-book"
+
 # Shown as the version in the menu; the image has no git to read it from
 ARG BUILD_DATE=unknown
 ARG BUILD_REVISION=unknown
