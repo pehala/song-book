@@ -1,21 +1,21 @@
 [Unit]
-Description=Songbook Redis (cache and Huey queue)
+Description=Songbook Valkey (cache and Huey queue)
 
 [Container]
 ContainerName=songbook-redis
-Image=docker.io/library/redis:8
+Image=docker.io/valkey/valkey:8
 Network=none
 # TCP disabled; only this user's containers can reach $XDG_RUNTIME_DIR/songbook/redis.
 # Cache keys carry a TTL and Huey keys do not, so volatile-lru evicts cache entries but never queued jobs.
-Exec=redis-server --port 0 --unixsocket /run/redis/redis.sock --unixsocketperm 700 \
+Exec=valkey-server --port 0 --unixsocket /run/redis/redis.sock --unixsocketperm 700 \
     --save 60 1 --maxmemory 256mb --maxmemory-policy volatile-lru
 Volume=songbook-redis.volume:/data
 Volume=%t/songbook/redis:/run/redis:z
-# The image's redis user (UID 999) is this host user, so everything it writes is owned by it
+# The image's valkey user (UID 999) is this host user, so everything it writes is owned by it
 UserNS=keep-id:uid=999,gid=999
-HealthCmd=redis-cli -s /run/redis/redis.sock ping
+HealthCmd=valkey-cli -s /run/redis/redis.sock ping
 HealthInterval=30s
-HealthStartupCmd=redis-cli -s /run/redis/redis.sock ping
+HealthStartupCmd=valkey-cli -s /run/redis/redis.sock ping
 HealthStartupInterval=2s
 Notify=healthy
 

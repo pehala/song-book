@@ -17,7 +17,7 @@ a network (`Network=none`). Nothing needs root except installing nginx and one A
 | Unit | Image | Role |
 |---|---|---|
 | `songbook-postgres` | `postgres:18` | database, socket in `$XDG_RUNTIME_DIR/songbook/postgres` |
-| `songbook-redis` | `redis:8` | Django cache (db 0) and Huey queue (db 1), socket in `$XDG_RUNTIME_DIR/songbook/redis` |
+| `songbook-redis` | `valkey/valkey:8` | Django cache (db 0) and Huey queue (db 1), socket in `$XDG_RUNTIME_DIR/songbook/redis` |
 | `songbook-web` | `ghcr.io/pehala/song-book` | `make migrate prerender cache_clear export_static start`: brings the database, cache and nginx's static files up to date, then runs gunicorn on `~/nginx/gunicorn` |
 | `songbook-worker` | `ghcr.io/pehala/song-book` | `make worker`: Huey consumer that renders PDFs |
 
@@ -98,7 +98,7 @@ secret afterwards also needs `ALTER ROLE songbook PASSWORD '…'` inside the dat
 
 ```bash
 install -D -m 0644 -t ~/.config/containers/systemd deploy/quadlets/*
-podman pull docker.io/library/postgres:18 docker.io/library/redis:8 ghcr.io/pehala/song-book:latest
+podman pull docker.io/library/postgres:18 docker.io/valkey/valkey:8 ghcr.io/pehala/song-book:latest
 systemctl --user daemon-reload
 systemctl --user start songbook-web songbook-worker
 ```
@@ -122,7 +122,7 @@ podman exec -it songbook-web python manage.py createsuperuser
   password (`--auth-local=scram-sha-256`) as a second line of defence.
 - **One owner for everything.** Rootless Podman maps container users to sub-UIDs, which would leave
   files owned by odd numeric IDs. Every unit instead sets `UserNS=keep-id:uid=<the image's user>`
-  (1001 for the app, 999 for PostgreSQL and Redis), which maps that container user to `songbook`.
+  (1001 for the app, 999 for PostgreSQL and Valkey), which maps that container user to `songbook`.
   Sockets, static files, PDFs and database files on the host are all owned by `songbook`.
 - **Web runs the deployment steps before it serves.** There is a single web container, so
   `migrate` runs once per start, before gunicorn opens its socket; the worker `Requires=` web and
@@ -133,20 +133,18 @@ podman exec -it songbook-web python manage.py createsuperuser
 - **Read-only containers.** The app containers run with `ReadOnly=true`, no capabilities and
   `NoNewPrivileges`; only `/tmp`, the media directory and the socket directories are writable.
 
-## Variant: shared PostgreSQL, Valkey in a container
+## Variant: shared PostgreSQL
 
 For a server that runs several apps: one PostgreSQL installed on the host serves them all, each with
-its own role and database, while this app keeps a private cache and queue in its own container. The
-`songbook-redis` unit already is one Redis per app; here it runs [Valkey](https://valkey.io/), a
-drop-in replacement that django-redis and Huey use unchanged. Nothing else in the app changes: the
-socket paths come from `POSTGRES_SOCKET_DIR` and `REDIS_SOCKET`, whose defaults are what these steps
-use. Do the steps below in place of the ones they replace, and skip `songbook-postgres` and the
-`songbook-db-password` secret.
+its own role and database, while this app keeps its private [Valkey](https://valkey.io/) for cache and
+queue (a Redis-compatible server that django-redis and Huey use unchanged). The socket paths come from
+`POSTGRES_SOCKET_DIR` and `REDIS_SOCKET`, whose defaults are what these steps use. Do the steps below
+in place of the ones they replace, and skip `songbook-postgres` and the `songbook-db-password` secret.
 
-Valkey is a private cache and queue rather than a shared service on purpose: Redis has no
-multi-tenancy (databases do not isolate, and eviction policy, `maxmemory` and persistence are global),
-and this app needs `volatile-lru` so that eviction never drops queued Huey jobs. A Redis instance costs
-a few MB, so there is nothing to gain from sharing it.
+Valkey stays a private cache and queue rather than a shared service on purpose: Redis-style servers have
+no multi-tenancy (databases do not isolate, and eviction policy, `maxmemory` and persistence are
+global), and this app needs `volatile-lru` so that eviction never drops queued Huey jobs. An instance
+costs a few MB, so there is nothing to gain from sharing it.
 
 ```
  songbook-web ──┬── /run/postgresql/.s.PGSQL.5432 ──> postgresql.service (host, shared)
@@ -196,17 +194,6 @@ that are not used:
 
 ```bash
 rm ~/.config/containers/systemd/songbook-postgres.*
-```
-
-In `songbook-redis.container`, run Valkey; the unit name, the socket directory and the volume stay as
-they are:
-
-```ini
-Image=docker.io/valkey/valkey:8
-Exec=valkey-server --port 0 --unixsocket /run/redis/redis.sock --unixsocketperm 700 \
-    --save 60 1 --maxmemory 256mb --maxmemory-policy volatile-lru
-HealthCmd=valkey-cli -s /run/redis/redis.sock ping
-HealthStartupCmd=valkey-cli -s /run/redis/redis.sock ping
 ```
 
 In `songbook-web.container` and `songbook-worker.container`:
@@ -317,7 +304,7 @@ database and create a default tenant that then collides with the restored one:
 
 ```bash
 install -D -m 0644 -t ~/.config/containers/systemd deploy/quadlets/*
-podman pull docker.io/library/postgres:18 docker.io/library/redis:8 ghcr.io/pehala/song-book:latest
+podman pull docker.io/library/postgres:18 docker.io/valkey/valkey:8 ghcr.io/pehala/song-book:latest
 systemctl --user daemon-reload
 systemctl --user start songbook-postgres
 ```
