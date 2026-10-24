@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-24 06:37-0500\n"
+"POT-Creation-Date: 2026-10-24 11:22-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -59,7 +59,7 @@ msgstr "Nová %(class)s"
 
 #: backend/models.py:35 category/models.py:20
 #: category/templates/category/list.html:12
-#: pdf/templates/pdf/templates/list.html:31 tenants/models.py:37
+#: pdf/templates/pdf/templates/list.html:31 tenants/models.py:41
 msgid "Name"
 msgstr "Jméno"
 
@@ -376,7 +376,7 @@ msgstr ""
 "nebo Úvodné obrázek"
 
 #: pdf/models/__init__.py:63 pdf/templates/pdf/files/list.html:29
-#: tenants/models.py:38
+#: tenants/models.py:42
 msgid "Title"
 msgstr "Nadpis"
 
@@ -410,6 +410,7 @@ msgid "(Optional) URL Link to include in the PDF"
 msgstr "(Nepovinné) URL adresa, zobrazená v PDF."
 
 #: pdf/models/__init__.py:86 pdf/templates/pdf/files/list.html:27
+#: tenants/models.py:31
 msgid "Link"
 msgstr "Odkaz"
 
@@ -580,11 +581,11 @@ msgstr "Šablona %(name)s byl úspěšně vytvořena"
 msgid "Songs in File Template '%(name)s' were successfully updated"
 msgstr "Písničky Šablony %(name)s byly úspěšně upraveny"
 
-#: tenants/admin.py:21 tenants/models.py:64
+#: tenants/admin.py:21 tenants/models.py:68
 msgid "Tenant"
 msgstr "Zpěvník"
 
-#: tenants/menu_items.py:24 tenants/models.py:46
+#: tenants/menu_items.py:24 tenants/models.py:50
 msgid "All Songs"
 msgstr "Všechno"
 
@@ -600,47 +601,59 @@ msgstr "URL odkaz"
 msgid "Display Name"
 msgstr "Jméno"
 
-#: tenants/models.py:35
+#: tenants/models.py:32
+msgid "Links"
+msgstr "Odkazy"
+
+#: tenants/models.py:39
 msgid "Hostname"
 msgstr "Doménové jméno"
 
-#: tenants/models.py:35
+#: tenants/models.py:39
 msgid "The exact hostname for this Tenant"
 msgstr "Přesné doménové jméno pod kterým bude Zpěvník dostupný"
 
-#: tenants/models.py:37
+#: tenants/models.py:41
 msgid "Internal name for this Tenant"
 msgstr "Interní název tohoto Zpevníku"
 
-#: tenants/models.py:38
+#: tenants/models.py:42
 msgid "Title on the Main site"
 msgstr "Titulek na hlavní stránce"
 
-#: tenants/models.py:40
+#: tenants/models.py:44
 msgid "Index redirect path"
 msgstr "Cíl přesměrování úvodní stránky"
 
-#: tenants/models.py:41
+#: tenants/models.py:45
 msgid ""
 "Where should new tenant redirect from index page, usually a category slug"
 msgstr ""
 "Kam by měla úvodní stránka přesměrovat uživatele, většinou URL kategorie"
 
-#: tenants/models.py:47
+#: tenants/models.py:51
 msgid "True, if all songs category should be added to navigation"
 msgstr "Pokud je zaškrknuto tak se do navigace přidá odkaz na všechny písničky"
 
-#: tenants/models.py:50
+#: tenants/models.py:54
 msgid "Logo"
-msgstr ""
+msgstr "Logo"
 
-#: tenants/models.py:51
+#: tenants/models.py:55
 msgid "Optional Site logo, should be around 50x50 and in PNG format"
 msgstr ""
 "Logo zpěvníčku, nepovinné, mělo by mít rozměry kolem 50x50 a být v PNG "
 "formátu"
 
-#: tenants/models.py:65
+#: tenants/models.py:61
+msgid "See also"
+msgstr "Podobné stránky"
+
+#: tenants/models.py:62
+msgid "Admins"
+msgstr "Správci"
+
+#: tenants/models.py:69
 msgid "Tenants"
 msgstr "Zpěvníky"
 
