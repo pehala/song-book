@@ -13,9 +13,7 @@
     <script   src="{% static "js/jquery-3.7.1.min.js" %}"
               type="text/javascript"
               defer></script>
-    <script   src="{% static "js/auto_darktheme.js" %}"
-              type="text/javascript"
-              defer></script>
+    <script>try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.bsTheme=t}catch(e){}</script>
     <link rel="stylesheet" type="text/css" href="{% static 'icons/css/songs.css' %}">
     <link rel="stylesheet" type="text/css" href="{% static 'styles.css' %}">
     {% block extra_head %} {% endblock %}

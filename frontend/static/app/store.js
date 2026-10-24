@@ -80,3 +80,12 @@ export function hit(url, key) {
 export function csrfToken() {
     return document.cookie.match(/(?:^|; )csrftoken=([^;]*)/)?.[1] ?? "";
 }
+
+// The JSON a page carries in `<script id=id type="application/json">`, or null when it is missing or malformed
+export function inlinedJson(id) {
+    try {
+        return JSON.parse(document.getElementById(id).textContent);
+    } catch {
+        return null;
+    }
+}
