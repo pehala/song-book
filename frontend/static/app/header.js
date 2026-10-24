@@ -126,7 +126,7 @@ export function useSiteHeader({boot, initialMe = null, server = false}) {
     return {boot, server, _, me, options: {...options, setLang}, toasts, toast, dismiss, logout, showQr, qr, setQr};
 }
 
-function Header({site, navigate}) {
+function Header({site, navigate, onReload}) {
     const {boot, _, me, options, server, showQr, logout} = site;
     const urls = boot.urls;
     const [menuOpen, setMenuOpen] = useState(false);
@@ -186,7 +186,8 @@ function Header({site, navigate}) {
                         <label>
                             ${_("Prevent sleep")}
                             <input type="checkbox" checked=${options.preventSleep} disabled=${!("wakeLock" in navigator)} onChange=${event => options.setPreventSleep(event.target.checked)} />
-                        </label>`}
+                        </label>
+                        ${onReload && html`<button class="sb-btn" onClick=${onReload}>${_("Reload songs")}</button>`}`}
                     <div class="sb-sep"></div>
                     <div class="sb-meta"><span>${_("Version")}</span><span>${boot.version}</span></div>
                     <div class="sb-meta"><span>${_("Git")}</span><span>${boot.rev}</span></div>
@@ -235,6 +236,6 @@ function QrDialog({site}) {
         </dialog>`;
 }
 
-export function SiteHeader({site, navigate}) {
-    return html`<${Header} site=${site} navigate=${navigate} /><${Toasts} site=${site} /><${QrDialog} site=${site} />`;
+export function SiteHeader({site, navigate, onReload}) {
+    return html`<${Header} site=${site} navigate=${navigate} onReload=${onReload} /><${Toasts} site=${site} /><${QrDialog} site=${site} />`;
 }

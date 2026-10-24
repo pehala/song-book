@@ -198,6 +198,38 @@ def test_first_download_estimates_the_time_left(page, library, make_song):
     assert not errors
 
 
+def test_options_reload_downloads_the_whole_list_again(page, library, requests_made):
+    """The reload button fetches the full list rather than a delta and says so"""
+    page.goto("/all")
+    expect(songs(page)).to_have_count(4)
+    requests_made.clear()
+
+    open_menu(page, "Options")
+    page.get_by_role("button", name="Reload songs").click()
+
+    expect(page.get_by_text("The songs were reloaded")).to_be_visible()
+    fetched = [url for method, url in requests_made if "/api/songs" in url]
+    assert fetched
+    assert not any("since" in url for url in fetched)
+    expect(songs(page)).to_have_count(4)
+
+
+def test_reload_over_a_slow_connection_draws_the_line_without_errors(page, library, make_song):
+    """The line along the top follows a manual reload that arrives in chunks"""
+    make_song(*library.category_set.all(), name="Long", text="{C}la " * 4000)
+    errors = page_errors(page)
+    page.goto("/all")
+    expect(songs(page)).to_have_count(5)
+    throttle(page, 40_000)
+
+    open_menu(page, "Options")
+    page.get_by_role("button", name="Reload songs").click()
+
+    expect(page.locator("[role=progressbar]:not(.centered)")).to_be_visible(timeout=10_000)
+    expect(page.get_by_text("The songs were reloaded")).to_be_visible(timeout=30_000)
+    assert not errors
+
+
 def test_switching_category_asks_the_server_for_nothing(page, library, requests_made):
     """The songs are held already, so changing category is a pushState and a filter"""
     page.goto("/categories/cs")
