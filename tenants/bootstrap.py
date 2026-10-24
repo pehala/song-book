@@ -45,13 +45,9 @@ def bootstrap_payload(tenant):
         "icon": tenant.icon.url if tenant.icon else None,
         "index": tenant.index_redirect,
         "all_songs": tenant.all_songs_category,
-        "categories": [
-            {"slug": item.category_slug, "name": item.title}
-            for item in CATEGORIES_MENU.children_of(tenant)
-            if hasattr(item, "category_slug")
-        ],
-        "pdfs": [{"name": item.title, "url": item.url} for item in FILES_MENU.children_of(tenant)],
-        "links": [{"name": item.title, "url": item.url} for item in LINKS_MENU.children_of(tenant)],
+        "categories": CATEGORIES_MENU.children_of(tenant),
+        "pdfs": FILES_MENU.children_of(tenant),
+        "links": LINKS_MENU.children_of(tenant),
         "urls": named_urls(),
         "i18n": reader_catalogues(),
         "version": get_version(),

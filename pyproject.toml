@@ -13,7 +13,6 @@ dependencies = [
   "django-markdownx>=4.0.11",
   "django-redis",
   "huey",
-  "django-simple-menu",
   "django-weasyprint",
   "weasyprint>=68.1",
   "Pillow",
