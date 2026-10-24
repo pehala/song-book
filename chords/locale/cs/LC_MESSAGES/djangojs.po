@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
-#: frontend/static/app/analytics.js:13 frontend/static/app/app.js:87
+#: frontend/static/app/analytics.js:13 frontend/static/app/app.js:102
 #: frontend/static/app/header.js:149
 msgid "All songs"
 msgstr "Všechno"
@@ -64,68 +64,72 @@ msgstr "Vše"
 msgid "Date range"
 msgstr "Rozsah"
 
-#: frontend/static/app/app.js:87
-msgid "Not found"
-msgstr "Nenalezeno"
+#: frontend/static/app/app.js:80
+msgid "The songs were reloaded"
+msgstr "Písničky byly načteny znovu"
 
-#: frontend/static/app/app.js:97
-msgid "A new version is available"
-msgstr "Je dostupná nová verze"
-
-#: frontend/static/app/app.js:98
-msgid "Reload"
-msgstr "Načíst znovu"
-
-#: frontend/static/app/app.js:131
-msgid "This category does not exist."
-msgstr "Tato kategorie neexistuje."
-
-#: frontend/static/app/app.js:131
-msgid "Back to homepage"
-msgstr "Zpátky domů"
-
-#: frontend/static/app/app.js:134
+#: frontend/static/app/app.js:81 frontend/static/app/app.js:149
 msgid "The songs could not be loaded"
 msgstr "Písničky se nepodařilo načíst"
 
-#: frontend/static/app/app.js:134
+#: frontend/static/app/app.js:102
+msgid "Not found"
+msgstr "Nenalezeno"
+
+#: frontend/static/app/app.js:112
+msgid "A new version is available"
+msgstr "Je dostupná nová verze"
+
+#: frontend/static/app/app.js:113
+msgid "Reload"
+msgstr "Načíst znovu"
+
+#: frontend/static/app/app.js:146
+msgid "This category does not exist."
+msgstr "Tato kategorie neexistuje."
+
+#: frontend/static/app/app.js:146
+msgid "Back to homepage"
+msgstr "Zpátky domů"
+
+#: frontend/static/app/app.js:149
 msgid "Try again"
 msgstr "Zkusit znovu"
 
-#: frontend/static/app/app.js:135
+#: frontend/static/app/app.js:150
 msgid "Loading songs…"
 msgstr "Načítání písniček…"
 
-#: frontend/static/app/app.js:135 frontend/static/app/app.js:148
+#: frontend/static/app/app.js:150 frontend/static/app/app.js:163
 msgid "Fetching the whole list…"
 msgstr "Stahuje se celý seznam…"
 
-#: frontend/static/app/app.js:139
+#: frontend/static/app/app.js:154
 msgid "Search"
 msgstr "Vyhledávání"
 
-#: frontend/static/app/app.js:140
+#: frontend/static/app/app.js:155
 msgid "Number, text or author"
 msgstr "Číslo, text nebo autor"
 
-#: frontend/static/app/app.js:148
+#: frontend/static/app/app.js:163
 msgid "Updating songs…"
 msgstr "Aktualizace písniček…"
 
-#: frontend/static/app/app.js:150
+#: frontend/static/app/app.js:165
 msgid "Back to top"
 msgstr "Nahoru"
 
-#: frontend/static/app/app.js:151
+#: frontend/static/app/app.js:166
 msgid "Scroll down"
 msgstr "Posunout dolů"
 
-#: frontend/static/app/app.js:163
+#: frontend/static/app/app.js:178
 #, javascript-format
 msgid "%s s left"
 msgstr "zbývá asi %s s"
 
-#: frontend/static/app/app.js:164
+#: frontend/static/app/app.js:179
 #, javascript-format
 msgid "%s min left"
 msgstr "zbývá asi %s min"
@@ -222,43 +226,47 @@ msgstr "Skrýt akordy"
 msgid "Prevent sleep"
 msgstr "Zabránit uspání"
 
-#: frontend/static/app/header.js:191
+#: frontend/static/app/header.js:190
+msgid "Reload songs"
+msgstr "Načíst písničky znovu"
+
+#: frontend/static/app/header.js:192
 msgid "Version"
 msgstr "Verze"
 
-#: frontend/static/app/header.js:192
+#: frontend/static/app/header.js:193
 msgid "Git"
 msgstr "Git"
 
-#: frontend/static/app/header.js:196
+#: frontend/static/app/header.js:197
 msgid "Account"
 msgstr "Účet"
 
-#: frontend/static/app/header.js:197
+#: frontend/static/app/header.js:198
 msgid "Logged as"
 msgstr "Přihlášen jako"
 
-#: frontend/static/app/header.js:198
+#: frontend/static/app/header.js:199
 msgid "Change password"
 msgstr "Změnit heslo"
 
-#: frontend/static/app/header.js:199
+#: frontend/static/app/header.js:200
 msgid "Log out"
 msgstr "Odhlásit se"
 
-#: frontend/static/app/header.js:201
+#: frontend/static/app/header.js:202
 msgid "Log in"
 msgstr "Přihlásit se"
 
-#: frontend/static/app/header.js:202
+#: frontend/static/app/header.js:203
 msgid "QR"
 msgstr "QR"
 
-#: frontend/static/app/header.js:216 frontend/static/app/header.js:234
+#: frontend/static/app/header.js:217 frontend/static/app/header.js:235
 msgid "Close"
 msgstr "Zavřít"
 
-#: frontend/static/app/header.js:232 frontend/static/app/header.js:233
+#: frontend/static/app/header.js:233 frontend/static/app/header.js:234
 msgid "QR code"
 msgstr "QR kód"
 
