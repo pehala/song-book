@@ -9,7 +9,7 @@ from django.utils import translation
 from django.utils.translation import get_language, gettext
 from django.views.generic import ListView
 
-from backend.cache import invalidate_tenant_songs_cache
+from backend.cache import invalidate_tenant_songs_cache, touch_songs
 from backend.generic import UniversalCreateView, UniversalDeleteView, UniversalUpdateView
 from backend.mixins import LocalAdminRequired, PassRequestToFormMixin, RegenerateViewMixin
 from backend.models import Song
@@ -89,6 +89,7 @@ class CategoryMoveView(AdminMoveView):
         files = PDFFile.objects.filter(template_id__in=ids)
         # bulk_update sends no signals, so the lists of the source tenants are cleared by hand
         source_tenants = {category.tenant for category in categories.select_related("tenant")}
+        touch_songs(songs)
         with transaction.atomic():
             for category in categories:
                 category.tenant = target

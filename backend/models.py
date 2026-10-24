@@ -1,11 +1,15 @@
 """Models for backend app"""
 
+from functools import partial
+
 from django.conf import settings
 from django.core.cache import cache
+from django.db import transaction
 from django.db.models import (
     BooleanField,
     CharField,
     DateField,
+    DateTimeField,
     ManyToManyField,
     Model,
     PositiveSmallIntegerField,
@@ -18,7 +22,7 @@ from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
 from markdownx.models import MarkdownxField
 
-from backend.cache import invalidate_songs_cache, invalidate_tenant_songs_cache, song_tenants
+from backend.cache import invalidate_songs_cache, invalidate_tenant_songs_cache, song_tenants, touch_songs
 from category.models import Category
 from chords.markdown import RENDERER
 from tenants.models import Tenant
@@ -30,6 +34,7 @@ class Song(Model):
 
     name = CharField(verbose_name=_("Name"), max_length=100)
     date = DateField(auto_now_add=True, editable=False)
+    updated_at = DateTimeField(auto_now=True, db_index=True)
     capo = PositiveSmallIntegerField(verbose_name=_("Capo"), db_default=Value(0))
     author = CharField(verbose_name=_("Author"), max_length=100, null=True, blank=True)
     link = URLField(verbose_name=_("Youtube Link"), null=True, blank=True)
@@ -110,16 +115,25 @@ def song_categories_changed(sender, instance, action, reverse, pk_set, **kwargs)
     Category membership changed: lists of both the old and the new categories are stale.
 
     pre_remove/pre_clear run while the old links still exist, post_add once the new ones do,
-    so the current links always name every affected tenant.
+    so the current links always name every affected tenant. A list rebuilt between the
+    pre_ invalidation and the change would keep the old links, so post_remove/post_clear
+    invalidate the remembered tenants again.
     """
+    if action in ("post_remove", "post_clear"):
+        for tenant in getattr(instance, "tenants_before_membership_change", ()):
+            invalidate_tenant_songs_cache(tenant)
+        return
     if action not in ("pre_remove", "pre_clear", "post_add"):
         return
     if reverse:
         tenants = {instance.tenant}
+        touch_songs(instance.song_set.all() if action == "pre_clear" else Song.objects.filter(pk__in=pk_set))
     else:
+        touch_songs(Song.objects.filter(pk=instance.pk))
         tenants = song_tenants(instance)
         if pk_set:
             tenants.update(Tenant.objects.filter(category__pk__in=pk_set))
+    instance.tenants_before_membership_change = tenants
     for tenant in tenants:
         invalidate_tenant_songs_cache(tenant)
 
@@ -137,17 +151,24 @@ def category_pre_save(sender, instance, **kwargs):
 @receiver(post_save, sender=Category)
 def category_saved(sender, instance, **kwargs):
     """A created, renamed or moved category changes the menu and the songs payload"""
+    touch_songs(instance.song_set.all())
     tenants = {instance.tenant}
     previous_tenant_id = getattr(instance, "previous_tenant_id", None)
     if previous_tenant_id and previous_tenant_id != instance.tenant_id:
         tenants.add(Tenant.objects.get(pk=previous_tenant_id))
     for tenant in tenants:
         invalidate_tenant_songs_cache(tenant)
-        cache.delete(tenant_cache_key(tenant, settings.CATEGORY_CACHE_KEY))
+        transaction.on_commit(partial(cache.delete, tenant_cache_key(tenant, settings.CATEGORY_CACHE_KEY)))
+
+
+@receiver(pre_delete, sender=Category)
+def category_pre_delete(sender, instance, **kwargs):
+    """The songs of a deleted category lose a slug, so they count as changed"""
+    touch_songs(instance.song_set.all())
 
 
 @receiver(post_delete, sender=Category)
 def category_deleted(sender, instance, **kwargs):
     """A deleted category changes the menu and the songs payload"""
     invalidate_tenant_songs_cache(instance.tenant)
-    cache.delete(tenant_cache_key(instance.tenant, settings.CATEGORY_CACHE_KEY))
+    transaction.on_commit(partial(cache.delete, tenant_cache_key(instance.tenant, settings.CATEGORY_CACHE_KEY)))

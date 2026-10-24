@@ -3,6 +3,7 @@
 import pytest
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
+from django.db import transaction
 from django.test import Client
 from django.utils.timezone import now
 from huey.contrib.djhuey import HUEY
@@ -12,6 +13,20 @@ from category.models import Category
 from pdf.models import Status
 from pdf.models.request import ManualPDFTemplate, PDFFile, PDFSong
 from tenants.models import Tenant
+
+REAL_ON_COMMIT = transaction.on_commit
+
+
+@pytest.fixture(autouse=True)
+def run_on_commit_at_once(monkeypatch):
+    """The test's own transaction never commits, so callbacks that wait for the commit run straight away"""
+    monkeypatch.setattr(transaction, "on_commit", lambda func, using=None, robust=False: func())
+
+
+@pytest.fixture
+def real_on_commit(monkeypatch):
+    """Restores the deferral, for tests of what waits for a commit"""
+    monkeypatch.setattr(transaction, "on_commit", REAL_ON_COMMIT)
 
 
 @pytest.fixture(autouse=True)
