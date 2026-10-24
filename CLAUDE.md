@@ -241,6 +241,9 @@ to the service user); containers have `Network=none` and talk over unix sockets 
 - ruff, line length 120, target `py314` (`.python-version` is 3.14).
 - Dev dependencies: `uv add --group dev <pkg>`.
 - One logical change per commit.
+- No fixup commits in the final history: a fix to code a commit of the same branch introduced is
+  folded into that commit (`git commit --fixup` + `git rebase --autosquash`), tests included, so
+  the branch never contains a commit that repairs an earlier one.
 - Conventional Commits for commits and PR titles: `type(scope): summary` — types `feat`, `fix`,
   `perf`, `refactor`, `test`, `docs`, `ci`, `chore`; scopes `backend`, `frontend`, `category`,
   `tenants`, `pdf`, `ci`, `settings`.
