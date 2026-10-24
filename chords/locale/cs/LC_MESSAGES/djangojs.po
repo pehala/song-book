@@ -1,0 +1,224 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-10-24 04:09-0500\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
+"<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
+#: frontend/static/app/app.js:87 frontend/static/app/header.js:145
+msgid "All songs"
+msgstr "Všechno"
+
+#: frontend/static/app/app.js:87
+msgid "Not found"
+msgstr "Nenalezeno"
+
+#: frontend/static/app/app.js:97
+msgid "A new version is available"
+msgstr "Je dostupná nová verze"
+
+#: frontend/static/app/app.js:98
+msgid "Reload"
+msgstr "Načíst znovu"
+
+#: frontend/static/app/app.js:131
+msgid "This category does not exist."
+msgstr "Tato kategorie neexistuje."
+
+#: frontend/static/app/app.js:131
+msgid "Back to homepage"
+msgstr "Zpátky domů"
+
+#: frontend/static/app/app.js:134
+msgid "The songs could not be loaded"
+msgstr "Písničky se nepodařilo načíst"
+
+#: frontend/static/app/app.js:134
+msgid "Try again"
+msgstr "Zkusit znovu"
+
+#: frontend/static/app/app.js:135
+msgid "Loading…"
+msgstr "Načítání…"
+
+#: frontend/static/app/app.js:139
+msgid "Search"
+msgstr "Vyhledávání"
+
+#: frontend/static/app/app.js:140
+msgid "Number, text or author"
+msgstr "Číslo, text nebo autor"
+
+#: frontend/static/app/app.js:148
+msgid "Back to top"
+msgstr "Nahoru"
+
+#: frontend/static/app/app.js:149
+msgid "Scroll down"
+msgstr "Posunout dolů"
+
+#: frontend/static/app/header.js:100
+msgid "Signing out failed"
+msgstr "Odhlášení se nezdařilo"
+
+#: frontend/static/app/header.js:139
+msgid "Menu"
+msgstr "Menu"
+
+#: frontend/static/app/header.js:141 frontend/static/app/header.js:153
+msgid "Categories"
+msgstr "Kategorie"
+
+#: frontend/static/app/header.js:147
+msgid "PDF"
+msgstr "PDF"
+
+#: frontend/static/app/header.js:148
+msgid "See also"
+msgstr "Jiné stránky"
+
+#: frontend/static/app/header.js:151
+msgid "Songs"
+msgstr "Písničky"
+
+#: frontend/static/app/header.js:152
+msgid "Add song"
+msgstr "Přidat písničku"
+
+#: frontend/static/app/header.js:155
+msgid "Files"
+msgstr "Soubory"
+
+#: frontend/static/app/header.js:156
+msgid "Generated files"
+msgstr "Vygenerované soubory"
+
+#: frontend/static/app/header.js:157
+msgid "Templates"
+msgstr "Šablony"
+
+#: frontend/static/app/header.js:159
+msgid "Admin"
+msgstr "Administrace"
+
+#: frontend/static/app/header.js:160
+msgid "Analytics"
+msgstr "Statistiky"
+
+#: frontend/static/app/header.js:161
+msgid "Edit songbook"
+msgstr "Upravit zpěvník"
+
+#: frontend/static/app/header.js:162
+msgid "Django admin"
+msgstr "Django admin"
+
+#: frontend/static/app/header.js:164
+msgid "Options"
+msgstr "Možnosti"
+
+#: frontend/static/app/header.js:166
+msgid "Language"
+msgstr "Jazyk"
+
+#: frontend/static/app/header.js:171
+msgid "Theme"
+msgstr "Motiv"
+
+#: frontend/static/app/header.js:172
+msgid "Light"
+msgstr "Světlý"
+
+#: frontend/static/app/header.js:172
+msgid "Dark"
+msgstr "Tmavý"
+
+#: frontend/static/app/header.js:172
+msgid "Auto"
+msgstr "Automaticky"
+
+#: frontend/static/app/header.js:178
+msgid "Columns"
+msgstr "Sloupce"
+
+#: frontend/static/app/header.js:181
+msgid "Hide chords"
+msgstr "Skrýt akordy"
+
+#: frontend/static/app/header.js:183
+msgid "Prevent sleep"
+msgstr "Zabránit uspání"
+
+#: frontend/static/app/header.js:187
+msgid "Version"
+msgstr "Verze"
+
+#: frontend/static/app/header.js:188
+msgid "Git"
+msgstr "Git"
+
+#: frontend/static/app/header.js:192
+msgid "Account"
+msgstr "Účet"
+
+#: frontend/static/app/header.js:193
+msgid "Logged as"
+msgstr "Přihlášen jako"
+
+#: frontend/static/app/header.js:194
+msgid "Change password"
+msgstr "Změnit heslo"
+
+#: frontend/static/app/header.js:195
+msgid "Log out"
+msgstr "Odhlásit se"
+
+#: frontend/static/app/header.js:197
+msgid "Log in"
+msgstr "Přihlásit se"
+
+#: frontend/static/app/header.js:198
+msgid "QR"
+msgstr "QR"
+
+#: frontend/static/app/header.js:212 frontend/static/app/header.js:230
+msgid "Close"
+msgstr "Zavřít"
+
+#: frontend/static/app/header.js:228 frontend/static/app/header.js:229
+msgid "QR code"
+msgstr "QR kód"
+
+#: frontend/static/app/songs.js:64 frontend/static/app/songs.js:65
+#: frontend/static/app/songs.js:66 frontend/static/app/songs.js:67
+msgid "Transpose"
+msgstr "Transponovat"
+
+#: frontend/static/app/songs.js:70
+msgid "Edit"
+msgstr "Upravit"
+
+#: frontend/static/app/songs.js:71
+msgid "Delete"
+msgstr "Smazat"
+
+#: frontend/static/app/songs.js:73
+msgid "Capo"
+msgstr "Capo"
+
+#: frontend/static/app/songs.js:105
+msgid "No songs found"
+msgstr "Nic nenalezeno"

@@ -6,9 +6,14 @@ They drive a real Chromium against Django's live server, so they need the browse
 """
 
 import os
+import subprocess
+from pathlib import Path
 
 import pytest
-from django.test import Client
+from django.conf import settings
+from django.test import Client, override_settings
+
+from frontend.catalogues import reader_catalogues
 
 # Playwright's sync API runs an event loop in the test thread, which Django refuses to query from
 os.environ.setdefault("DJANGO_ALLOW_ASYNC_UNSAFE", "true")
@@ -19,6 +24,19 @@ def pytest_collection_modifyitems(items):
     for item in items:
         if "/tests/e2e/" in str(item.fspath):
             item.add_marker(pytest.mark.e2e)
+
+
+@pytest.fixture(scope="session", autouse=True)
+def compiled_messages(tmp_path_factory):
+    """Czech strings come from compiled catalogues, which are not committed; they are built outside the source tree"""
+    compiled = tmp_path_factory.mktemp("locale")
+    for source in Path(settings.LOCALE_PATHS[0]).glob("*/LC_MESSAGES/*.po"):
+        target = compiled / source.relative_to(settings.LOCALE_PATHS[0]).with_suffix(".mo")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        subprocess.run(["msgfmt", "-o", str(target), str(source)], check=True)
+    with override_settings(LOCALE_PATHS=[str(compiled)]):
+        reader_catalogues.cache_clear()
+        yield
 
 
 @pytest.fixture(scope="session")
