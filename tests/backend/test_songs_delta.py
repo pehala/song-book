@@ -111,3 +111,11 @@ def test_reverse_membership_change_marks_the_songs(anon_client, song, make_categ
     other.song_set.clear()
 
     assert changed_ids(anon_client) == [song.id]
+
+
+def test_responses_carry_their_uncompressed_size(anon_client, song):
+    whole = anon_client.get(URL)
+    part = delta(anon_client)
+
+    assert int(whole["X-Songs-Size"]) == len(whole.content)
+    assert int(part["X-Songs-Size"]) == len(part.content)
