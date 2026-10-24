@@ -10,7 +10,7 @@
 {% for url in stylesheets %}<link rel="stylesheet" href="{{ url }}">
 {% endfor %}
 {% for url in modules %}<link rel="modulepreload" href="{{ url }}">
-{% endfor %}<link rel="preload" href="{{ boot.urls.songs }}" as="fetch" crossorigin>
+{% endfor %}
 </head>
 <body>
 {% include "shell/sprite.svg" %}
