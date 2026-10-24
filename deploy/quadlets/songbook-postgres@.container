@@ -1,5 +1,6 @@
-# Template: `systemctl --user start songbook-postgres@<instance>` starts an instance; %i is its name. See docs/DEPLOY.md.
+# Template of one songbook unit; %i is the instance name, started through songbook@<instance>.target. See docs/DEPLOY.md.
 [Unit]
+PartOf=songbook@%i.target
 Description=Songbook PostgreSQL, instance %i
 
 [Container]
