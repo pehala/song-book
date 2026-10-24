@@ -102,7 +102,7 @@ Cross-app glue worth knowing before editing:
 - **Navigation** is drawn client-side by the shared header from the tenant's bootstrap (`tenants/bootstrap.py`),
   whose categories, PDFs and links come from the cached menus in `tenants/menus.py`.
 - **URLs**: `backend.urls` is mounted at `^` (so `/`, `/all`, `/api/songs`, `/api/me`, `/add`,
-  `/edit/<pk>`), `frontend.urls` serves `/sw.js` and `/manifest.webmanifest`, categories live at
+  `/edit/<pk>`), `frontend.urls` serves `/service_worker.js` and `/manifest.webmanifest`, categories live at
   `/categories/<slug>`, plus `/pdf/`, `/analytics/` (including `POST /analytics/hit/<key>`), `/tenants/`,
   `/admin/`. `/`, `/all` and `/categories/<slug>` all route to `frontend.views.ShellView`.
 
@@ -162,11 +162,11 @@ templates and Bootstrap from the CDN.
   (Cache API entry `songs`: draw the stored list, revalidate, replace it when the ETag changed; deleted
   on logout) and reports each route with `navigator.sendBeacon` to `HitView`, which only accepts
   same-origin requests for `all` or a slug of the tenant.
-- `ServiceWorkerView` renders `frontend/templates/sw.js` per tenant: the cache name hashes the precached
+- `ServiceWorkerView` renders `frontend/templates/service_worker.js` per tenant: the cache name hashes the precached
   urls and carries the tenant id, the shell is cache-first with background ETag revalidation
   (`ignoreVary`), `/static/*`, the manifest and the logo are cache-first, everything else (including
   `/api/*`) goes to the network. A new worker waits; the page shows a toast and sends `skipWaiting`.
-  Reader routes in `sw.js` (`READER`) must stay in step with the URLconf.
+  Reader routes in `service_worker.js` (`READER`) must stay in step with the URLconf.
 
 ## Songs payload + caching
 

@@ -103,7 +103,7 @@ function App() {
             });
         navigator.serviceWorker.addEventListener("controllerchange", () => reloadRequested && location.reload());
         navigator.serviceWorker
-            .register(urls.sw)
+            .register(urls.service_worker)
             .then(registration => {
                 const watch = worker =>
                     worker.addEventListener("statechange", () => {
