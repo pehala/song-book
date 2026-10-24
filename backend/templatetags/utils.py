@@ -5,15 +5,7 @@ from django.template.defaultfilters import stringfilter
 from django.templatetags.static import static
 from django.utils.safestring import mark_safe
 
-from backend import utils
-
 register = template.Library()
-
-
-@register.inclusion_tag("menu/bootstrap4-menu.html", takes_context=True)
-def draw_menu(context, key):
-    """Draws menu"""
-    return {"menu": context["menus"][key]}
 
 
 @register.filter
@@ -21,18 +13,6 @@ def draw_menu(context, key):
 def prefix(value, args):
     """Adds prefix if value is not empty"""
     return str(args) + value if value else value
-
-
-@register.simple_tag
-def version():
-    """Returns currently used version e.g. date of the last commit"""
-    return utils.get_version()
-
-
-@register.simple_tag
-def git_revision():
-    """Returns sha of the latest revision"""
-    return utils.get_git_revision()
 
 
 @register.simple_tag(takes_context=True)

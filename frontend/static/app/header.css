@@ -1,0 +1,276 @@
+/* The header, notices and dialog shared by the reader and the pages the server renders.
+   Every class is prefixed so it can sit next to Bootstrap. */
+
+:root {
+    --bg: #fff;
+    --fg: #212529;
+    --muted: #6c757d;
+    --accent: #7793f3;
+    --hi: #e81c1c;
+    --line: #dee2e6;
+    --bar: #f8f9fa;
+    color-scheme: light;
+}
+
+:root[data-bs-theme="dark"] {
+    --bg: #000;
+    --fg: #dee2e6;
+    --muted: #9ca3af;
+    --line: #343a40;
+    --bar: #212529;
+    color-scheme: dark;
+}
+
+#site-header {
+    min-height: 3.5rem;
+    background: var(--bar);
+}
+
+.sb-i {
+    width: 1.25em;
+    height: 1.25em;
+    fill: currentColor;
+    vertical-align: -.25em;
+}
+
+.sb-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem 1rem;
+    padding: .5rem 1rem;
+    min-height: 3.5rem;
+    background: var(--bar);
+    color: var(--fg);
+}
+
+.sb-bar a,
+.sb-bar a:hover {
+    text-decoration: none;
+}
+
+.sb-bar a {
+    color: var(--accent);
+}
+
+.sb-bar a:hover,
+.sb-bar a[aria-current] {
+    color: var(--hi);
+}
+
+.sb-brand {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    font-size: 1.25rem;
+    margin-right: .5rem;
+}
+
+.sb-brand img {
+    width: 30px;
+    height: 30px;
+}
+
+.sb-btn.sb-burger {
+    margin-left: auto;
+    display: none;
+}
+
+.sb-menu {
+    display: flex;
+    flex: 1;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .25rem .75rem;
+}
+
+.sb-menu > a,
+.sb-dd > summary {
+    padding: .5rem;
+}
+
+.sb-gap {
+    margin-left: auto;
+}
+
+.sb-btn {
+    font: inherit;
+    line-height: 1.5;
+    color: inherit;
+    background: none;
+    border: 1px solid var(--line);
+    border-radius: .375rem;
+    padding: .25rem .75rem;
+    cursor: pointer;
+    display: inline-block;
+    text-decoration: none;
+}
+
+.sb-btn:hover {
+    border-color: var(--accent);
+}
+
+.sb-btn[aria-pressed="true"] {
+    border-color: var(--accent);
+    color: var(--accent);
+}
+
+.sb-bar .sb-btn,
+.sb-btn.sb-primary {
+    color: inherit;
+}
+
+.sb-btn.sb-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+}
+
+.sb-dd {
+    position: relative;
+}
+
+.sb-dd > summary {
+    list-style: none;
+    cursor: pointer;
+    color: var(--accent);
+}
+
+.sb-dd > summary::-webkit-details-marker {
+    display: none;
+}
+
+.sb-dd > summary::after {
+    content: " \25BE";
+}
+
+.sb-dd[open] > summary,
+.sb-dd > summary:hover {
+    color: var(--hi);
+}
+
+.sb-panel {
+    position: absolute;
+    right: 0;
+    z-index: 20;
+    min-width: 12rem;
+    margin-top: .25rem;
+    padding: .5rem 0;
+    background: var(--bar);
+    border: 1px solid var(--line);
+    border-radius: .375rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.sb-panel > * {
+    padding: .25rem 1rem;
+}
+
+.sb-panel a,
+.sb-panel .sb-link {
+    text-align: left;
+    border: 0;
+    background: none;
+    font: inherit;
+    color: var(--accent);
+    cursor: pointer;
+}
+
+.sb-panel label {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: .5rem;
+}
+
+.sb-panel input[type="number"] {
+    width: 4.5rem;
+}
+
+.sb-row {
+    display: flex;
+    gap: .5rem;
+    justify-content: center;
+}
+
+.sb-meta {
+    color: var(--muted);
+    display: flex;
+    justify-content: space-between;
+}
+
+.sb-sep {
+    border-top: 1px solid var(--line);
+    margin: .25rem 0;
+}
+
+.sb-toasts {
+    position: fixed;
+    left: 1rem;
+    right: 1rem;
+    bottom: 1rem;
+    z-index: 1090;
+    display: flex;
+    flex-direction: column;
+    gap: .5rem;
+    align-items: center;
+    pointer-events: none;
+}
+
+.sb-toast {
+    display: flex;
+    align-items: center;
+    gap: .75rem;
+    padding: .5rem 1rem;
+    background: var(--fg);
+    color: var(--bg);
+    border-radius: .375rem;
+    pointer-events: auto;
+}
+
+.sb-toast-error,
+.sb-toast-warning {
+    border-left: .4rem solid var(--hi);
+}
+
+.sb-toast .sb-btn {
+    color: inherit;
+}
+
+.sb-dialog {
+    border: 1px solid var(--line);
+    border-radius: .5rem;
+    background: var(--bg);
+    color: var(--fg);
+    text-align: center;
+}
+
+.sb-dialog img {
+    max-width: 100%;
+}
+
+@media (max-width: 767px) {
+    .sb-btn.sb-burger {
+        display: block;
+    }
+
+    .sb-menu {
+        display: none;
+        flex-direction: column;
+        align-items: stretch;
+        flex-basis: 100%;
+    }
+
+    .sb-menu.open {
+        display: flex;
+    }
+
+    .sb-gap {
+        margin-left: 0;
+    }
+
+    .sb-panel {
+        position: static;
+    }
+}

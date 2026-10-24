@@ -59,6 +59,7 @@ def test_page_preloads_modules_and_songs(anon_client, tenant):
 
     for module in MODULES:
         assert f'<link rel="modulepreload" href="/static/{module}">' in html
+    assert '<link rel="stylesheet" href="/static/app/header.css">' in html
     assert '<link rel="stylesheet" href="/static/app/app.css">' in html
     assert f'<link rel="preload" href="{reverse("chords:songs_api")}" as="fetch" crossorigin>' in html
     assert f'<script type="module" src="/static/{MODULES[0]}"></script>' in html

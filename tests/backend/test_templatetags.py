@@ -3,7 +3,7 @@
 import pytest
 from django.test import RequestFactory
 
-from backend.templatetags.utils import datatables_language, draw_menu, git_revision, prefix, version
+from backend.templatetags.utils import datatables_language, prefix
 
 
 class FakeContext(dict):
@@ -47,24 +47,3 @@ def test_datatables_language_for_czech(request_with_language):
 def test_datatables_language_for_english(request_with_language):
     """Other languages use the datatables defaults"""
     assert datatables_language(FakeContext(request_with_language("en"))) == ""
-
-
-def test_version_is_a_date():
-    """The version tag reports the date of the last commit"""
-    assert len(version().split("/")) == 3
-
-
-def test_git_revision_is_a_short_sha():
-    """The revision tag reports an abbreviated commit sha"""
-    revision = git_revision()
-
-    assert revision
-    assert len(revision) <= 40
-
-
-@pytest.mark.django_db
-def test_draw_menu_looks_up_plain_key():
-    """Menus not bound to a tenant are looked up verbatim"""
-    context = FakeContext(RequestFactory().get("/"), menus={"admin": ["item"]})
-
-    assert draw_menu(context, "admin") == {"menu": ["item"]}
