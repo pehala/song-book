@@ -38,7 +38,7 @@ messages-js:
 migrations:
 	$(MANAGE) makemigrations
 
-deploy: migrate prerender compilemessages collectstatic ## Deploys to production
+deploy: migrate prerender cache_clear compilemessages collectstatic ## Deploys to production
 
 migrate: ## Applies database migrations
 	$(MANAGE) migrate --noinput

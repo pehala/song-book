@@ -1,28 +1,14 @@
 """Generators for the items of the tenant-specific menus"""
 
 from django.db.models import Prefetch
-from django.urls import reverse
-from django.utils.translation import gettext_lazy as _
-from simple_menu import MenuItem
 
 from category.models import Category
 from pdf.models.request import ManualPDFTemplate, PDFFile, Status
 
 
 def categories(tenant):
-    """Returns MenuItems for all Categories"""
-    items = [
-        MenuItem(
-            category.name,
-            reverse("category:index", kwargs={"slug": category.slug}),
-            skip_translate=True,
-            category_slug=category.slug,
-        )
-        for category in tenant.category_set.all()
-    ]
-    if tenant.all_songs_category:
-        items.append(MenuItem(title=_("All Songs"), url=reverse("backend:all"), separator=True, skip_translate=False))
-    return items
+    """Returns the slug and name of every Category of the tenant"""
+    return [{"slug": category.slug, "name": category.name} for category in tenant.category_set.all()]
 
 
 def distinct_requests(tenant):
@@ -41,16 +27,14 @@ def distinct_requests(tenant):
         for template in model.objects.filter(tenant=tenant).prefetch_related(latest_files_prefetch):
             file = template.prefetched_files[0] if template.prefetched_files else None
             if file and file.file:
-                data.append(MenuItem(file.name, file.file.url))
+                data.append({"name": file.name, "url": file.file.url})
     # Without template
     for file in PDFFile.objects.filter(tenant=tenant, status=Status.DONE, public=True, template=None):
         if file.file:
-            data.append(MenuItem(file.name, file.file.url))
+            data.append({"name": file.name, "url": file.file.url})
     return data
 
 
 def link_items(tenant):
-    """Returns MenuItems for all Links of the Tenant"""
-    return [
-        MenuItem(link.display_name, url=link.link, skip_translate=True, new_tab=True) for link in tenant.links.all()
-    ]
+    """Returns the name and url of every Link of the Tenant"""
+    return [{"name": link.display_name, "url": link.link} for link in tenant.links.all()]

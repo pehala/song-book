@@ -8,7 +8,7 @@ from tenants.models import Link
 
 
 def titles(menu, tenant):
-    return [str(item.title) for item in menu.children_of(tenant)]
+    return [item["name"] for item in menu.children_of(tenant)]
 
 
 def test_categories_are_scoped_to_the_tenant(tenant, other_tenant, category):
@@ -47,16 +47,6 @@ def test_links_follow_assignment_and_edits(tenant, other_tenant):
     assert titles(LINKS_MENU, tenant) == ["Renamed"]
     link.delete()
     assert LINKS_MENU.children_of(tenant) == []
-
-
-def test_categories_follow_all_songs_category_flag(tenant):
-    tenant.all_songs_category = True
-    tenant.save()
-    assert "Všechno" in titles(CATEGORIES_MENU, tenant)
-
-    tenant.all_songs_category = False
-    tenant.save()
-    assert "Všechno" not in titles(CATEGORIES_MENU, tenant)
 
 
 @pytest.mark.django_db

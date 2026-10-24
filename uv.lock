@@ -201,7 +201,6 @@ dependencies = [
     { name = "django-markdownx" },
     { name = "django-polymorphic" },
     { name = "django-redis" },
-    { name = "django-simple-menu" },
     { name = "django-weasyprint" },
     { name = "huey" },
     { name = "mistune" },
@@ -232,7 +231,6 @@ requires-dist = [
     { name = "django-markdownx", specifier = ">=4.0.11" },
     { name = "django-polymorphic" },
     { name = "django-redis" },
-    { name = "django-simple-menu" },
     { name = "django-weasyprint" },
     { name = "huey" },
     { name = "mistune", specifier = ">=3.2.1" },
@@ -466,18 +464,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/fb/78/203a0cdc0f1c083a5407d01f77b58099a120bb8a5a04562f56a9bb341314/django_redis-7.0.0.tar.gz", hash = "sha256:e48491c862f4350b0747ceb1016700686fb93c4f4e0fb9c490fe6c6658ffd933", size = 64601, upload-time = "2026-06-02T14:17:48.819Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/7e/9f/09cdb9a1eebe8533b02a7694ca787acfc1e4d93b5b6175ff99366d4e6d64/django_redis-7.0.0-py3-none-any.whl", hash = "sha256:4b23aa6e0cd0937bb1242e9a463809e6004de3ca2150f34e986306bb6220d688", size = 38932, upload-time = "2026-06-02T14:17:47.281Z" },
-]
-
-[[package]]
-name = "django-simple-menu"
-version = "2.1.4"
-source = { registry = "https://pypi.org/simple" }
-dependencies = [
-    { name = "django" },
-]
-sdist = { url = "https://files.pythonhosted.org/packages/34/a8/fc21e909e2fa7527afb38ccc80f1411c6efea3ea8cdd23b0007435aa7964/django_simple_menu-2.1.4.tar.gz", hash = "sha256:4f9cc5edbf75c5ed6067b9a227134b21404d57f88ef899050d2cadb21e277fef", size = 184923, upload-time = "2025-06-08T14:36:14.225Z" }
-wheels = [
-    { url = "https://files.pythonhosted.org/packages/de/4e/0bedf1103950276076aeb3844851f0306c46323ad5127cbb786f06cba897/django_simple_menu-2.1.4-py3-none-any.whl", hash = "sha256:53b2c39d2248297f92fe1eeeae4f6333ec43d2ae5bb19001d2f20ecd8b42bda4", size = 13877, upload-time = "2025-06-08T14:36:12.491Z" },
 ]
 
 [[package]]
