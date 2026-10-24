@@ -1,20 +1,38 @@
 """Shared pytest fixtures for the whole test suite."""
 
+import subprocess
+from pathlib import Path
+
 import pytest
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.db import transaction
-from django.test import Client
+from django.test import Client, override_settings
 from django.utils.timezone import now
 from huey.contrib.djhuey import HUEY
 
 from backend.models import Song
 from category.models import Category
+from frontend.catalogues import reader_catalogues
 from pdf.models import Status
 from pdf.models.request import ManualPDFTemplate, PDFFile, PDFSong
 from tenants.models import Tenant
 
 REAL_ON_COMMIT = transaction.on_commit
+
+
+@pytest.fixture(scope="session", autouse=True)
+def compiled_messages(tmp_path_factory):
+    """Czech strings come from compiled catalogues, which are not committed; they are built outside the source tree"""
+    compiled = tmp_path_factory.mktemp("locale")
+    for source in Path(settings.LOCALE_PATHS[0]).glob("*/LC_MESSAGES/*.po"):
+        target = compiled / source.relative_to(settings.LOCALE_PATHS[0]).with_suffix(".mo")
+        target.parent.mkdir(parents=True, exist_ok=True)
+        subprocess.run(["msgfmt", "-o", str(target), str(source)], check=True)
+    with override_settings(LOCALE_PATHS=[str(compiled)]):
+        reader_catalogues.cache_clear()
+        yield
 
 
 @pytest.fixture(autouse=True)
