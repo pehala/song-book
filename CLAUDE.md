@@ -151,6 +151,9 @@ templates and Bootstrap from the CDN.
   worker's precache. A new file must be added there. Keep modules
   free of import cycles (hashing needs a DAG) and `import()` out of modules with nested template
   literals: `ManifestStorage` cannot see past them.
+- The CSS is mobile first (`min-width` queries), every control is at least 44 px, form fields use 16 px text, text
+  meets WCAG AA contrast in both themes and animations stop under `prefers-reduced-motion`;
+  `tests/e2e/test_layout.py` checks all of it, so keep colours in the `--*` variables of `header.css`.
 - `/api/me` (`MeView`) is the only place that knows the user: `auth`, `username`, `localadmin`,
   `superuser`, plus the pending `django.contrib.messages`, which it drains; the CRUD views still redirect
   to the shell and the toast arrives through here. It is `private, no-store` and sets the CSRF cookie.
