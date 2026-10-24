@@ -1,0 +1,21 @@
+# Lets the songbook containers (container_t) connect to the socket of a PostgreSQL installed on the
+# host, which lives in /run/postgresql and is mounted into them without relabelling.
+#
+# checkmodule -M -m -o songbook_postgres.mod songbook_postgres.te
+# semodule_package -o songbook_postgres.pp -m songbook_postgres.mod
+# semodule -i songbook_postgres.pp
+
+module songbook_postgres 1.0;
+
+require {
+    type container_t;
+    type postgresql_t;
+    type postgresql_var_run_t;
+    class dir search;
+    class sock_file { getattr write };
+    class unix_stream_socket connectto;
+}
+
+allow container_t postgresql_var_run_t:dir search;
+allow container_t postgresql_var_run_t:sock_file { getattr write };
+allow container_t postgresql_t:unix_stream_socket connectto;
