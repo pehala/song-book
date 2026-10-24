@@ -44,27 +44,60 @@ main {
     position: sticky;
     top: 0;
     z-index: var(--z-search);
-    display: flex;
-    align-items: center;
-    gap: .5rem;
     padding: .75rem 0;
     background: var(--bg);
 }
 
-.search .count {
+.input-group {
+    display: flex;
+    align-items: stretch;
+}
+
+.input-group > * {
+    min-height: var(--tap);
+    border: 1px solid var(--control);
+    border-radius: 0;
+}
+
+.input-group > :not(:first-child) {
+    margin-left: -1px;
+}
+
+.input-group > :first-child {
+    border-radius: var(--radius) 0 0 var(--radius);
+}
+
+.input-group > :last-child {
+    border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.input-group > :only-child {
+    border-radius: var(--radius);
+}
+
+.input-group > :focus-visible {
+    position: relative;
+    outline-offset: 0;
+}
+
+.input-group .addon {
+    display: flex;
+    align-items: center;
+    padding: .375rem .75rem;
+    background: var(--bar);
     color: var(--muted);
     white-space: nowrap;
+}
+
+.input-group .count {
     font-variant-numeric: tabular-nums;
 }
 
-.search input {
+.input-group input {
     flex: 1;
     min-width: 0;
     font: inherit;
-    min-height: var(--tap);
     padding: .375rem .75rem;
-    border: 1px solid var(--control);
-    border-radius: var(--radius);
     background: var(--bg);
     color: inherit;
 }
