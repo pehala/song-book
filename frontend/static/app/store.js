@@ -29,6 +29,53 @@ export function mergeDelta(songs, delta) {
     return merged.every(Boolean) ? merged : null;
 }
 
+// The body as text, reporting {loaded, total} to onProgress as it arrives. `total` is the uncompressed size the
+// server announces, or 0 when it does not; `loaded` counts decoded bytes, so the two are comparable.
+async function readText(response, onProgress) {
+    const total = Number(response.headers.get("X-Songs-Size")) || 0;
+    if (!response.body) {
+        return response.text();
+    }
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let text = "";
+    let loaded = 0;
+    for (;;) {
+        const {done, value} = await reader.read();
+        if (done) {
+            return text + decoder.decode();
+        }
+        loaded += value.length;
+        text += decoder.decode(value, {stream: true});
+        onProgress?.({loaded, total});
+    }
+}
+
+// Seconds a download has left, from the {time, loaded} samples of its last few seconds, or null while the speed
+// is not known yet, the download has stalled or it is about to finish
+export function remainingSeconds(samples, total) {
+    const first = samples[0];
+    const last = samples[samples.length - 1];
+    const elapsed = (last.time - first.time) / 1000;
+    const speed = (last.loaded - first.loaded) / elapsed;
+    if (!total || elapsed < 1 || !(speed > 0)) {
+        return null;
+    }
+    const seconds = (total - last.loaded) / speed;
+    return seconds < 2 ? null : seconds;
+}
+
+// What is kept of a response: its body and the headers the next sync relies on
+function keptCopy(text, response) {
+    const headers = new Headers({"Content-Type": "application/json"});
+    for (const name of ["ETag", "Date"]) {
+        if (response.headers.has(name)) {
+            headers.set(name, response.headers.get(name));
+        }
+    }
+    return new Response(text, {headers});
+}
+
 // Asks for what changed since the stored copy when its ETag and Date are known, for the whole list otherwise.
 // Sending If-None-Match makes the browser pass a 304 on instead of answering it from its own cache.
 function fetchSongs(url, stored) {
@@ -44,8 +91,10 @@ function fetchSongs(url, stored) {
 // Calls onSongs with the stored list straight away, then with the fresh one if it differs.
 // An unchanged list costs a 304, a changed one only the songs that changed; a delta that does not
 // fit the stored list falls back to the whole list.
+// onProgress receives {loaded, total} while a body downloads, with retry set while the whole list is fetched
+// again because a delta did not fit.
 // Resolves when the network answered or failed with a stored copy to fall back on, rejects otherwise.
-export async function loadSongs(url, onSongs) {
+export async function loadSongs(url, onSongs, onProgress) {
     const cache = await open();
     let stored = null;
     let list = null;
@@ -74,11 +123,11 @@ export async function loadSongs(url, onSongs) {
     if (!response.ok) {
         throw new Error(`${response.status}`);
     }
-    const copy = response.clone();
-    const body = await response.json();
+    const text = await readText(response, onProgress);
+    const body = JSON.parse(text);
     if (Array.isArray(body)) {
         onSongs(body);
-        await store(cache, url, copy);
+        await store(cache, url, keptCopy(text, response));
         return;
     }
     const merged = list && mergeDelta(list, body);
@@ -93,13 +142,15 @@ export async function loadSongs(url, onSongs) {
         }));
         return;
     }
+    const retry = step => onProgress?.({...step, retry: true});
+    retry({loaded: 0, total: 0});
     const whole = await fetch(url);
     if (!whole.ok) {
         throw new Error(`${whole.status}`);
     }
-    const wholeCopy = whole.clone();
-    onSongs(await whole.json());
-    await store(cache, url, wholeCopy);
+    const wholeText = await readText(whole, retry);
+    onSongs(JSON.parse(wholeText));
+    await store(cache, url, keptCopy(wholeText, whole));
 }
 
 async function store(cache, url, response) {

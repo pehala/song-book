@@ -57,11 +57,145 @@ def test_all_songs_lists_every_song(page, library):
 
 
 def test_shell_placeholder_is_gone_once_the_reader_is_drawn(page, library):
-    """The spinner of the shell must not linger below the song list"""
+    """The progress bar of the shell must not linger below the song list"""
     page.goto("/all")
 
     expect(songs(page)).to_have_count(4)
-    expect(page.locator(".spinner")).to_have_count(0)
+    expect(page.locator(".progress")).to_have_count(0)
+
+
+def test_progress_bar_shows_while_the_first_list_downloads(page, library):
+    """With nothing stored the reader shows a progress bar until the songs arrive"""
+    held = []
+
+    def hold(route):
+        held.append(route)
+
+    page.route("**/api/songs", hold)
+    page.goto("/all")
+
+    expect(page.locator("[role=progressbar].centered")).to_be_visible()
+    expect(page.locator(".progress-caption")).to_contain_text("Loading songs")
+    held[0].continue_()
+
+    expect(songs(page)).to_have_count(4)
+    expect(page.locator("[role=progressbar]")).to_have_count(0)
+
+
+def test_download_progress_follows_the_announced_size(page, library):
+    """The bytes read are reported against the size the server announces, and the list is stored whole"""
+    page.goto("/all")
+    expect(songs(page)).to_have_count(4)
+
+    report = page.evaluate(
+        """async () => {
+            const {loadSongs} = await import("/static/app/store.js");
+            const bytes = new TextEncoder().encode(JSON.stringify([{id: 1, number: 1}]));
+            window.fetch = async () => new Response(
+                new ReadableStream({
+                    start(controller) {
+                        controller.enqueue(bytes.slice(0, 5));
+                        controller.enqueue(bytes.slice(5));
+                        controller.close();
+                    },
+                }),
+                {headers: {"X-Songs-Size": String(bytes.length), "ETag": '"e"'}},
+            );
+            const steps = [];
+            let songs = null;
+            await loadSongs("/api/songs-fake", list => (songs = list), step => steps.push(step));
+            const stored = await (await caches.open("songs")).match("/api/songs-fake");
+            return {steps, songs, size: bytes.length, etag: stored.headers.get("ETag")};
+        }"""
+    )
+
+    assert report["steps"] == [
+        {"loaded": 5, "total": report["size"]},
+        {"loaded": report["size"], "total": report["size"]},
+    ]
+    assert report["songs"] == [{"id": 1, "number": 1}]
+    assert report["etag"] == '"e"'
+
+
+def test_progress_says_when_the_whole_list_is_fetched_again(page, library):
+    """A delta that does not fit the stored list makes the reader fetch everything, which the progress reports"""
+    page.goto("/all")
+    expect(songs(page)).to_have_count(4)
+
+    steps = page.evaluate(
+        """async () => {
+            const {loadSongs} = await import("/static/app/store.js");
+            const headers = {"ETag": '"old"', "Date": new Date().toUTCString()};
+            const cache = await caches.open("songs");
+            await cache.put("/api/songs-fake", new Response('[{"id": 1, "number": 1}]', {headers}));
+            const delta = {etag: '"new"', now: 0, ids: [1, 2], changed: []};
+            const whole = [{id: 1, number: 1}, {id: 2, number: 2}];
+            let calls = 0;
+            window.fetch = async () => new Response(JSON.stringify(calls++ ? whole : delta));
+            const steps = [];
+            await loadSongs("/api/songs-fake", () => {}, step => steps.push(step));
+            return steps;
+        }"""
+    )
+
+    retried = [step for step in steps if step.get("retry")]
+    assert retried[0] == {"loaded": 0, "total": 0, "retry": True}
+    assert steps[-1].get("retry")
+    assert not steps[0].get("retry")
+
+
+def test_remaining_time_follows_the_recent_speed(page, library):
+    """The estimate waits for a known speed and a total, and is left out for a stalled or nearly done download"""
+    page.goto("/all")
+    expect(songs(page)).to_have_count(4)
+
+    estimates = page.evaluate(
+        """async () => {
+            const {remainingSeconds} = await import("/static/app/store.js");
+            const at = (time, loaded) => ({time, loaded});
+            return [
+                remainingSeconds([at(0, 0), at(2000, 200)], 1000),
+                remainingSeconds([at(0, 0), at(500, 100)], 1000),
+                remainingSeconds([at(0, 100), at(2000, 100)], 1000),
+                remainingSeconds([at(0, 0), at(2000, 990)], 1000),
+                remainingSeconds([at(0, 0), at(2000, 200)], 0),
+            ];
+        }"""
+    )
+
+    assert estimates == [8, None, None, None, None]
+
+
+def page_errors(page):
+    """The uncaught errors the page raises"""
+    errors = []
+
+    def collect(error):
+        errors.append(error)
+
+    page.on("pageerror", collect)
+    return errors
+
+
+def throttle(page, bytes_per_second):
+    """Makes the page's downloads arrive in chunks over several seconds"""
+    session = page.context.new_cdp_session(page)
+    session.send(
+        "Network.emulateNetworkConditions",
+        {"offline": False, "latency": 0, "downloadThroughput": bytes_per_second, "uploadThroughput": -1},
+    )
+
+
+def test_first_download_estimates_the_time_left(page, library, make_song):
+    """Over a slow connection the caption of the bar tells how long the songs still take"""
+    make_song(*library.category_set.all(), name="Long", text="{C}la " * 4000)
+    errors = page_errors(page)
+    throttle(page, 40_000)
+    page.goto("/all")
+
+    expect(page.locator(".progress-caption")).to_contain_text("left", timeout=15_000)
+    expect(songs(page)).to_have_count(5, timeout=30_000)
+    assert not errors
 
 
 def test_switching_category_asks_the_server_for_nothing(page, library, requests_made):
