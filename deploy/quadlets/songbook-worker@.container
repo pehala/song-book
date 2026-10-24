@@ -1,0 +1,32 @@
+# Template: `systemctl --user start songbook-worker@<instance>` starts an instance; %i is its name. See docs/DEPLOY.md.
+[Unit]
+Description=Songbook Huey worker (PDF generation), instance %i
+# songbook-web is only ready after it has migrated the database
+Requires=songbook-web@%i.service songbook-postgres@%i.service songbook-redis@%i.service
+After=songbook-web@%i.service songbook-postgres@%i.service songbook-redis@%i.service
+
+[Container]
+ContainerName=songbook-worker-%i
+Image=ghcr.io/pehala/song-book:latest
+Exec=worker
+Network=none
+EnvironmentFile=%h/.config/songbook/%i.env
+Secret=songbook-secret-key-%i,type=env,target=SECRET_KEY
+Secret=songbook-db-password-%i,type=env,target=POSTGRES_PASSWORD
+Volume=%t/songbook/%i/postgres:/run/postgresql:z
+Volume=%t/songbook/%i/redis:/run/redis:z
+Volume=%h/nginx/%i/media:/srv/media:z
+# The image's user (UID 1001) is this host user, so everything it writes is owned by it
+UserNS=keep-id:uid=1001,gid=1001
+# make is the entrypoint; catatonit as PID 1 forwards SIGTERM so gunicorn/huey shut down gracefully
+RunInit=true
+ReadOnly=true
+NoNewPrivileges=true
+DropCapability=ALL
+
+[Service]
+Restart=always
+SuccessExitStatus=143
+
+[Install]
+WantedBy=default.target
