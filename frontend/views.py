@@ -24,10 +24,10 @@ MODULES = [
     "app/chrome.js",
     "app/i18n.js",
     "app/options.js",
-    "app/qr.js",
     "app/songs.js",
     "app/store.js",
     "app/vendor/preact-htm.module.js",
+    "app/vendor/qr.mjs",
 ]
 # Draws the header on the pages the server renders
 SITE_ENTRY = "app/site.js"
