@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-24 04:41-0500\n"
+"POT-Creation-Date: 2026-10-24 05:54-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -202,6 +202,70 @@ msgstr "Zavřít"
 #: frontend/static/app/header.js:228 frontend/static/app/header.js:229
 msgid "QR code"
 msgstr "QR kód"
+
+#: frontend/static/app/progress.js:10
+msgid "Waiting for start"
+msgstr "Čeká na zpracování"
+
+#: frontend/static/app/progress.js:11
+msgid "Parsing HTML"
+msgstr "Zpracovávání HTML"
+
+#: frontend/static/app/progress.js:12
+msgid "Parsing CSS"
+msgstr "Zpracovávání CSS"
+
+#: frontend/static/app/progress.js:13
+msgid "Applying CSS"
+msgstr "Aplikace CSS pravidel"
+
+#: frontend/static/app/progress.js:14
+msgid "Creating formatting structure"
+msgstr "Vytváření formátovací struktury"
+
+#: frontend/static/app/progress.js:15
+msgid "Generating layout"
+msgstr "Generování rozložení"
+
+#: frontend/static/app/progress.js:16
+msgid "Creating PDF"
+msgstr "Vytváření PDF"
+
+#: frontend/static/app/progress.js:17
+msgid "Adding PDF metadata"
+msgstr "Přidávání metadat do PDF"
+
+#: frontend/static/app/progress.js:54
+msgid "Completed"
+msgstr "Dokončeno"
+
+#: frontend/static/app/progress.js:57
+msgid "Failed"
+msgstr "Chyba"
+
+#: frontend/static/app/progress.js:60
+msgid "The progress could not be loaded"
+msgstr "Postup se nepodařilo načíst"
+
+#: frontend/static/app/progress.js:67
+msgid "File name"
+msgstr "Název souboru"
+
+#: frontend/static/app/progress.js:71 frontend/static/app/progress.js:73
+msgid "Progress"
+msgstr "Postup"
+
+#: frontend/static/app/progress.js:79
+msgid "Status"
+msgstr "Stav"
+
+#: frontend/static/app/progress.js:83
+msgid "Link"
+msgstr "Odkaz"
+
+#: frontend/static/app/progress.js:88
+msgid "Back to all files"
+msgstr "Zpátky na seznam souborů"
 
 #: frontend/static/app/songs.js:64 frontend/static/app/songs.js:65
 #: frontend/static/app/songs.js:66 frontend/static/app/songs.js:67
