@@ -441,7 +441,7 @@ def test_new_version_is_offered_and_installed_on_request(page, library, monkeypa
     before = shell_caches(page)
     assert len(before) == 1
 
-    monkeypatch.setattr("frontend.views.ASSETS", [*ASSETS, "js/qr.mjs"])
+    monkeypatch.setattr("frontend.views.ASSETS", [*ASSETS, "styles.css"])
     page.evaluate("navigator.serviceWorker.getRegistration().then(registration => registration.update())")
 
     expect(page.get_by_text("A new version is available")).to_be_visible()
