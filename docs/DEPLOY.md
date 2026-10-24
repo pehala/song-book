@@ -106,16 +106,15 @@ secret afterwards also needs `ALTER ROLE songbook PASSWORD '…'` inside the dat
 ```bash
 install -D -m 0644 -t ~/.config/containers/systemd/songbook deploy/quadlets/*
 podman pull docker.io/library/postgres:18 docker.io/valkey/valkey:8 ghcr.io/pehala/song-book:latest
-for unit in postgres redis web worker; do
-  ln -s songbook-$unit@.container ~/.config/containers/systemd/songbook/songbook-$unit@$INSTANCE.container
-done
+install -D -m 0644 -t ~/.config/systemd/user deploy/systemd/songbook@.target
 systemctl --user daemon-reload
-systemctl --user start songbook-web@$INSTANCE songbook-worker@$INSTANCE
+systemctl --user enable --now songbook@$INSTANCE.target
 ```
 
-Podman reads the `songbook` subdirectory, and the unit names come from the file names only. The symlinks are the
-instance: quadlet generates `songbook-web@camp.service` from `songbook-web@camp.container` and its `[Install]`
-section starts it at boot. (`systemctl enable` does not work on generated units, and is not needed.) The templates are
+Podman reads the `songbook` subdirectory, and the unit names come from the file names only. The target
+`songbook@.target` is an ordinary systemd unit, so `enable` works on it: it starts the instance's web and worker
+(which pull in Redis and PostgreSQL) now and at boot, and `stop`/`restart` of the target act on all its
+units. (`systemctl enable` is refused for the generated container units themselves.) The templates are
 installed once; `/usr/libexec/podman/quadlet --user --dryrun` prints the units they generate. Starting web pulls in Redis and PostgreSQL, which report ready through their health checks. Web
 itself reports ready once gunicorn accepts connections — after the migrations — and only then does
 the worker start. All units are `WantedBy=default.target` and the user lingers, so they come back
@@ -129,7 +128,7 @@ podman exec -it songbook-web-$INSTANCE python manage.py createsuperuser
 
 ### Adding another instance
 
-Repeat steps 3 and 4 with a new `INSTANCE` (tmpfiles file, env file, secrets, the instance symlinks, `start`), install
+Repeat steps 3 and 4 with a new `INSTANCE` (tmpfiles file, env file, secrets, `enable --now songbook@<instance>.target`), install
 another nginx server block (section 7) and, for the shared PostgreSQL variant, create another database
 (`songbook_<instance>`). The templates are not copied again. Instances share nothing but the images and the
 user, so each one upgrades, restarts and is backed up on its own.
@@ -218,7 +217,7 @@ client of the server.
 that are not used:
 
 ```bash
-rm ~/.config/containers/systemd/songbook/songbook-postgres@*.container   # the template and any instance symlink
+rm ~/.config/containers/systemd/songbook/songbook-postgres@.container
 ```
 
 In `songbook-web@.container` and `songbook-worker@.container`:
@@ -245,7 +244,7 @@ after the database was reachable.
 ```bash
 podman pull docker.io/valkey/valkey:8 ghcr.io/pehala/song-book:latest
 systemctl --user daemon-reload
-systemctl --user start songbook-web@$INSTANCE songbook-worker@$INSTANCE
+systemctl --user enable --now songbook@$INSTANCE.target
 ```
 
 The rest of this guide applies with these differences:
@@ -385,7 +384,7 @@ cp -a ~/song-book/chords/media/. ~/nginx/$INSTANCE/media/
 prerenders and publishes the static files before it serves:
 
 ```bash
-systemctl --user start songbook-web@$INSTANCE songbook-worker@$INSTANCE
+systemctl --user enable --now songbook@$INSTANCE.target
 journalctl --user -u songbook-web@$INSTANCE -f        # wait for "Listening at: unix:/run/gunicorn/gunicorn.sock"
 ```
 
