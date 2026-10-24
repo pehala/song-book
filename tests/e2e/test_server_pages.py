@@ -10,6 +10,18 @@ def offline_cdn(page):
     page.route("https://cdn.jsdelivr.net/**", lambda route: route.fulfill(body="", content_type="text/plain"))
 
 
+def has_language_cookie(page):
+    return any(cookie["name"] == "django_language" for cookie in page.context.cookies())
+
+
+def wait_for_language_cookie(page):
+    """The server sets the cookie in the answer to a POST the page sends in the background"""
+    for _ in range(50):
+        if has_language_cookie(page):
+            return
+        page.wait_for_timeout(100)
+
+
 def labels(page):
     return page.locator("header.sb-bar summary, header.sb-bar nav > a, header.sb-bar nav > button").all_inner_texts()
 
@@ -106,12 +118,30 @@ def test_language_chosen_in_the_reader_reaches_server_pages(page, library):
     page.locator("summary", has_text="Options").click()
     page.get_by_label("Language").select_option("cs")
     expect(page.get_by_label("Vyhledávání")).to_be_visible()
-    for _ in range(50):
-        if any(cookie["name"] == "django_language" for cookie in page.context.cookies()):
-            break
-        page.wait_for_timeout(100)
+    wait_for_language_cookie(page)
 
     page.goto("/accounts/login/")
 
     expect(page.locator("html")).to_have_attribute("lang", "cs")
     expect(page.locator("summary", has_text="Možnosti")).to_be_visible()
+
+
+def test_language_chosen_before_the_user_is_known_reaches_server_pages(page, library):
+    """The CSRF cookie comes with /api/me, so a language picked before it answered waits for it"""
+    held = []
+
+    def hold(route):  # Playwright cannot wrap the builtin held.append
+        held.append(route)
+
+    page.route("**/api/me", hold)
+    page.goto("/categories/cs")
+    page.locator("summary", has_text="Options").click()
+    page.get_by_label("Language").select_option("cs")
+    expect(page.get_by_label("Vyhledávání")).to_be_visible()
+    assert not has_language_cookie(page)
+
+    held[0].continue_()
+    wait_for_language_cookie(page)
+
+    page.goto("/accounts/login/")
+    expect(page.locator("html")).to_have_attribute("lang", "cs")

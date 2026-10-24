@@ -38,6 +38,8 @@ export function useSiteHeader({boot, initialMe = null, server = false}) {
     const options = useOptions({server});
     const _ = useMemo(() => translator(options.lang, boot.i18n), [options.lang]);
     const [me, setMe] = useState(initialMe);
+    // Answering /api/me sets the CSRF cookie, so the header's POSTs wait for it
+    const [meLoaded] = useState(() => (initialMe ? Promise.resolve(initialMe) : fetchMe(urls.me)));
     const [toasts, setToasts] = useState([]);
     const [qr, setQr] = useState(null);
 
@@ -52,7 +54,7 @@ export function useSiteHeader({boot, initialMe = null, server = false}) {
         if (initialMe) {
             return;
         }
-        fetchMe(urls.me).then(current => {
+        meLoaded.then(current => {
             setMe(current);
             current.messages.forEach(message => {
                 const id = toast(message.text, null, message.level);
@@ -81,6 +83,7 @@ export function useSiteHeader({boot, initialMe = null, server = false}) {
                 // the choice lasts until the page is closed
             }
             const body = new URLSearchParams({language: code, next: location.pathname});
+            await meLoaded;
             try {
                 await fetch(urls.setlang, {method: "POST", body, headers: {"X-CSRFToken": csrfToken()}, redirect: "manual"});
             } catch {
@@ -94,6 +97,7 @@ export function useSiteHeader({boot, initialMe = null, server = false}) {
     );
 
     const logout = useCallback(async () => {
+        await meLoaded;
         try {
             await fetch(urls.logout, {method: "POST", headers: {"X-CSRFToken": csrfToken()}, redirect: "manual"});
         } catch {

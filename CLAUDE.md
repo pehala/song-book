@@ -131,6 +131,11 @@ The reader (song list, search, category switching, song view) is a Preact + htm 
 with no build step. Everything else (CRUD, PDF, analytics, login, `/admin/`) keeps its Django
 templates and Bootstrap from the CDN.
 
+- Some of those server pages have their content drawn by Preact too: the template keeps the title, renders an
+  empty `#page` and the page's data as `page-data` JSON and loads a page entry (`progress.js` for
+  `/pdf/files/wait/<pk>`, `analytics.js` for `/analytics/`), which calls `mountPage` from `page.js`. The data
+  names the JSON endpoints the page calls, and the strings are `_("…")` msgids of the reader's catalogue,
+  translated into the language of `<html lang>`.
 - The header (`header.js`: `SiteHeader`, which draws the bar, the notices and the QR dialog from the state of
   `useSiteHeader`) is one Preact component used twice: by the
   reader and, through `site.js`, by every Bootstrap page. `base/index.html` has an empty `#site-header`, the
@@ -150,9 +155,9 @@ templates and Bootstrap from the CDN.
   every route and every user. `RecognizeTenantMiddleware` resolves `is_localadmin` lazily for the
   same reason.
 - Modules are in `frontend/static/app/` (`app.js` entry, `site.js` entry for server pages, `header.js`, `options.js`, `songs.js`, `store.js`,
-  `i18n.js`, `vendor/preact-htm.module.js`, `vendor/qr.mjs`, `header.css`, `app.css`) and listed once in
-  `frontend.views` (`MODULES`, `SITE_ENTRY`, `STYLESHEETS`), which feeds the preload links and the service
-  worker's precache. A new file must be added there. Keep modules
+  `i18n.js`, `page.js` and the page entries, `vendor/preact-htm.module.js`, `vendor/qr.mjs`, `header.css`, `app.css`)
+  and listed once in `frontend.views` (`MODULES`, `SITE_ENTRY`, `PAGE_ENTRIES`/`PAGE_MODULES`, `STYLESHEETS`), which
+  feeds the preload links and the service worker's precache. A new file must be added there. Keep modules
   free of import cycles (hashing needs a DAG) and `import()` out of modules with nested template
   literals: `ManifestStorage` cannot see past them.
 - The CSS is mobile first (`min-width` queries), every control is at least 44 px, form fields use 16 px text, text
@@ -255,8 +260,9 @@ to the service user); containers have `Network=none` and talk over unix sockets 
   `make check-messages` (part of `commit-acceptance`) regenerates `djangojs.po` and fails when it differs from
   the committed file or has an untranslated string.
 - Every user-visible string goes through `gettext_lazy`/`gettext_noop`. Czech is the default
-  language; `make check-fuzzy` fails the build if `chords/locale/cs/LC_MESSAGES/django.po`
-  contains fuzzy entries, so run `make messages` and resolve them.
+  language; `make check-messages` also regenerates `chords/locale/cs/LC_MESSAGES/django.po` and fails when it
+  differs from the committed file, and `make check-fuzzy` fails the build if either catalogue contains fuzzy
+  entries, so run `make messages`, resolve them and commit both files.
 - ruff, line length 120, target `py314` (`.python-version` is 3.14).
 - Dev dependencies: `uv add --group dev <pkg>`.
 - One logical change per commit.
