@@ -71,7 +71,7 @@ start: ## Runs gunicorn as configured for the container image
 
 IMAGE ?= localhost/songbook:latest
 
-image: ## Builds the container image (see docs/DEPLOY.md)
+image: ## Builds the container image (see deploy/DEPLOY.md)
 	podman build -t $(IMAGE) \
 		--build-arg BUILD_DATE=$$(git log -1 --format=%ad --date=format:%Y/%m/%d) \
 		--build-arg BUILD_REVISION=$$(git rev-parse --short HEAD) .

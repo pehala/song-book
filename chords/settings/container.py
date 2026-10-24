@@ -1,6 +1,6 @@
 """Settings for the container image, configured through environment variables.
 
-PostgreSQL and Redis are reached over unix sockets mounted into the container; see docs/DEPLOY.md.
+PostgreSQL and Redis are reached over unix sockets mounted into the container; see deploy/DEPLOY.md.
 """
 
 import os

@@ -1,4 +1,5 @@
-# Template of one songbook unit; %i is the instance name, started through songbook@<instance>.target. See docs/DEPLOY.md.
+# PostgreSQL in a container, for a host without one; %i is the instance name. See deploy/DEPLOY.md, "PostgreSQL in a container": web and worker mount its socket directory
+# in place of /run/postgresql.
 [Unit]
 PartOf=songbook@%i.target
 Description=Songbook PostgreSQL, instance %i
