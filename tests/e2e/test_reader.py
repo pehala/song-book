@@ -192,6 +192,23 @@ def test_transposing_changes_the_chords(page, library):
     expect(chords).to_have_text(["G#mi", "H", "A#", "D#mi"])
 
 
+def test_chords_can_stand_above_the_text(page, library, settings):
+    """With the above renderer the chords are annotations over their words and still transpose"""
+    settings.SONG_RENDERER = "chords.markdown.RUBY_RENDERER"
+    page.goto("/categories/cs")
+    songs(page).nth(0).locator("summary").click()
+    chords = songs(page).nth(0).locator("rt.chord")
+    expect(chords).to_have_text(["Ami", "C", "H", "Emi"])
+    above = chords.first.evaluate(
+        "rt => rt.getBoundingClientRect().bottom <= rt.parentElement.getBoundingClientRect().bottom - 10"
+    )
+    assert above
+
+    page.get_by_role("button", name="Transpose +1").click()
+
+    expect(chords).to_have_text(["A#mi", "C#", "C", "Fmi"])
+
+
 def test_transposing_starts_again_for_the_next_song(page, library):
     """The shift belongs to the open song"""
     page.goto("/categories/cs")

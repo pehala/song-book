@@ -20,7 +20,7 @@ from markdownx.models import MarkdownxField
 
 from backend.cache import invalidate_songs_cache, invalidate_tenant_songs_cache, song_tenants
 from category.models import Category
-from chords.markdown import RENDERER
+from chords.markdown import INLINE_RENDERER, song_renderer
 from tenants.models import Tenant
 from tenants.utils import tenant_cache_key
 
@@ -45,7 +45,7 @@ class Song(Model):
         If USE_DYNAMIC_PRERENDER is False, it will fail if there is no cached version ready
         """
         if not settings.USE_PRERENDERED_MARKDOWN:
-            return RENDERER(self.text)
+            return song_renderer()(self.text)
 
         field = self.prerendered
 
@@ -57,7 +57,7 @@ class Song(Model):
 
     def prerender(self, save: bool = True):
         """Generates prerendered html for specific type with a specific rendered"""
-        html = RENDERER(self.text)
+        html = song_renderer()(self.text)
         self.prerendered = html
 
         if save:
@@ -68,6 +68,13 @@ class Song(Model):
     def rendered_markdown(self):
         """Returns rendered markdown for web"""
         return self._get_rendered_markdown()
+
+    @property
+    def inline_markdown(self):
+        """Returns rendered markdown with the chords inline, for outputs that cannot lay out ruby text (PDF)"""
+        if song_renderer() is INLINE_RENDERER:
+            return self.rendered_markdown
+        return INLINE_RENDERER(self.text)
 
     def __str__(self):
         return f"{self.name} ({self.id})"
