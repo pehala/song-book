@@ -2,6 +2,7 @@
 
 import json
 from collections.abc import Callable, Iterable
+from datetime import UTC, datetime
 
 from django.conf import settings
 from django.core.cache import cache
@@ -55,8 +56,8 @@ def songs_to_json(songs: Iterable[Song]) -> str:
     return json.dumps(result, cls=DjangoJSONEncoder)
 
 
-def build_songs_payload(tenant, include_archived: bool) -> str:
-    """Serializes every song of the tenant together with the slugs of the tenant's categories it is in"""
+def tenant_songs(tenant, include_archived: bool) -> QuerySet:
+    """Songs of the tenant the user may see, each with its tenant's categories prefetched"""
     songs = (
         Song.objects.filter(categories__tenant=tenant)
         .distinct()
@@ -64,7 +65,36 @@ def build_songs_payload(tenant, include_archived: bool) -> str:
             Prefetch("categories", queryset=Category.objects.filter(tenant=tenant), to_attr="tenant_categories")
         )
     )
-    return songs_to_json(visible_songs(songs, include_archived))
+    return visible_songs(songs, include_archived)
+
+
+def build_songs_payload(tenant, include_archived: bool) -> str:
+    """Serializes every song of the tenant together with the slugs of the tenant's categories it is in"""
+    return songs_to_json(tenant_songs(tenant, include_archived))
+
+
+def build_songs_delta(tenant, include_archived: bool, since: int, etag: str) -> str:
+    """
+    Serializes what a reader holding the list as of `since` (epoch seconds) is missing.
+
+    `ids` names every current song in list order, which is also what numbers them, so the reader drops
+    the songs that are gone, renumbers by position and takes the rows of `changed`, the songs edited
+    at or after `since`. `etag` is the one of the full list, which the merged list answers to from then on.
+    """
+    songs = tenant_songs(tenant, include_archived)
+    listed = list(songs.values_list("id", "archived"))
+    ids = [pk for pk, archived in listed if not archived] + [pk for pk, archived in listed if archived]
+    numbers = {pk: number for number, pk in enumerate(ids, start=1)}
+    changed = songs.filter(pk__in=ids, updated_at__gte=datetime.fromtimestamp(since, UTC))
+    return json.dumps(
+        {
+            "etag": etag,
+            "now": int(datetime.now(UTC).timestamp()),
+            "ids": ids,
+            "changed": [transform_song(song, numbers[song.id]) for song in changed],
+        },
+        cls=DjangoJSONEncoder,
+    )
 
 
 def cached_songs_payload(tenant, include_archived: bool) -> str:
