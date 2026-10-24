@@ -1,4 +1,4 @@
-"""Invalidation of the songs JSON lists kept in the cache"""
+"""Invalidation of the songs payload kept in the cache"""
 
 from django.conf import settings
 from django.core.cache import cache
@@ -6,17 +6,15 @@ from django.core.cache import cache
 from tenants.utils import tenant_cache_key
 
 
-def invalidate_tenant_songs_cache(tenant, extra_slugs=()):
-    """
-    Invalidates every songs JSON cache entry of a tenant: the "all" list and each category list.
+def songs_payload_key(tenant, include_archived):
+    """Cache key of the combined songs payload of a tenant"""
+    key = tenant_cache_key(tenant, settings.SONGS_CACHE_KEY)
+    return f"{key}_archived" if include_archived else key
 
-    extra_slugs lets callers clear lists of slugs that no longer exist (renamed or deleted categories).
-    """
-    slugs = [*tenant.category_set.values_list("slug", flat=True), *extra_slugs]
-    for name in ["ALL", *slugs]:
-        key = tenant_cache_key(tenant, f"{settings.SONGS_CACHE_KEY}_{name}")
-        cache.delete(key)
-        cache.delete(f"{key}_archived")
+
+def invalidate_tenant_songs_cache(tenant):
+    """Invalidates the combined songs payload of a tenant, in both its public and its archived variant"""
+    cache.delete_many([songs_payload_key(tenant, include_archived) for include_archived in (False, True)])
 
 
 def song_tenants(song):
@@ -25,6 +23,6 @@ def song_tenants(song):
 
 
 def invalidate_songs_cache(song):
-    """Invalidates songs JSON cache for every tenant the song belongs to"""
+    """Invalidates the songs payload of every tenant the song belongs to"""
     for tenant in song_tenants(song):
         invalidate_tenant_songs_cache(tenant)

@@ -28,7 +28,6 @@ INSTALLED_APPS = [
     "tenants",
     "django_bootstrap5",
     "markdownx",
-    "simple_menu",
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -71,6 +70,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                "frontend.context_processors.header",
             ],
         },
     },
@@ -219,24 +219,22 @@ CATEGORY_PDF_DELAY = 30 * 60
 LOCALE_PATHS = ["chords/locale"]
 
 # Content Security Policy (Django 6.0) — enforced policy
-# Scripts: 'self' for local static files + CDNs used for Bootstrap, Chart.js, JsRender;
-#          'unsafe-inline' required for the many inline <script type="module"> blocks;
-#          'unsafe-eval' required by JsRender, which compiles templates via new Function().
+# Scripts: 'self' for local static files + cdn.jsdelivr.net for Bootstrap and Chart.js on the admin pages;
+#          'unsafe-inline' required for the many inline <script type="module"> blocks.
 # Styles: 'self' for local static files + cdn.jsdelivr.net for Bootstrap CSS;
 #         'unsafe-inline' required for inline <style> blocks (incl. WeasyPrint @page rules)
 #         and style= attributes used in templates.
 # Images: 'self' + data: URIs (QR code SVG is injected as data:).
 # Connect: 'self' for fetch() calls to JSON data endpoints and analytics REST view.
 # Fonts: 'self' for any self-hosted web fonts.
+# Workers: 'self' for the reader's service worker.
 # Frame ancestors: 'none' — this app is never embedded in iframes.
 SECURE_CSP = {
     "default-src": ["'self'"],
     "script-src": [
         "'self'",
         "'unsafe-inline'",
-        "'unsafe-eval'",
         "cdn.jsdelivr.net",
-        "cdnjs.cloudflare.com",
     ],
     "style-src": [
         "'self'",
@@ -246,5 +244,6 @@ SECURE_CSP = {
     "img-src": ["'self'", "data:"],
     "connect-src": ["'self'"],
     "font-src": ["'self'"],
+    "worker-src": ["'self'"],
     "frame-ancestors": ["'none'"],
 }

@@ -1,15 +1,17 @@
 """Analytics views"""
 
 from datetime import UTC, datetime, timedelta
+from urllib.parse import urlparse
 
 from django.db import transaction
 from django.db.models import Sum
-from django.http import HttpRequest, HttpResponseBadRequest, JsonResponse
+from django.http import Http404, HttpRequest, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, JsonResponse
 
 # Create your views here.
+from django.utils.decorators import method_decorator
 from django.utils.timezone import now
-from django.utils.translation import gettext_noop
 from django.views import View
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 
 from analytics.models import DayStatistic
@@ -24,19 +26,31 @@ def analytics(request, key):
         statistic.save()
 
 
-class AnalyticsMixin(View):
-    """Mixin for gathering number of hits per day analytics"""
+ALL_SONGS_KEY = "all"
 
-    KEY = gettext_noop("General")
 
-    def get_key(self):
-        """Returns Key to be used in analytics"""
-        return self.KEY
+def is_same_origin(request: HttpRequest) -> bool:
+    """Whether the request was made by a page of this very site"""
+    origin = request.headers.get("Origin")
+    if origin:
+        return urlparse(origin).netloc == request.get_host()
+    return request.headers.get("Sec-Fetch-Site") == "same-origin"
 
-    def dispatch(self, request, *args, **kwargs):
-        result = super().dispatch(request, *args, **kwargs)
-        analytics(request, self.get_key())
-        return result
+
+@method_decorator(csrf_exempt, name="dispatch")
+class HitView(View):
+    """Counts a page view reported by the reader, which navigates without loading pages"""
+
+    http_method_names = ["post", "options"]
+
+    def post(self, request: HttpRequest, key: str):
+        """Adds a hit for the key, which is the slug of one of the tenant's categories or `all`"""
+        if not is_same_origin(request):
+            return HttpResponseForbidden()
+        if key != ALL_SONGS_KEY and not request.tenant.category_set.filter(slug=key).exists():
+            raise Http404(key)
+        analytics(request, key)
+        return HttpResponse(status=204)
 
 
 class AnalyticsShowView(LocalAdminRequired, TemplateView):

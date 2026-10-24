@@ -16,6 +16,7 @@ def categories(tenant):
             category.name,
             reverse("category:index", kwargs={"slug": category.slug}),
             skip_translate=True,
+            category_slug=category.slug,
         )
         for category in tenant.category_set.all()
     ]

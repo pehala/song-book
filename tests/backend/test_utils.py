@@ -6,63 +6,53 @@ import pytest
 from django.core.cache import cache
 from django.urls import reverse
 
-from backend.cache import invalidate_songs_cache
+from backend.cache import invalidate_songs_cache, songs_payload_key
 from backend.models import Song
 from backend.utils import get_git_revision, get_version
-from chords.settings.base import SONGS_CACHE_KEY
-from tenants.utils import tenant_cache_key
 
 pytestmark = pytest.mark.django_db
 
-ALL_DATA_URL = reverse("chords:all_data")
+URL = reverse("chords:songs_api")
 
 
-def _prime_all_cache(client):
-    client.get(ALL_DATA_URL)
-
-
-def test_invalidate_clears_anon_all_key(anon_client, song, tenant):
-    """invalidate_songs_cache deletes the anonymous /all cache key."""
-    _prime_all_cache(anon_client)
-    key = tenant_cache_key(tenant, f"{SONGS_CACHE_KEY}_ALL")
+def test_invalidate_clears_the_public_payload(anon_client, song, tenant):
+    """invalidate_songs_cache deletes the cached payload of the song's tenant."""
+    anon_client.get(URL)
+    key = songs_payload_key(tenant, False)
     assert cache.get(key) is not None
 
     invalidate_songs_cache(song)
     assert cache.get(key) is None
 
 
-def test_invalidate_clears_archived_all_key(superuser_client, song, tenant):
-    """invalidate_songs_cache deletes the superuser (archived-inclusive) /all cache key."""
-    superuser_client.get(ALL_DATA_URL)
-    key = tenant_cache_key(tenant, f"{SONGS_CACHE_KEY}_ALL_archived")
+def test_invalidate_clears_the_archived_payload(superuser_client, song, tenant):
+    """invalidate_songs_cache deletes the superuser (archived-inclusive) payload."""
+    superuser_client.get(URL)
+    key = songs_payload_key(tenant, True)
     assert cache.get(key) is not None
 
     invalidate_songs_cache(song)
     assert cache.get(key) is None
 
 
-def test_invalidate_clears_category_slug_key(anon_client, song, tenant):
-    """invalidate_songs_cache deletes the per-category cache key."""
-    url = reverse("category:songs_data", kwargs={"slug": "test-cat"})
-    anon_client.get(url)
-    key = tenant_cache_key(tenant, f"{SONGS_CACHE_KEY}_test-cat")
-    assert cache.get(key) is not None
+def test_invalidate_leaves_other_tenants_alone(anon_client, song, other_tenant):
+    """Only the tenants the song belongs to are touched."""
+    key = songs_payload_key(other_tenant, False)
+    cache.set(key, "[]")
 
     invalidate_songs_cache(song)
-    assert cache.get(key) is None
+    assert cache.get(key) == "[]"
 
 
 def test_new_song_visible_after_cache_invalidation(anon_client, song, category):
     """A newly added song is returned once the cache has been invalidated."""
-    _prime_all_cache(anon_client)
+    anon_client.get(URL)
 
     new_song = Song.objects.create(name="Brand New Song", text="z")
     new_song.categories.add(category)
     invalidate_songs_cache(new_song)
 
-    response = anon_client.get(ALL_DATA_URL)
-    data = json.loads(response.content)
-    names = [s["name"] for s in data]
+    names = [s["name"] for s in json.loads(anon_client.get(URL).content)]
     assert "Brand New Song" in names
 
 
