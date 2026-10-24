@@ -1,18 +1,19 @@
+# Template: `systemctl --user start songbook-postgres@<instance>` starts an instance; %i is its name. See docs/DEPLOY.md.
 [Unit]
-Description=Songbook PostgreSQL
+Description=Songbook PostgreSQL, instance %i
 
 [Container]
-ContainerName=songbook-postgres
+ContainerName=songbook-postgres-%i
 Image=docker.io/library/postgres:18
-# No network at all: clients connect through the socket in $XDG_RUNTIME_DIR/songbook/postgres
+# No network at all: clients connect through the socket in $XDG_RUNTIME_DIR/songbook/<instance>/postgres
 Network=none
 Environment=POSTGRES_USER=songbook
 Environment=POSTGRES_DB=songbook
 # initdb would otherwise trust every connection through the socket
 Environment=POSTGRES_INITDB_ARGS=--auth-local=scram-sha-256
-Secret=songbook-db-password,type=env,target=POSTGRES_PASSWORD
-Volume=songbook-postgres.volume:/var/lib/postgresql
-Volume=%t/songbook/postgres:/var/run/postgresql:z
+Secret=songbook-db-password-%i,type=env,target=POSTGRES_PASSWORD
+Volume=songbook-postgres-%i:/var/lib/postgresql
+Volume=%t/songbook/%i/postgres:/var/run/postgresql:z
 # The image's postgres user (UID 999) is this host user, so everything it writes is owned by it
 UserNS=keep-id:uid=999,gid=999
 ShmSize=256m
