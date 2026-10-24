@@ -10,6 +10,7 @@ MANAGE ?= $(RUN) python manage.py
 
 SETTINGS ?= chords.settings.production
 DEV_SETTINGS ?= chords.settings.development
+PORT ?= 8000
 
 ruff:
 	$(RUN) ruff check . --fix
@@ -93,10 +94,10 @@ coverage: ## Runs the test suite and reports coverage
 run: ## Runs the development server
 	$(MANAGE) runserver --settings $(SETTINGS)
 
-dev: ## Runs the development server on SQLite with DEBUG, no `make init` or Redis needed
+dev: ## Runs the development server on SQLite with DEBUG, no `make init` or Redis needed (PORT, DB_FILE)
 	$(MANAGE) compilemessages --settings $(DEV_SETTINGS)
 	$(MANAGE) migrate --noinput --settings $(DEV_SETTINGS)
-	$(MANAGE) runserver --settings $(DEV_SETTINGS)
+	$(MANAGE) runserver $(PORT) --settings $(DEV_SETTINGS)
 
 worker: ## Runs the Huey PDF worker
 	$(MANAGE) run_huey --settings $(SETTINGS) --worker-type process

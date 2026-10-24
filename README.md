@@ -87,6 +87,10 @@ Then run the development server:
 It uses `chords/settings/development.py`: SQLite (`db.sqlite3`), `DEBUG`, an in-memory cache and PDF generation inline,
 so there is no Redis to start and no file to generate. It compiles the translations and applies the migrations first.
 
+It listens on port 8000 and uses the `db.sqlite3` of the working tree; `PORT` and `DB_FILE` change that:
+
+    PORT=8765 DB_FILE=~/songs.sqlite3 make dev
+
 To run with production-like settings (Redis cache, hashed static files), initialize and use those instead:
 
     make init
