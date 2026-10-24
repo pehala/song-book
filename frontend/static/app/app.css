@@ -70,7 +70,13 @@ main {
 }
 
 .song {
+    padding-left: .5rem;
     border-bottom: 1px solid var(--line);
+    border-left: .25rem solid transparent;
+}
+
+.song[open] {
+    border-left-color: var(--accent);
 }
 
 .song > summary {
