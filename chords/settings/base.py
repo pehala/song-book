@@ -38,7 +38,10 @@ INSTALLED_APPS = [
     "huey.contrib.djhuey",
 ]
 
-MARKDOWNX_MARKDOWNIFY_FUNCTION = "chords.markdown.RENDERER"
+# Dotted path of the markdown renderer of songs: chords.markdown.INLINE_RENDERER keeps chords inline,
+# chords.markdown.RUBY_RENDERER writes them above the text (prerendered songs have to be rendered again)
+SONG_RENDERER = "chords.markdown.INLINE_RENDERER"
+MARKDOWNX_MARKDOWNIFY_FUNCTION = SONG_RENDERER
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
