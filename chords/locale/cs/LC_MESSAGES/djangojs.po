@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-24 05:57-0500\n"
+"POT-Creation-Date: 2026-10-24 06:45-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -20,7 +20,7 @@ msgstr ""
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
 #: frontend/static/app/analytics.js:13 frontend/static/app/app.js:87
-#: frontend/static/app/header.js:145
+#: frontend/static/app/header.js:149
 msgid "All songs"
 msgstr "Všechno"
 
@@ -112,135 +112,135 @@ msgstr "Nahoru"
 msgid "Scroll down"
 msgstr "Posunout dolů"
 
-#: frontend/static/app/header.js:100
+#: frontend/static/app/header.js:104
 msgid "Signing out failed"
 msgstr "Odhlášení se nezdařilo"
 
-#: frontend/static/app/header.js:139
+#: frontend/static/app/header.js:143
 msgid "Menu"
 msgstr "Menu"
 
-#: frontend/static/app/header.js:141 frontend/static/app/header.js:153
+#: frontend/static/app/header.js:145 frontend/static/app/header.js:157
 msgid "Categories"
 msgstr "Kategorie"
 
-#: frontend/static/app/header.js:147
+#: frontend/static/app/header.js:151
 msgid "PDF"
 msgstr "PDF"
 
-#: frontend/static/app/header.js:148
+#: frontend/static/app/header.js:152
 msgid "See also"
 msgstr "Jiné stránky"
 
-#: frontend/static/app/header.js:151
+#: frontend/static/app/header.js:155
 msgid "Songs"
 msgstr "Písničky"
 
-#: frontend/static/app/header.js:152
+#: frontend/static/app/header.js:156
 msgid "Add song"
 msgstr "Přidat písničku"
 
-#: frontend/static/app/header.js:155
+#: frontend/static/app/header.js:159
 msgid "Files"
 msgstr "Soubory"
 
-#: frontend/static/app/header.js:156
+#: frontend/static/app/header.js:160
 msgid "Generated files"
 msgstr "Vygenerované soubory"
 
-#: frontend/static/app/header.js:157
+#: frontend/static/app/header.js:161
 msgid "Templates"
 msgstr "Šablony"
 
-#: frontend/static/app/header.js:159
+#: frontend/static/app/header.js:163
 msgid "Admin"
 msgstr "Administrace"
 
-#: frontend/static/app/header.js:160
+#: frontend/static/app/header.js:164
 msgid "Analytics"
 msgstr "Statistiky"
 
-#: frontend/static/app/header.js:161
+#: frontend/static/app/header.js:165
 msgid "Edit songbook"
 msgstr "Upravit zpěvník"
 
-#: frontend/static/app/header.js:162
+#: frontend/static/app/header.js:166
 msgid "Django admin"
 msgstr "Django admin"
 
-#: frontend/static/app/header.js:164
+#: frontend/static/app/header.js:168
 msgid "Options"
 msgstr "Možnosti"
 
-#: frontend/static/app/header.js:166
+#: frontend/static/app/header.js:170
 msgid "Language"
 msgstr "Jazyk"
 
-#: frontend/static/app/header.js:171
+#: frontend/static/app/header.js:175
 msgid "Theme"
 msgstr "Motiv"
 
-#: frontend/static/app/header.js:172
+#: frontend/static/app/header.js:176
 msgid "Light"
 msgstr "Světlý"
 
-#: frontend/static/app/header.js:172
+#: frontend/static/app/header.js:176
 msgid "Dark"
 msgstr "Tmavý"
 
-#: frontend/static/app/header.js:172
+#: frontend/static/app/header.js:176
 msgid "Auto"
 msgstr "Automaticky"
 
-#: frontend/static/app/header.js:178
+#: frontend/static/app/header.js:182
 msgid "Columns"
 msgstr "Sloupce"
 
-#: frontend/static/app/header.js:181
+#: frontend/static/app/header.js:185
 msgid "Hide chords"
 msgstr "Skrýt akordy"
 
-#: frontend/static/app/header.js:183
+#: frontend/static/app/header.js:187
 msgid "Prevent sleep"
 msgstr "Zabránit uspání"
 
-#: frontend/static/app/header.js:187
+#: frontend/static/app/header.js:191
 msgid "Version"
 msgstr "Verze"
 
-#: frontend/static/app/header.js:188
+#: frontend/static/app/header.js:192
 msgid "Git"
 msgstr "Git"
 
-#: frontend/static/app/header.js:192
+#: frontend/static/app/header.js:196
 msgid "Account"
 msgstr "Účet"
 
-#: frontend/static/app/header.js:193
+#: frontend/static/app/header.js:197
 msgid "Logged as"
 msgstr "Přihlášen jako"
 
-#: frontend/static/app/header.js:194
+#: frontend/static/app/header.js:198
 msgid "Change password"
 msgstr "Změnit heslo"
 
-#: frontend/static/app/header.js:195
+#: frontend/static/app/header.js:199
 msgid "Log out"
 msgstr "Odhlásit se"
 
-#: frontend/static/app/header.js:197
+#: frontend/static/app/header.js:201
 msgid "Log in"
 msgstr "Přihlásit se"
 
-#: frontend/static/app/header.js:198
+#: frontend/static/app/header.js:202
 msgid "QR"
 msgstr "QR"
 
-#: frontend/static/app/header.js:212 frontend/static/app/header.js:230
+#: frontend/static/app/header.js:216 frontend/static/app/header.js:234
 msgid "Close"
 msgstr "Zavřít"
 
-#: frontend/static/app/header.js:228 frontend/static/app/header.js:229
+#: frontend/static/app/header.js:232 frontend/static/app/header.js:233
 msgid "QR code"
 msgstr "QR kód"
 
