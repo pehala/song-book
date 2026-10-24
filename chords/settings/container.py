@@ -1,6 +1,6 @@
 """Settings for the container image, configured through environment variables.
 
-PostgreSQL and Redis are reached over unix sockets mounted into the container; see docs/DEPLOY.md.
+PostgreSQL and Redis are reached over unix sockets mounted into the container; see deploy/DEPLOY.md.
 """
 
 import os
@@ -31,6 +31,8 @@ DATABASES = {
         "NAME": os.environ.get("POSTGRES_DB", "songbook"),
         "USER": os.environ.get("POSTGRES_USER", "songbook"),
         "PASSWORD": os.environ.get("POSTGRES_PASSWORD", ""),
+        # The port is part of the socket's file name (.s.PGSQL.<port>); empty means PostgreSQL's default, 5432
+        "PORT": os.environ.get("POSTGRES_PORT", ""),
         "CONN_MAX_AGE": 60,
         "CONN_HEALTH_CHECKS": True,
     }
@@ -59,6 +61,10 @@ MEDIA_ROOT = os.environ["MEDIA_ROOT"]
 
 TENANT_HOSTNAME = os.environ.get("TENANT_HOSTNAME", TENANT_HOSTNAME)  # noqa: F405
 SITE_NAME = os.environ.get("SITE_NAME", SITE_NAME)  # noqa: F405
+
+# Dotted path of the renderer of the songs, e.g. chords.markdown.RUBY_RENDERER; the preview of the editor follows it
+SONG_RENDERER = os.environ.get("SONG_RENDERER", SONG_RENDERER)  # noqa: F405
+MARKDOWNX_MARKDOWNIFY_FUNCTION = SONG_RENDERER
 
 # The web container prerenders every song on start (make prerender); edits re-render the edited song
 USE_PRERENDERED_MARKDOWN = True

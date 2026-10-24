@@ -2,7 +2,9 @@
 #   migrate prerender cache_clear export_static start    (web)
 #   worker                                              (Huey worker)
 # Build: make image
-# Deployment with Podman quadlets is described in docs/DEPLOY.md.
+# Deployment with Podman quadlets is described in deploy/DEPLOY.md.
+# Debian slim rather than Alpine on purpose: the PDF index is sorted with locale.strxfrm under cs_CZ.UTF-8, and
+# musl has no locale collation, so on Alpine "Č" and "Š" would sort after "Z" and "Ch" would not follow "H".
 
 FROM docker.io/library/python:3.14-slim-trixie AS base
 

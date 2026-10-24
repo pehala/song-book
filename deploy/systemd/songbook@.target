@@ -1,0 +1,8 @@
+# One songbook instance: `systemctl --user enable --now songbook@<instance>.target` starts it now and at boot,
+# stop/restart act on all of its units. Install to ~/.config/systemd/user/. See deploy/DEPLOY.md.
+[Unit]
+Description=Songbook %i
+Wants=songbook-web@%i.service songbook-worker@%i.service
+
+[Install]
+WantedBy=default.target

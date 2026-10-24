@@ -1,8 +1,9 @@
-# Template: `systemctl --user start songbook-web@<instance>` starts an instance; %i is its name. See docs/DEPLOY.md.
+# Template of one songbook unit; %i is the instance name, started through songbook@<instance>.target. See deploy/DEPLOY.md.
 [Unit]
+PartOf=songbook@%i.target
 Description=Songbook web (gunicorn), instance %i
-Requires=songbook-postgres@%i.service songbook-redis@%i.service
-After=songbook-postgres@%i.service songbook-redis@%i.service
+Requires=songbook-redis@%i.service
+After=songbook-redis@%i.service
 
 [Container]
 ContainerName=songbook-web-%i
@@ -15,9 +16,9 @@ Exec=migrate prerender cache_clear export_static start
 Network=none
 EnvironmentFile=%h/.config/songbook/%i.env
 Secret=songbook-secret-key-%i,type=env,target=SECRET_KEY
-Secret=songbook-db-password-%i,type=env,target=POSTGRES_PASSWORD
 Volume=%h/nginx/%i/gunicorn:/run/gunicorn:z
-Volume=%t/songbook/%i/postgres:/run/postgresql:z
+# The socket directory of the host's PostgreSQL, mounted without relabelling so that it keeps its labels
+Volume=/run/postgresql:/run/postgresql
 Volume=%t/songbook/%i/redis:/run/redis:z
 Volume=%h/nginx/%i/media:/srv/media:z
 Volume=%h/nginx/%i/static:/srv/static:z
@@ -28,18 +29,23 @@ RunInit=true
 ReadOnly=true
 NoNewPrivileges=true
 DropCapability=ALL
-# Healthy once gunicorn accepts connections, i.e. after the migrations; the worker waits for it.
-# A stale socket from the previous run refuses connections, so it does not count.
-HealthCmd=python -c "import socket; socket.socket(socket.AF_UNIX).connect('/run/gunicorn/gunicorn.sock')"
+# Healthy once gunicorn has created its socket, i.e. after the migrations; the worker waits for it.
+# The socket of the previous run is removed before every start, so it does not count.
+HealthCmd=test -S /run/gunicorn/gunicorn.sock
 HealthInterval=30s
-HealthStartupCmd=python -c "import socket; socket.socket(socket.AF_UNIX).connect('/run/gunicorn/gunicorn.sock')"
+HealthStartupCmd=test -S /run/gunicorn/gunicorn.sock
 HealthStartupInterval=2s
 Notify=healthy
 
 [Service]
+# POSTGRES_PORT, the port in the name of PostgreSQL's socket, comes from the instance's env file
+EnvironmentFile=-%h/.config/songbook/%i.env
+ExecStartPre=-/bin/rm -f %h/nginx/%i/gunicorn/gunicorn.sock
+# Wait for PostgreSQL, so that a boot where the user's units win the race does not burn through the restart limit
+ExecStartPre=/bin/sh -c 'until test -S /run/postgresql/.s.PGSQL.$${POSTGRES_PORT:-5432}; do sleep 1; done'
 Restart=always
 SuccessExitStatus=143
-# Migrations run before the socket opens
+# Migrations run before the socket opens, and the wait for PostgreSQL counts too
 TimeoutStartSec=900
 
 [Install]
