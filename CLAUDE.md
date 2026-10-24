@@ -90,7 +90,7 @@ One deployment serves several songbooks, told apart by `Host` header.
 | `category` | `Category` (a **subclass of `pdf.PDFTemplate`**), category admin views |
 | `pdf` | `PDFTemplate`/`ManualPDFTemplate`/`PDFFile`/`PDFSong`, WeasyPrint generation, Huey tasks |
 | `tenants` | `Tenant`, `Link`, the hostname middleware, tenant admin/move views |
-| `analytics` | `DayStatistic` per tenant/key/day, the `analytics()` counter and the `HitView` beacon |
+| `analytics` | `DayStatistic` per tenant/key/day, the `analytics()` counter, bumped once per `/api/songs` request |
 | `frontend` | no models — the reader (`ShellView`, `ServiceWorkerView`, `ManifestView`, `shell.html`, `static/app/*`, the header context processor) and the Bootstrap base templates of the admin pages (`base/index.html`, `base/frame.html`, `base/verbs/*`), global CSS, icon font |
 
 Cross-app glue worth knowing before editing:
@@ -103,7 +103,7 @@ Cross-app glue worth knowing before editing:
   whose categories, PDFs and links come from the cached menus in `tenants/menus.py`.
 - **URLs**: `backend.urls` is mounted at `^` (so `/`, `/all`, `/api/songs`, `/api/me`, `/add`,
   `/edit/<pk>`), `frontend.urls` serves `/service_worker.js` and `/manifest.webmanifest`, categories live at
-  `/categories/<slug>`, plus `/pdf/`, `/analytics/` (including `POST /analytics/hit/<key>`), `/tenants/`,
+  `/categories/<slug>`, plus `/pdf/`, `/analytics/`, `/tenants/`,
   `/admin/`. `/`, `/all` and `/categories/<slug>` all route to `frontend.views.ShellView`.
 
 ## Song rendering pipeline
@@ -169,8 +169,8 @@ templates and Bootstrap from the CDN.
 - The client keeps UI options in `localStorage` (`theme`, `lang`, `columns`, `hide_chords`,
   `prevent_sleep`; `theme` keeps the key the Bootstrap pages use), fetches songs through `store.js`
   (Cache API entry `songs`: draw the stored list, revalidate, replace it when the ETag changed; deleted
-  on logout) and reports each route with `navigator.sendBeacon` to `HitView`, which only accepts
-  same-origin requests for `all` or a slug of the tenant.
+  on logout). Statistics are counted by the server: each `/api/songs` request, which the reader makes once per
+  open, adds a hit under the key `all`.
 - `ServiceWorkerView` renders `frontend/templates/service_worker.js` per tenant: the cache name hashes the precached
   urls and carries the tenant id, the shell is cache-first with background ETag revalidation
   (`ignoreVary`), `/static/*`, the manifest and the logo are cache-first, everything else (including

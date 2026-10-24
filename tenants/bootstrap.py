@@ -19,7 +19,6 @@ def named_urls():
         "service_worker": reverse("frontend:service_worker"),
         "songs": reverse("chords:songs_api"),
         "me": reverse("chords:me"),
-        "hit": reverse("analytics:hit", kwargs={"key": "0"}),
         "add": reverse("backend:add"),
         "edit": reverse("backend:edit", kwargs={"pk": 0}),
         "delete": reverse("backend:delete", kwargs={"pk": 0}),

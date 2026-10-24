@@ -128,15 +128,6 @@ export async function fetchMe(url) {
     }
 }
 
-// Tells the server which list was opened; `url` ends in 0, standing for the key
-export function hit(url, key) {
-    try {
-        navigator.sendBeacon(url.replace(/0$/, key));
-    } catch {
-        // statistics are not worth an error
-    }
-}
-
 export function csrfToken() {
     return document.cookie.match(/(?:^|; )csrftoken=([^;]*)/)?.[1] ?? "";
 }

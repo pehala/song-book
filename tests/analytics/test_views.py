@@ -2,9 +2,11 @@
 
 import json
 from datetime import timedelta
+from unittest import mock
 
 import pytest
-from django.test import Client
+from django.db import DatabaseError, IntegrityError
+from django.db.models import QuerySet
 from django.urls import reverse
 from django.utils.timezone import now
 
@@ -19,10 +21,10 @@ DATA_URL = reverse("analytics:data")
 @pytest.fixture
 def statistics(tenant):
     """Two keys with hits recorded for today and one of them a week ago too"""
-    DayStatistic.objects.create(tenant=tenant, key="rock", hits=5)
-    DayStatistic.objects.create(tenant=tenant, key="folk", hits=3)
     week_ago = DayStatistic.objects.create(tenant=tenant, key="rock", hits=2)
     DayStatistic.objects.filter(pk=week_ago.pk).update(date=now().date() - timedelta(days=7))  # date is auto_now_add
+    DayStatistic.objects.create(tenant=tenant, key="rock", hits=5)
+    DayStatistic.objects.create(tenant=tenant, key="folk", hits=3)
 
 
 def hits(client, **params):
@@ -89,73 +91,68 @@ def test_other_tenants_data_is_not_returned(staff_client, tenant, other_tenant):
     assert sum(data["hits"]) == 0
 
 
-def hit_url(key):
-    return reverse("analytics:hit", kwargs={"key": key})
+SONGS_URL = reverse("chords:songs_api")
 
 
-def test_hit_counts_a_category(anon_client, category):
-    """A same-origin beacon adds a hit under the category slug"""
-    response = anon_client.post(hit_url(category.slug), HTTP_ORIGIN="http://localhost")
+def test_songs_request_counts_a_hit(anon_client, tenant):
+    """Each request for the songs list adds a hit under the `all` key"""
+    anon_client.get(SONGS_URL)
+    anon_client.get(SONGS_URL)
 
-    assert response.status_code == 204
-    assert DayStatistic.objects.get(key=category.slug).hits == 1
-
-
-def test_hit_counts_the_all_songs_list(anon_client, tenant):
-    """The list of all songs has its own key"""
-    anon_client.post(hit_url("all"), HTTP_ORIGIN="http://localhost")
-
-    assert DayStatistic.objects.get(key="all").hits == 1
+    assert DayStatistic.objects.get(tenant=tenant, key="all").hits == 2
 
 
-def test_repeated_hits_accumulate(anon_client, category):
-    """Hits are added to the day's counter"""
-    for _ in range(2):
-        anon_client.post(hit_url(category.slug), HTTP_ORIGIN="http://localhost")
+def test_revalidation_counts_a_hit(anon_client, tenant):
+    """A 304 is an app open too"""
+    etag = anon_client.get(SONGS_URL)["ETag"]
 
-    assert DayStatistic.objects.get(key=category.slug).hits == 2
-
-
-def test_hit_accepts_fetch_metadata_without_origin(anon_client, category):
-    """Browsers that send no Origin still prove a same-origin request through Sec-Fetch-Site"""
-    response = anon_client.post(hit_url(category.slug), HTTP_SEC_FETCH_SITE="same-origin")
-
-    assert response.status_code == 204
+    assert anon_client.get(SONGS_URL, HTTP_IF_NONE_MATCH=etag).status_code == 304
+    assert DayStatistic.objects.get(tenant=tenant, key="all").hits == 2
 
 
-@pytest.mark.parametrize(
-    "headers",
-    [
-        pytest.param({}, id="no origin information"),
-        pytest.param({"HTTP_ORIGIN": "http://evil.example"}, id="foreign origin"),
-        pytest.param({"HTTP_SEC_FETCH_SITE": "cross-site"}, id="cross-site fetch"),
-    ],
-)
-def test_hit_from_elsewhere_is_refused(anon_client, category, headers):
-    """Other sites cannot inflate the statistics"""
-    assert anon_client.post(hit_url(category.slug), **headers).status_code == 403
-    assert not DayStatistic.objects.exists()
+def test_delta_request_counts_a_hit(anon_client, tenant):
+    """A request for what changed since the stored copy is counted"""
+    anon_client.get(SONGS_URL)
+
+    anon_client.get(f"{SONGS_URL}?since=0", HTTP_IF_NONE_MATCH='"other"')
+
+    assert DayStatistic.objects.get(tenant=tenant, key="all").hits == 2
 
 
-def test_hit_needs_no_csrf_token(category, tenant):
-    """The beacon cannot carry a CSRF token"""
-    client = Client(HTTP_HOST="localhost", enforce_csrf_checks=True)
+def test_hits_are_kept_per_tenant(anon_client, tenant, other_tenant):
+    """Only the tenant being served is credited"""
+    anon_client.get(SONGS_URL)
 
-    assert client.post(hit_url(category.slug), HTTP_ORIGIN="http://localhost").status_code == 204
-
-
-def test_hit_for_unknown_key_is_not_found(anon_client, tenant):
-    """Only slugs of the tenant's categories can be counted"""
-    assert anon_client.post(hit_url("nope"), HTTP_ORIGIN="http://localhost").status_code == 404
-    assert not DayStatistic.objects.exists()
+    assert not DayStatistic.objects.filter(tenant=other_tenant).exists()
 
 
-def test_hit_for_category_of_another_tenant_is_not_found(anon_client, other_category):
-    """Keys are validated against the tenant being served"""
-    assert anon_client.post(hit_url(other_category.slug), HTTP_ORIGIN="http://localhost").status_code == 404
+def test_a_statistic_is_unique_per_day(tenant):
+    """Two counters for one key and day cannot exist"""
+    DayStatistic.objects.create(tenant=tenant, key="all")
+
+    with pytest.raises(IntegrityError):
+        DayStatistic.objects.create(tenant=tenant, key="all")
 
 
-def test_hit_is_post_only(anon_client, category):
-    """Reading the beacon url counts nothing"""
-    assert anon_client.get(hit_url(category.slug)).status_code == 405
-    assert not DayStatistic.objects.exists()
+def test_hit_lost_the_race_to_create_the_counter(anon_client, tenant):
+    """A counter created by a concurrent request after the first update is incremented instead"""
+    DayStatistic.objects.create(tenant=tenant, key="all", hits=1)
+    real_update = QuerySet.update
+    calls = []
+
+    def update(queryset, **kwargs):
+        calls.append(kwargs)
+        return 0 if len(calls) == 1 else real_update(queryset, **kwargs)
+
+    with mock.patch.object(QuerySet, "update", autospec=True, side_effect=update):
+        anon_client.get(SONGS_URL)
+
+    assert DayStatistic.objects.get(tenant=tenant, key="all").hits == 2
+
+
+def test_failing_counter_does_not_break_the_songs(anon_client, tenant):
+    """The list is served even when the hit cannot be stored"""
+    with mock.patch.object(DayStatistic.objects, "filter", side_effect=DatabaseError):
+        response = anon_client.get(SONGS_URL)
+
+    assert response.status_code == 200
