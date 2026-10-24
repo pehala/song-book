@@ -65,7 +65,8 @@ location /media/ { expires 30d; add_header Cache-Control "public"; }
 * [gettext](https://www.gnu.org/software/gettext/)
     * Used for compiling locales
 * [Redis](https://redis.io/)
-    * Used as both cache and messaging queue for PDF generation
+    * Used as both cache and messaging queue for PDF generation, only needed when running with
+      `chords/settings/production.py` (`make run`)
 
 ## Getting Started
 
@@ -79,12 +80,16 @@ Install uv and dependencies
     pip install uv
     uv sync --group dev
     
-Then simply initialize the website:
+Then run the development server:
+
+    make dev
+
+It uses `chords/settings/development.py`: SQLite (`db.sqlite3`), `DEBUG`, an in-memory cache and PDF generation inline,
+so there is no Redis to start and no file to generate. It compiles the translations and applies the migrations first.
+
+To run with production-like settings (Redis cache, hashed static files), initialize and use those instead:
 
     make init
-
-You can now run the development server:
-
     make run
 
 
@@ -94,7 +99,7 @@ Song book can generate PDF for entire categories automatically when changed or o
 
 ### Local development
 
-For enabling PDF generation for local development without having a separate worker, I recommend adding this line to `settings.py`:
+`make dev` already generates PDFs without a separate worker. For other settings, add this line to the settings module:
 
 ```yaml
 HUEY = {"immediate": True}
