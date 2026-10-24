@@ -83,7 +83,9 @@ target/
 __pycache__/
 
 .env
-db.sqlite3
+# SQLite databases and their journal/WAL files
+*.sqlite3
+*.sqlite3-*
 /chords/static/
 /chords/settings/production.py
 /chords/media
