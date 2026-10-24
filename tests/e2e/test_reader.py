@@ -361,6 +361,35 @@ def test_changed_songs_replace_the_stored_ones(page, library):
     expect(page.locator("details.song > summary").nth(1)).to_contain_text("Hrad Karlštejn")
 
 
+def test_only_the_changed_song_is_downloaded(page, library):
+    """A returning reader asks for what changed since its copy, and gets the edit and an added song merged in"""
+    for category in library.category_set.all():
+        category.song_set.update(updated_at="2020-01-01T00:00:00Z")
+    page.goto("/categories/cs")
+    expect(songs(page)).to_have_count(3)
+    page.wait_for_load_state("networkidle")  # the in-memory database is locked while the server reads it
+    category = library.category_set.get(slug="cs")
+    song = category.song_set.get(name="Hrad")
+    song.name = "Hrad Karlštejn"
+    song.save()
+    category.song_set.create(name="Nová", text="text")
+
+    changed = []
+
+    def record(route):
+        # the browser drops the body of a streamed response, so fetch it here and hand it on
+        response = route.fetch()
+        changed.append(len(response.json()["changed"]))
+        route.fulfill(response=response)
+
+    page.route(lambda url: "since=" in url, record)
+    page.reload()
+
+    expect(songs(page)).to_have_count(4)
+    expect(page.locator("details.song > summary").nth(1)).to_contain_text("Hrad Karlštejn")
+    assert changed == [2]
+
+
 def test_songs_are_kept_for_offline_use(page, context, library):
     """After one visit the reader opens without any connection"""
     page.goto("/categories/cs")
