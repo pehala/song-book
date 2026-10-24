@@ -41,14 +41,25 @@ main {
 }
 
 .search {
+    position: sticky;
+    top: 0;
+    z-index: 5;
     display: flex;
     align-items: center;
     gap: .5rem;
-    margin: 1rem 0;
+    padding: .75rem 0;
+    background: var(--bg);
+}
+
+.search .count {
+    color: var(--muted);
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
 }
 
 .search input {
     flex: 1;
+    min-width: 0;
     font: inherit;
     min-height: 2.75rem;
     padding: .375rem .75rem;
