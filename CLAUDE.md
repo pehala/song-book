@@ -260,8 +260,9 @@ to the service user); containers have `Network=none` and talk over unix sockets 
   `make check-messages` (part of `commit-acceptance`) regenerates `djangojs.po` and fails when it differs from
   the committed file or has an untranslated string.
 - Every user-visible string goes through `gettext_lazy`/`gettext_noop`. Czech is the default
-  language; `make check-fuzzy` fails the build if `chords/locale/cs/LC_MESSAGES/django.po`
-  contains fuzzy entries, so run `make messages` and resolve them.
+  language; `make check-messages` also regenerates `chords/locale/cs/LC_MESSAGES/django.po` and fails when it
+  differs from the committed file, and `make check-fuzzy` fails the build if either catalogue contains fuzzy
+  entries, so run `make messages`, resolve them and commit both files.
 - ruff, line length 120, target `py314` (`.python-version` is 3.14).
 - Dev dependencies: `uv add --group dev <pkg>`.
 - One logical change per commit.
