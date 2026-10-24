@@ -52,11 +52,11 @@ def test_links_follow_assignment_and_edits(tenant, other_tenant):
 def test_categories_follow_all_songs_category_flag(tenant):
     tenant.all_songs_category = True
     tenant.save()
-    assert "All Songs" in titles(CATEGORIES_MENU, tenant)
+    assert "Všechno" in titles(CATEGORIES_MENU, tenant)
 
     tenant.all_songs_category = False
     tenant.save()
-    assert "All Songs" not in titles(CATEGORIES_MENU, tenant)
+    assert "Všechno" not in titles(CATEGORIES_MENU, tenant)
 
 
 @pytest.mark.django_db
