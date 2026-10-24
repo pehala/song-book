@@ -133,8 +133,9 @@ templates and Bootstrap from the CDN.
 
 - Some of those server pages have their content drawn by Preact too: the template keeps the title, renders an
   empty `#page` and the page's data as `page-data` JSON and loads a page entry (`progress.js` for
-  `/pdf/files/wait/<pk>`), which calls `mountPage` from `page.js`. The data names the JSON endpoints the page
-  calls, and the strings are `_("…")` msgids of the reader's catalogue, translated into the language of `<html lang>`.
+  `/pdf/files/wait/<pk>`, `analytics.js` for `/analytics/`), which calls `mountPage` from `page.js`. The data
+  names the JSON endpoints the page calls, and the strings are `_("…")` msgids of the reader's catalogue,
+  translated into the language of `<html lang>`.
 - The header (`header.js`: `SiteHeader`, which draws the bar, the notices and the QR dialog from the state of
   `useSiteHeader`) is one Preact component used twice: by the
   reader and, through `site.js`, by every Bootstrap page. `base/index.html` has an empty `#site-header`, the

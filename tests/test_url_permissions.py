@@ -40,6 +40,7 @@ LOCAL_ADMIN_URLS = [
     url("pdf:templates:assign", "manual_template"),
     url("pdf:templates:generate", "manual_template"),
     url("analytics:index"),
+    url("analytics:data"),
     url("tenants:edit"),
 ]
 
