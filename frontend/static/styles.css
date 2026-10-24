@@ -9,20 +9,6 @@
  [data-bs-theme="dark"] {
      --bs-body-bg: #000000;
 }
- [data-bs-theme="dark"] .navbar {
-     background: #212529;
-}
- .navbar {
-     --bs-navbar-color: var(--chords-default-color);
-     --bs-navbar-hover-color: var(--chords-highlight-color);
-     --bs-navbar-active-color: var(--chords-highlight-color);
-     --bs-navbar-brand-color: var(--chords-default-color);
-     --bs-navbar-brand-hover-color: var(--chords-highlight-color);
-}
- .dropdown-menu {
-     --bs-dropdown-link-color: var(--chords-default-color);
-     --bs-dropdown-link-hover-color: var(--chords-highlight-color);
-}
  .chord {
      font-weight: bold;
      font-size: 100%;
@@ -31,15 +17,6 @@
  hr {
      background-color: var(--bs-border-color);
      height: 2px;
-}
- .custom-link {
-     color: var(--chords-default-color);
-}
- .custom-link:hover {
-     color: var(--chords-highlight-color);
-}
- .small-hr {
-     height: 1px;
 }
  .markdownx-editor {
     height: 100%;
