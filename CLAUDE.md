@@ -145,11 +145,11 @@ templates and Bootstrap from the CDN.
   every route and every user. `RecognizeTenantMiddleware` resolves `is_localadmin` lazily for the
   same reason.
 - Modules are in `frontend/static/app/` (`app.js` entry, `site.js` entry for server pages, `chrome.js`, `options.js`, `songs.js`, `store.js`,
-  `i18n.js`, `qr.js`, `vendor/preact-htm.module.js`, `header.css`, `app.css`) and listed once in
+  `i18n.js`, `vendor/preact-htm.module.js`, `vendor/qr.mjs`, `header.css`, `app.css`) and listed once in
   `frontend.views` (`MODULES`, `SITE_ENTRY`, `STYLESHEETS`), which feeds the preload links and the service
   worker's precache. A new file must be added there. Keep modules
   free of import cycles (hashing needs a DAG) and `import()` out of modules with nested template
-  literals: `ManifestStorage` cannot see past them, which is why `qr.js` exists.
+  literals: `ManifestStorage` cannot see past them.
 - `/api/me` (`MeView`) is the only place that knows the user: `auth`, `username`, `localadmin`,
   `superuser`, plus the pending `django.contrib.messages`, which it drains; the CRUD views still redirect
   to the shell and the toast arrives through here. It is `private, no-store` and sets the CSRF cookie.

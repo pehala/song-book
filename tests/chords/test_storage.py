@@ -16,7 +16,7 @@ def test_module_imports_are_rewritten():
 
 @pytest.mark.django_db
 def test_collectstatic_hashes_module_imports(tmp_path):
-    """collectstatic produces an app.js whose static and dynamic imports point at hashed files."""
+    """collectstatic produces modules whose imports point at hashed files."""
     storages = {
         "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
         "staticfiles": {"BACKEND": "chords.storage.ManifestStorage"},
@@ -26,11 +26,11 @@ def test_collectstatic_hashes_module_imports(tmp_path):
         call_command("collectstatic", interactive=False, verbosity=0)
         manifest = json.loads((static_root / "staticfiles.json").read_text())["paths"]
         hashed_app = (static_root / manifest["app/app.js"]).read_text()
-        hashed_qr_module = (static_root / manifest["app/qr.js"]).read_text()
+        hashed_chrome = (static_root / manifest["app/chrome.js"]).read_text()
         hashed_songs = manifest["app/songs.js"].rsplit("/", 1)[-1]
-        hashed_qr = manifest["js/qr.mjs"].rsplit("/", 1)[-1]
+        hashed_qr = manifest["app/vendor/qr.mjs"].rsplit("/", 1)[-1]
         hashed_vendor = manifest["app/vendor/preact-htm.module.js"].rsplit("/", 1)[-1]
         assert hashed_songs != "songs.js"
         assert f'from "./{hashed_songs}"' in hashed_app
         assert f'from "./vendor/{hashed_vendor}"' in hashed_app
-        assert f'import("../js/{hashed_qr}")' in hashed_qr_module
+        assert f'from "./vendor/{hashed_qr}"' in hashed_chrome
