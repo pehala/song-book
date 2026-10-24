@@ -6,6 +6,8 @@ import pytest
 from django.urls import reverse
 from playwright.sync_api import expect
 
+from analytics.models import DayStatistic
+
 
 @pytest.fixture(autouse=True)
 def offline_cdn(page):
@@ -58,3 +60,76 @@ def test_progress_is_polled_from_the_server(page, library, pdf_file):
 
     expect(page.get_by_role("status").filter(has_text="Waiting for start")).to_be_visible()
     expect(page.get_by_role("progressbar")).to_have_attribute("aria-valuenow", "0")
+
+
+# Stands in for Chart.js: keeps what the page draws in window.chart
+FAKE_CHART = """
+window.Chart = class {
+    constructor(canvas, config) {
+        Object.assign(this, config);
+        window.chart = this;
+    }
+    update() {}
+    destroy() {}
+};
+"""
+
+
+@pytest.fixture
+def chart(page):
+    page.route(
+        "https://cdn.jsdelivr.net/npm/chart.js@*/**",
+        lambda route: route.fulfill(body=FAKE_CHART, content_type="application/javascript"),
+    )
+
+
+@pytest.fixture
+def statistics(library):
+    DayStatistic.objects.create(tenant=library, key="cs", hits=5)
+    DayStatistic.objects.create(tenant=library, key="all", hits=3)
+
+
+def wait_until(page, expression):
+    """Polls through evaluate: wait_for_function would need the eval the page's CSP forbids"""
+    for _ in range(50):
+        if page.evaluate(expression):
+            return
+        page.wait_for_timeout(100)
+    raise AssertionError(f"{expression} never held")
+
+
+def drawn(page):
+    return page.evaluate("({labels: window.chart?.data.labels, hits: window.chart?.data.datasets[0].data})")
+
+
+def test_analytics_draws_the_hits(page, statistics, staff_user, sign_in, chart):
+    """The chart shows a week of hits of every page, today last"""
+    sign_in(staff_user)
+    page.goto(reverse("analytics:index"))
+
+    expect(page.get_by_label("Keys").locator("option")).to_have_text(["All", "All songs", "Česky"])
+    wait_until(page, "window.chart !== undefined")
+    assert len(drawn(page)["labels"]) == 7
+    assert drawn(page)["hits"][-1] == 8
+
+
+def test_analytics_follows_the_choices(page, statistics, staff_user, sign_in, chart):
+    """Picking a key and a range redraws the chart with their hits"""
+    sign_in(staff_user)
+    page.goto(reverse("analytics:index"))
+    expect(page.get_by_label("Keys").locator("option")).to_have_count(3)
+
+    page.get_by_label("Keys").select_option(label="Česky")
+    wait_until(page, "window.chart?.data.datasets[0].data.at(-1) === 5")
+    page.get_by_label("Date range").select_option(label="Month")
+    wait_until(page, "window.chart?.data.labels.length === 30")
+
+    assert drawn(page)["hits"][-1] == 5
+
+
+def test_analytics_without_chart_library(page, statistics, staff_user, sign_in):
+    """Without the CDN the page says why there is no chart"""
+    sign_in(staff_user)
+    page.goto(reverse("analytics:index"))
+
+    expect(page.get_by_role("alert")).to_have_text("The chart could not be loaded")
