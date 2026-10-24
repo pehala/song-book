@@ -50,6 +50,7 @@ function App() {
     const [query, setQuery] = useState("");
     const [openId, setOpenId] = useState(null);
     const [scrolled, setScrolled] = useState(false);
+    const [scrollToOpen, setScrollToOpen] = useState(false);
     const site = useSiteHeader({boot});
     const {_, toast} = site;
     const route = useMemo(() => parseRoute(path), [path]);
@@ -141,6 +142,22 @@ function App() {
     const rows = useMemo(() => (songs && route.kind !== "missing" ? routeRows(songs, route) : []), [songs, route]);
     const visible = useMemo(() => filterRows(rows, query), [rows, query]);
 
+    // A random song of the list as it is shown, other than the one already open
+    const openRandom = useCallback(() => {
+        const others = visible.filter(({song}) => song.id !== openId);
+        if (others.length) {
+            setOpenId(others[Math.floor(Math.random() * others.length)].song.id);
+            setScrollToOpen(true);
+        }
+    }, [visible, openId]);
+
+    useEffect(() => {
+        if (scrollToOpen) {
+            setScrollToOpen(false);
+            document.querySelector("details.song[open]")?.scrollIntoView({behavior: scrollBehavior(), block: "start"});
+        }
+    }, [scrollToOpen]);
+
     let content;
     if (route.kind === "missing") {
         content = html`<p class="empty">${_("This category does not exist.")} <${Link} to=${boot.index} onNavigate=${navigate}>${_("Back to homepage")}<//></p>`;
@@ -154,6 +171,7 @@ function App() {
                 <label for="search">${_("Search")}</label>
                 <input id="search" type="search" placeholder=${_("Number, text or author")} value=${query} onInput=${event => setQuery(event.target.value)} />
                 ${query.trim() && html`<output class="count" for="search">${visible.length} / ${rows.length}</output>`}
+                <button class="sb-btn" title=${_("Random song")} aria-label=${_("Random song")} disabled=${visible.length === 0} onClick=${openRandom}><${Icon} name="shuffle" /></button>
             </div>
             <${SongList} rows=${visible} openId=${openId} setOpen=${setOpenId} me=${site.me} urls=${urls} _=${_} />`;
     }
@@ -162,7 +180,7 @@ function App() {
         <${SiteHeader} site=${site} navigate=${navigate} onReload=${reload} />
         ${songs !== null && progress && html`<${Progress} progress=${progress} label=${_("Updating songs…")} retryLabel=${_("Fetching the whole list…")} />`}
         <main>${content}</main>
-        ${scrolled && html`<button class="sb-btn sb-primary fab" style="top:20px" title=${_("Back to top")} aria-label=${_("Back to top")} onClick=${() => scrollTo({top: 0, behavior: scrollBehavior()})}><${Icon} name="up" /></button>`}
+        ${scrolled && html`<button class="sb-btn sb-primary fab fab-top" title=${_("Back to top")} aria-label=${_("Back to top")} onClick=${() => scrollTo({top: 0, behavior: scrollBehavior()})}><${Icon} name="up" /></button>`}
         ${openId !== null && html`<button class="sb-btn sb-primary fab" style="bottom:20px" title=${_("Scroll down")} aria-label=${_("Scroll down")} onClick=${scrollDown}><${Icon} name="down" /></button>`}`;
 }
 

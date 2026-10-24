@@ -70,6 +70,7 @@ main {
 }
 
 .song {
+    scroll-margin-top: calc(var(--tap) + 1.5rem);
     padding-left: .5rem;
     border-bottom: 1px solid var(--line);
     border-left: .25rem solid transparent;
@@ -302,4 +303,8 @@ rt.chord {
     right: 20px;
     z-index: var(--z-fab);
     font-size: 1.25rem;
+}
+
+.fab-top {
+    top: calc(var(--tap) + 2rem);
 }

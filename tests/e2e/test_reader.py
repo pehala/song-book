@@ -332,6 +332,58 @@ def test_one_song_is_open_at_a_time(page, library):
     expect(songs(page).nth(1)).to_have_attribute("open", "")
 
 
+def test_random_song_button_opens_a_song_of_the_list(page, library):
+    """The button opens one song of the category, and another one each time"""
+    page.goto("/categories/cs")
+
+    page.get_by_role("button", name="Random song").click()
+
+    expect(page.locator("details.song[open]")).to_have_count(1)
+    first = page.locator("details.song[open] h2").inner_text()
+    page.get_by_role("button", name="Random song").click()
+    expect(page.locator("details.song[open]")).to_have_count(1)
+    expect(page.locator("details.song[open] h2")).not_to_have_text(first)
+
+
+def test_random_song_button_follows_the_search(page, library):
+    """Only the songs left by the search are drawn from, and the button is off when none is"""
+    page.goto("/categories/cs")
+    page.get_by_label("Search").fill("hrad")
+
+    page.get_by_role("button", name="Random song").click()
+
+    expect(page.locator("details.song[open] h2")).to_have_text("Hrad")
+    page.get_by_label("Search").fill("zzzz")
+    expect(page.get_by_role("button", name="Random song")).to_be_disabled()
+
+
+def test_floating_buttons_stay_clear_of_the_search_bar(page, library):
+    """Back to top sits below the search bar and, like Scroll down, does not cover the random song button"""
+    page.goto("/categories/cs")
+    songs(page).nth(0).locator("summary").click()
+    page.evaluate("document.querySelector('main').style.minHeight = '4000px'")
+    page.evaluate("scrollTo(0, 1000)")
+    boxes = {
+        name: page.get_by_role("button", name=name).bounding_box()
+        for name in ("Random song", "Back to top", "Scroll down")
+    }
+
+    def overlap(one, other):
+        return (
+            one["x"] < other["x"] + other["width"]
+            and other["x"] < one["x"] + one["width"]
+            and (one["y"] < other["y"] + other["height"] and other["y"] < one["y"] + one["height"])
+        )
+
+    viewport = page.viewport_size
+    for name, box in boxes.items():
+        assert box["x"] >= 0 and box["x"] + box["width"] <= viewport["width"], name
+        assert box["y"] >= 0 and box["y"] + box["height"] <= viewport["height"], name
+    assert not overlap(boxes["Random song"], boxes["Back to top"])
+    assert not overlap(boxes["Random song"], boxes["Scroll down"])
+    assert not overlap(boxes["Back to top"], boxes["Scroll down"])
+
+
 def test_capo_and_video_link_are_shown(page, library):
     """Songs with a capo or a link say so"""
     page.goto("/categories/cs")
