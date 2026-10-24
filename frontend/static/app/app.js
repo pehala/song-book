@@ -25,6 +25,10 @@ function parseRoute(path) {
     return category ? {kind: "category", key: slug, category} : {kind: "missing", key: path};
 }
 
+function scrollBehavior() {
+    return matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+}
+
 // Scrolls the open song by about a screen: to the next paragraph below the first one fully in view
 function scrollDown() {
     const paragraphs = [...document.querySelectorAll(".song-text p")];
@@ -34,7 +38,7 @@ function scrollDown() {
     };
     const index = paragraphs.findIndex(inView);
     if (index >= 0 && index < paragraphs.length - 1 && !inView(paragraphs[paragraphs.length - 1])) {
-        scrollBy({top: 0.8 * paragraphs[index + 1].getBoundingClientRect().top, behavior: "smooth"});
+        scrollBy({top: 0.8 * paragraphs[index + 1].getBoundingClientRect().top, behavior: scrollBehavior()});
     }
 }
 
@@ -141,7 +145,7 @@ function App() {
     return html`
         <${SiteHeader} site=${site} navigate=${navigate} />
         <main>${content}</main>
-        ${scrolled && html`<button class="sb-btn sb-primary fab" style="top:20px" title=${t("top")} aria-label=${t("top")} onClick=${() => scrollTo({top: 0, behavior: "smooth"})}><${Icon} name="up" /></button>`}
+        ${scrolled && html`<button class="sb-btn sb-primary fab" style="top:20px" title=${t("top")} aria-label=${t("top")} onClick=${() => scrollTo({top: 0, behavior: scrollBehavior()})}><${Icon} name="up" /></button>`}
         ${openId !== null && html`<button class="sb-btn sb-primary fab" style="bottom:20px" title=${t("down")} aria-label=${t("down")} onClick=${scrollDown}><${Icon} name="down" /></button>`}`;
 }
 
