@@ -16,81 +16,77 @@ SHOW_URL = reverse("analytics:index")
 DATA_URL = reverse("analytics:data")
 
 
-def timestamp(days_ago=0):
-    return str(int((now() - timedelta(days=days_ago)).timestamp()))
-
-
 @pytest.fixture
 def statistics(tenant):
-    """Two keys with hits recorded for today"""
+    """Two keys with hits recorded for today and one of them a week ago too"""
     DayStatistic.objects.create(tenant=tenant, key="rock", hits=5)
     DayStatistic.objects.create(tenant=tenant, key="folk", hits=3)
+    week_ago = DayStatistic.objects.create(tenant=tenant, key="rock", hits=2)
+    DayStatistic.objects.filter(pk=week_ago.pk).update(date=now().date() - timedelta(days=7))  # date is auto_now_add
 
 
-def test_show_page_lists_recorded_keys(staff_client, statistics):
-    """The graph page offers every key that has data"""
-    keys = list(staff_client.get(SHOW_URL).context["keys"])
-
-    assert sorted(keys) == ["folk", "rock"]
-
-
-@pytest.mark.parametrize("name", ["now", "week", "month", "year"])
-def test_show_page_offers_date_ranges(staff_client, statistics, name):
-    """The page provides the boundaries of every preset range"""
-    assert staff_client.get(SHOW_URL).context[name] is not None
+def hits(client, **params):
+    response = client.get(DATA_URL, params)
+    assert response.status_code == 200
+    return json.loads(response.content)
 
 
-def test_show_page_ignores_other_tenants(staff_client, other_tenant):
-    """Keys recorded for another tenant are not offered"""
-    DayStatistic.objects.create(tenant=other_tenant, key="foreign", hits=1)
+def test_show_page_tells_the_browser_where_the_data_is(staff_client):
+    """The graph is drawn in the browser from the data endpoint"""
+    response = staff_client.get(SHOW_URL)
 
-    assert list(staff_client.get(SHOW_URL).context["keys"]) == []
+    assert response.context["page"] == {"data": DATA_URL}
+    assert b'<script id="page-data" type="application/json">' in response.content
 
 
-@pytest.mark.parametrize(
-    "payload",
-    [
-        pytest.param({}, id="nothing submitted"),
-        pytest.param({"key": "rock"}, id="without start_date"),
-        pytest.param({"start_date": "0"}, id="without key"),
-    ],
-)
-def test_incomplete_requests_are_rejected(staff_client, statistics, payload):
-    """Both the start date and the key are mandatory"""
-    assert staff_client.post(DATA_URL, payload).status_code == 400
+def test_data_lists_recorded_keys(staff_client, statistics):
+    """Every key that has data is offered"""
+    assert hits(staff_client)["keys"] == ["folk", "rock"]
+
+
+def test_data_covers_every_day_of_the_range(staff_client, statistics):
+    """Days without hits are zero and today is the last day"""
+    data = hits(staff_client, days=30)
+
+    assert len(data["dates"]) == len(data["hits"]) == 30
+    assert data["dates"][-1] == now().date().isoformat()
+    assert data["hits"][-1] == 8
+    assert data["hits"][-8] == 2
+    assert sum(data["hits"]) == 10
+
+
+def test_week_is_the_default_range(staff_client, statistics):
+    """The hits of a week ago are one day too old for the default range"""
+    data = hits(staff_client)
+
+    assert len(data["dates"]) == 7
+    assert sum(data["hits"]) == 8
 
 
 def test_hits_are_returned_for_a_single_key(staff_client, statistics):
     """Only the requested key is summed up"""
-    response = staff_client.post(DATA_URL, {"start_date": timestamp(days_ago=1), "key": "rock"})
-
-    assert list(json.loads(response.content).values()) == [5]
+    assert hits(staff_client, key="rock", days=30)["hits"][-1] == 5
 
 
 def test_empty_key_sums_up_everything(staff_client, statistics):
     """An empty key aggregates across all keys"""
-    response = staff_client.post(DATA_URL, {"start_date": timestamp(days_ago=1), "key": ""})
-
-    assert list(json.loads(response.content).values()) == [8]
+    assert hits(staff_client, key="")["hits"][-1] == 8
 
 
-def test_end_date_limits_the_range(staff_client, statistics):
-    """Days after the end date are left out"""
-    response = staff_client.post(
-        DATA_URL,
-        {"start_date": timestamp(days_ago=10), "end_date": timestamp(days_ago=5), "key": "rock"},
-    )
-
-    assert json.loads(response.content) == {}
+@pytest.mark.parametrize("days", ["0", "-1", "3661", "week"])
+def test_invalid_range_is_rejected(staff_client, statistics, days):
+    """The range is a positive number of days with a limit"""
+    assert staff_client.get(DATA_URL, {"days": days}).status_code == 400
 
 
-def test_other_tenants_data_is_not_returned(staff_client, other_tenant):
-    """Statistics are scoped to the tenant being served"""
+def test_other_tenants_data_is_not_returned(staff_client, tenant, other_tenant):
+    """Statistics and keys are scoped to the tenant being served"""
     DayStatistic.objects.create(tenant=other_tenant, key="rock", hits=9)
 
-    response = staff_client.post(DATA_URL, {"start_date": timestamp(days_ago=1), "key": "rock"})
+    data = hits(staff_client, key="rock")
 
-    assert json.loads(response.content) == {}
+    assert data["keys"] == []
+    assert sum(data["hits"]) == 0
 
 
 def hit_url(key):
