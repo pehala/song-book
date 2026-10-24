@@ -212,6 +212,9 @@ itself (non-archived songs first, archived ones appended).
   `store.js` (`mergeDelta`) merges the delta into the stored list, asking from 60 s before the
   stored copy's `Date`, and falls back to the whole list when the delta does not fit. The shell therefore does
   not `preload` `/api/songs`.
+  Both response kinds carry the uncompressed byte length in `X-Songs-Size`; `store.js` reads the body in chunks and
+  reports `{loaded, total}`, which `app.js` draws as a progress bar while no list is stored and as a thin line along
+  the top while a stored list is being brought up to date (hidden for the first 300 ms).
 - `ETagJsonMixin` hashes the cached JSON (blake2b) into an ETag and returns 304 via
   `get_conditional_response`, with `Cache-Control: no-cache`.
 

@@ -226,20 +226,52 @@ rt.chord {
     padding: 2rem 0;
 }
 
-.spinner {
-    width: 2rem;
-    height: 2rem;
-    margin: 4rem auto;
-    border: .25rem solid var(--line);
-    border-top-color: var(--accent);
-    border-radius: 50%;
+.progress {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: var(--z-panel);
+    height: 3px;
+    overflow: hidden;
     opacity: 0;
-    animation: spin .75s linear infinite, show 0s .4s forwards;
+    animation: show 0s .3s forwards;
 }
 
-@keyframes spin {
+.progress.centered {
+    position: static;
+    width: min(20rem, 80%);
+    height: .5rem;
+    margin: 4rem auto .5rem;
+    border-radius: var(--radius);
+    background: var(--line);
+}
+
+.progress-caption {
+    margin: 0 0 4rem;
+    text-align: center;
+    color: var(--muted);
+}
+
+.progress > div {
+    height: 100%;
+    background: var(--accent);
+    transform-origin: left;
+    transition: transform .2s linear;
+}
+
+.progress.indeterminate > div {
+    width: 40%;
+    animation: slide 1.2s ease-in-out infinite;
+}
+
+@keyframes slide {
+    from {
+        transform: translateX(-100%);
+    }
+
     to {
-        transform: rotate(360deg);
+        transform: translateX(250%);
     }
 }
 
@@ -255,8 +287,13 @@ rt.chord {
         transition: none;
     }
 
-    .spinner {
-        animation: show 0s .4s forwards;
+    .progress > div {
+        transition: none;
+    }
+
+    .progress.indeterminate > div {
+        width: 100%;
+        animation: none;
     }
 }
 
