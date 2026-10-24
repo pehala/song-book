@@ -156,7 +156,7 @@ msgstr "PDF"
 
 #: frontend/static/app/header.js:152
 msgid "See also"
-msgstr "Jiné stránky"
+msgstr "Podobné stránky"
 
 #: frontend/static/app/header.js:155
 msgid "Songs"
