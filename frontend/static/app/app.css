@@ -135,9 +135,26 @@ main {
     margin: .25rem 0 .5rem;
 }
 
-.tools output {
-    min-width: 2em;
+.stepper {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--control);
+    border-radius: .375rem;
+}
+
+.stepper .sb-btn {
+    border: 0;
+}
+
+.stepper output {
+    min-width: 2.5em;
     text-align: center;
+    font-variant-numeric: tabular-nums;
+}
+
+.sb-ghost {
+    border-color: transparent;
+    color: var(--muted);
 }
 
 .tools .gap {
@@ -145,7 +162,11 @@ main {
 }
 
 .capo {
-    margin: .5rem 0 0 1rem;
+    padding: .25rem .75rem;
+    border-radius: 1rem;
+    background: var(--line);
+    font-weight: 600;
+    white-space: nowrap;
 }
 
 .song-text {
@@ -153,6 +174,9 @@ main {
     column-count: var(--chords-grid-columns);
     column-gap: 5em;
     width: fit-content;
+    max-width: 100%;
+    font-size: 1.0625rem;
+    line-height: 1.9;
 }
 
 .song-text p {
@@ -160,8 +184,12 @@ main {
 }
 
 .chord {
+    font-size: .95em;
     font-weight: 700;
-    vertical-align: super;
+    color: var(--accent);
+    position: relative;
+    top: -.5em;
+    line-height: 0;
 }
 
 .hide-chords .chord {
