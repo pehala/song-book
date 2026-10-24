@@ -22,9 +22,9 @@ check-fuzzy:
 		if [ ! -z "$$(msgattrib $$file --only-fuzzy)" ]; then echo "$$file contains fuzzy strings" && exit 1; fi; \
 	done
 
-# Fails when the reader's catalogue is not what `make messages-js` produces or has an untranslated string
-check-messages: messages-js
-	@ git diff --exit-code -I'^"POT-Creation-Date' -- chords/locale/cs/LC_MESSAGES/djangojs.po || { echo "run make messages and commit the result"; exit 1; }
+# Fails when a catalogue is not what `make messages` produces, or the reader's one has an untranslated string
+check-messages: messages
+	@ git diff --exit-code -I'^"POT-Creation-Date' -- chords/locale/cs/LC_MESSAGES/django.po chords/locale/cs/LC_MESSAGES/djangojs.po || { echo "run make messages and commit the result"; exit 1; }
 	@ if [ ! -z "$$(msgattrib chords/locale/cs/LC_MESSAGES/djangojs.po --untranslated)" ]; then echo "djangojs.po contains untranslated strings" && exit 1; fi
 
 messages: messages-js
