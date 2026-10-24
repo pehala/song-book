@@ -1,7 +1,7 @@
-.PHONY: commit-acceptance pylint black reformat pre-commit locale migrations deploy check-fuzzy run test coverage e2e \
+.PHONY: commit-acceptance pylint black reformat pre-commit locale migrations deploy check-fuzzy check-messages messages messages-js run test coverage e2e \
 	image migrate prerender cache_clear compilemessages collectstatic compress_static export_static start worker
 
-commit-acceptance: ruff reformat check-fuzzy
+commit-acceptance: ruff reformat check-fuzzy check-messages
 pre-commit: messages migrations reformat
 
 # The container image sets RUN empty: its virtualenv is already on PATH and it has no uv
@@ -17,10 +17,21 @@ reformat:
 	$(RUN) ruff format .
 
 check-fuzzy:
-	@ if [ ! -z "$$(msgattrib chords/locale/cs/LC_MESSAGES/django.po --only-fuzzy)" ]; then echo "chords/locale/cs/LC_MESSAGES/django.po contains fuzzy strings" && exit 1; fi
+	@ for po in django djangojs; do \
+		file=chords/locale/cs/LC_MESSAGES/$$po.po; \
+		if [ ! -z "$$(msgattrib $$file --only-fuzzy)" ]; then echo "$$file contains fuzzy strings" && exit 1; fi; \
+	done
 
-messages:
+# Fails when the reader's catalogue is not what `make messages-js` produces or has an untranslated string
+check-messages: messages-js
+	@ git diff --exit-code -I'^"POT-Creation-Date' -- chords/locale/cs/LC_MESSAGES/djangojs.po || { echo "run make messages and commit the result"; exit 1; }
+	@ if [ ! -z "$$(msgattrib chords/locale/cs/LC_MESSAGES/djangojs.po --untranslated)" ]; then echo "djangojs.po contains untranslated strings" && exit 1; fi
+
+messages: messages-js
 	$(MANAGE) makemessages -l cs
+
+messages-js:
+	$(MANAGE) makemessages -l cs -d djangojs -i "*/vendor/*" -i "backend/static/*" -i "pdf/static/*" -i "*/templates/*" -i "staticfiles/*"
 
 migrations:
 	$(MANAGE) makemigrations

@@ -54,28 +54,28 @@ export function filterRows(rows, query) {
     });
 }
 
-function SongBody({song, me, urls, t}) {
+function SongBody({song, me, urls, _}) {
     const [shift, setShift] = useState(0);
     const text = useMemo(() => transposeHtml(song.text, shift), [song.text, shift]);
     const next = "?next=" + encodeURIComponent(location.pathname);
     return html`
         <div class="tools">
             ${song.link && html`<a class="sb-btn sb-primary" href=${song.link} title="YouTube"><${Icon} name="play" /></a>`}
-            <span>${t("transpose")}</span>
-            <button class="sb-btn" aria-label=${t("transpose") + " −1"} onClick=${() => setShift(Math.max(-11, shift - 1))}><${Icon} name="minus" /></button>
-            <output aria-label=${t("transpose")}>${shift > 0 ? "+" + shift : shift}</output>
-            <button class="sb-btn" aria-label=${t("transpose") + " +1"} onClick=${() => setShift(Math.min(11, shift + 1))}><${Icon} name="plus" /></button>
+            <span>${_("Transpose")}</span>
+            <button class="sb-btn" aria-label=${_("Transpose") + " −1"} onClick=${() => setShift(Math.max(-11, shift - 1))}><${Icon} name="minus" /></button>
+            <output aria-label=${_("Transpose")}>${shift > 0 ? "+" + shift : shift}</output>
+            <button class="sb-btn" aria-label=${_("Transpose") + " +1"} onClick=${() => setShift(Math.min(11, shift + 1))}><${Icon} name="plus" /></button>
             ${me?.localadmin && html`
                 <span class="gap"></span>
-                <a class="sb-btn" href=${urls.edit.replace(/0$/, song.id) + next}><${Icon} name="edit" /> ${t("edit")}</a>
-                <a class="sb-btn" href=${urls.delete.replace(/0$/, song.id) + next}><${Icon} name="trash" /> ${t("delete")}</a>`}
+                <a class="sb-btn" href=${urls.edit.replace(/0$/, song.id) + next}><${Icon} name="edit" /> ${_("Edit")}</a>
+                <a class="sb-btn" href=${urls.delete.replace(/0$/, song.id) + next}><${Icon} name="trash" /> ${_("Delete")}</a>`}
         </div>
-        ${song.capo > 0 && html`<h3 class="capo">${t("capo")} ${song.capo}</h3>`}
+        ${song.capo > 0 && html`<h3 class="capo">${_("Capo")} ${song.capo}</h3>`}
         <div class="song-text" dangerouslySetInnerHTML=${{__html: text}}></div>`;
 }
 
 // The body stays drawn while the details element animates shut
-function SongRow({song, number, open, setOpen, me, urls, t}) {
+function SongRow({song, number, open, setOpen, me, urls, _}) {
     const [lingering, setLingering] = useState(false);
     useEffect(() => {
         if (open) {
@@ -96,15 +96,15 @@ function SongRow({song, number, open, setOpen, me, urls, t}) {
                 <h2>${song.name}</h2>
                 ${song.author && html`<small>${song.author}</small>`}
             </summary>
-            ${(open || lingering) && html`<${SongBody} song=${song} me=${me} urls=${urls} t=${t} />`}
+            ${(open || lingering) && html`<${SongBody} song=${song} me=${me} urls=${urls} _=${_} />`}
         </details>`;
 }
 
-export function SongList({rows, openId, setOpen, me, urls, t}) {
+export function SongList({rows, openId, setOpen, me, urls, _}) {
     if (rows.length === 0) {
-        return html`<p class="empty">${t("noResults")}</p>`;
+        return html`<p class="empty">${_("No songs found")}</p>`;
     }
     return rows.map(
-        ({song, number}) => html`<${SongRow} key=${song.id} song=${song} number=${number} open=${openId === song.id} setOpen=${setOpen} me=${me} urls=${urls} t=${t} />`
+        ({song, number}) => html`<${SongRow} key=${song.id} song=${song} number=${number} open=${openId === song.id} setOpen=${setOpen} me=${me} urls=${urls} _=${_} />`
     );
 }

@@ -26,7 +26,7 @@ make worker                         # Huey worker for PDF generation
 make test                           # uv run --group dev pytest tests/
 make coverage                       # the same, with a branch coverage report
 make e2e                            # Playwright tests of the reader (needs `uv run playwright install --with-deps chromium`)
-make commit-acceptance              # what CI gates on: ruff --fix + ruff format + check-fuzzy
+make commit-acceptance              # what CI gates on: ruff --fix + ruff format + check-fuzzy + check-messages
 make migrations                     # makemigrations
 make messages                       # makemessages -l cs
 make deploy                         # migrate + prerender + compilemessages + collectstatic
@@ -233,8 +233,12 @@ to the service user); containers have `Network=none` and talk over unix sockets 
 - Do not add new `_`-prefixed methods unless something genuinely must stay internal; give the
   method a public name, or make it a module-level function. The same goes for reading protected
   members of other objects (`_meta`, `_base_manager`) when a public API exists.
-- The reader's own strings are in `frontend/static/app/i18n.js`, outside the gettext catalogue;
-  `tests/frontend/test_i18n.py` keeps the Czech and English key sets equal.
+- The reader's strings are English gettext msgids written `_("…")` in `frontend/static/app/*.js` (the name
+  `_` is what `xgettext` extracts, so keep it and use literals only). `make messages` extracts them into
+  `chords/locale/cs/LC_MESSAGES/djangojs.po`; `frontend/catalogues.py` reads the compiled catalogue and
+  `bootstrap_payload` carries it as `i18n`, so both the shell and the server pages translate without a request.
+  `make check-messages` (part of `commit-acceptance`) regenerates `djangojs.po` and fails when it differs from
+  the committed file or has an untranslated string.
 - Every user-visible string goes through `gettext_lazy`/`gettext_noop`. Czech is the default
   language; `make check-fuzzy` fails the build if `chords/locale/cs/LC_MESSAGES/django.po`
   contains fuzzy entries, so run `make messages` and resolve them.
