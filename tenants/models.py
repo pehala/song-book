@@ -27,6 +27,10 @@ class Link(Model):
     def __str__(self):
         return f"{self.display_name} ({self.link})"
 
+    class Meta:
+        verbose_name = _("Link")
+        verbose_name_plural = _("Links")
+
 
 class Tenant(Model):
     """Represents a Tenant, who has own Categories and is determined by a Host Header"""
@@ -54,8 +58,8 @@ class Tenant(Model):
         upload_to="uploads/",
         validators=[only_png],
     )
-    links = ManyToManyField(Link, blank=True)
-    admins = ManyToManyField(get_user_model())
+    links = ManyToManyField(Link, blank=True, verbose_name=_("See also"))
+    admins = ManyToManyField(get_user_model(), verbose_name=_("Admins"))
 
     def __str__(self):
         return f"{self.name} ({self.id})"
