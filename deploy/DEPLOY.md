@@ -5,7 +5,7 @@ Podman [quadlets](https://docs.podman.io/en/latest/markdown/podman-systemd.unit.
 nginx and a PostgreSQL that are installed **on the host**. Every component talks over **unix sockets**;
 none of the containers has a network (`Network=none`). Nothing needs root except installing nginx and
 PostgreSQL, creating the user and a few permissions. A host without a PostgreSQL of its own can run one in
-a container instead, see [PostgreSQL in a container](#9-postgresql-in-a-container).
+a container instead, see [PostgreSQL in a container](#8-postgresql-in-a-container).
 
 The units are systemd **templates**: one set of files serves any number of independent songbooks
 (*instances*) under the same user. Each instance has its own name — `camp` in the examples — which
@@ -52,34 +52,7 @@ The guide assumes a dedicated, unprivileged user — `songbook` with home `/home
 examples — a recent Podman (the units are written against 5.x), and the nginx and PostgreSQL packages of
 the host. All files referenced live in `deploy/`; run the commands from a checkout of the repository.
 
-## 1. The image
-
-The `docker` GitHub workflow builds the [`Containerfile`](../Containerfile) on every push to
-`main` and publishes it as `ghcr.io/pehala/song-book:latest` (plus a tag per commit sha, for
-rollbacks); `ghcr-cleanup` prunes all but the newest ten versions weekly. Pull requests only build
-it. The `docker-branch` workflow, started by hand on a branch, publishes that branch as
-`ghcr.io/pehala/song-book:<branch>` for trying it out ([another image for one instance](#another-image-for-one-instance)).
-If the package is private, run `podman login ghcr.io` as the `songbook` user with a token that
-can read packages.
-
-The image installs the `production` dependency group with `uv` and bakes in everything that needs
-no database: `make compilemessages collectstatic compress_static`, the last writing a `.br` (brotli
-quality 11) and `.gz` (gzip -9) sibling next to every compressible static file. It runs as UID/GID
-1001 with `DJANGO_SETTINGS_MODULE=chords.settings.container`.
-
-Its entrypoint is `make` and the container arguments are Makefile targets — the same targets used
-outside containers. The units only list them: `Exec=migrate prerender cache_clear export_static start`
-for web, `Exec=worker` for the worker. A one-off command works the same way, e.g.
-`podman run --rm … ghcr.io/pehala/song-book:latest migrate`.
-
-It is based on Debian slim rather than Alpine on purpose: the PDF index is sorted with
-`locale.strxfrm` under `cs_CZ.UTF-8`, and musl has no locale collation, so on Alpine "Č" and "Š"
-would sort after "Z" and "Ch" would not follow "H".
-
-To run a local build instead, `make image` (tags `localhost/songbook:latest`) and set `Image=` in
-`songbook-web@.container` and `songbook-worker@.container`, or for one instance only as described below.
-
-## 2. Prepare the host (as root, once)
+## 1. Prepare the host (as root, once)
 
 ```bash
 useradd --create-home songbook
@@ -94,13 +67,12 @@ module in the next section.
 Everything else runs as `songbook`. Log in with `machinectl shell songbook@` (or SSH) rather than
 `su`, so that `systemctl --user` finds the user's session.
 
-## 3. PostgreSQL
+## 2. PostgreSQL
 
-The containers reach the server of the host through its unix socket. Because they run with
-`UserNS=keep-id`, a connection arrives as the host user `songbook`, and PostgreSQL's `peer`
-authentication maps that to the role of the same name, **without a password**. Distributions ship
-`local all all peer` in `pg_hba.conf`, so this needs no change. An instance gets a database of its own, and
-instances may share the role.
+The containers use the server's socket in `/run/postgresql`, which the units mount as it is. Because they run
+with `UserNS=keep-id`, a connection arrives as the host user `songbook`, and PostgreSQL's `peer` authentication maps
+it to the role of the same name, **without a password**. Distributions ship `local all all peer` in `pg_hba.conf`,
+so the defaults need no change. Each instance gets a database of its own; instances may share the role.
 
 **Role and database (as root, once per instance).** The role carries the name of the host user:
 
@@ -111,29 +83,12 @@ CREATE DATABASE songbook_camp OWNER songbook;
 SQL
 ```
 
-(Skip `CREATE ROLE` if it exists. A database that the app used before can be used as it is, see
-[migrating](#8-migrating-an-existing-deployment).) Check it as `songbook`:
+Skip `CREATE ROLE` if it exists. A database that the app used before works as it is, see
+[migrating](#7-migrating-an-existing-deployment). Check it as `songbook`:
 
 ```bash
 psql songbook_camp --command 'SELECT current_user'
 ```
-
-**Which socket.** The socket is `<directory>/.s.PGSQL.<port>`, and the port is part of the name. Ask the
-server for its directory, and, if the host runs several clusters (Debian and Ubuntu create one per major
-version, on ports 5432, 5433, …), find the port of the cluster that holds the database:
-
-```bash
-sudo -u postgres psql --command 'SHOW unix_socket_directories'      # /var/run/postgresql is /run/postgresql
-pg_lsclusters                                                       # Debian, Ubuntu
-ls -la /run/postgresql/
-```
-
-The units mount `/run/postgresql`. If your server keeps its socket elsewhere, change that path in the
-`Volume=` line of `songbook-web@.container` and `songbook-worker@.container` and in the `ExecStartPre=` of web
-before [installing them](#5-install-the-units-and-start). The port goes into `POSTGRES_PORT` of the env file (nothing
-to set for 5432). With a database
-that is not on the first cluster this matters: the app would otherwise try port 5432 and find another
-database, or none.
 
 **SELinux (as root, only when enforcing).** A container may not connect to PostgreSQL's socket by
 default. Install [`selinux/songbook_postgres.te`](selinux/songbook_postgres.te) like the nginx module in
@@ -149,10 +104,29 @@ semodule -i songbook_postgres.pp
 The directory is mounted without `:z` on purpose: relabelling `/run/postgresql` would change it for every
 other client of the server.
 
-**A role with a password.** If `pg_hba.conf` does not use `peer` for `local` connections, or the role must have a
-password for another reason, create it (`CREATE ROLE songbook LOGIN PASSWORD '…'`), put `local songbook songbook
-scram-sha-256` above the catch-all rule, create the secret `songbook-db-password-<instance>` holding the password
-and add it to the units with a drop-in, once per template:
+### Locating the socket
+
+Only needed when the server is not on the defaults. The socket is `<directory>/.s.PGSQL.<port>`, and the port is
+part of its name.
+
+```bash
+sudo -u postgres psql --command 'SHOW unix_socket_directories'      # /var/run/postgresql is /run/postgresql
+pg_lsclusters                                                       # Debian, Ubuntu: one cluster per major version
+ls -la /run/postgresql/                                             # .s.PGSQL.5432, .s.PGSQL.5433, …
+```
+
+- **Another port** (the database is on the second cluster, 5433, and so on): set `POSTGRES_PORT` in the env file of the
+  instance. Without it the app tries 5432 and finds another database, or none.
+- **Another directory:** change the path in the `Volume=` line of `songbook-web@.container` and
+  `songbook-worker@.container` and in the `ExecStartPre=` of web, before
+  [installing them](#4-install-the-units-and-start).
+
+### A role with a password
+
+If `pg_hba.conf` does not use `peer` for `local` connections, or the role must have a password for another reason,
+create it (`CREATE ROLE songbook LOGIN PASSWORD '…'`), put `local songbook songbook scram-sha-256` above the
+catch-all rule, create the secret `songbook-db-password-<instance>` holding the password and add it to the units
+with a drop-in, once per template:
 
 ```bash
 for unit in web worker; do
@@ -162,7 +136,7 @@ for unit in web worker; do
 done
 ```
 
-## 4. Prepare an instance
+## 3. Prepare an instance
 
 Directories for Valkey's socket and for the served files, one tmpfiles file per instance:
 
@@ -199,16 +173,16 @@ The file is also read by systemd, so write values without quotes. Any other sett
 
 If the database already holds a songbook, restore or adopt it **before** the first start: web would otherwise
 migrate an empty database and create a default tenant that collides with the existing one
-([migrating](#8-migrating-an-existing-deployment)).
+([migrating](#7-migrating-an-existing-deployment)).
 
-## 5. Install the units and start
+## 4. Install the units and start
 
 The templates are installed once for all instances:
 
 ```bash
 install -D -m 0644 -t ~/.config/containers/systemd/songbook deploy/quadlets/*
 install -D -m 0644 -t ~/.config/systemd/user deploy/systemd/songbook@.target
-podman pull docker.io/valkey/valkey:8 ghcr.io/pehala/song-book:latest
+podman pull docker.io/valkey/valkey:8 ghcr.io/pehala/song-book:latest      # a private package needs `podman login ghcr.io` first
 systemctl --user daemon-reload
 systemctl --user enable --now songbook@$INSTANCE.target
 journalctl --user -u songbook-web@$INSTANCE -f       # wait for "Listening at: unix:/run/gunicorn/gunicorn.sock"
@@ -250,33 +224,28 @@ Create the first superuser (not needed when you restored a database):
 podman exec -it songbook-web-$INSTANCE python manage.py createsuperuser
 ```
 
-Then set up nginx ([section 6](#6-nginx)).
+Then set up nginx ([section 5](#5-nginx)).
 
 ### Adding another instance
 
 ```mermaid
 flowchart TB
-    tpl["Installed once: the templates<br/>songbook-redis@ · songbook-web@ · songbook-worker@ · songbook@.target"]
-    tpl --> camp
-    tpl --> church
+    tpl["Installed once: the templates<br/>songbook-redis@, songbook-web@, songbook-worker@, songbook@.target"]
+    tpl --> camp["Instance camp"]
+    tpl --> church["Instance church"]
 
-    subgraph camp["instance camp"]
-        direction TB
-        c1["env file camp.env<br/>secret songbook-secret-key-camp"]
-        c2["database songbook_camp<br/>role songbook (shared)"]
-        c3["sockets in $XDG_RUNTIME_DIR/songbook/camp/<br/>files in ~/nginx/camp/"]
-        c4["nginx server block songbook-camp.conf"]
-    end
-    subgraph church["instance church"]
-        direction TB
-        h1["env file church.env<br/>secret songbook-secret-key-church"]
-        h2["database songbook_church<br/>role songbook (shared)"]
-        h3["sockets in $XDG_RUNTIME_DIR/songbook/church/<br/>files in ~/nginx/church/"]
-        h4["nginx server block songbook-church.conf"]
-    end
+    camp --> c1["camp.env<br/>secret songbook-secret-key-camp"]
+    camp --> c2["database songbook_camp<br/>role songbook, shared"]
+    camp --> c3["Valkey socket in the runtime directory<br/>files in ~/nginx/camp"]
+    camp --> c4["nginx server block songbook-camp.conf"]
+
+    church --> h1["church.env<br/>secret songbook-secret-key-church"]
+    church --> h2["database songbook_church<br/>role songbook, shared"]
+    church --> h3["Valkey socket in the runtime directory<br/>files in ~/nginx/church"]
+    church --> h4["nginx server block songbook-church.conf"]
 ```
 
-Repeat the PostgreSQL role/database, step 4 and `enable --now songbook@<instance>.target` with a new `INSTANCE`,
+Repeat the PostgreSQL role/database, step 3 and `enable --now songbook@<instance>.target` with a new `INSTANCE`,
 and install another nginx server block. The templates are not copied again. Instances share nothing but the images
 and the user, so each one upgrades, restarts and is backed up on its own.
 
@@ -294,7 +263,7 @@ and the user, so each one upgrades, restarts and is backed up on its own.
 - **The PostgreSQL of the host is mounted as it is.** The units mount `/run/postgresql` at the same path,
   without relabelling it, so the server's own files keep their labels and every instance reaches the same server.
   All instances of a host share the units, so they all use the host's PostgreSQL or all use
-  [PostgreSQL in a container](#9-postgresql-in-a-container).
+  [PostgreSQL in a container](#8-postgresql-in-a-container).
 - **Web runs the deployment steps before it serves.** There is a single web container per instance, so
   `migrate` runs once per start, before gunicorn opens its socket; the worker `Requires=` web and
   starts after it. `cache_clear` empties the Redis cache database because cached songs JSON built by
@@ -308,7 +277,7 @@ and the user, so each one upgrades, restarts and is backed up on its own.
   removes the previous run's socket before every start. A command with quoted arguments would be mangled by
   older quadlet generators.
 
-## 6. nginx
+## 5. nginx
 
 Install [`deploy/nginx/songbook-common.conf`](nginx/songbook-common.conf) once into
 `/etc/nginx/conf.d/`: the static cache map and the catch-all default server. Then install
@@ -366,10 +335,6 @@ and that statics come pre-compressed (look for `content-encoding: br` and a long
 curl -sI -H 'Accept-Encoding: br, gzip' https://songs.example.org/static/<path printed in the page source>
 ```
 
-**BREACH.** Compressing HTML that contains a secret together with attacker-reflected input can leak
-the secret. Django masks the CSRF token differently in every response, which is the standard
-mitigation; nothing else secret is rendered into pages.
-
 **No brotli module?** It is not part of stock nginx. Debian/Ubuntu ship it as
 `libnginx-mod-http-brotli-filter` and `libnginx-mod-http-brotli-static`; elsewhere it may need to be
 built ([google/ngx_brotli](https://github.com/google/ngx_brotli)). Without it, delete the `brotli*`
@@ -402,7 +367,7 @@ anything with `GUNICORN_CMD_ARGS` in `~/.config/songbook/<instance>.env`, e.g. `
 
 nginx needs three things from the `songbook` user's files, all of which the setup above gives it:
 
-- search (`x`) permission on `/home/songbook` — the ACL from step 2; nothing in the home is listable;
+- search (`x`) permission on `/home/songbook` — the ACL from step 1; nothing in the home is listable;
 - `~/nginx` and everything below it world-readable (`0755` directories, `0644` files);
 - the gunicorn socket writable: gunicorn creates it `0777` (`umask = 0`). Only users that can traverse
   the home — `songbook` and nginx — can reach it.
@@ -424,25 +389,45 @@ semodule -i songbook_nginx.pp
 If nginx logs `Permission denied` anyway, `ausearch -m avc -ts recent | audit2allow` shows what is
 still missing.
 
-## 7. Operating
+## 6. Operating
 
 ### Upgrade
+
+Podman's own updater does it. `songbook-web@` carries `AutoUpdate=registry`, and the user timer
+`podman-auto-update.timer` runs `podman-auto-update.service` daily: it pulls the images of all units with that label
+and restarts the units whose image changed, for every instance. Enable it once (the user lingers, so it runs without a
+login):
+
+```bash
+systemctl --user enable --now podman-auto-update.timer
+systemctl --user list-timers podman-auto-update.timer      # when it runs next
+```
+
+To update now, start the service, or look at what it would change first:
+
+```bash
+podman auto-update --dry-run
+systemctl --user start podman-auto-update.service
+journalctl --user -u podman-auto-update.service            # what it pulled and restarted
+```
+
+Without the timer, the same by hand:
 
 ```bash
 podman pull ghcr.io/pehala/song-book:latest
 systemctl --user restart songbook-web@$INSTANCE      # once per instance
 ```
 
-Web migrates and publishes the new static files before it serves again, and the worker restarts
-with it because it `Requires=` web. Web is unavailable for the few seconds the migrations take.
-
-`songbook-web@` carries `AutoUpdate=registry`, so `systemctl --user enable --now podman-auto-update.timer`
-does the above daily on its own, for every instance. The worker deliberately has no `AutoUpdate=`: it is restarted
-through web, and updating it on its own could start it on new code before web migrated.
+Web migrates and publishes the new static files before it serves again, and the worker restarts with it because it
+`Requires=` web, on the image that was just pulled. Web is unavailable for the few seconds the migrations take. The worker
+deliberately has no `AutoUpdate=`: updating it on its own could start it on new code before web migrated. An instance
+with [its own image](#another-image-for-one-instance) has the label removed and is left alone.
 
 Rolling back is the same with a commit sha tag: `podman pull ghcr.io/pehala/song-book:<sha>`, then
-`podman tag` it as `latest` before the restart. Migrations are not reversed, so roll back only across
-releases that did not change the schema, or restore the database dump as well.
+`podman tag` it as `latest` before the restart. The next run of the updater would pull `latest` from the registry again
+and undo that, so stop the timer (`systemctl --user disable --now podman-auto-update.timer`) while you stay on the old
+version. Migrations are not reversed, so roll back only across releases that did not change the schema, or restore the
+database dump as well.
 
 `export_static` keeps previously published static files, so a page loaded before the upgrade can
 still fetch its old fingerprinted CSS/JS. To prune them occasionally:
@@ -473,8 +458,7 @@ After a failed restore (it rolls back) drop the database and create it again.
 ### Changing a setting
 
 The env file is read when the container starts: edit `~/.config/songbook/$INSTANCE.env` and
-`systemctl --user restart songbook@$INSTANCE.target`. A changed `SONG_RENDERER` needs nothing more: web prerenders
-every song on start and saves the ones whose HTML changed.
+`systemctl --user restart songbook@$INSTANCE.target`.
 
 ### Changing the hostname of a tenant
 
@@ -490,7 +474,9 @@ menus are `Link` rows with their own URLs, edited in `/admin/`.
 
 ### Another image for one instance
 
-To run one instance on another image, for instance a branch published by the `docker-branch` workflow, give its web
+To run one instance on another image, for instance a branch published by the `docker-branch` workflow (started by hand
+on the branch, it publishes `ghcr.io/pehala/song-book:<branch>`) or a local build (`make image` tags
+`localhost/songbook:latest`), give its web
 and worker units an instance file of their own with a drop-in that sets the image. An instance file is a link to the
 template, and Podman then attaches `<name>.container.d/*.conf` to that instance only:
 
@@ -512,7 +498,7 @@ uses the shared templates for everything else. Web migrates the database of the 
 undo migrations, so try a newer image on a copy of the data (`CREATE DATABASE songbook_test TEMPLATE songbook_camp OWNER songbook`)
 or after a dump. To go back, delete the two links and the two `.d` directories, then `daemon-reload` and restart.
 
-## 8. Migrating an existing deployment
+## 7. Migrating an existing deployment
 
 For moving a running non-container deployment (gunicorn from a checkout with its own
 `chords/settings/production.py`, PostgreSQL on the host) to the quadlets. The old deployment is
@@ -524,24 +510,7 @@ socket, as the host user that ran it, with `peer` authentication — which is wh
 (`songs` in the examples; commands as `songbook`, which also runs the old deployment in them, unless marked *root*)
 is therefore reachable as it is.
 
-```mermaid
-flowchart TD
-    A["Prepare the new instance<br/>(sections 2-4, old secret key)"] --> B["Do not start it yet"]
-    B --> C["Stop the old gunicorn and Huey units"]
-    C --> D{"Database"}
-    D -- "use in place" --> E["POSTGRES_DB = old database<br/>dump it first: web migrates it on start"]
-    D -- "copy" --> F["createdb, pg_dump, pg_restore<br/>the old database stays as it was"]
-    E --> G["Check the tenants against ALLOWED_HOSTS and server_name"]
-    F --> G
-    G --> H["Copy the PDFs to ~/nginx/INSTANCE/media"]
-    H --> I["enable --now songbook@INSTANCE.target"]
-    I --> J["Switch the nginx config and reload"]
-    J --> K{"Works?"}
-    K -- yes --> L["Disable the old units"]
-    K -- no --> M["Revert nginx, start the old units<br/>(only if the database was copied)"]
-```
-
-**1. Prepare the new instance** with [sections 2–4](#2-prepare-the-host-as-root-once), except for the secret key:
+**1. Prepare the new instance** with [sections 1–3](#1-prepare-the-host-as-root-once), except for the secret key:
 reuse the old one, so sessions and password-reset links stay valid:
 
 ```bash
@@ -550,7 +519,7 @@ uv run python -c 'from chords.settings import production; print(production.SECRE
   | podman secret create songbook-secret-key-$INSTANCE -
 ```
 
-`ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS` must cover every existing tenant (step 3 lists them); `TENANT_HOSTNAME` does
+`ALLOWED_HOSTS` and `CSRF_TRUSTED_ORIGINS` must cover every existing tenant (step 4 lists them); `TENANT_HOSTNAME` does
 not matter, the database already has its tenants. Install the units, but do not start the instance yet — starting
 web now would migrate an empty database and create a default tenant that collides with the restored one.
 
@@ -602,7 +571,7 @@ systemctl --user enable --now songbook@$INSTANCE.target
 journalctl --user -u songbook-web@$INSTANCE -f        # wait for "Listening at: unix:/run/gunicorn/gunicorn.sock"
 ```
 
-Then, as *root*, replace the old site's nginx config with the ones of [section 6](#6-nginx) and reload:
+Then, as *root*, replace the old site's nginx config with the ones of [section 5](#5-nginx) and reload:
 `nginx -t && systemctl reload nginx`.
 
 **7. Clean up** once the site works, as *root*: `systemctl disable <old gunicorn unit> <old huey unit>`.
@@ -610,29 +579,17 @@ Keep the old database (or the dump) and the checkout until you are sure; switchi
 and starting the old units again, when the database was copied. PDF generations that were queued in the old Redis are
 not carried over — regenerate them from the PDF pages if needed.
 
-## 9. PostgreSQL in a container
+## 8. PostgreSQL in a container
 
 For a host without a PostgreSQL, or one that should not be touched, every instance can run its own
 `postgres:18`. It listens on nothing but a unix socket in a directory of the instance that web and worker mount in place of
 `/run/postgresql`, so everything else of this guide applies unchanged. Differences, in place of the host PostgreSQL steps:
 
-```mermaid
-flowchart LR
-    subgraph host["Default: PostgreSQL of the host"]
-        direction LR
-        w1["web, worker"] -- "mount /run/postgresql" --> s1["postgresql.service<br/>peer authentication"]
-    end
-    subgraph cont["This section: PostgreSQL in a container"]
-        direction LR
-        w2["web, worker"] -- "mount $XDG_RUNTIME_DIR/songbook/camp/postgres<br/>at /run/postgresql" --> p2["songbook-postgres@camp<br/>password from a secret"]
-    end
-```
-
-**1. Skip [section 3](#3-postgresql)** (role, database, SELinux module). The container creates the role `songbook` and
+**1. Skip [section 2](#2-postgresql)** (role, database, SELinux module). The container creates the role `songbook` and
 the database `songbook` on its first start, with a password: `initdb` runs with `--auth-local=scram-sha-256`, because
 it would otherwise trust every connection through the socket.
 
-**2. In step 4,** add the socket directory of the container to the tmpfiles, and keep `POSTGRES_DB=songbook` (not a
+**2. In step 3,** add the socket directory of the container to the tmpfiles, and keep `POSTGRES_DB=songbook` (not a
 name of your own) in the env file; the database password is a secret:
 
 ```bash
@@ -640,7 +597,7 @@ sed "s/INSTANCE/$INSTANCE/g" deploy/postgres-container/user-tmpfiles.d/songbook-
 python3 -c 'import secrets; print(secrets.token_urlsafe(32), end="")' | podman secret create songbook-db-password-$INSTANCE -
 ```
 
-**3. In step 5,** install the additional files together with the templates. They add the PostgreSQL unit and, as
+**3. In step 4,** install the additional files together with the templates. They add the PostgreSQL unit and, as
 drop-ins, make web and worker wait for it and receive the password. Two lines of the templates themselves point at
 the host's socket, and a drop-in cannot remove a line, so change them with `sed` — the mount of the socket directory
 in both units and the wait for it in web:
@@ -669,18 +626,9 @@ The rest of the guide applies with these differences:
   `podman volume rm songbook-postgres-<instance>` and start it again for an empty database.
 - When a PostgreSQL unit is part of the instance, restarting the target restarts the database too.
 - Starting a new instance on an existing deployment: do not start web before the restore, for the reason given in
-  [section 8](#8-migrating-an-existing-deployment); start only `songbook-postgres@$INSTANCE` first.
+  [section 7](#7-migrating-an-existing-deployment); start only `songbook-postgres@$INSTANCE` first.
 
 ## Troubleshooting
-
-```mermaid
-flowchart TD
-    S["nginx answers 502"] --> L["sudo tail /var/log/nginx/error.log"]
-    L --> Q{"connect() to unix:…gunicorn.sock failed"}
-    Q -- "(2) No such file" --> A2["path of the upstream in the nginx config,<br/>ls ~/nginx/INSTANCE/gunicorn/"]
-    Q -- "(13) Permission denied" --> A13["home ACL for the nginx user (www-data / nginx),<br/>modes of ~/nginx, SELinux"]
-    Q -- "(111) Connection refused" --> A111["systemctl --user status songbook-web@INSTANCE<br/>journalctl --user -u songbook-web@INSTANCE"]
-```
 
 | Symptom | Look at |
 |---|---|
@@ -698,5 +646,5 @@ flowchart TD
 | `403 CSRF verification failed` on login | origin missing from `CSRF_TRUSTED_ORIGINS`, or `X-Forwarded-Proto` not set |
 | PDFs stay queued | `journalctl --user -u songbook-worker@<instance>` |
 | units do not start after a reboot | `loginctl show-user songbook -p Linger` must say `yes`, and the target must be enabled |
-| `statfs …/songbook/<instance>/…: no such file or directory` | `$XDG_RUNTIME_DIR/songbook/<instance>` missing: are the tmpfiles files of step 4 installed and `systemd-tmpfiles --user --create` run? |
+| `statfs …/songbook/<instance>/…: no such file or directory` | `$XDG_RUNTIME_DIR/songbook/<instance>` missing: are the tmpfiles files of step 3 installed and `systemd-tmpfiles --user --create` run? |
 | `Failed to connect to bus` from `systemctl --user` | logged in with `su`; use `machinectl shell songbook@` or SSH |
