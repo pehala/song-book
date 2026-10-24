@@ -5,7 +5,7 @@ import {html, useEffect, useMemo, useState} from "./vendor/preact-htm.module.js"
 const SCALE = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "H"];
 const NORMALIZE = {Cb: "H", Db: "C#", Eb: "D#", Fb: "E", Gb: "F#", Ab: "G#", Hb: "A#", B: "A#", "E#": "F", "H#": "C"};
 const NOTE = /[CDEFGAHB][b#]?/g;
-const CHORD = /(<span class="chord">)([^<]*)(<\/span>)/g;
+const CHORD = /(<(?:span|rt) class="chord">)([^<]*)(<\/(?:span|rt)>)/g;
 
 export function transposeChord(chord, amount) {
     return chord.replace(NOTE, note => {
