@@ -5,6 +5,7 @@ import json
 import pytest
 from django.conf import settings
 from django.core.cache import cache
+from django.db.models.signals import m2m_changed
 from django.test import override_settings
 from django.urls import reverse
 
@@ -154,3 +155,56 @@ def test_save_leaves_prerendered_alone_when_disabled(category):
     assert settings.USE_PRERENDERED_MARKDOWN is False
     song = Song.objects.create(name="Pre", text="{Ami}Hello")
     assert song.prerendered is None
+
+
+@pytest.mark.parametrize("change", ["remove", "clear"])
+def test_list_rebuilt_before_the_membership_change_is_dropped_after_it(anon_client, song, tenant, category, change):
+    """A request between the invalidation and the change caches the old links, so the change invalidates again"""
+
+    def rebuild_in_between(sender, action, **kwargs):
+        if action.startswith("pre_"):
+            prime_payload(anon_client)
+
+    m2m_changed.connect(rebuild_in_between, sender=Song.categories.through)
+    try:
+        if change == "remove":
+            song.categories.remove(category)
+        else:
+            song.categories.clear()
+    finally:
+        m2m_changed.disconnect(rebuild_in_between, sender=Song.categories.through)
+
+    assert cache.get(payload_key(tenant)) is None
+
+
+def test_invalidation_inside_a_transaction_waits_for_the_commit(
+    anon_client, song, tenant, real_on_commit, django_capture_on_commit_callbacks
+):
+    """The Django admin saves inside atomic(); a list rebuilt before the commit would keep the old rows"""
+    prime_payload(anon_client)
+
+    with django_capture_on_commit_callbacks() as callbacks:
+        song.name = "Renamed"
+        song.save()
+        assert cache.get(payload_key(tenant)) is not None
+
+    assert callbacks
+    for callback in callbacks:
+        callback()
+    assert cache.get(payload_key(tenant)) is None
+
+
+def test_category_menu_invalidation_waits_for_the_commit(
+    category, tenant, real_on_commit, django_capture_on_commit_callbacks
+):
+    key = tenant_cache_key(tenant, CATEGORY_CACHE_KEY)
+    cache.set(key, "menu")
+
+    with django_capture_on_commit_callbacks() as callbacks:
+        category.name = "Renamed"
+        category.save()
+        assert cache.get(key) == "menu"
+
+    for callback in callbacks:
+        callback()
+    assert cache.get(key) is None
