@@ -43,7 +43,7 @@ main {
 .search {
     position: sticky;
     top: 0;
-    z-index: 5;
+    z-index: var(--z-search);
     display: flex;
     align-items: center;
     gap: .5rem;
@@ -61,10 +61,10 @@ main {
     flex: 1;
     min-width: 0;
     font: inherit;
-    min-height: 2.75rem;
+    min-height: var(--tap);
     padding: .375rem .75rem;
     border: 1px solid var(--control);
-    border-radius: .375rem;
+    border-radius: var(--radius);
     background: var(--bg);
     color: inherit;
 }
@@ -80,7 +80,7 @@ main {
 }
 
 .song > summary {
-    min-height: 2.75rem;
+    min-height: var(--tap);
     display: flex;
     align-items: baseline;
     gap: .5rem;
@@ -112,7 +112,7 @@ main {
 .song::details-content {
     block-size: 0;
     overflow: hidden;
-    transition: block-size .25s ease,content-visibility .25s allow-discrete;
+    transition: block-size .25s ease, content-visibility .25s allow-discrete;
 }
 
 .song[open]::details-content {
@@ -121,7 +121,7 @@ main {
 
 .song h2,
 .num {
-    font-size: min(2rem,calc(1.325rem + .9vw));
+    font-size: min(2rem, calc(1.325rem + .9vw));
     font-weight: 500;
     line-height: 1.2;
     margin: 0;
@@ -156,7 +156,7 @@ main {
     display: inline-flex;
     align-items: center;
     border: 1px solid var(--control);
-    border-radius: .375rem;
+    border-radius: var(--radius);
 }
 
 .stepper .sb-btn {
@@ -169,18 +169,13 @@ main {
     font-variant-numeric: tabular-nums;
 }
 
-.sb-ghost {
-    border-color: transparent;
-    color: var(--muted);
-}
-
 .tools .gap {
     margin-left: auto;
 }
 
 .capo {
     padding: .25rem .75rem;
-    border-radius: 1rem;
+    border-radius: var(--radius-pill);
     background: var(--line);
     font-weight: 600;
     white-space: nowrap;
@@ -239,7 +234,7 @@ rt.chord {
     border-top-color: var(--accent);
     border-radius: 50%;
     opacity: 0;
-    animation: spin .75s linear infinite,show 0s .4s forwards;
+    animation: spin .75s linear infinite, show 0s .4s forwards;
 }
 
 @keyframes spin {
@@ -268,6 +263,6 @@ rt.chord {
 .fab {
     position: fixed;
     right: 20px;
-    z-index: 10;
+    z-index: var(--z-fab);
     font-size: 1.25rem;
 }
