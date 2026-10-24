@@ -2,8 +2,15 @@ name: docker
 
 on:
   push: { branches: [main] }
+  # A pull request only needs proving to build when the image definition changes; main always builds
   pull_request:
+    paths:
+      - Containerfile
+      - .github/workflows/build-image.yml
+      - .github/workflows/docker.yml
 
+# A newer run for the same ref cancels the older one, so merging several pull requests in
+# a row leaves a single build of the last main commit
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
