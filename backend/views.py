@@ -12,7 +12,7 @@ from backend.generic import UniversalCreateView, UniversalDeleteView, UniversalU
 from backend.me import me_payload
 from backend.mixins import LocalAdminRequired, PassRequestToFormMixin, RegenerateViewMixin
 from backend.models import Song
-from backend.songs import cached_songs_payload
+from backend.songs import build_songs_delta, cached_songs_payload
 from backend.utils import regenerate_pdf
 
 
@@ -42,7 +42,16 @@ class SongsApiView(ETagJsonMixin, View):
     def get(self, request, *args, **kwargs):
         include_archived = request.user.is_superuser
         payload = cached_songs_payload(request.tenant, include_archived)
-        return self.etag_response(request, payload, private=include_archived)
+        response = self.etag_response(request, payload, private=include_archived)
+        since = request.GET.get("since", "")
+        if response.status_code == 304 or not since.isdecimal() or len(since) > 10:
+            return response
+        delta = HttpResponse(
+            build_songs_delta(request.tenant, include_archived, int(since), response["ETag"]),
+            content_type="application/json",
+        )
+        delta["Cache-Control"] = "private, no-store" if include_archived else "no-store"
+        return delta
 
 
 class MeView(View):

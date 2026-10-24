@@ -53,15 +53,15 @@ def test_page_carries_no_songs(anon_client, song):
     assert song.name not in anon_client.get(reverse("chords:all")).content.decode()
 
 
-def test_page_preloads_modules_and_songs(anon_client, tenant):
-    """Everything after the page is requested in a single round trip"""
+def test_page_preloads_modules_but_not_songs(anon_client, tenant):
+    """The modules are requested in a single round trip; the songs are not, as the reader may ask for a delta instead"""
     html = anon_client.get(reverse("chords:all")).content.decode()
 
     for module in MODULES:
         assert f'<link rel="modulepreload" href="/static/{module}">' in html
     assert '<link rel="stylesheet" href="/static/app/header.css">' in html
     assert '<link rel="stylesheet" href="/static/app/app.css">' in html
-    assert f'<link rel="preload" href="{reverse("chords:songs_api")}" as="fetch" crossorigin>' in html
+    assert 'rel="preload"' not in html
     assert f'<script type="module" src="/static/{MODULES[0]}"></script>' in html
 
 
