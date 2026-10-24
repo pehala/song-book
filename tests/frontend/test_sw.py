@@ -1,15 +1,19 @@
 """Tests for the service worker and the web app manifest."""
 
 import json
+import posixpath
 import re
 from pathlib import Path
 
 import pytest
+from django.contrib.staticfiles import finders
 from django.core.files.uploadedfile import SimpleUploadedFile
 from django.templatetags.static import static
 from django.test import Client
 from django.urls import reverse
 from PIL import Image
+
+from frontend.views import ASSETS, ENTRY, MODULES, SITE_ENTRY, STYLESHEETS
 
 pytestmark = pytest.mark.django_db
 
@@ -126,3 +130,68 @@ def test_manifest_follows_the_tenant(tenant, other_tenant):
     manifest = json.loads(Client(HTTP_HOST="other.localhost").get(MANIFEST_URL).content)
 
     assert manifest["name"] == other_tenant.display_name
+
+
+@pytest.mark.parametrize("path", ASSETS)
+def test_every_asset_is_a_static_file(path):
+    """The worker precaches and the pages preload what is listed, so a renamed or deleted file must leave the list"""
+    assert finders.find(path)
+
+
+def test_assets_are_the_modules_the_entries_and_the_styles():
+    """The list the worker precaches covers everything the pages load"""
+    assert [*MODULES, SITE_ENTRY, *STYLESHEETS] == ASSETS
+    assert MODULES[0] == ENTRY
+
+
+def test_every_module_is_reachable_from_an_entry():
+    """A listed module that nothing imports is dead weight in the precache"""
+    root = Path(__file__).parents[2] / "frontend/static"
+    sources = {path: (root / path).read_text() for path in ASSETS if path.endswith((".js", ".mjs"))}
+    imported = {ENTRY, SITE_ENTRY}
+    pending = [ENTRY, SITE_ENTRY]
+    while pending:
+        current = pending.pop()
+        for relative in re.findall(r'from "(\.[^"]+)"', sources[current]):
+            target = posixpath.normpath(posixpath.join(posixpath.dirname(current), relative))
+            if target not in imported:
+                imported.add(target)
+                pending.append(target)
+
+    assert set(sources) == imported
+
+
+@pytest.fixture
+def development_files(tmp_path, monkeypatch, settings):
+    """Development: static files are not hashed, and the stylesheet is a file the test can edit"""
+    settings.DEBUG = True
+    stylesheet = tmp_path / "header.css"
+    stylesheet.write_text("a {}")
+    find = finders.find
+    monkeypatch.setattr(
+        "frontend.views.finders.find", lambda path: stylesheet if path == "app/header.css" else find(path)
+    )
+    return stylesheet
+
+
+def cache_name(client):
+    return re.search(r'CACHE = "(.*)"', worker(client)).group(1)
+
+
+def test_worker_is_built_in_development(anon_client, tenant, development_files):
+    """The worker is served while static files are not hashed"""
+    assert anon_client.get(SW_URL).status_code == 200
+
+
+def test_worker_version_follows_file_content_in_development(anon_client, tenant, development_files):
+    """Edited files change the worker, since their urls do not change"""
+    before = cache_name(anon_client)
+
+    development_files.write_text("a { color: red }")
+
+    assert cache_name(anon_client) != before
+
+
+def test_worker_version_is_stable_while_nothing_changes(anon_client, tenant, development_files):
+    """The browser does not install a worker per request"""
+    assert cache_name(anon_client) == cache_name(anon_client)
