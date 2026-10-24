@@ -3,18 +3,18 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="color-scheme" content="light dark">
 <title>{{ boot.name }}</title>
 <link rel="manifest" href="{% url 'frontend:manifest' %}">
 {% if boot.icon %}<link rel="icon" type="image/png" href="{{ boot.icon }}">{% endif %}
-<script>try{var t=localStorage.getItem("theme");if(t==="light"||t==="dark")document.documentElement.dataset.theme=t}catch(e){}</script>
-<link rel="stylesheet" href="{{ stylesheet }}">
+<script>try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.bsTheme=t}catch(e){}</script>
+{% for url in stylesheets %}<link rel="stylesheet" href="{{ url }}">
+{% endfor %}
 {% for url in modules %}<link rel="modulepreload" href="{{ url }}">
 {% endfor %}<link rel="preload" href="{{ boot.urls.songs }}" as="fetch" crossorigin>
 </head>
 <body>
 {% include "shell/sprite.svg" %}
-<div id="app"><div class="spinner"></div></div>
+<div id="app"><div class="sb-bar"></div><div class="spinner"></div></div>
 {{ boot|json_script:"boot" }}
 <script type="module" src="{{ entry }}"></script>
 </body>

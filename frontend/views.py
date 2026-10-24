@@ -19,9 +19,20 @@ from tenants.bootstrap import bootstrap_payload
 # The reader's modules, the entry point first, and its stylesheet. The shell preloads the modules and the
 # service worker stores all of them when it installs, so the reader works offline from the first reload.
 ENTRY = "app/app.js"
-MODULES = [ENTRY, "app/songs.js", "app/store.js", "app/i18n.js", "app/qr.js", "app/vendor/preact-htm.module.js"]
-STYLESHEET = "app/app.css"
-ASSETS = [*MODULES, STYLESHEET]
+MODULES = [
+    ENTRY,
+    "app/chrome.js",
+    "app/i18n.js",
+    "app/options.js",
+    "app/qr.js",
+    "app/songs.js",
+    "app/store.js",
+    "app/vendor/preact-htm.module.js",
+]
+# Draws the header on the pages the server renders
+SITE_ENTRY = "app/site.js"
+STYLESHEETS = ["app/header.css", "app/app.css"]
+ASSETS = [*MODULES, SITE_ENTRY, *STYLESHEETS]
 
 SHELL_URL = "/"
 THEME_COLOR = "#7793f3"
@@ -59,7 +70,7 @@ class ShellView(View):
                 "boot": bootstrap_payload(tenant),
                 "modules": [static(path) for path in MODULES],
                 "entry": static(ENTRY),
-                "stylesheet": static(STYLESHEET),
+                "stylesheets": [static(path) for path in STYLESHEETS],
             },
         )
         known = slug is None or tenant.category_set.filter(slug=slug).exists()
@@ -113,9 +124,12 @@ class ManifestView(TemplateView):
             "background_color": BACKGROUND_COLOR,
         }
         if tenant.icon:
-            manifest["icons"] = [
-                {"src": tenant.icon.url, "sizes": f"{tenant.icon.width}x{tenant.icon.height}", "type": "image/png"}
-            ]
+            try:
+                sizes = f"{tenant.icon.width}x{tenant.icon.height}"
+            except FileNotFoundError:
+                sizes = None  # the logo was removed from the storage; the manifest is still valid without it
+            if sizes:
+                manifest["icons"] = [{"src": tenant.icon.url, "sizes": sizes, "type": "image/png"}]
         response = JsonResponse(manifest, content_type="application/manifest+json")
         add_never_cache_headers(response)
         return response

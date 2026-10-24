@@ -2,16 +2,14 @@
 
 import hashlib
 
-from django.contrib.messages import get_messages
 from django.http import HttpResponse, JsonResponse
-from django.middleware.csrf import get_token
 from django.urls import reverse_lazy
 from django.utils.cache import get_conditional_response
 from django.views import View
 
-from backend.auth import is_localadmin
 from backend.forms import SongForm
 from backend.generic import UniversalCreateView, UniversalDeleteView, UniversalUpdateView
+from backend.me import me_payload
 from backend.mixins import LocalAdminRequired, PassRequestToFormMixin, RegenerateViewMixin
 from backend.models import Song
 from backend.songs import cached_songs_payload
@@ -55,17 +53,7 @@ class MeView(View):
     """
 
     def get(self, request, *args, **kwargs):
-        get_token(request)
-        user = request.user
-        response = JsonResponse(
-            {
-                "auth": user.is_authenticated,
-                "username": user.get_username() if user.is_authenticated else None,
-                "localadmin": is_localadmin(request),
-                "superuser": user.is_superuser,
-                "messages": [{"level": message.level_tag, "text": str(message)} for message in get_messages(request)],
-            }
-        )
+        response = JsonResponse(me_payload(request))
         response["Cache-Control"] = "private, no-store"
         return response
 

@@ -44,6 +44,8 @@ const dictionaries = {
         templates: "Šablony",
         loading: "Načítání…",
         loadFailed: "Písničky se nepodařilo načíst",
+        logoutFailed: "Odhlášení se nezdařilo",
+        bootFailed: "Stránku se nepodařilo načíst",
         retry: "Zkusit znovu",
         notFound: "Nenalezeno",
         categoryMissing: "Tato kategorie neexistuje.",
@@ -97,6 +99,8 @@ const dictionaries = {
         templates: "Templates",
         loading: "Loading…",
         loadFailed: "The songs could not be loaded",
+        logoutFailed: "Signing out failed",
+        bootFailed: "The page could not be loaded",
         retry: "Try again",
         notFound: "Not found",
         categoryMissing: "This category does not exist.",
@@ -113,7 +117,12 @@ export const LANGUAGES = [
     ["en", "English"],
 ];
 
-// The stored choice, else the first browser language the songbook speaks, else Czech
+// The language the server chose for this browser: the pages it renders follow the same cookie
+function cookieLanguage() {
+    return document.cookie.match(/(?:^|; )django_language=([^;]*)/)?.[1];
+}
+
+// The server's choice, else the stored one, else the first browser language the songbook speaks, else Czech
 export function detectLanguage() {
     let stored = null;
     try {
@@ -121,8 +130,10 @@ export function detectLanguage() {
     } catch {
         // storage is blocked
     }
-    if (stored in dictionaries) {
-        return stored;
+    for (const choice of [cookieLanguage(), stored]) {
+        if (choice in dictionaries) {
+            return choice;
+        }
     }
     for (const language of navigator.languages ?? []) {
         const code = language.slice(0, 2).toLowerCase();

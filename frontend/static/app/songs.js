@@ -1,8 +1,5 @@
+import {Icon} from "./chrome.js";
 import {html, useEffect, useMemo, useState} from "./vendor/preact-htm.module.js";
-
-export function Icon({name}) {
-    return html`<svg class="i" aria-hidden="true"><use href=${"#i-" + name} /></svg>`;
-}
 
 // Czech names: H is the natural B, B is B flat
 const SCALE = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "H"];
@@ -63,15 +60,15 @@ function SongBody({song, me, urls, t}) {
     const next = "?next=" + encodeURIComponent(location.pathname);
     return html`
         <div class="tools">
-            ${song.link && html`<a class="btn primary" href=${song.link} title="YouTube"><${Icon} name="play" /></a>`}
+            ${song.link && html`<a class="sb-btn sb-primary" href=${song.link} title="YouTube"><${Icon} name="play" /></a>`}
             <span>${t("transpose")}</span>
-            <button class="btn" aria-label=${t("transpose") + " −1"} onClick=${() => setShift(Math.max(-11, shift - 1))}><${Icon} name="minus" /></button>
+            <button class="sb-btn" aria-label=${t("transpose") + " −1"} onClick=${() => setShift(Math.max(-11, shift - 1))}><${Icon} name="minus" /></button>
             <output aria-label=${t("transpose")}>${shift > 0 ? "+" + shift : shift}</output>
-            <button class="btn" aria-label=${t("transpose") + " +1"} onClick=${() => setShift(Math.min(11, shift + 1))}><${Icon} name="plus" /></button>
+            <button class="sb-btn" aria-label=${t("transpose") + " +1"} onClick=${() => setShift(Math.min(11, shift + 1))}><${Icon} name="plus" /></button>
             ${me?.localadmin && html`
                 <span class="gap"></span>
-                <a class="btn" href=${urls.edit.replace(/0$/, song.id) + next}><${Icon} name="edit" /> ${t("edit")}</a>
-                <a class="btn" href=${urls.delete.replace(/0$/, song.id) + next}><${Icon} name="trash" /> ${t("delete")}</a>`}
+                <a class="sb-btn" href=${urls.edit.replace(/0$/, song.id) + next}><${Icon} name="edit" /> ${t("edit")}</a>
+                <a class="sb-btn" href=${urls.delete.replace(/0$/, song.id) + next}><${Icon} name="trash" /> ${t("delete")}</a>`}
         </div>
         ${song.capo > 0 && html`<h3 class="capo">${t("capo")} ${song.capo}</h3>`}
         <div class="song-text" dangerouslySetInnerHTML=${{__html: text}}></div>`;
