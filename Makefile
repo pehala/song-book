@@ -1,4 +1,4 @@
-.PHONY: commit-acceptance pylint black reformat pre-commit locale migrations deploy check-fuzzy check-messages messages messages-js run test coverage e2e \
+.PHONY: commit-acceptance pylint black reformat pre-commit locale migrations deploy check-fuzzy check-messages messages messages-js run dev test coverage e2e \
 	image migrate prerender cache_clear compilemessages collectstatic compress_static export_static start worker
 
 commit-acceptance: ruff reformat check-fuzzy check-messages
@@ -9,6 +9,7 @@ RUN ?= uv run
 MANAGE ?= $(RUN) python manage.py
 
 SETTINGS ?= chords.settings.production
+DEV_SETTINGS ?= chords.settings.development
 
 ruff:
 	$(RUN) ruff check . --fix
@@ -91,6 +92,11 @@ coverage: ## Runs the test suite and reports coverage
 
 run: ## Runs the development server
 	$(MANAGE) runserver --settings $(SETTINGS)
+
+dev: ## Runs the development server on SQLite with DEBUG, no `make init` or Redis needed
+	$(MANAGE) compilemessages --settings $(DEV_SETTINGS)
+	$(MANAGE) migrate --noinput --settings $(DEV_SETTINGS)
+	$(MANAGE) runserver --settings $(DEV_SETTINGS)
 
 worker: ## Runs the Huey PDF worker
 	$(MANAGE) run_huey --settings $(SETTINGS) --worker-type process
