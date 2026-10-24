@@ -6,6 +6,7 @@ import pytest
 from django.core.cache import cache
 from django.utils.timezone import now
 
+from frontend.catalogues import reader_catalogues
 from pdf.models import Status
 from pdf.models.request import PDFFile
 from tenants.bootstrap import SCHEMA_VERSION, bootstrap_payload
@@ -115,3 +116,8 @@ def test_urls_point_at_the_pages_the_reader_links_to(tenant):
         "/pdf/templates/",
         "/accounts/password_change/",
     )
+
+
+def test_payload_carries_the_readers_translations(tenant):
+    """The reader translates its strings from the bootstrap, so it needs no further request"""
+    assert bootstrap_payload(tenant)["i18n"] == reader_catalogues()
