@@ -65,7 +65,7 @@ msgstr "Jméno"
 
 #: backend/models.py:38 pdf/templates/pdf/index.html:52
 msgid "Capo"
-msgstr ""
+msgstr "Capo"
 
 #: backend/models.py:39
 msgid "Author"
