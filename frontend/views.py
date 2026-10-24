@@ -89,7 +89,7 @@ class ServiceWorkerView(TemplateView):
     installs the new worker; the tenant is part of the cache name for hostnames that change tenant.
     """
 
-    template_name = "sw.js"
+    template_name = "service_worker.js"
     content_type = "application/javascript"
 
     def get_context_data(self, **kwargs):
