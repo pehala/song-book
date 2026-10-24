@@ -61,6 +61,34 @@ def test_rendered_markdown_renders_on_the_fly_by_default(settings, song):
     assert "chord" in song.rendered_markdown
 
 
+def test_prerender_uses_the_configured_renderer(settings, song):
+    """SONG_RENDERER decides how the chords of a song are written"""
+    settings.SONG_RENDERER = "chords.markdown.RUBY_RENDERER"
+
+    assert "<ruby>" in song.prerender(save=False)
+
+    settings.SONG_RENDERER = "chords.markdown.INLINE_RENDERER"
+
+    assert "<ruby>" not in song.prerender(save=False)
+
+
+def test_inline_markdown_keeps_the_chords_inline(settings, song):
+    """Outputs that cannot lay out ruby text get inline chords whatever SONG_RENDERER says"""
+    settings.SONG_RENDERER = "chords.markdown.RUBY_RENDERER"
+
+    assert "<ruby>" in song.rendered_markdown
+    assert "<ruby>" not in song.inline_markdown
+    assert '<span class="chord">' in song.inline_markdown
+
+
+def test_inline_markdown_reuses_the_prerendered_field(settings, song):
+    """With the inline renderer configured the stored html is served"""
+    settings.USE_PRERENDERED_MARKDOWN = True
+    song.prerendered = "<p>stored</p>"
+
+    assert song.inline_markdown == "<p>stored</p>"
+
+
 def test_rendered_markdown_uses_prerendered_field(settings, song):
     """With prerendering enabled the stored html wins"""
     settings.USE_PRERENDERED_MARKDOWN = True

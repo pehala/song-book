@@ -1,8 +1,8 @@
-"""Markdown extension for chords"""
+"""Markdown extension for chords written inline"""
 
 from mistune import InlineState
 
-CHORD_RE = r"\{(?!\s)(?P<chords>.+?)(?!\s)\}"
+from chords.plugins import CHORD_RE
 
 
 def parse_chords(inline, m, state: InlineState):
@@ -17,8 +17,8 @@ def render_chords(renderer, text):
     return r'<span class="chord">' + text + r"</span>&nbsp;"
 
 
-def chords(md):
-    """A mistune plugin to support chords.
+def inline_chords(md):
+    """A mistune plugin to support chords inline, in front of the text.
     Inline chords are surrounded by `{}`, such as {Ami}
 
     :param md: Markdown instance
