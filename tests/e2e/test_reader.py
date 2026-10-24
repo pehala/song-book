@@ -31,6 +31,15 @@ def go_to_category(page, name):
     page.get_by_role("link", name=name).click()
 
 
+def test_all_songs_is_the_first_entry_of_the_categories_menu(page, library):
+    """All songs leads the categories in the menu"""
+    page.goto("/categories/cs")
+    open_menu(page, "Categories")
+
+    entries = page.locator("details.sb-dd", has=page.locator("summary", has_text="Categories")).locator("a")
+    expect(entries.first).to_have_text("All songs")
+
+
 def test_landing_page_is_drawn_from_the_shell(page, library):
     """/ shows the tenant's landing page without a redirect from the server"""
     page.goto("/")

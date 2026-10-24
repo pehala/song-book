@@ -143,10 +143,10 @@ function Header({site, navigate, onReload}) {
             <button class="sb-btn sb-burger" aria-label=${_("Menu")} aria-expanded=${menuOpen} onClick=${() => setMenuOpen(!menuOpen)}><${Icon} name="menu" /></button>
             <nav class=${"sb-menu" + (menuOpen ? " open" : "")}>
                 <${Dropdown} label=${_("Categories")}>
+                    ${boot.all_songs && html`<${Link} to=${urls.all} onNavigate=${go} aria-current=${current(urls.all)}>${_("All songs")}<//>`}
                     ${boot.categories.map(
                         category => html`<${Link} key=${category.slug} to=${urls.categories + category.slug} onNavigate=${go} aria-current=${current(urls.categories + category.slug)}>${category.name}<//>`
                     )}
-                    ${boot.all_songs && html`<${Link} to=${urls.all} onNavigate=${go} aria-current=${current(urls.all)}>${_("All songs")}<//>`}
                 <//>
                 ${boot.pdfs.length > 0 && html`<${Dropdown} label=${_("PDF")}>${boot.pdfs.map(file => html`<a key=${file.url} href=${file.url}>${file.name}</a>`)}<//>`}
                 ${boot.links.length > 0 && html`<${Dropdown} label=${_("See also")}>${boot.links.map(link => html`<a key=${link.url} href=${link.url} target="_blank" rel="noopener">${link.name}</a>`)}<//>`}
