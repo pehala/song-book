@@ -15,6 +15,20 @@
     color-scheme: light;
 }
 
+:root {
+    --tap: 2.75rem;
+    --radius: .375rem;
+    --radius-lg: .5rem;
+    --radius-pill: 1rem;
+    --scrim: rgb(0 0 0 / .5);
+    --shadow: 0 .5rem 1rem rgb(0 0 0 / .15);
+    --z-search: 5;
+    --z-fab: 10;
+    --z-panel: 20;
+    /* above Bootstrap's modals */
+    --z-toast: 1090;
+}
+
 :root[data-bs-theme="dark"] {
     --bg: #000;
     --fg: #dee2e6;
@@ -73,7 +87,7 @@
     display: flex;
     align-items: center;
     gap: .5rem;
-    min-height: 2.75rem;
+    min-height: var(--tap);
     font-size: 1.25rem;
     margin-right: .5rem;
 }
@@ -89,9 +103,9 @@
     color: inherit;
     background: none;
     border: 1px solid var(--control);
-    border-radius: .375rem;
-    min-width: 2.75rem;
-    min-height: 2.75rem;
+    border-radius: var(--radius);
+    min-width: var(--tap);
+    min-height: var(--tap);
     padding: .25rem .75rem;
     cursor: pointer;
     display: inline-flex;
@@ -104,13 +118,17 @@
     border-color: var(--accent);
 }
 
+.sb-ghost {
+    border-color: transparent;
+    color: var(--muted);
+}
+
 .sb-btn[aria-pressed="true"] {
     border-color: var(--accent);
     color: var(--accent);
 }
 
-.sb-bar .sb-btn,
-.sb-btn.sb-primary {
+.sb-bar .sb-btn {
     color: inherit;
 }
 
@@ -147,7 +165,7 @@
 .sb-dd > summary {
     display: flex;
     align-items: center;
-    min-height: 2.75rem;
+    min-height: var(--tap);
     padding: 0 .5rem;
 }
 
@@ -184,12 +202,12 @@
 }
 
 .sb-panel {
-    z-index: 20;
+    z-index: var(--z-panel);
     min-width: 12rem;
     padding: .25rem 0;
     background: var(--bar);
     border: 1px solid var(--line);
-    border-radius: .375rem;
+    border-radius: var(--radius);
     display: flex;
     flex-direction: column;
 }
@@ -198,7 +216,7 @@
     display: flex;
     align-items: center;
     gap: .25rem;
-    min-height: 2.75rem;
+    min-height: var(--tap);
     padding: 0 1rem;
 }
 
@@ -221,12 +239,12 @@
 .sb-panel input[type="number"] {
     font: inherit;
     width: 8rem;
-    min-height: 2.75rem;
+    min-height: var(--tap);
     padding: 0 .75rem;
     color: var(--fg);
     background: var(--bg);
     border: 1px solid var(--control);
-    border-radius: .375rem;
+    border-radius: var(--radius);
 }
 
 .sb-panel input[type="checkbox"] {
@@ -262,7 +280,7 @@
     left: 1rem;
     right: 1rem;
     bottom: 1rem;
-    z-index: 1090;
+    z-index: var(--z-toast);
     display: flex;
     flex-direction: column;
     gap: .5rem;
@@ -277,7 +295,7 @@
     padding: .5rem 1rem;
     background: var(--fg);
     color: var(--bg);
-    border-radius: .375rem;
+    border-radius: var(--radius);
     pointer-events: auto;
 }
 
@@ -292,13 +310,10 @@
 
 .sb-dialog {
     border: 1px solid var(--line);
-    border-radius: .5rem;
+    border-radius: var(--radius-lg);
     background: var(--bg);
     color: var(--fg);
     text-align: center;
-}
-
-.sb-dialog {
     width: min(34rem, calc(100vw - 1rem));
     max-height: calc(100vh - 1rem);
     padding: 1.5rem;
@@ -316,7 +331,7 @@
 }
 
 .sb-dialog::backdrop {
-    background: rgb(0 0 0 / .5);
+    background: var(--scrim);
 }
 
 @media (min-width: 768px) {
@@ -349,6 +364,6 @@
         min-width: 18rem;
         margin-top: .25rem;
         padding: .5rem 0;
-        box-shadow: 0 .5rem 1rem rgb(0 0 0 / .15);
+        box-shadow: var(--shadow);
     }
 }
