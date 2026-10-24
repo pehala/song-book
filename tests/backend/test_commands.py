@@ -19,6 +19,25 @@ def test_prerender_fills_every_song(song, archived_song):
     assert "chord" in Song.objects.get(pk=song.pk).prerendered
 
 
+def test_prerender_marks_the_songs_as_changed(song):
+    """The rendered html is what readers see, and bulk_update does not move updated_at by itself"""
+    Song.objects.filter(pk=song.pk).update(updated_at="2020-01-01T00:00:00Z")
+
+    call_command("prerender")
+
+    assert Song.objects.get(pk=song.pk).updated_at.year > 2020
+
+
+def test_prerender_leaves_songs_with_current_html_alone(song):
+    """Readers only download the songs whose html differs"""
+    call_command("prerender")
+    Song.objects.filter(pk=song.pk).update(updated_at="2020-01-01T00:00:00Z")
+
+    call_command("prerender")
+
+    assert Song.objects.get(pk=song.pk).updated_at.year == 2020
+
+
 def test_clear_prerender_empties_every_song(song):
     """The clear_prerender command drops all cached html"""
     call_command("prerender")
