@@ -8,6 +8,11 @@ import os
 from chords.settings.base import *  # noqa: F403
 
 
+def env_int(name, default):
+    """Integer environment variable, the default when it is unset"""
+    return int(os.environ.get(name, default))
+
+
 def env_list(name):
     """Comma separated environment variable as a list"""
     return [item.strip() for item in os.environ.get(name, "").split(",") if item.strip()]
@@ -59,8 +64,18 @@ HUEY = {
 
 MEDIA_ROOT = os.environ["MEDIA_ROOT"]
 
+# The default tenant that the first migration creates
+TENANT_NAME = os.environ.get("TENANT_NAME", TENANT_NAME)  # noqa: F405
 TENANT_HOSTNAME = os.environ.get("TENANT_HOSTNAME", TENANT_HOSTNAME)  # noqa: F405
 SITE_NAME = os.environ.get("SITE_NAME", SITE_NAME)  # noqa: F405
+
+TIME_ZONE = os.environ.get("TIME_ZONE", "UTC")
+
+# Seconds: how long a category waits for more edits before its PDF is generated, how long the songs payload and
+# other cached pages are kept, and how long a login lasts
+CATEGORY_PDF_DELAY = env_int("CATEGORY_PDF_DELAY", CATEGORY_PDF_DELAY)  # noqa: F405
+CACHE_TIMEOUT = env_int("CACHE_TIMEOUT", CACHE_TIMEOUT)  # noqa: F405
+SESSION_COOKIE_AGE = env_int("SESSION_COOKIE_AGE", SESSION_COOKIE_AGE)  # noqa: F405
 
 # Dotted path of the renderer of the songs, e.g. chords.markdown.RUBY_RENDERER; the preview of the editor follows it
 SONG_RENDERER = os.environ.get("SONG_RENDERER", SONG_RENDERER)  # noqa: F405
