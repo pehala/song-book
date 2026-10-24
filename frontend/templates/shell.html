@@ -14,7 +14,7 @@
 </head>
 <body>
 {% include "shell/sprite.svg" %}
-<div id="app"><div class="sb-bar"></div><div class="spinner"></div></div>
+<div id="app"><div class="sb-bar"></div><div class="progress centered indeterminate"><div></div></div></div>
 {{ boot|json_script:"boot" }}
 <script type="module" src="{{ entry }}"></script>
 </body>

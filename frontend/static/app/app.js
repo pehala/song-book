@@ -1,8 +1,8 @@
-import {html, render, useCallback, useEffect, useMemo, useState} from "./vendor/preact-htm.module.js";
+import {html, render, useCallback, useEffect, useMemo, useRef, useState} from "./vendor/preact-htm.module.js";
 import {SiteHeader, Icon, Link, closeDropdowns, useSiteHeader} from "./header.js";
 import {SongList, filterRows, routeRows} from "./songs.js";
 import {detectLanguage, translator} from "./i18n.js";
-import {inlinedJson, loadSongs} from "./store.js";
+import {inlinedJson, loadSongs, remainingSeconds} from "./store.js";
 
 const boot = inlinedJson("boot");
 if (!boot) {
@@ -46,6 +46,7 @@ function App() {
     const [path, setPath] = useState(location.pathname);
     const [songs, setSongs] = useState(null);
     const [failed, setFailed] = useState(false);
+    const [progress, setProgress] = useState(null);
     const [query, setQuery] = useState("");
     const [openId, setOpenId] = useState(null);
     const [scrolled, setScrolled] = useState(false);
@@ -62,7 +63,9 @@ function App() {
 
     const load = useCallback(() => {
         setFailed(false);
-        loadSongs(urls.songs, setSongs).catch(() => setFailed(true));
+        loadSongs(urls.songs, setSongs, setProgress)
+            .catch(() => setFailed(true))
+            .finally(() => setProgress(null));
     }, []);
 
     useEffect(load, []);
@@ -129,7 +132,7 @@ function App() {
     } else if (songs === null) {
         content = failed
             ? html`<p class="empty">${_("The songs could not be loaded")} <button class="sb-btn" onClick=${load}>${_("Try again")}</button></p>`
-            : html`<div class="spinner" role="status" aria-label=${_("Loading…")}></div>`;
+            : html`<${Progress} progress=${progress} label=${_("Loading songs…")} retryLabel=${_("Fetching the whole list…")} centered _=${_} />`;
     } else {
         content = html`
             <div class="search">
@@ -142,9 +145,57 @@ function App() {
 
     return html`
         <${SiteHeader} site=${site} navigate=${navigate} />
+        ${songs !== null && progress && html`<${Progress} progress=${progress} label=${_("Updating songs…")} retryLabel=${_("Fetching the whole list…")} />`}
         <main>${content}</main>
         ${scrolled && html`<button class="sb-btn sb-primary fab" style="top:20px" title=${_("Back to top")} aria-label=${_("Back to top")} onClick=${() => scrollTo({top: 0, behavior: scrollBehavior()})}><${Icon} name="up" /></button>`}
         ${openId !== null && html`<button class="sb-btn sb-primary fab" style="bottom:20px" title=${_("Scroll down")} aria-label=${_("Scroll down")} onClick=${scrollDown}><${Icon} name="down" /></button>`}`;
+}
+
+function formatSize(bytes) {
+    return bytes < 1e6 ? `${Math.round(bytes / 1e3)} kB` : `${(bytes / 1e6).toFixed(1)} MB`;
+}
+
+// How long the last stretch of a download is looked at to tell its speed
+const SPEED_WINDOW = 3000;
+
+function formatRemaining(seconds, _) {
+    return seconds < 60
+        ? _("%s s left").replace("%s", Math.round(seconds))
+        : _("%s min left").replace("%s", Math.round(seconds / 60));
+}
+
+// A download's progress: a bar with a caption in the page's middle while there is nothing to show, otherwise a line
+// along the top. Without a known total the bar runs indeterminately.
+function Progress({progress, label, retryLabel, centered, _}) {
+    const {loaded, total, retry} = progress ?? {loaded: 0, total: 0};
+    const samples = useRef([]);
+    const text = retry ? retryLabel : label;
+    const ratio = total ? Math.min(1, loaded / total) : 0;
+    let detail = loaded ? formatSize(loaded) : "";
+    if (centered && total) {
+        const recent = samples.current;
+        if (recent.length && loaded < recent[recent.length - 1].loaded) {
+            recent.length = 0;
+        }
+        if (loaded > (recent[recent.length - 1]?.loaded ?? 0)) {
+            recent.push({time: performance.now(), loaded});
+        }
+        while (recent.length > 2 && performance.now() - recent[0].time > SPEED_WINDOW) {
+            recent.shift();
+        }
+        detail = `${formatSize(loaded)} / ${formatSize(total)} (${Math.round(ratio * 100)} %)`;
+        const seconds = recent.length > 1 && remainingSeconds(recent, total);
+        if (seconds) {
+            detail += ` · ${formatRemaining(seconds, _)}`;
+        }
+    }
+    return html`
+        <div class=${`progress${centered ? " centered" : ""}${total ? "" : " indeterminate"}`} role="progressbar"
+             aria-label=${text} aria-valuemin="0" aria-valuemax=${total || undefined}
+             aria-valuenow=${total ? loaded : undefined}>
+            <div style=${total ? {transform: `scaleX(${ratio})`} : undefined}></div>
+        </div>
+        ${centered && html`<p class="progress-caption" aria-hidden="true">${text} ${detail}</p>`}`;
 }
 
 const root = document.getElementById("app");
