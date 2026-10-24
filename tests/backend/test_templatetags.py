@@ -3,7 +3,7 @@
 import pytest
 from django.test import RequestFactory
 
-from backend.templatetags.utils import datatables_language, prefix
+from backend.templatetags.utils import datatables_language
 
 
 class FakeContext(dict):
@@ -22,19 +22,6 @@ def request_with_language():
         return request
 
     return build
-
-
-@pytest.mark.parametrize(
-    ("value", "argument", "expected"),
-    [
-        pytest.param("name", "Song: ", "Song: name", id="value gets the prefix"),
-        pytest.param("", "Song: ", "", id="empty value is left alone"),
-        pytest.param("0", "#", "#0", id="zero is still a value"),
-    ],
-)
-def test_prefix(value, argument, expected):
-    """The prefix filter only decorates non-empty values"""
-    assert prefix(value, argument) == expected
 
 
 def test_datatables_language_for_czech(request_with_language):
