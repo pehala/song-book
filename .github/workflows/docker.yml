@@ -10,33 +10,11 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
     permissions:
       contents: read
       packages: write
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-      - name: Name the build
-        id: version
-        run: |
-          echo "date=$(git log -1 --format=%ad --date=format:%Y/%m/%d)" >> "$GITHUB_OUTPUT"
-          echo "revision=${GITHUB_SHA::7}" >> "$GITHUB_OUTPUT"
-      - uses: redhat-actions/buildah-build@719e3c40d8af9790c23eca13f7daa339f2867034 # v3.1.0
-        id: build
-        with:
-          image: ${{ github.repository }}
-          tags: latest ${{ github.sha }}
-          containerfiles: Containerfile
-          # The image has no git, so the menu's version and revision are baked in here
-          build-args: |
-            BUILD_DATE=${{ steps.version.outputs.date }}
-            BUILD_REVISION=${{ steps.version.outputs.revision }}
+    uses: ./.github/workflows/build-image.yml
+    with:
+      tags: latest
       # Pull requests only prove the image builds; main publishes it for podman auto-update
-      - if: github.event_name == 'push'
-        uses: redhat-actions/push-to-registry@94ade333c38ecc0e60e94785125d9a52ca423b37 # v3.0.0
-        with:
-          image: ${{ steps.build.outputs.image }}
-          tags: ${{ steps.build.outputs.tags }}
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+      push: ${{ github.event_name == 'push' }}
