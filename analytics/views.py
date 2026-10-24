@@ -1,57 +1,44 @@
 """Analytics views"""
 
+import logging
 from datetime import timedelta
-from urllib.parse import urlparse
 
-from django.db import transaction
-from django.db.models import Sum
-from django.http import Http404, HttpRequest, HttpResponse, HttpResponseBadRequest, HttpResponseForbidden, JsonResponse
+from django.db import DatabaseError, IntegrityError, transaction
+from django.db.models import F, Sum
+from django.http import HttpRequest, HttpResponseBadRequest, JsonResponse
 
 # Create your views here.
 from django.urls import reverse
-from django.utils.decorators import method_decorator
 from django.utils.timezone import now
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import TemplateView
 
 from analytics.models import DayStatistic
 from backend.mixins import LocalAdminRequired
 
-
-def analytics(request, key):
-    """Adds hit"""
-    with transaction.atomic():
-        statistic, _ = DayStatistic.objects.get_or_create(key=key, date=now(), tenant=request.tenant)
-        statistic.hits += 1
-        statistic.save()
-
+logger = logging.getLogger(__name__)
 
 ALL_SONGS_KEY = "all"
 
 
-def is_same_origin(request: HttpRequest) -> bool:
-    """Whether the request was made by a page of this very site"""
-    origin = request.headers.get("Origin")
-    if origin:
-        return urlparse(origin).netloc == request.get_host()
-    return request.headers.get("Sec-Fetch-Site") == "same-origin"
+def add_hit(request, key):
+    """Adds one hit to today's counter of the key, creating the counter on the first hit of the day"""
+    today = DayStatistic.objects.filter(tenant=request.tenant, key=key, date=now().date())
+    if today.update(hits=F("hits") + 1):
+        return
+    try:
+        with transaction.atomic():
+            DayStatistic.objects.create(tenant=request.tenant, key=key, hits=1)
+    except IntegrityError:
+        today.update(hits=F("hits") + 1)
 
 
-@method_decorator(csrf_exempt, name="dispatch")
-class HitView(View):
-    """Counts a page view reported by the reader, which navigates without loading pages"""
-
-    http_method_names = ["post", "options"]
-
-    def post(self, request: HttpRequest, key: str):
-        """Adds a hit for the key, which is the slug of one of the tenant's categories or `all`"""
-        if not is_same_origin(request):
-            return HttpResponseForbidden()
-        if key != ALL_SONGS_KEY and not request.tenant.category_set.filter(slug=key).exists():
-            raise Http404(key)
-        analytics(request, key)
-        return HttpResponse(status=204)
+def analytics(request, key):
+    """Adds hit; a failing database must not break the request being counted"""
+    try:
+        add_hit(request, key)
+    except DatabaseError:
+        logger.exception("Could not count a hit for %s", key)
 
 
 class AnalyticsShowView(LocalAdminRequired, TemplateView):
