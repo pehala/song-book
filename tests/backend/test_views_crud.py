@@ -269,3 +269,56 @@ def test_an_edit_and_a_delete_schedule_one_file(staff_client, printed_category, 
     staff_client.post(reverse("backend:delete", kwargs={"pk": Song.objects.get(name="First").pk}))
 
     assert PDFFile.objects.filter(template=printed).count() == 1
+
+
+@pytest.mark.parametrize("name", ["backend:edit", "backend:delete"])
+def test_pages_of_a_song_of_another_tenant_are_not_found(staff_client, other_category, make_song, name):
+    """A local admin cannot reach songs listed only by another tenant."""
+    foreign = make_song(other_category, name="Foreign Song")
+
+    response = staff_client.get(reverse(name, kwargs={"pk": foreign.pk}))
+
+    assert response.status_code == 404
+
+
+def test_song_of_another_tenant_cannot_be_updated(staff_client, category, other_category, make_song):
+    """Saving the edit form of a foreign song changes nothing."""
+    foreign = make_song(other_category, name="Foreign Song")
+
+    response = staff_client.post(reverse("backend:edit", kwargs={"pk": foreign.pk}), song_payload(category))
+
+    assert response.status_code == 404
+    foreign.refresh_from_db()
+    assert foreign.name == "Foreign Song"
+    assert list(foreign.categories.all()) == [other_category]
+
+
+def test_song_of_another_tenant_cannot_be_deleted(staff_client, other_category, make_song):
+    """Confirming the deletion of a foreign song leaves it in place."""
+    foreign = make_song(other_category, name="Foreign Song")
+
+    response = staff_client.post(reverse("backend:delete", kwargs={"pk": foreign.pk}))
+
+    assert response.status_code == 404
+    assert Song.objects.filter(pk=foreign.pk).exists()
+
+
+def test_update_keeps_the_categories_of_other_tenants(staff_client, category, other_category, make_song):
+    """A song shared with another tenant stays in that tenant's categories."""
+    shared = make_song(category, other_category, name="Shared Song")
+
+    staff_client.post(reverse("backend:edit", kwargs={"pk": shared.pk}), song_payload(category, name="Renamed"))
+
+    shared.refresh_from_db()
+    assert shared.name == "Renamed"
+    assert set(shared.categories.all()) == {category, other_category}
+
+
+def test_delete_of_a_shared_song_only_leaves_this_tenant(staff_client, category, other_category, make_song):
+    """A song another tenant lists as well is taken out of this tenant's categories instead of being deleted."""
+    shared = make_song(category, other_category, name="Shared Song")
+
+    response = staff_client.post(reverse("backend:delete", kwargs={"pk": shared.pk}))
+
+    assert response.status_code == 302
+    assert list(shared.categories.all()) == [other_category]

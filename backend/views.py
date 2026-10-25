@@ -2,7 +2,7 @@
 
 import hashlib
 
-from django.http import HttpResponse, JsonResponse
+from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse_lazy
 from django.utils.cache import get_conditional_response
 from django.views import View
@@ -87,8 +87,17 @@ class SongCreateView(LocalAdminRequired, PassRequestToFormMixin, UniversalCreate
         return super().get_success_url()
 
 
+class TenantSongsMixin:
+    """Limits the songs a view can reach to those in a category of the current Tenant."""
+
+    def get_queryset(self):
+        """Returns the songs in a category of the current Tenant."""
+        return super().get_queryset().filter(categories__tenant=self.request.tenant).distinct()
+
+
 class SongUpdateView(
     LocalAdminRequired,
+    TenantSongsMixin,
     PassRequestToFormMixin,
     RegenerateViewMixin,
     UniversalUpdateView,
@@ -107,8 +116,8 @@ class SongUpdateView(
         return response
 
 
-class SongDeleteView(LocalAdminRequired, UniversalDeleteView):
-    """Removes song."""
+class SongDeleteView(LocalAdminRequired, TenantSongsMixin, UniversalDeleteView):
+    """Removes song; a song that other Tenants list as well only leaves the categories of the current one."""
 
     model = Song
     success_url = reverse_lazy("backend:index")
@@ -117,3 +126,11 @@ class SongDeleteView(LocalAdminRequired, UniversalDeleteView):
         """Schedules the PDF regeneration for the song's categories before it is deleted."""
         regenerate_pdf(self.get_object())
         return super().post(request, *args, **kwargs)
+
+    def form_valid(self, form):
+        """Deletes the song, or takes it out of this Tenant's categories when another Tenant lists it too."""
+        own = self.object.categories.filter(tenant=self.request.tenant)
+        if self.object.categories.exclude(tenant=self.request.tenant).exists():
+            self.object.categories.remove(*own)
+            return HttpResponseRedirect(self.get_success_url())
+        return super().form_valid(form)

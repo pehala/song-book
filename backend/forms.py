@@ -1,5 +1,6 @@
 """Forms for backend app."""
 
+from django.db.models import Q
 from django.forms import CheckboxSelectMultiple, ModelForm, ModelMultipleChoiceField
 
 from backend.models import Song
@@ -23,3 +24,11 @@ class SongForm(AdminSongForm):
         self.request = kwargs.pop("request")
         super().__init__(*args, **kwargs)
         self.fields["categories"].queryset = Category.objects.filter(tenant=self.request.tenant)
+
+    def clean_categories(self):
+        """Keeps the categories the song has in other tenants, which this form neither shows nor changes."""
+        chosen = self.cleaned_data["categories"]
+        if not self.instance.pk:
+            return chosen
+        kept = self.instance.categories.exclude(tenant=self.request.tenant)
+        return Category.objects.filter(Q(pk__in=chosen) | Q(pk__in=kept))
