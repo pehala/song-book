@@ -152,3 +152,50 @@ def test_delete_invalidates_songs_cache(staff_client, anon_client, tenant, categ
     staff_client.post(reverse("category:delete", kwargs={"pk": category.pk}))
 
     assert cache.get(key) is None
+
+
+@pytest.mark.parametrize("name", ["category:edit", "category:delete"])
+def test_pages_of_a_category_of_another_tenant_are_not_found(staff_client, other_category, name):
+    """A local admin cannot reach categories of another tenant."""
+    response = staff_client.get(reverse(name, kwargs={"pk": other_category.pk}))
+
+    assert response.status_code == 404
+
+
+def test_category_of_another_tenant_cannot_be_updated(staff_client, other_tenant, other_category):
+    """Saving the edit form of a foreign category changes nothing."""
+    url = reverse("category:edit", kwargs={"pk": other_category.pk})
+
+    response = staff_client.post(url, category_payload(other_tenant, name="Renamed", slug=other_category.slug))
+
+    assert response.status_code == 404
+    other_category.refresh_from_db()
+    assert other_category.name == "Other Category"
+
+
+def test_category_of_another_tenant_cannot_be_deleted(staff_client, other_category):
+    """Confirming the deletion of a foreign category leaves it in place."""
+    response = staff_client.post(reverse("category:delete", kwargs={"pk": other_category.pk}))
+
+    assert response.status_code == 404
+    assert Category.objects.filter(pk=other_category.pk).exists()
+
+
+def test_category_cannot_be_created_in_another_tenant(staff_client, other_tenant):
+    """The hidden tenant field only accepts the tenant being served."""
+    response = staff_client.post(reverse("category:add"), category_payload(other_tenant))
+
+    assert response.status_code == 200
+    assert "tenant" in response.context["form"].errors
+    assert not Category.objects.filter(name="Created Category").exists()
+
+
+def test_category_cannot_be_moved_to_another_tenant(staff_client, tenant, other_tenant, category):
+    """Editing a category cannot hand it over to another tenant."""
+    url = reverse("category:edit", kwargs={"pk": category.pk})
+
+    staff_client.post(url, category_payload(other_tenant, name="Renamed", slug=category.slug))
+
+    category.refresh_from_db()
+    assert category.tenant == tenant
+    assert category.name != "Renamed"
