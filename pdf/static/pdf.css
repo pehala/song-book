@@ -24,7 +24,7 @@
          width: 100%;
     }
      @top-center {
-         content: string(title);
+         content: string(title, first-except);
          font-size: 9pt;
          height: 1cm;
          vertical-align: middle;
@@ -197,4 +197,33 @@
      @top-right {
          vertical-align: top;
     }
+}
+
+ .contents-list .contents-section {
+     break-after: avoid;
+     break-inside: avoid;
+     margin-top: 8pt;
+     font-size: 10pt;
+     font-weight: bold;
+     border-bottom: .5pt solid #999;
+}
+ .contents-list .contents-section a {
+     padding-left: 0;
+}
+ .section-start {
+     break-before: page;
+}
+ .section-start h2 {
+     break-before: avoid;
+}
+ .section-title {
+     string-set: title content();
+     font-size: 11pt;
+     font-weight: bold;
+     letter-spacing: .15em;
+     text-transform: uppercase;
+     color: #555;
+     border-bottom: .5pt solid #999;
+     padding-bottom: 3pt;
+     margin: 0 0 14pt;
 }
