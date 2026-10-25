@@ -49,12 +49,16 @@ class ManualPDFTemplate(PDFTemplate):
     songs = ManyToManyField(Song, through="PDFSong")
     name = CharField(_("Template Name"), help_text=_("Name of this template, only shown internally"), max_length=255)
 
+    def get_sections(self) -> list[Section]:
+        """The songs in the order of their numbers, divided into the sections they are labelled with."""
+        return group_sections(
+            (pdf_song.song_number, pdf_song.song, pdf_song.section)
+            for pdf_song in PDFSong.objects.filter(request=self).select_related("song").order_by("song_number")
+        )
+
     def get_songs(self) -> Iterable[tuple[int, Song]]:
         """Returns all songs for PDFTemplate."""
-        return [
-            (pdf_song.song_number, pdf_song.song)
-            for pdf_song in PDFSong.objects.filter(request=self).select_related("song")
-        ]
+        return [numbered for section in self.get_sections() for numbered in section.songs]
 
     class Meta:
         verbose_name = _("File Template")
@@ -187,6 +191,12 @@ class PDFSong(Model):
     song = ForeignKey(Song, on_delete=CASCADE)
     request = ForeignKey(ManualPDFTemplate, on_delete=CASCADE)
     song_number = PositiveIntegerField(validators=[MinValueValidator(1)], verbose_name=_("Song number"))
+    section = CharField(
+        max_length=100,
+        blank=True,
+        help_text=_("Title of the section the song starts or continues, empty for none"),
+        verbose_name=_("Section"),
+    )
 
     class Meta:
         constraints = [

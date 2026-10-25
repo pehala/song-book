@@ -20,10 +20,10 @@ from backend.mixins import LocalAdminRequired, TenantObjectsMixin
 from backend.models import Song
 from category.forms import NameForm
 from category.models import Category
-from pdf.forms import BasePDFSongFormset, ManualTemplateForm, PDFSongForm, SongSelectionForm
+from pdf.forms import BasePDFSongFormset, ManualTemplateForm, PDFSongForm, SectionStart, SongSelectionForm
 from pdf.generate import AllowedTemplates, generate_pdf_file
 from pdf.models import PDFTemplate
-from pdf.models.request import ManualPDFTemplate, PDFFile
+from pdf.models.request import ManualPDFTemplate, PDFFile, PDFSong, category_rows
 from tenants.utils import tenant_cache_key
 from tenants.views import AdminMoveView
 
@@ -86,13 +86,14 @@ class TemplateNumberingMixin:
 
     PDFSongFormset = formset_factory(PDFSongForm, formset=BasePDFSongFormset, min_num=1, validate_min=True, extra=0)
 
-    def render_assign_template(self, pk=None, formset=None, songs: Iterable[Song] | None = None):
-        """Renders assign template."""
+    def render_assign_template(self, pk=None, formset=None, rows: Iterable[tuple[int, Song, str]] | None = None):
+        """Renders assign template, with a row for each (number, song, section) of `rows` unless given a formset."""
         formset = formset or self.PDFSongFormset(
             prefix="songs",
             form_kwargs={"request": self.request},
             initial=[
-                {"name": song.name, "song_number": number, "song": song} for number, song in enumerate(songs, start=1)
+                {"name": song.name, "song_number": number, "song": song, "section": section}
+                for number, song, section in rows
             ],
         )
         pk = pk or self.kwargs.get("pk")
@@ -139,6 +140,22 @@ class UpdateTemplateView(LocalAdminRequired, TemplateNumberingMixin, TemplateVie
         """Returns the edited template, which has to belong to the current tenant."""
         return get_object_or_404(ManualPDFTemplate, pk=self.kwargs["pk"], tenant=self.request.tenant)
 
+    def numbered_rows(self, template: ManualPDFTemplate, songs, sections: str) -> list[tuple[int, Song, str]]:
+        """The songs as (number, song, section) in the order to start ordering them from.
+
+        By category when asked to; otherwise the songs the template has keep their order and section and the
+        ones added to it follow, without a section.
+        """
+        if sections == SectionStart.CATEGORY:
+            return category_rows(self.request.tenant, songs)
+        stored = {pdf_song.song_id: pdf_song for pdf_song in PDFSong.objects.filter(request=template)}
+        kept = sorted((song for song in songs if song.pk in stored), key=lambda song: stored[song.pk].song_number)
+        added = [song for song in songs if song.pk not in stored]
+        return [
+            (number, song, stored[song.pk].section if song.pk in stored else "")
+            for number, song in enumerate(kept + added, start=1)
+        ]
+
     def post(self, request, *args, **kwargs):
         """Handles post request, shows assign.html to user to assign numbers to requested songs."""
         instance = self.get_template() if "pk" in self.kwargs else ManualPDFTemplate(tenant=self.request.tenant)
@@ -156,7 +173,8 @@ class UpdateTemplateView(LocalAdminRequired, TemplateNumberingMixin, TemplateVie
                     self.request,
                     _("File Template '%(name)s' was successfully created") % {"name": template.name},
                 )
-            return self.render_assign_template(pk=template.pk, songs=songs_form.cleaned_data["songs"])
+            rows = self.numbered_rows(template, songs_form.cleaned_data["songs"], songs_form.cleaned_data["sections"])
+            return self.render_assign_template(pk=template.pk, rows=rows)
         return self.render_to_response(self.get_context_data(template_form=template_form, songs_form=songs_form))
 
 

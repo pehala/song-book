@@ -12,7 +12,8 @@ class NoopWidget(Widget):
 
     def render(self, name, value, attrs=None, renderer=None):
         """Renders nothing."""
-        return ""
+        # Safe, so that a form renderer joining the fields does not escape the ones rendered after it
+        return mark_safe("")
 
     def value_from_datadict(self, data, files, name):
         """Returns the submitted values, a list when the data has several for the name."""

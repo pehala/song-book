@@ -23,8 +23,8 @@
 {#    <p class="text-center fw-bold">{% trans "Please, now please fill all the details for the PDF and choose song ordering" %}</p>#}
     <form id="assign_form" method="post" enctype="multipart/form-data">
         {% csrf_token %}
-        {% bootstrap_form songs_form %}
         {% bootstrap_form template_form %}
+        {% bootstrap_form songs_form %}
         <select id="select" name="songs" class="d-none" multiple="multiple"></select>
     </form>
     <p class="text-center fw-bold">{% trans "Please enter the file configuration options and select the songs to include" %}</p>

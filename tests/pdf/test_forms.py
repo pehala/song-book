@@ -86,6 +86,41 @@ def test_missing_field_falls_back_to_the_default(tenant_request):
     assert form.get_list_field_value("songs", ["fallback"]) == ["fallback"]
 
 
+@pytest.mark.parametrize("sections", ["", "category"])
+def test_sections_may_be_none_or_by_category(tenant_request, song, sections):
+    """Both ways of starting the sections are accepted, and none is the default."""
+    form = SongSelectionForm(QueryDict(f"songs={song.pk}&sections={sections}"), request=tenant_request)
+
+    assert form.is_valid()
+    assert form.cleaned_data["sections"] == sections
+
+
+def test_sections_are_optional(tenant_request, song):
+    """A form without the choice starts without sections."""
+    form = SongSelectionForm(QueryDict(f"songs={song.pk}"), request=tenant_request)
+
+    assert form.is_valid()
+    assert form.cleaned_data["sections"] == ""
+
+
+def test_other_sections_are_refused(tenant_request, song):
+    """Only the offered choices are accepted."""
+    form = SongSelectionForm(QueryDict(f"songs={song.pk}&sections=alphabet"), request=tenant_request)
+
+    assert not form.is_valid()
+
+
+def test_a_song_is_stored_with_its_section(tenant_request, song):
+    """The section of a row is read from the formset, and an empty one means no section."""
+    data = formset_data((song, 1))
+    data["songs-0-section"] = "Camp"
+
+    formset = Formset(data, prefix="songs", form_kwargs={"request": tenant_request})
+
+    assert formset.is_valid()
+    assert formset.forms[0].cleaned_data["section"] == "Camp"
+
+
 def test_distinct_song_numbers_are_accepted(tenant_request, song, make_song, category):
     """Every song may hold its own position."""
     second = make_song(category, name="Second Song")
@@ -102,6 +137,46 @@ def test_duplicate_song_numbers_are_refused(tenant_request, song, make_song, cat
     formset = Formset(formset_data((song, 1), (second, 1)), prefix="songs", form_kwargs={"request": tenant_request})
 
     assert not formset.is_valid()
+
+
+def sectioned_formset(tenant_request, song, make_song, category, *sections):
+    """A formset with a song for each of the sections, numbered from 1, the section of a song being its name."""
+    songs = [song] + [make_song(category, name=f"Song {index}") for index in range(len(sections) - 1)]
+    data = formset_data(*[(song, number) for number, song in enumerate(songs, start=1)])
+    for index, section in enumerate(sections):
+        data[f"songs-{index}-section"] = section
+    return Formset(data, prefix="songs", form_kwargs={"request": tenant_request})
+
+
+def test_sections_in_one_piece_are_accepted(tenant_request, song, make_song, category):
+    """A section may hold several songs, as long as they are together."""
+    assert sectioned_formset(tenant_request, song, make_song, category, "Camp", "Camp", "Evening", "").is_valid()
+
+
+def test_a_section_that_comes_back_is_refused(tenant_request, song, make_song, category):
+    """Camp, Evening, Camp would print two Camp sections, so the admin is told which one is split."""
+    formset = sectioned_formset(tenant_request, song, make_song, category, "Camp", "Evening", "Camp")
+
+    assert not formset.is_valid()
+    assert formset.non_form_errors() == ["Každá sekce musí být vcelku, tyto jsou rozdělené: Camp"]
+
+
+def test_the_sections_are_checked_in_the_order_of_the_numbers(tenant_request, song, make_song, category):
+    """The order of the rows posted does not matter, the numbers do."""
+    first, second, third = song, make_song(category, name="Second"), make_song(category, name="Third")
+    data = formset_data((third, 1), (first, 3), (second, 2))
+    for index, section in enumerate(["Camp", "Camp", "Evening"]):
+        data[f"songs-{index}-section"] = section
+
+    assert not Formset(data, prefix="songs", form_kwargs={"request": tenant_request}).is_valid()
+
+
+def test_songs_without_a_section_after_the_sections_are_split_up(tenant_request, song, make_song, category):
+    """Songs without a section that come back after another section are all titled alike, so they are refused too."""
+    formset = sectioned_formset(tenant_request, song, make_song, category, "Camp", "", "Evening", "")
+
+    assert not formset.is_valid()
+    assert "Ostatní" in formset.non_form_errors()[0]
 
 
 def test_invalid_entries_short_circuit_the_check(tenant_request, song):

@@ -1,0 +1,6 @@
+{% load i18n %}
+<div class="section-row d-flex flex-row align-items-center border border-primary rounded bg-body-secondary p-2 mt-2">
+    <span class="fw-bold me-2" style="cursor: move;">{% trans "Section" %}</span>
+    <input type="text" maxlength="100" class="form-control form-control-sm me-2" value="{{ title }}" placeholder="{% trans "Section title" %}" aria-label="{% trans "Section title" %}">
+    <button type="button" class="btn-close remove-section" aria-label="{% trans "Remove section" %}"></button>
+</div>

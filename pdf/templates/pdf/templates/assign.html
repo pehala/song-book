@@ -23,9 +23,13 @@
     {{ formset.management_form }}
     {{ formset.non_form_errors.as_ul }}
     <h4>{% trans "Song numbers" %}</h4>
+    <p class="text-muted">{% trans "A song belongs to the section above it, a new section starts at its heading." %}</p>
     <div id="sortable" class="mb-3">
     {% for form in formset.forms %}
-        <div class="d-flex flex-row border border-secondary pt-2 ps-2 mt-2 pe-2 rounded">
+        {% with section=form.section.value|default:"" %}
+        {% ifchanged section %}{% if section or not forloop.first %}{% include "pdf/templates/section_row.html" with title=section %}{% endif %}{% endifchanged %}
+        {% endwith %}
+        <div class="song-row d-flex flex-row border border-secondary pt-2 ps-2 mt-2 pe-2 rounded">
             {% for hidden in form.hidden_fields %}
                 {{ hidden }}
             {% endfor %}
@@ -35,7 +39,9 @@
         </div>
     {% endfor %}
     </div>
+    <template id="section-template">{% include "pdf/templates/section_row.html" with title="" %}</template>
 
+    {% bootstrap_button _("Add section") button_type="button" button_class="btn-outline-primary" id="add-section"%}
     {% bootstrap_button _("Sort by name") button_type="button" button_class="btn-secondary" id="sort"%}
     {% bootstrap_button _("Finish") button_type="submit"%}
     {{ form.media }}
@@ -44,25 +50,61 @@
     const sortable = $('#sortable')
     function reassign_numbers() {
         let i = 1;
-        for (let element of sortable.find("input[type='number']")) {
-            element = $(element)
-            element.val((i++).toString())
+        for (let element of sortable.find(".song-row input[type='number']")) {
+            $(element).val((i++).toString())
         }
+    }
+    function assign_sections() {
+        let title = ""
+        for (let element of sortable.children()) {
+            const row = $(element)
+            if (row.hasClass("section-row")) {
+                title = row.find("input").val().trim()
+            } else {
+                row.find("input[type='hidden'][name$='-section']").val(title)
+            }
+        }
+    }
+    function update() {
+        reassign_numbers()
+        assign_sections()
     }
     function sort_by_name() {
-        const list = []
-        for (let element of sortable.find("input[type='text']")) {
-            element = $(element)
-            list.push([element.val(), element.parent().parent()])
+        const rows = []
+        let run = []
+        function flush() {
+            run.sort((a, b) => a.name.localeCompare(b.name))
+            rows.push(...run.map((song) => song.row))
+            run = []
         }
-        list.sort((a, b) => a[0].localeCompare(b[0]))
-
-        sortable.empty().html(list.map((a) => a[1]));
-        reassign_numbers()
+        for (let element of sortable.children()) {
+            const row = $(element)
+            if (row.hasClass("section-row")) {
+                flush()
+                rows.push(element)
+            } else {
+                run.push({name: row.find("input[type='text']").val(), row: element})
+            }
+        }
+        flush()
+        sortable.empty().append(rows)
+        update()
+    }
+    function add_section() {
+        sortable.prepend(document.getElementById("section-template").content.cloneNode(true))
+        sortable.children().first().find("input").focus()
+        update()
     }
     $("#sort").click(sort_by_name)
+    $("#add-section").click(add_section)
+    sortable.on("input", ".section-row input", assign_sections)
+    sortable.on("click", ".remove-section", (event) => {
+        $(event.target).closest(".section-row").remove()
+        update()
+    })
+    sortable.closest("form").on("submit", assign_sections)
     sortable.sortable({
-      update: reassign_numbers
+      update: update
     });
     for (let element of sortable.find("input[type='number']")) {
             element = $(element)

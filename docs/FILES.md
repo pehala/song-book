@@ -10,6 +10,12 @@
 * User created template for creating PDFFiles
 * Schedule manually
 * Songs need to be configured manually
+* Each song carries the title of its section (`PDFSong.section`, empty for none); a run of songs with one title,
+  in the order of their numbers, is a section, so the numbers run through all of them. The page that orders the songs
+  has a heading row for each section: dragging a heading moves where the section starts, and the page writes the
+  title of the heading above a song into the song when it is sent. The song selection can start the sections off
+  by category, a song under the first category it is in. A section has to be in one piece: the page refuses an
+  order in which a title comes back after another section
 
 #### Category
 * Category is a subclass of PDFTemplate.

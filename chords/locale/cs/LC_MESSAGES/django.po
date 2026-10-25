@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: chords\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 14:33-0500\n"
+"POT-Creation-Date: 2026-10-25 14:45-0500\n"
 "PO-Revision-Date: 2026-10-25 12:00+0000\n"
 "Last-Translator: pehala <halapetr@selfnet.cz>\n"
 "Language-Team: Czech\n"
@@ -225,11 +225,27 @@ msgstr "Zpěvník %(name)s: texty s akordy, které fungují i offline"
 msgid "Move Template to a different Tenant"
 msgstr "Přesunout Šablony do jiného Zpěvníku"
 
+msgid "No sections"
+msgstr "Bez sekcí"
+
+msgid "By category"
+msgstr "Podle kategorií"
+
+msgid "Sections"
+msgstr "Sekce"
+
+msgid "Divide the songs into sections, which can be changed when ordering them"
+msgstr "Rozdělí písničky do sekcí, které jde změnit při řazení písniček"
+
 msgid "No songs selected"
 msgstr "Nevybrány žádné písničky"
 
 msgid "Each song must have a distinct number"
 msgstr "Každá písnička musí mít jedinečné číslo"
+
+#, python-format
+msgid "Each section has to be in one piece, these are split up: %(titles)s"
+msgstr "Každá sekce musí být vcelku, tyto jsou rozdělené: %(titles)s"
 
 msgctxt "title of the songs outside the sections"
 msgid "Other"
@@ -365,6 +381,13 @@ msgstr "Soubory"
 msgid "Song number"
 msgstr "Číslo písničky"
 
+msgid "Title of the section the song starts or continues, empty for none"
+msgstr ""
+"Název sekce, kterou písnička začíná nebo v ní pokračuje, prázdný pro žádnou"
+
+msgid "Section"
+msgstr "Sekce"
+
 msgid "No."
 msgstr "Číslo"
 
@@ -408,6 +431,13 @@ msgstr "Zvolte prosím pořadí písniček a jejich čísla"
 msgid "Song numbers"
 msgstr "Čísla písniček"
 
+msgid ""
+"A song belongs to the section above it, a new section starts at its heading."
+msgstr "Písnička patří do sekce nad ní, nová sekce začíná svým nadpisem."
+
+msgid "Add section"
+msgstr "Přidat sekci"
+
 msgid "Sort by name"
 msgstr "Seřadit podle názvu"
 
@@ -419,6 +449,12 @@ msgstr "Přidat Šablonu"
 
 msgid "Generate"
 msgstr "Generovat"
+
+msgid "Section title"
+msgstr "Název sekce"
+
+msgid "Remove section"
+msgstr "Odebrat sekci"
 
 msgid "Create new File Template"
 msgstr "Vytvořit novou Šablonu"
