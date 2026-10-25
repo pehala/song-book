@@ -303,14 +303,13 @@ package — the `__init__.py` files are what keep same-named modules such as
 `backend/test_models.py` and `category/test_models.py` from colliding.
 
 `tests/conftest.py` provides the shared fixtures: `tenant`/`other_tenant`, `category`, `song`,
-`archived_song`, the `make_category`/`make_song` factories, `manual_template`, `pdf_file`,
+`archived_song`, the `make_category`/`make_song`/`make_pdf_file` factories, `manual_template`, `pdf_file`,
 `superuser`/`staff_user`/`plain_user` and the matching `Client` fixtures. Three autouse fixtures
 clear the cache, flush the task queue and point `MEDIA_ROOT` at a `tmp_path`, so generated PDFs
 and uploads never reach the source tree. A session-scoped autouse fixture, `compiled_messages`, compiles the `.po` files with `msgfmt` into a
 temporary directory and points `LOCALE_PATHS` there, so the tests run in the default language (Czech) with real translations whatever
 `.mo` files lie in the source tree; assert the Czech strings. The e2e browser is pinned to `en-US`
-(`browser_context_args`), so the reader is English there until a test switches the language. `tests/pdf/conftest.py` adds the PDF-only fixtures and
-overrides `manual_template` for that directory; fixtures used by a single
+(`browser_context_args`), so the reader is English there until a test switches the language. `tests/pdf/conftest.py` adds the PDF-only fixtures; fixtures used by a single
 module live in that module. The initial migration already seeds a category for the default
 tenant, so tests look categories up by slug rather than assume the fixture is the only one.
 `tests/backend/test_signals.py` covers the signal-driven invalidation and prerender-on-save;

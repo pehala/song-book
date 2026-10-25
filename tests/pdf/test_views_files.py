@@ -5,9 +5,7 @@ import json
 import pytest
 from django.conf import settings
 from django.core.cache import cache
-from django.core.files.base import ContentFile
 from django.urls import reverse
-from django.utils.timezone import now
 
 from pdf.models import Status
 from pdf.models.request import PDFFile
@@ -27,23 +25,14 @@ def prime_menu_cache(tenant):
 
 
 @pytest.fixture
-def finished_file(tenant, category):
+def finished_file(category, make_pdf_file):
     """A finished PDF file of the category."""
-    file = PDFFile.objects.create(
-        tenant=tenant,
-        template=category,
-        filename="songbook",
-        status=Status.DONE,
-        update_date=now(),
-        progress=7,
-    )
-    file.file.save("songbook.pdf", ContentFile(b"%PDF-"))
-    return file
+    return make_pdf_file(category, status=Status.DONE, progress=7, content=b"%PDF-")
 
 
-def test_list_shows_files_of_this_tenant_only(staff_client, pdf_file, other_tenant):
+def test_list_shows_files_of_this_tenant_only(staff_client, pdf_file, other_tenant, make_pdf_file):
     """The file list is scoped to the tenant being served."""
-    foreign = PDFFile.objects.create(tenant=other_tenant, filename="foreign", update_date=now())
+    foreign = make_pdf_file(tenant=other_tenant)
 
     listed = staff_client.get(reverse("pdf:files:list")).context["files"]
 
@@ -132,27 +121,29 @@ def test_info_reports_a_finished_file(anon_client, finished_file):
     assert data["progress"] == 7
 
 
-def test_template_edit_redirects_to_the_category(staff_client, pdf_file, category):
-    """Files generated from a category lead back to the category form."""
-    response = staff_client.get(reverse("pdf:files:template_edit", kwargs={"pk": pdf_file.pk}))
-
-    assert response.status_code == 302
-    assert response["Location"] == reverse("category:edit", kwargs={"pk": category.pk})
-
-
-def test_template_edit_redirects_to_the_manual_template(staff_client, tenant, manual_template):
-    """Files generated from a manual template lead back to the template form."""
-    file = PDFFile.objects.create(tenant=tenant, template=manual_template, filename="manual", update_date=now())
+@pytest.mark.parametrize(
+    ("template_fixture", "edit_view"),
+    [
+        pytest.param("category", "category:edit", id="category"),
+        pytest.param("manual_template", "pdf:templates:edit", id="manual template"),
+    ],
+)
+def test_template_edit_redirects_to_the_form_of_the_template(
+    request, staff_client, make_pdf_file, template_fixture, edit_view
+):
+    """A file leads back to the form of the template it was generated from."""
+    template = request.getfixturevalue(template_fixture)
+    file = make_pdf_file(template)
 
     response = staff_client.get(reverse("pdf:files:template_edit", kwargs={"pk": file.pk}))
 
     assert response.status_code == 302
-    assert response["Location"] == reverse("pdf:templates:edit", kwargs={"pk": manual_template.pk})
+    assert response["Location"] == reverse(edit_view, kwargs={"pk": template.pk})
 
 
-def test_template_edit_redirects_to_the_all_songs_form(staff_client, tenant, all_songs_template):
+def test_template_edit_redirects_to_the_all_songs_form(staff_client, all_songs_template, make_pdf_file):
     """Files generated from the all songs template lead back to its form."""
-    file = PDFFile.objects.create(tenant=tenant, template=all_songs_template, filename="all", update_date=now())
+    file = make_pdf_file(all_songs_template)
 
     response = staff_client.get(reverse("pdf:files:template_edit", kwargs={"pk": file.pk}))
 
@@ -160,13 +151,13 @@ def test_template_edit_redirects_to_the_all_songs_form(staff_client, tenant, all
     assert response["Location"] == reverse("category:edit_all")
 
 
-def test_template_edit_without_a_template(staff_client, tenant):
+def test_template_edit_without_a_template(staff_client, make_pdf_file):
     """A file whose template is gone answers with a 404.
 
     The template FK is SET_NULL, so orphaned files happen whenever a category or
     manual template is deleted.
     """
-    file = PDFFile.objects.create(tenant=tenant, filename="orphan", update_date=now())
+    file = make_pdf_file()
 
     response = staff_client.get(reverse("pdf:files:template_edit", kwargs={"pk": file.pk}))
 
@@ -174,11 +165,9 @@ def test_template_edit_without_a_template(staff_client, tenant):
 
 
 @pytest.fixture
-def foreign_file(other_category):
+def foreign_file(other_category, make_pdf_file):
     """A file of another tenant."""
-    return PDFFile.objects.create(
-        tenant=other_category.tenant, template=other_category, filename="foreign", update_date=now()
-    )
+    return make_pdf_file(other_category)
 
 
 def test_template_of_a_file_of_another_tenant_is_not_found(staff_client, foreign_file):
@@ -217,7 +206,7 @@ def test_progress_of_a_file_of_another_tenant_is_not_found(anon_client, foreign_
 
 def test_generate_now_generates_the_file_and_shows_its_progress(staff_client, make_pdf_file, category, mock_weasyprint):
     """Posting to the generate now page generates the scheduled file and leads to its waiting page."""
-    file = make_pdf_file(category)
+    file = make_pdf_file(category, status=Status.SCHEDULED)
 
     response = staff_client.post(reverse("pdf:files:generate_now", kwargs={"pk": file.pk}))
 
@@ -239,7 +228,7 @@ def test_generate_now_refuses_a_file_that_is_not_scheduled(staff_client, make_pd
 
 def test_generate_now_needs_a_post(staff_client, make_pdf_file, category):
     """Generating is not started by opening a link."""
-    file = make_pdf_file(category)
+    file = make_pdf_file(category, status=Status.SCHEDULED)
 
     response = staff_client.get(reverse("pdf:files:generate_now", kwargs={"pk": file.pk}))
 
@@ -248,7 +237,7 @@ def test_generate_now_needs_a_post(staff_client, make_pdf_file, category):
 
 def test_generate_now_is_for_local_admins(anon_client, plain_client, make_pdf_file, category, mock_weasyprint):
     """Neither visitors nor users without rights can generate a scheduled file now."""
-    file = make_pdf_file(category)
+    file = make_pdf_file(category, status=Status.SCHEDULED)
     url = reverse("pdf:files:generate_now", kwargs={"pk": file.pk})
 
     assert anon_client.post(url).status_code == 302
@@ -269,7 +258,7 @@ def test_generate_now_of_a_file_of_another_tenant_is_not_found(staff_client, for
 
 def test_only_scheduled_files_offer_generating_now(staff_client, make_pdf_file, category):
     """The file list offers to generate a scheduled file now, and not a finished one."""
-    scheduled = make_pdf_file(category)
+    scheduled = make_pdf_file(category, status=Status.SCHEDULED)
     url = reverse("pdf:files:generate_now", kwargs={"pk": scheduled.pk})
 
     assert url in staff_client.get(reverse("pdf:files:list")).content.decode()

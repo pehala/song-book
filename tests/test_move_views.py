@@ -7,9 +7,7 @@ import pytest
 from django.conf import settings
 from django.core.cache import cache
 from django.urls import reverse
-from django.utils.timezone import now
 
-from pdf.models.request import PDFFile
 from tenants.utils import tenant_cache_key
 
 pytestmark = pytest.mark.django_db
@@ -53,10 +51,10 @@ def test_move_reassigns_the_object(superuser_client, move, other_tenant):
     assert moved.tenant == other_tenant
 
 
-def test_move_takes_the_generated_files_along(superuser_client, move, tenant, other_tenant):
+def test_move_takes_the_generated_files_along(superuser_client, move, make_pdf_file, other_tenant):
     """Files printed from the moved object follow it to the new tenant."""
     url, moved = move
-    file = PDFFile.objects.create(tenant=tenant, template=moved, filename="moved", update_date=now())
+    file = make_pdf_file(moved)
 
     superuser_client.post(url, move_payload(other_tenant, moved))
 

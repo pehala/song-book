@@ -7,6 +7,7 @@ import pytest
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
+from django.core.files.base import ContentFile
 from django.db import transaction
 from django.test import Client, override_settings
 from django.utils.timezone import now
@@ -16,7 +17,7 @@ from backend.models import Song
 from category.models import Category
 from frontend.catalogues import reader_catalogues
 from pdf.models import Status
-from pdf.models.request import AllSongsTemplate, ManualPDFTemplate, PDFFile, PDFSong
+from pdf.models.request import AllSongsTemplate, ManualPDFTemplate, PDFFile
 from tenants.models import Tenant
 
 REAL_ON_COMMIT = transaction.on_commit
@@ -151,16 +152,9 @@ def archived_song(category, make_song):
 
 
 @pytest.fixture
-def manual_template(tenant, song):
-    """A ManualPDFTemplate holding a single numbered song."""
-    template = ManualPDFTemplate.objects.create(
-        tenant=tenant,
-        name="Manual Template",
-        filename="manual",
-        locale="en",
-    )
-    PDFSong.objects.create(request=template, song=song, song_number=1)
-    return template
+def manual_template(tenant):
+    """A ManualPDFTemplate of the tenant, without songs."""
+    return ManualPDFTemplate.objects.create(tenant=tenant, name="Manual Template", filename="manual", locale="en")
 
 
 @pytest.fixture
@@ -170,15 +164,33 @@ def all_songs_template(tenant):
 
 
 @pytest.fixture
-def pdf_file(tenant, category):
+def make_pdf_file(tenant):
+    """Factory for PDFFiles of a template, or of none, queued unless told otherwise.
+
+    The file belongs to the template's tenant, or to the default tenant without a template. ``file`` sets a
+    storage path on the row without touching the disk, ``content`` writes real bytes.
+    """
+
+    def factory(template=None, *, file=None, content=None, **kwargs):
+        kwargs.setdefault("tenant", template.tenant if template else tenant)
+        kwargs.setdefault("filename", template.filename if template else "songbook")
+        kwargs.setdefault("status", Status.QUEUED)
+        kwargs.setdefault("update_date", now())
+        created = PDFFile.objects.create(template=template, **kwargs)
+        if file:
+            PDFFile.objects.filter(pk=created.pk).update(file=file)
+            created.refresh_from_db()
+        if content is not None:
+            created.file.save(f"{created.filename}.pdf", ContentFile(content))
+        return created
+
+    return factory
+
+
+@pytest.fixture
+def pdf_file(category, make_pdf_file):
     """A PDFFile awaiting generation, created from the category template."""
-    return PDFFile.objects.create(
-        tenant=tenant,
-        template=category,
-        filename="songbook",
-        status=Status.QUEUED,
-        update_date=now(),
-    )
+    return make_pdf_file(category)
 
 
 @pytest.fixture

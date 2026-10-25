@@ -3,8 +3,6 @@
 import os
 
 import pytest
-from django.core.files.base import ContentFile
-from django.utils.timezone import now
 
 from pdf.models.request import PDFFile
 from pdf.storage import DateOverwriteStorage
@@ -13,11 +11,9 @@ pytestmark = pytest.mark.django_db
 
 
 @pytest.fixture
-def stored_file(tenant):
+def stored_file(make_pdf_file):
     """A PDFFile with real bytes written to disk."""
-    file = PDFFile.objects.create(tenant=tenant, filename="songbook", update_date=now())
-    file.file.save("songbook.pdf", ContentFile(b"%PDF-"))
-    return file
+    return make_pdf_file(content=b"%PDF-")
 
 
 def test_existing_names_are_reused(tmp_path):
@@ -38,18 +34,13 @@ def test_deleting_the_record_removes_the_file(stored_file):
     assert not os.path.exists(path)
 
 
-def test_deleting_a_record_without_a_file_is_harmless(tenant):
-    """A record that never produced a file deletes cleanly."""
-    file = PDFFile.objects.create(tenant=tenant, filename="songbook", update_date=now())
-
-    file.delete()
-
-    assert not PDFFile.objects.filter(pk=file.pk).exists()
-
-
-def test_cleanup_ignores_records_whose_file_is_gone(tenant):
-    """A record pointing at a file that is no longer there deletes cleanly."""
-    file = PDFFile.objects.create(tenant=tenant, filename="songbook", update_date=now(), file="pdfs/missing.pdf")
+@pytest.mark.parametrize(
+    "path",
+    [pytest.param(None, id="never produced a file"), pytest.param("pdfs/missing.pdf", id="file is gone")],
+)
+def test_deleting_a_record_without_a_file_is_harmless(make_pdf_file, path):
+    """A record that never produced a file, or whose file is no longer there, deletes cleanly."""
+    file = make_pdf_file(file=path)
 
     file.delete()
 
