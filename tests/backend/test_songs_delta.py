@@ -79,54 +79,6 @@ def test_bad_since_gives_the_whole_list(anon_client, song, since):
     assert isinstance(anon_client.get(URL, {"since": since}).json(), list)
 
 
-def stale(song):
-    """Sets the song's updated_at far in the past, bypassing `auto_now`."""
-    Song.objects.filter(pk=song.pk).update(updated_at="2020-01-01T00:00:00Z")
-
-
-def changed_ids(client):
-    """Returns the ids of the songs the delta of the last few seconds carries in full."""
-    return [row["id"] for row in delta(client, since=int(time.time()) - 5).json()["changed"]]
-
-
-def test_category_rename_marks_its_songs(anon_client, song, category):
-    """Saving a category marks its songs as changed."""
-    stale(song)
-    category.name = "Renamed"
-    category.save()
-
-    assert changed_ids(anon_client) == [song.id]
-
-
-def test_category_delete_marks_its_songs(anon_client, song, category, make_category, tenant):
-    """Deleting a category marks the songs it held as changed."""
-    other = make_category(tenant, name="Other", slug="other")
-    song.categories.add(other)
-    stale(song)
-    category.delete()
-
-    assert changed_ids(anon_client) == [song.id]
-
-
-def test_membership_change_marks_the_song(anon_client, song, make_category, tenant):
-    """Adding a song to a category marks the song as changed."""
-    other = make_category(tenant, name="Other", slug="other")
-    stale(song)
-    song.categories.add(other)
-
-    assert changed_ids(anon_client) == [song.id]
-
-
-def test_reverse_membership_change_marks_the_songs(anon_client, song, make_category, tenant):
-    """Clearing the songs of a category marks them as changed."""
-    other = make_category(tenant, name="Other", slug="other")
-    song.categories.add(other)
-    stale(song)
-    other.song_set.clear()
-
-    assert changed_ids(anon_client) == [song.id]
-
-
 def test_responses_carry_their_uncompressed_size(anon_client, song):
     """Both the whole list and the delta report their size."""
     whole = anon_client.get(URL)

@@ -36,28 +36,53 @@ def songs(client):
     return {entry["name"]: entry for entry in json.loads(client.get(URL).content)}
 
 
-def test_song_save_invalidates(anon_client, song, tenant):
+@pytest.fixture
+def primed(anon_client, song):
+    """The song, with the payload that lists it in the cache."""
+    prime_payload(anon_client)
+    return song
+
+
+def assert_rebuilt(client, tenant, names):
+    """Asserts that the cached payload was dropped and the next one lists the songs of the given names."""
+    assert cache.get(payload_key(tenant)) is None
+    assert set(songs(client)) == names
+
+
+def test_song_save_clears_the_payload(anon_client, primed, tenant):
     """Saving a song, as the admin does, clears the payload without any explicit call."""
-    prime_payload(anon_client)
-    song.name = "Renamed"
-    song.save()
-    assert cache.get(payload_key(tenant)) is None
-    assert list(songs(anon_client)) == ["Renamed"]
+    primed.name = "Renamed"
+    primed.save()
+
+    assert_rebuilt(anon_client, tenant, {"Renamed"})
 
 
-def test_new_song_visible_after_adding_category(anon_client, song, category):
-    """A song created and linked to a category appears on the next request."""
-    prime_payload(anon_client)
-    Song.objects.create(name="Late Song", text="y").categories.add(category)
-    assert "Late Song" in songs(anon_client)
-
-
-def test_song_delete_invalidates(anon_client, song, tenant):
+def test_song_delete_clears_the_payload(anon_client, primed, tenant):
     """Deleting a song clears the payload of the tenants it belonged to."""
-    prime_payload(anon_client)
-    song.delete()
-    assert cache.get(payload_key(tenant)) is None
-    assert songs(anon_client) == {}
+    primed.delete()
+
+    assert_rebuilt(anon_client, tenant, set())
+
+
+def test_clearing_the_categories_clears_the_payload(anon_client, primed, tenant):
+    """A song taken out of every category leaves the payload."""
+    primed.categories.clear()
+
+    assert_rebuilt(anon_client, tenant, set())
+
+
+def test_new_song_added_to_a_category_clears_the_payload(anon_client, primed, tenant, category):
+    """A song created and linked to a category appears on the next request."""
+    Song.objects.create(name="Late", text="y").categories.add(category)
+
+    assert_rebuilt(anon_client, tenant, {"Test Song", "Late"})
+
+
+def test_category_gaining_a_song_clears_the_payload(anon_client, primed, tenant, category):
+    """Adding a song from the category's side clears the payload too."""
+    category.song_set.add(Song.objects.create(name="Late", text="y"))
+
+    assert_rebuilt(anon_client, tenant, {"Test Song", "Late"})
 
 
 def test_removing_category_updates_cats(anon_client, song, tenant, category):
@@ -68,23 +93,6 @@ def test_removing_category_updates_cats(anon_client, song, tenant, category):
     song.categories.remove(category)
     assert cache.get(payload_key(tenant)) is None
     assert songs(anon_client)["Test Song"]["cats"] == ["other"]
-
-
-def test_clearing_categories_invalidates(anon_client, song, tenant):
-    """song.categories.clear() clears the payload that contained the song."""
-    prime_payload(anon_client)
-    song.categories.clear()
-    assert cache.get(payload_key(tenant)) is None
-    assert songs(anon_client) == {}
-
-
-def test_reverse_add_invalidates(anon_client, song, tenant, category):
-    """category.song_set.add(song) invalidates the category's tenant."""
-    prime_payload(anon_client)
-    late = Song.objects.create(name="Reverse", text="r")
-    category.song_set.add(late)
-    assert cache.get(payload_key(tenant)) is None
-    assert "Reverse" in songs(anon_client)
 
 
 def test_category_rename_clears_payload_and_menu(anon_client, song, tenant, category):

@@ -22,6 +22,12 @@ def other(make_category, tenant):
 
 
 @pytest.fixture
+def third(make_category, tenant):
+    """A third category of the tenant, without songs."""
+    return make_category(tenant, name="Third", slug="third")
+
+
+@pytest.fixture
 def aged(song, other):
     """The song, in two categories and with its updated_at far in the past."""
     song.categories.add(other)
@@ -34,18 +40,75 @@ def moved(song):
     return Song.objects.get(pk=song.pk).updated_at.year > 2020
 
 
-def test_save(aged):
-    """Saving a song marks it as changed."""
-    aged.name = "Renamed"
-    aged.save()
+@pytest.mark.parametrize(
+    ("instance", "changes"),
+    [
+        pytest.param("aged", {"name": "Renamed"}, id="song saved"),
+        pytest.param("aged", {"archived": True}, id="song archived"),
+        pytest.param("other", {"slug": "renamed"}, id="category renamed"),
+    ],
+)
+def test_saving_marks_the_song(request, aged, instance, changes):
+    """Saving a song, or a category it is in, marks the song as changed."""
+    saved = request.getfixturevalue(instance)
+    for name, value in changes.items():
+        setattr(saved, name, value)
+
+    saved.save()
 
     assert moved(aged)
 
 
-def test_archiving(aged):
-    """Archiving a song marks it as changed."""
-    aged.archived = True
-    aged.save()
+def fixtures(request, names):
+    """Returns the fixtures of the given names, keeping the nesting of lists."""
+    if isinstance(names, list):
+        return [fixtures(request, name) for name in names]
+    return request.getfixturevalue(names)
+
+
+@pytest.mark.parametrize(
+    ("method", "arguments"),
+    [
+        pytest.param("add", ["third"], id="add"),
+        pytest.param("remove", ["other"], id="remove"),
+        pytest.param("set", [["category"]], id="set"),
+        pytest.param("clear", [], id="clear"),
+    ],
+)
+def test_changing_the_categories_of_the_song_marks_it(request, aged, method, arguments):
+    """Adding, removing, replacing or clearing the categories of a song marks the song as changed."""
+    getattr(aged.categories, method)(*fixtures(request, arguments))
+
+    assert moved(aged)
+
+
+@pytest.mark.parametrize(
+    ("owner", "method", "arguments"),
+    [
+        pytest.param("third", "add", ["aged"], id="add"),
+        pytest.param("other", "remove", ["aged"], id="remove"),
+        pytest.param("other", "set", [[]], id="set"),
+        pytest.param("other", "clear", [], id="clear"),
+    ],
+)
+def test_changing_the_songs_of_a_category_marks_them(request, aged, owner, method, arguments):
+    """Adding, removing, replacing or clearing the songs of a category from its side marks the songs as changed."""
+    getattr(request.getfixturevalue(owner).song_set, method)(*fixtures(request, arguments))
+
+    assert moved(aged)
+
+
+def test_category_delete(aged, other):
+    """Deleting a category marks its songs as changed."""
+    other.delete()
+
+    assert moved(aged)
+
+
+@pytest.mark.parametrize("command", ["prerender", "clear_prerender"])
+def test_command_marks_the_song(aged, command):
+    """The commands that rewrite the html of the songs mark them as changed."""
+    call_command(command)
 
     assert moved(aged)
 
@@ -57,78 +120,6 @@ def test_edit_view(aged, staff_client, category):
     )
 
     assert response.status_code == 302
-    assert moved(aged)
-
-
-def test_forward_add(aged, make_category, tenant):
-    """Adding a category to a song marks the song as changed."""
-    aged.categories.add(make_category(tenant, name="Third", slug="third"))
-
-    assert moved(aged)
-
-
-def test_forward_remove(aged, other):
-    """Removing a category from a song marks the song as changed."""
-    aged.categories.remove(other)
-
-    assert moved(aged)
-
-
-def test_forward_set(aged, category):
-    """Replacing the categories of a song marks the song as changed."""
-    aged.categories.set([category])
-
-    assert moved(aged)
-
-
-def test_forward_clear(aged):
-    """Clearing the categories of a song marks the song as changed."""
-    aged.categories.clear()
-
-    assert moved(aged)
-
-
-def test_reverse_add(aged, make_category, tenant):
-    """Adding a song to a category from the category's side marks the song as changed."""
-    third = make_category(tenant, name="Third", slug="third")
-    third.song_set.add(aged)
-
-    assert moved(aged)
-
-
-def test_reverse_remove(aged, other):
-    """Removing a song from a category from the category's side marks the song as changed."""
-    other.song_set.remove(aged)
-
-    assert moved(aged)
-
-
-def test_reverse_set(aged, other):
-    """Replacing the songs of a category marks the songs it dropped as changed."""
-    other.song_set.set([])
-
-    assert moved(aged)
-
-
-def test_reverse_clear(aged, other):
-    """Clearing the songs of a category marks them as changed."""
-    other.song_set.clear()
-
-    assert moved(aged)
-
-
-def test_category_rename(aged, other):
-    """Saving a category marks its songs as changed."""
-    other.slug = "renamed"
-    other.save()
-
-    assert moved(aged)
-
-
-def test_category_delete(aged, other):
-    """Deleting a category marks its songs as changed."""
-    other.delete()
-
     assert moved(aged)
 
 

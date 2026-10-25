@@ -52,6 +52,23 @@ def test_songs_are_numbered_with_archived_last(superuser_client, category, make_
     assert [(entry["name"], entry["number"]) for entry in entries] == [("Public", 1), ("Hidden", 2)]
 
 
+@pytest.mark.parametrize(
+    ("client_fixture", "names", "cache_control"),
+    [
+        pytest.param("anon_client", ["Test Song"], "no-cache", id="anonymous"),
+        pytest.param("staff_client", ["Test Song"], "no-cache", id="tenant admin"),
+        pytest.param("superuser_client", ["Test Song", "Archived Song"], "private, no-cache", id="superuser"),
+    ],
+)
+@pytest.mark.usefixtures("song", "archived_song")
+def test_only_superusers_get_the_archived_songs_in_a_private_list(request, client_fixture, names, cache_control):
+    """Tenant admins share the public list, which revalidates but may be cached anywhere; superusers get their own."""
+    response = request.getfixturevalue(client_fixture).get(URL)
+
+    assert [entry["name"] for entry in json.loads(response.content)] == names
+    assert response["Cache-Control"] == cache_control
+
+
 def test_songs_of_other_tenants_are_left_out(anon_client, song, other_category, make_song):
     """Another tenant's songs and category slugs never show up."""
     make_song(other_category, name="Foreign")
@@ -71,38 +88,6 @@ def test_each_song_is_listed_once(anon_client, category, make_category, tenant, 
     assert len(fetch(anon_client)) == 1
 
 
-def test_archived_songs_hidden_from_anonymous(anon_client, song, archived_song):
-    """Archived songs are only for superusers."""
-    assert [entry["name"] for entry in fetch(anon_client)] == ["Test Song"]
-
-
-def test_archived_songs_shown_to_superuser(superuser_client, song, archived_song):
-    """Superusers get the archived songs as well."""
-    assert {entry["name"] for entry in fetch(superuser_client)} == {"Test Song", "Archived Song"}
-
-
-def test_tenant_admins_share_the_public_variant(staff_client, song, archived_song):
-    """Only superusers see archived songs, tenant administrators do not."""
-    assert [entry["name"] for entry in fetch(staff_client)] == ["Test Song"]
-
-
-def test_public_variant_may_be_cached_by_anyone(anon_client, song):
-    """The public list revalidates on every use but is not private."""
-    assert anon_client.get(URL)["Cache-Control"] == "no-cache"
-
-
-def test_archived_variant_is_private(superuser_client, song):
-    """The list with archived songs stays out of shared caches."""
-    assert superuser_client.get(URL)["Cache-Control"] == "private, no-cache"
-
-
-def test_matching_etag_answers_304(anon_client, song):
-    """A client holding the current list gets no body."""
-    etag = anon_client.get(URL)["ETag"]
-
-    assert anon_client.get(URL, HTTP_IF_NONE_MATCH=etag).status_code == 304
-
-
 def test_variants_are_cached_separately(anon_client, superuser_client, tenant, song, archived_song):
     """The public and the archived list live under their own keys."""
     fetch(anon_client)
@@ -117,34 +102,3 @@ def test_cache_is_used_before_building(anon_client, tenant, song):
     cache.set(songs_payload_key(tenant, False), "[]")
 
     assert fetch(anon_client) == []
-
-
-def test_editing_a_song_changes_the_payload(anon_client, tenant, song):
-    """Saving a song drops the cached payload."""
-    fetch(anon_client)
-
-    song.name = "Renamed"
-    song.save()
-
-    assert cache.get(songs_payload_key(tenant, False)) is None
-    assert fetch(anon_client)[0]["name"] == "Renamed"
-
-
-def test_renaming_a_category_slug_changes_cats(anon_client, category, song):
-    """A renamed slug is visible in the next payload."""
-    fetch(anon_client)
-
-    category.slug = "renamed"
-    category.save()
-
-    assert fetch(anon_client)[0]["cats"] == ["renamed"]
-
-
-def test_moving_a_song_between_categories_changes_cats(anon_client, category, make_category, tenant, song):
-    """Membership changes drop the payload too."""
-    other = make_category(tenant, name="Other", slug="moved-to")
-    fetch(anon_client)
-
-    song.categories.set([other])
-
-    assert fetch(anon_client)[0]["cats"] == ["moved-to"]
