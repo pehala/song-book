@@ -111,12 +111,14 @@ Cross-app glue worth knowing before editing:
 ## Song rendering pipeline
 
 Markdown → HTML happens through the mistune instances of `chords/markdown.py`, each with three
-local plugins in `chords/plugins/`: `inline` (`{Ami}` → `<span class="chord">`) or `ruby`
-(`{Ami}word` → `<ruby>word<rt class="chord">`), `paragraph`, `spaces`. `INLINE_RENDERER` uses the
-first, `RUBY_RENDERER` the second, and the `SONG_RENDERER` setting (a dotted path, `RUBY_RENDERER` by
-default) picks the one used for songs and for django-markdownx's preview. PDFs always keep the chords
-inline (`Song.inline_markdown`; WeasyPrint cannot lay out ruby text); a changed renderer needs
-`manage.py prerender`.
+local plugins in `chords/plugins/`: a chord plugin — `inline` (`{Ami}` → `<span class="chord">`), `ruby`
+(`{Ami}word` → `<ruby>word<rt class="chord">`) or `raised` (PDF only) — `paragraph` and `spaces`.
+`INLINE_RENDERER` uses the first, `RUBY_RENDERER` the second, and the `SONG_RENDERER` setting (a dotted path,
+`RUBY_RENDERER` by default) picks the one used for songs and for django-markdownx's preview; a changed
+renderer needs `manage.py prerender`.
+
+PDFs use `PDF_RENDERER` (`Song.pdf_markdown`) instead, whatever `SONG_RENDERER` says; `docs/PDF_LAYOUT.md`
+describes how their chords, header link and running footer are laid out.
 
 `Song.rendered_markdown` chooses between rendering on the fly and the stored `prerendered`
 column, controlled by two settings:
@@ -231,7 +233,7 @@ template's locale and saves the file.
 Category PDFs regenerate automatically on song/category change via
 `request_pdf_regeneration()`, delayed by `CATEGORY_PDF_DELAY` (30 min) so an editing spree
 batches into one file; it is skipped while the template already has an unfinished file.
-`docs/FILES.md` describes the template/file workflow.
+`docs/FILES.md` describes the template/file workflow, `docs/PDF_LAYOUT.md` the page layout.
 
 Locally, set `HUEY = {"immediate": True}` in `chords/settings/production.py` to run generation
 inline instead of running `make worker`.

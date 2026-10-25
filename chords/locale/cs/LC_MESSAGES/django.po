@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 05:01-0500\n"
+"POT-Creation-Date: 2026-10-25 10:12-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -89,11 +89,11 @@ msgstr "Archivovat"
 msgid "Lyrics"
 msgstr "Text"
 
-#: backend/models.py:88
+#: backend/models.py:86
 msgid "Song"
 msgstr "Písnička"
 
-#: backend/models.py:89
+#: backend/models.py:87
 msgid "Songs"
 msgstr "Písničky"
 

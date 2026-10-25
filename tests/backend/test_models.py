@@ -72,22 +72,24 @@ def test_prerender_uses_the_configured_renderer(settings, song):
     assert "<ruby>" not in song.prerender(save=False)
 
 
-def test_inline_markdown_keeps_the_chords_inline(settings, song):
-    """Outputs that cannot lay out ruby text get inline chords whatever SONG_RENDERER says"""
+def test_pdf_markdown_raises_the_chords_whatever_the_renderer(settings, song):
+    """The PDF raises the chords above their words whatever SONG_RENDERER says"""
     settings.SONG_RENDERER = "chords.markdown.RUBY_RENDERER"
+    song.text = "{Ami}Hello"
 
     assert "<ruby>" in song.rendered_markdown
-    assert "<ruby>" not in song.inline_markdown
-    assert '<span class="chord">' in song.inline_markdown
+    assert "<ruby>" not in song.pdf_markdown
+    assert '<span class="chord" style="margin-right: -' in song.pdf_markdown
 
 
-def test_inline_markdown_reuses_the_prerendered_field(settings, song):
-    """With the inline renderer configured the stored html is served"""
-    settings.SONG_RENDERER = "chords.markdown.INLINE_RENDERER"
+def test_pdf_markdown_ignores_the_prerendered_field(settings, song):
+    """The stored html is written for the web, so the PDF renders the text itself"""
     settings.USE_PRERENDERED_MARKDOWN = True
+    song.text = "{Ami}Hello"
     song.prerendered = "<p>stored</p>"
 
-    assert song.inline_markdown == "<p>stored</p>"
+    assert "stored" not in song.pdf_markdown
+    assert ">Ami</span>Hello" in song.pdf_markdown
 
 
 def test_rendered_markdown_uses_prerendered_field(settings, song):

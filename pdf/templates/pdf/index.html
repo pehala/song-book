@@ -52,7 +52,7 @@
           <h3 class="">{{ song.author }} {% if song.capo > 0 %}<span class="right">{% trans "Capo" %} {{ song.capo }}</span> {% endif %}</h3>
 
           <section class="text">
-            {{ song.inline_markdown|safe }}
+            {{ song.pdf_markdown|safe }}
           </section>
         </article>
     {% endfor %}

@@ -24,7 +24,7 @@ from markdownx.models import MarkdownxField
 
 from backend.cache import invalidate_songs_cache, invalidate_tenant_songs_cache, song_tenants, touch_songs
 from category.models import Category
-from chords.markdown import INLINE_RENDERER, song_renderer
+from chords.markdown import PDF_RENDERER, song_renderer
 from tenants.models import Tenant
 from tenants.utils import tenant_cache_key
 
@@ -75,11 +75,9 @@ class Song(Model):
         return self._get_rendered_markdown()
 
     @property
-    def inline_markdown(self):
-        """Returns rendered markdown with the chords inline, for outputs that cannot lay out ruby text (PDF)"""
-        if song_renderer() is INLINE_RENDERER:
-            return self.rendered_markdown
-        return INLINE_RENDERER(self.text)
+    def pdf_markdown(self):
+        """Returns rendered markdown with the chords stacked above their words, for PDF"""
+        return PDF_RENDERER(self.text)
 
     def __str__(self):
         return f"{self.name} ({self.id})"

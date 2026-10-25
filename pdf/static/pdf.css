@@ -65,7 +65,9 @@
  .chord {
      font-weight: bold;
      font-size: 85%;
-     vertical-align: super;
+     line-height: 1.1;
+     vertical-align: 1.3em;
+     white-space: nowrap;
 }
  html {
      font-family: "Open Sans", serif;

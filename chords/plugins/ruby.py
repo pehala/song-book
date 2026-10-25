@@ -4,8 +4,10 @@ from mistune import InlineState
 
 from chords.plugins import CHORD_RE
 
+# A character of the plain word a chord is written over
+WORD_CHAR = r"[^\s{}<>&*_`~\[\]\\/]"
 # The chord and the plain word right after it, which the chord is written over
-RUBY_CHORD_RE = CHORD_RE + r"(?P<word>[^\s{}<>&*_`~\[\]\\/]*)"
+RUBY_CHORD_RE = CHORD_RE + rf"(?P<word>{WORD_CHAR}*)"
 
 
 def parse_chords(inline, m, state: InlineState):
