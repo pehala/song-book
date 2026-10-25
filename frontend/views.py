@@ -10,7 +10,9 @@ from django.http import HttpResponse, JsonResponse
 from django.template.loader import render_to_string
 from django.templatetags.static import static
 from django.urls import reverse
+from django.utils import translation
 from django.utils.cache import add_never_cache_headers, get_conditional_response
+from django.utils.translation import gettext
 from django.views import View
 from django.views.generic import TemplateView
 
@@ -67,10 +69,16 @@ class ShellView(View):
     def get(self, request, slug=None):
         """Renders the shell; a slug that is no category of the tenant gets the same page with status 404"""
         tenant = request.tenant
+        # In the language of the page, whatever the user's language is: the body is the same for everyone
+        with translation.override(settings.LANGUAGE_CODE):
+            description = gettext("Songbook %(name)s: lyrics with chords that work offline") % {
+                "name": tenant.display_name
+            }
         body = render_to_string(
             "shell.html",
             {
                 "boot": bootstrap_payload(tenant),
+                "description": description,
                 "modules": [static(path) for path in MODULES],
                 "entry": static(ENTRY),
                 "stylesheets": [static(path) for path in STYLESHEETS],
