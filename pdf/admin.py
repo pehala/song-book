@@ -25,9 +25,9 @@ class RequestAdmin(admin.ModelAdmin):
         link = reverse("admin:tenants_tenant_change", args=[obj.tenant.id])
         return format_html('<a href="{}">{}</a>', link, obj.tenant.name)
 
-    @admin.action(description=_("Move Request to a different Tenant"))
+    @admin.action(description=_("Move Template to a different Tenant"))
     def move_tenant(self, request, queryset):
-        """Move Request to a different Tenant"""
+        """Move Template to a different Tenant"""
         ids = queryset.values_list("id", flat=True)
         url = f"{reverse_lazy('pdf:templates:move')}?{urlencode({'pk': list(ids)}, True)}"
         return HttpResponseRedirect(url)

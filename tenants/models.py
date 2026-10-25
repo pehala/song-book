@@ -39,20 +39,20 @@ class Tenant(Model):
         verbose_name=_("Hostname"), help_text=_("The exact hostname for this Tenant"), unique=True, max_length=64
     )
     name = CharField(verbose_name=_("Name"), help_text=_("Internal name for this Tenant"), max_length=32)
-    display_name = CharField(verbose_name=_("Title"), help_text=_("Title on the Main site"), max_length=32)
+    display_name = CharField(verbose_name=_("Title"), help_text=_("Title on the main site"), max_length=32)
     index_redirect = CharField(
         verbose_name=_("Index redirect path"),
-        help_text=_("Where should new tenant redirect from index page, usually a category slug"),
+        help_text=_("Where the index page redirects to, usually a category slug"),
         max_length=32,
     )
     all_songs_category = BooleanField(
         default=True,
         verbose_name=_("All Songs"),
-        help_text=_("True, if all songs category should be added to navigation"),
+        help_text=_("Check to add a link to all songs to the navigation"),
     )
     icon = ImageField(
         verbose_name=_("Logo"),
-        help_text=_("Optional Site logo, should be around 50x50 and in PNG format"),
+        help_text=_("Optional site logo, around 50×50 px and in PNG format"),
         null=True,
         blank=True,
         upload_to="uploads/",

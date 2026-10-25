@@ -46,7 +46,7 @@ def test_server_page_header_knows_the_user(page, library, staff_user, sign_in):
 
     page.locator("summary", has_text="Account").click()
 
-    expect(page.get_by_text("Logged as")).to_contain_text("staff")
+    expect(page.get_by_text("Logged in as")).to_contain_text("staff")
 
 
 def test_anonymous_server_page_offers_login(page, library):

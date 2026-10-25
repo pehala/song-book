@@ -17,7 +17,7 @@
 {% endblock %}
 
 {% block framed_body %}
-  <p class="text-center fw-bold">{% trans "Please, choose song order and their numbers" %}</p>
+  <p class="text-center fw-bold">{% trans "Please choose the song order and numbers" %}</p>
   <form method="post" action="{{ action }}" enctype="multipart/form-data">
     {% csrf_token %}
     {{ formset.management_form }}

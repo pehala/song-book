@@ -67,7 +67,7 @@ class AllSongsTemplate(PDFTemplate):
     tenant = OneToOneField(Tenant, on_delete=CASCADE)
     generate_pdf = BooleanField(
         verbose_name=_("PDF generation"),
-        help_text=_("True, if the PDF file should be generated automatically when a song changes"),
+        help_text=_("Check to generate the PDF file automatically when a song changes"),
         default=False,
     )
 
@@ -110,7 +110,7 @@ class PDFFile(Model):
         max_length=30,
         null=True,
         blank=True,
-        help_text=_("Display name for the file, if empty filename will be used"),
+        help_text=_("Display name for the file, if empty, the file name will be used"),
         verbose_name=_("Display name"),
     )
     update_date = DateTimeField(null=True)
@@ -121,7 +121,7 @@ class PDFFile(Model):
     scheduled_at = DateTimeField(null=True)
     public = BooleanField(
         default=True,
-        help_text=_("True, if the file should be public"),
+        help_text=_("Check to make the file public"),
         verbose_name=_("Public file"),
     )
 

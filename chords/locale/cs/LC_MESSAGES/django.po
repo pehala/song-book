@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 13:12-0500\n"
+"POT-Creation-Date: 2026-10-25 13:15-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -74,7 +74,7 @@ msgid "Author"
 msgstr "Autor"
 
 #: backend/models.py:40
-msgid "Youtube Link"
+msgid "YouTube link"
 msgstr "Odkaz na Youtube"
 
 #: backend/models.py:41 category/models.py:39
@@ -119,8 +119,7 @@ msgstr "Automatické Generování PDF"
 
 #: category/models.py:28
 msgid ""
-"True, if the PDF file be automatically generated when a category or song "
-"changes?"
+"Check to generate the PDF file automatically when a category or song changes"
 msgstr ""
 "Zaškrknětě, pokud má být vygenerován PDF soubor když se kategorie nebo "
 "písnička změní?"
@@ -250,8 +249,8 @@ msgstr "Přístup zamítnut"
 msgid "Insufficient permissions"
 msgstr "Nedostatečné oprávnění"
 
-#: frontend/templates/404.html:4
-msgid "Not Found"
+#: frontend/templates/404.html:4 frontend/templates/base/error.html:8
+msgid "Not found"
 msgstr "Nenalezeno"
 
 #: frontend/templates/404.html:4
@@ -262,10 +261,6 @@ msgstr "Zpátky domů"
 #, python-format
 msgid "URL %(request_path)s does not exist."
 msgstr "URL %(request_path)s neexistuje."
-
-#: frontend/templates/base/error.html:8
-msgid "Not found"
-msgstr "Nenalezeno"
 
 #: frontend/templates/base/form.html:9
 #: tenants/templates/admin/base/migrate.html:16
@@ -279,7 +274,7 @@ msgstr "Prosím potrvďte odstranění"
 
 #: frontend/templates/base/verbs/delete.html:10
 #, python-format
-msgid "Are you sure, you want to delete %(model_verbose_name)s"
+msgid "Are you sure you want to delete %(model_verbose_name)s"
 msgstr "Jste si jistí že chcete smazat %(model_verbose_name)s"
 
 #: frontend/templates/base/verbs/delete.html:13
@@ -331,7 +326,7 @@ msgid "Songbook %(name)s: lyrics with chords that work offline"
 msgstr "Zpěvník %(name)s: texty s akordy, které fungují i offline"
 
 #: pdf/admin.py:28
-msgid "Move Request to a different Tenant"
+msgid "Move Template to a different Tenant"
 msgstr "Přesunout požadavky do jiného Tenanta"
 
 #: pdf/forms.py:62
@@ -339,7 +334,7 @@ msgid "No songs selected"
 msgstr "Nevybrány žádné písničky"
 
 #: pdf/forms.py:87
-msgid "Each song has to have distinct song number"
+msgid "Each song must have a distinct number"
 msgstr "Každá písnička musí mít unikátní číslo"
 
 #: pdf/models/__init__.py:28
@@ -364,8 +359,8 @@ msgstr "Chyba"
 
 #: pdf/models/__init__.py:42
 msgid ""
-"(Optional) Display name for the generated files. If empty filename will be "
-"used"
+"(Optional) Display name for the generated files. If empty, the file name "
+"will be used"
 msgstr ""
 "(Nepovinné) Veřejné jméno pro vytvořené soubory. V případě že necháte pole "
 "prázdné, veřejné jméno bude vytvořeno na zákaldě jména souboru"
@@ -383,7 +378,7 @@ msgid "File name"
 msgstr "Název souboru"
 
 #: pdf/models/__init__.py:54
-msgid "True, if the file should be visible in the menu"
+msgid "Check to show the file in the menu"
 msgstr "Zaškrkněte, pokud chcete aby byl PDF soubor veřejně viditelný v menu"
 
 #: pdf/models/__init__.py:55 pdf/models/request.py:125
@@ -396,8 +391,8 @@ msgstr "Jazyk PDF souboru"
 
 #: pdf/models/__init__.py:66
 msgid ""
-"Name to be used on the title page of the PDF, usually only this or Title "
-"image should be used"
+"Name for the title page of the PDF, usually only this or the title image is "
+"needed"
 msgstr ""
 "Jméno pro titulní stranu pdf souboru. Obvykle stačí vyplnit pouze Nadpis "
 "nebo Úvodné obrázek"
@@ -412,11 +407,11 @@ msgid "Show date"
 msgstr "Vložit datum"
 
 #: pdf/models/__init__.py:72
-msgid "True, if the date should be included in the PDF"
+msgid "Check to include the date in the PDF"
 msgstr "Zaškrkněte, pokud chcete aby v PDF souboru bylo datum"
 
 #: pdf/models/__init__.py:75
-msgid "Title Image"
+msgid "Title image"
 msgstr "Úvodní obrázek"
 
 #: pdf/models/__init__.py:76
@@ -424,7 +419,7 @@ msgid "(Optional) title image for the PDF"
 msgstr "(Nepovinný) Obrázek na úvodní stránku PDF souboru"
 
 #: pdf/models/__init__.py:82
-msgid "Title Image margins"
+msgid "Title image margins"
 msgstr "Odsazení úvodního obrázku"
 
 #: pdf/models/__init__.py:83
@@ -433,7 +428,7 @@ msgstr ""
 "Odsazení obrázku na úvodní stránce, může být nutné pro některé tiskárny"
 
 #: pdf/models/__init__.py:89
-msgid "(Optional) URL Link to include in the PDF"
+msgid "(Optional) URL to include in the PDF"
 msgstr "(Nepovinné) URL adresa, zobrazená v PDF."
 
 #: pdf/models/__init__.py:90 pdf/templates/pdf/files/list.html:27
@@ -467,8 +462,7 @@ msgid "File Templates"
 msgstr "Šablony"
 
 #: pdf/models/request.py:70
-msgid ""
-"True, if the PDF file should be generated automatically when a song changes"
+msgid "Check to generate the PDF file automatically when a song changes"
 msgstr ""
 "Zaškrkněte, pokud má být PDF soubor generován automaticky při změně písničky"
 
@@ -486,13 +480,13 @@ msgid "All Songs PDFs"
 msgstr "PDF všech písniček"
 
 #: pdf/models/request.py:113
-msgid "Display name for the file, if empty filename will be used"
+msgid "Display name for the file, if empty, the file name will be used"
 msgstr ""
 "Veřejné jméno pro vytvořené soubory. V případě že necháte pole prázdné, "
 "veřejné jméno bude vytvořeno na zákaldě jména souboru"
 
 #: pdf/models/request.py:124
-msgid "True, if the file should be public"
+msgid "Check to make the file public"
 msgstr "Zaškrkněte, pokud chcete aby byl PDF soubor veřejně viditelný"
 
 #: pdf/models/request.py:141
@@ -561,7 +555,7 @@ msgid "Song order"
 msgstr "Pořadí písniček"
 
 #: pdf/templates/pdf/templates/assign.html:20
-msgid "Please, choose song order and their numbers"
+msgid "Please choose the song order and numbers"
 msgstr "Zvolte prosím pořadí písniček a jejich čísla"
 
 #: pdf/templates/pdf/templates/assign.html:25
@@ -591,14 +585,13 @@ msgstr "Vytvořit novou Šablonu"
 
 #: pdf/templates/pdf/templates/select.html:30
 msgid ""
-"Please enter file configuration option and select which songs you would like "
-"to include"
+"Please enter the file configuration options and select the songs to include"
 msgstr ""
 "Prosím vyplňte parametry PDF souboru a vyberte písničky, které má soubor "
 "obsahovat"
 
 #: pdf/templates/pdf/templates/select.html:97
-msgid "Select All"
+msgid "Select all"
 msgstr "Vybrat všechny"
 
 #: pdf/templates/pdf/templates/select.html:104
@@ -621,7 +614,7 @@ msgstr "Jiný Soubor (%(id)s) for %(name)s je již ve frontě"
 
 #: pdf/views/templates.py:70
 #, python-format
-msgid "Scheduled File (%(id)s) generation from template %(template)s"
+msgid "Scheduled generation of file %(id)s from template %(template)s"
 msgstr "Generování souboru (%(id)s) ze šablony %(template)s bylo naplánováno"
 
 #: pdf/views/templates.py:142
@@ -672,7 +665,7 @@ msgid "Internal name for this Tenant"
 msgstr "Interní název tohoto Zpevníku"
 
 #: tenants/models.py:42
-msgid "Title on the Main site"
+msgid "Title on the main site"
 msgstr "Titulek na hlavní stránce"
 
 #: tenants/models.py:44
@@ -680,8 +673,7 @@ msgid "Index redirect path"
 msgstr "Cíl přesměrování úvodní stránky"
 
 #: tenants/models.py:45
-msgid ""
-"Where should new tenant redirect from index page, usually a category slug"
+msgid "Where the index page redirects to, usually a category slug"
 msgstr ""
 "Kam by měla úvodní stránka přesměrovat uživatele, většinou URL kategorie"
 
@@ -690,7 +682,7 @@ msgid "All Songs"
 msgstr "Všechno"
 
 #: tenants/models.py:51
-msgid "True, if all songs category should be added to navigation"
+msgid "Check to add a link to all songs to the navigation"
 msgstr "Pokud je zaškrknuto tak se do navigace přidá odkaz na všechny písničky"
 
 #: tenants/models.py:54
@@ -698,7 +690,7 @@ msgid "Logo"
 msgstr "Logo"
 
 #: tenants/models.py:55
-msgid "Optional Site logo, should be around 50x50 and in PNG format"
+msgid "Optional site logo, around 50×50 px and in PNG format"
 msgstr ""
 "Logo zpěvníčku, nepovinné, mělo by mít rozměry kolem 50x50 a být v PNG "
 "formátu"

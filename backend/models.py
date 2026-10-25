@@ -37,7 +37,7 @@ class Song(Model):
     updated_at = DateTimeField(auto_now=True, db_index=True)
     capo = PositiveSmallIntegerField(verbose_name=_("Capo"), db_default=Value(0))
     author = CharField(verbose_name=_("Author"), max_length=100, null=True, blank=True)
-    link = URLField(verbose_name=_("Youtube Link"), null=True, blank=True)
+    link = URLField(verbose_name=_("YouTube link"), null=True, blank=True)
     categories = ManyToManyField(Category, verbose_name=_("Categories"))
     archived = BooleanField(verbose_name=_("Archived"), default=False)
     text = MarkdownxField(verbose_name=_("Lyrics"))

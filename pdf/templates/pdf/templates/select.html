@@ -27,7 +27,7 @@
         {% bootstrap_form template_form %}
         <select id="select" name="songs" class="d-none" multiple="multiple"></select>
     </form>
-    <p class="text-center fw-bold">{% trans "Please enter file configuration option and select which songs you would like to include" %}</p>
+    <p class="text-center fw-bold">{% trans "Please enter the file configuration options and select the songs to include" %}</p>
     <div class="d-flex flex-row justify-content-center">
     {% for category in categories %}
       <div class="form-check form-switch align-middle me-3">
@@ -94,7 +94,7 @@
         {% datatables_language %}
         buttons: [
             {
-                text: '{% trans "Select All" %}',
+                text: '{% trans "Select all" %}',
                 action: function (e, dt, node, config) {
                     dt.rows( {search:'applied'} ).select()
                 }

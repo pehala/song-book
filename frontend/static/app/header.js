@@ -195,7 +195,7 @@ function Header({site, navigate, onReload}) {
                 ${me?.auth
                     ? html`
                         <${Dropdown} label=${_("Account")}>
-                            <span>${_("Logged as")} <b>${me.username}</b></span>
+                            <span>${_("Logged in as")} <b>${me.username}</b></span>
                             <a href=${urls.password}>${_("Change password")}</a>
                             <button class="sb-link" onClick=${logout}>${_("Log out")}</button>
                         <//>`
