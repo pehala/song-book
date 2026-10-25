@@ -40,4 +40,8 @@ to.
 
 * `PDFTemplate.link` is free text. `PDFTemplate.link_url` returns it with `https://` in front unless it names a
   scheme (`scheme://` or `mailto:`), and the template only uses `link_url`.
-* It is printed in the `@top-right` margin box of every page.
+* The template writes `<a class="link" href="{{ link_url }}">` first in the body. `position: running(link)` takes it
+  out of the flow and `content: element(link)` puts it in the `@top-right` margin box of every page. A string in
+  `content` would only be text, while an element keeps its hyperlink.
+* `.link` sets the 9 pt size of the margin box and no underline, because a running element keeps the font size of the
+  body.

@@ -24,9 +24,10 @@
 {% endif %}
 {% if link_url %}
 <style>
+    .link { position: running(link); text-decoration: none; font-size: 9pt; }
     @page {
         @top-right {
-            content: "{{ link_url }}";
+            content: element(link);
             font-size: 9pt;
             height: 1cm;
             vertical-align: middle;
@@ -36,6 +37,7 @@
 </style>
 {% endif %}
 <body>
+    {% if link_url %}<a class="link" href="{{ link_url }}">{{ link_url }}</a>{% endif %}
     <article id="contents">
       <h1 class="title">{% if request.title %}{{ name }}{% endif %}</h1>
       <p class="date">{% if request.show_date %}{% now "d.m.Y" %}{% endif %}</p>

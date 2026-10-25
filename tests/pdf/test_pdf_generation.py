@@ -35,14 +35,25 @@ def test_chords_are_raised_whatever_the_song_renderer(settings, mock_weasyprint,
     assert "<ruby>" not in html
 
 
-def test_link_is_printed_with_a_scheme(mock_weasyprint, category, make_song, pdf_file):
-    """The link of the template is printed in the header with https:// when none was typed"""
+def test_link_is_a_clickable_anchor_with_a_scheme(mock_weasyprint, category, make_song, pdf_file):
+    """The link of the template is printed and points to its URL, with https:// when none was typed"""
     make_song(category, text="Hello")
     category.link = "jerry.crazycactus.eu"
 
     generate_pdf(pdf_file, category)
 
-    assert 'content: "https://jerry.crazycactus.eu"' in mock_weasyprint.call_args.kwargs["string"]
+    html = mock_weasyprint.call_args.kwargs["string"]
+    assert '<a class="link" href="https://jerry.crazycactus.eu">https://jerry.crazycactus.eu</a>' in html
+
+
+def test_no_anchor_without_a_link(mock_weasyprint, category, make_song, pdf_file):
+    """A template without a link prints no anchor"""
+    make_song(category, text="Hello")
+    category.link = ""
+
+    generate_pdf(pdf_file, category)
+
+    assert 'class="link"' not in mock_weasyprint.call_args.kwargs["string"]
 
 
 # ---------------------------------------------------------------------------
