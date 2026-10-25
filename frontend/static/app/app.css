@@ -255,7 +255,8 @@ main {
 
 .song-text {
     padding: 0 0 1rem;
-    column-count: var(--chords-grid-columns);
+    /* no more columns than verses, so a short song is not left with empty ones */
+    column-count: min(var(--chords-grid-columns), var(--verses, 1));
     column-gap: 5em;
     width: fit-content;
     max-width: 100%;
@@ -268,7 +269,9 @@ main {
     line-height: 1.7;
 }
 
+/* Verses are spaced below only: a margin above would push the first column below the others */
 .song-text p {
+    margin: 0 0 1em;
     break-inside: avoid-column;
 }
 

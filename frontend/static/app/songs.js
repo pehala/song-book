@@ -61,6 +61,7 @@ export function filterRows(rows, query) {
 function SongBody({song, me, urls, _}) {
     const [shift, setShift] = useState(0);
     const text = useMemo(() => transposeHtml(song.text, shift), [song.text, shift]);
+    const verses = useMemo(() => song.text.split("<p>").length - 1 || 1, [song.text]);
     const next = "?next=" + encodeURIComponent(location.pathname);
     return html`
         <div class="tools">
@@ -77,7 +78,7 @@ function SongBody({song, me, urls, _}) {
                 <a class="sb-btn sb-ghost" href=${urls.edit.replace(/0$/, song.id) + next}><${Icon} name="edit" /> ${_("Edit")}</a>
                 <a class="sb-btn sb-ghost" href=${urls.delete.replace(/0$/, song.id) + next}><${Icon} name="trash" /> ${_("Delete")}</a>`}
         </div>
-        <div class="song-text" dangerouslySetInnerHTML=${{__html: text}}></div>`;
+        <div class="song-text" style=${{"--verses": verses}} dangerouslySetInnerHTML=${{__html: text}}></div>`;
 }
 
 // The body stays drawn while the details element animates shut
