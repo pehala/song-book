@@ -132,6 +132,11 @@ class PDFTemplate(PolymorphicModel):
         """Returns latest generated file for this template."""
         return self.pdffile_set.first()
 
+    @property
+    def latest_generated_file(self) -> PDFFile:
+        """Returns the newest file of this template that was generated successfully, None without one."""
+        return self.pdffile_set.filter(status=Status.DONE).exclude(file="").exclude(file=None).first()
+
     def has_scheduled_file(self) -> bool:
         """True, if the latest file created from this template is scheduled to be generated."""
         file = self.latest_file

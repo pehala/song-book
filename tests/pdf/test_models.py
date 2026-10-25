@@ -1,6 +1,7 @@
 """Tests for the PDF template and file models."""
 
 import json
+from datetime import timedelta
 
 import pytest
 from django.urls import reverse
@@ -56,6 +57,23 @@ def test_latest_file_is_the_most_recent_one(tenant, category):
 def test_latest_file_is_none_without_files(category):
     """A template that never produced anything has no latest file."""
     assert category.latest_file is None
+
+
+def test_latest_generated_file_skips_files_still_waiting(tenant, category):
+    """A file queued after a finished one does not hide the finished one."""
+    done = make_file(tenant, category, status=Status.DONE, file="songbook.pdf", update_date=now() - timedelta(days=1))
+    make_file(tenant, category, status=Status.SCHEDULED)
+
+    assert category.latest_generated_file == done
+    assert category.latest_file.status == Status.SCHEDULED
+
+
+def test_latest_generated_file_is_none_without_a_finished_file(tenant, category):
+    """Failed and waiting files are not generated files."""
+    make_file(tenant, category, status=Status.FAILED)
+    make_file(tenant, category, status=Status.QUEUED)
+
+    assert category.latest_generated_file is None
 
 
 @pytest.mark.parametrize(

@@ -50,11 +50,13 @@
           {% with template.latest_file as pdf %}
             {% if pdf %}
               <td>
-                {% if pdf.file %}
-                  <a href="{{ pdf.file.url }}" target="_blank">{{ pdf.name }}</a>
-                {% else %}
-                  {% trans "None" %}
-                {% endif %}
+                {% with template.latest_generated_file as generated %}
+                  {% if generated %}
+                    <a href="{{ generated.file.url }}" target="_blank">{{ generated.name }}</a>
+                  {% else %}
+                    {% trans "None" %}
+                  {% endif %}
+                {% endwith %}
               </td>
               <td style="background-color: {{ pdf.status|get_status_color }}" class="text-black">{{ pdf.get_status_display }} {% if pdf.status == "PR" %}{{ pdf.progress }}/7 {% endif %} {% if pdf.status == "SC" %} {{ pdf.scheduled_at }} {% endif %}</td>
               <td data-order="{{ pdf.update_date|date:"c" }}">{{ pdf.update_date }}</td>
