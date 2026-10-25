@@ -61,6 +61,25 @@ class ManualPDFTemplate(PDFTemplate):
         verbose_name_plural = _("File Templates")
 
 
+def category_rows(tenant: Tenant, songs: Iterable[Song]) -> list[tuple[int, Song, str]]:
+    """Numbers the songs one after another through the Categories of the Tenant, in the order they were made.
+
+    Each song is under the first Category it is in and, within a Category, in the order it was given. Every row
+    carries the name of its Category; a song in no Category of the Tenant is left out.
+    """
+    songs = list(songs)
+    links = (
+        Song.categories.through.objects.filter(song__in=songs, category__tenant=tenant)
+        .order_by("category_id")
+        .values_list("song_id", "category_id", "category__name")
+    )
+    first = {}
+    for song_id, category_id, name in links:
+        first.setdefault(song_id, (category_id, name))
+    placed = sorted((song for song in songs if song.pk in first), key=lambda song: first[song.pk][0])
+    return [(number, song, first[song.pk][1]) for number, song in enumerate(placed, start=1)]
+
+
 class AllSongsTemplate(PDFTemplate):
     """Template of the PDF with every song of a Tenant, the printable counterpart of the all songs list."""
 
@@ -97,14 +116,7 @@ class AllSongsTemplate(PDFTemplate):
         """
         if not self.category_sections:
             return super().get_sections()
-        rows = []
-        printed = set()
-        for category in self.tenant.category_set.order_by("pk"):
-            for song in category.song_set.filter(archived=False):
-                if song.pk not in printed:
-                    printed.add(song.pk)
-                    rows.append((len(rows) + 1, song, category.name))
-        return group_sections(rows)
+        return group_sections(category_rows(self.tenant, self.songs()))
 
     @classmethod
     def for_tenant(cls, tenant: Tenant, **defaults) -> AllSongsTemplate:

@@ -7,7 +7,7 @@ from django.urls import reverse
 from django.utils.timezone import now
 
 from pdf.models import Section, Status, group_sections
-from pdf.models.request import AllSongsTemplate, PDFFile, PDFSong, upload_path
+from pdf.models.request import AllSongsTemplate, PDFFile, PDFSong, category_rows, upload_path
 
 pytestmark = pytest.mark.django_db
 
@@ -234,6 +234,35 @@ def test_all_songs_template_sections_keep_the_list_order_in_a_category(sectioned
     later = make_song(category, name="Later")
 
     assert template.get_sections()[0].songs == [(1, shared), (2, later)]
+
+
+def test_category_rows_number_the_wanted_songs_through_the_categories(sectioned, make_song):
+    """Only the given songs are numbered, category by category, each under the first category it is in."""
+    template, category, second, shared = sectioned
+    only_second = make_song(second, name="Only second")
+    make_song(category, name="Not wanted")
+
+    assert category_rows(template.tenant, [only_second, shared]) == [
+        (1, shared, category.name),
+        (2, only_second, "Second"),
+    ]
+
+
+def test_category_rows_ask_the_database_once(sectioned, make_song, django_assert_num_queries):
+    """However many categories and songs there are, the rows come from a single query."""
+    template, category, second, shared = sectioned
+    songs = [shared, make_song(second, name="Only second"), make_song(category, name="Only first")]
+
+    with django_assert_num_queries(1):
+        category_rows(template.tenant, songs)
+
+
+def test_category_rows_keep_the_given_order_within_a_category(sectioned, make_song):
+    """The songs of one category stay in the order they were given."""
+    template, category, _second, shared = sectioned
+    later = make_song(category, name="Later")
+
+    assert [song for _number, song, _title in category_rows(template.tenant, [later, shared])] == [later, shared]
 
 
 def test_group_sections_starts_a_section_where_the_label_changes():
