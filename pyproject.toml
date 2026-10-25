@@ -74,8 +74,14 @@ line-length = 120
 target-version = "py314"
 
 [tool.ruff.lint]
-extend-select = ["E", "F", "I", "B", "UP", "SIM", "PL"]
-ignore = ["PLR2004", "RUF012"]
+extend-select = ["E", "F", "I", "B", "UP", "SIM", "PL", "D"]
+# D105/D107: `__str__` and `__init__` are covered by the class docstring; D106: Django's `Meta` classes
+ignore = ["PLR2004", "RUF012", "D105", "D106", "D107"]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
 
 [tool.ruff.lint.per-file-ignores]
 "manage.py" = ["PLC0415"]
+"**/migrations/*" = ["D"]
+"tests/**/__init__.py" = ["D104"]
