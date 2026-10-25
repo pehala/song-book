@@ -2,7 +2,9 @@
 
 from collections.abc import Iterable
 
+from django.conf import settings
 from django.contrib import messages
+from django.core.cache import cache
 from django.db import transaction
 from django.db.models import Count, Q
 from django.forms import formset_factory
@@ -21,7 +23,8 @@ from category.models import Category
 from pdf.forms import BasePDFSongFormset, ManualTemplateForm, PDFSongForm, SongSelectionForm
 from pdf.generate import AllowedTemplates, generate_pdf_file
 from pdf.models import PDFTemplate
-from pdf.models.request import ManualPDFTemplate
+from pdf.models.request import ManualPDFTemplate, PDFFile
+from tenants.utils import tenant_cache_key
 from tenants.views import AdminMoveView
 
 
@@ -193,7 +196,14 @@ class MovePDFTemplatesView(AdminMoveView):
     def action(self, target, ids):
         """Moves the templates to the target tenant."""
         requests = ManualPDFTemplate.objects.filter(id__in=ids).distinct()
+        files = PDFFile.objects.filter(template_id__in=ids)
+        source_tenants = {request.tenant for request in requests.select_related("tenant")}
         with transaction.atomic():
             for request in requests:
                 request.tenant = target
+            for file in files:
+                file.tenant = target
             ManualPDFTemplate.objects.bulk_update(requests, ["tenant"])
+            PDFFile.objects.bulk_update(files, ["tenant"])
+        for tenant in source_tenants | {target}:
+            cache.delete(tenant_cache_key(tenant, settings.PDF_CACHE_KEY))

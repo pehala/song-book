@@ -159,3 +159,4 @@ class CategoryMoveView(AdminMoveView):
         for tenant in source_tenants | {target}:
             invalidate_tenant_songs_cache(tenant)
             cache.delete(tenant_cache_key(tenant, settings.CATEGORY_CACHE_KEY))
+            cache.delete(tenant_cache_key(tenant, settings.PDF_CACHE_KEY))
