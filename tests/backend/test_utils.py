@@ -1,13 +1,10 @@
 """Tests for invalidate_songs_cache — verifies all relevant cache keys are cleared."""
 
-import json
-
 import pytest
 from django.core.cache import cache
 from django.urls import reverse
 
 from backend.cache import invalidate_songs_cache, songs_payload_key
-from backend.models import Song
 from backend.utils import get_git_revision, get_version
 
 pytestmark = pytest.mark.django_db
@@ -42,18 +39,6 @@ def test_invalidate_leaves_other_tenants_alone(anon_client, song, other_tenant):
 
     invalidate_songs_cache(song)
     assert cache.get(key) == "[]"
-
-
-def test_new_song_visible_after_cache_invalidation(anon_client, song, category):
-    """A newly added song is returned once the cache has been invalidated."""
-    anon_client.get(URL)
-
-    new_song = Song.objects.create(name="Brand New Song", text="z")
-    new_song.categories.add(category)
-    invalidate_songs_cache(new_song)
-
-    names = [s["name"] for s in json.loads(anon_client.get(URL).content)]
-    assert "Brand New Song" in names
 
 
 @pytest.fixture

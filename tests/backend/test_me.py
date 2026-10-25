@@ -26,25 +26,24 @@ def test_anonymous_visitor(anon_client, tenant):
     }
 
 
-def test_plain_user(plain_client):
-    """A signed in user without rights."""
-    data = fetch(plain_client)
+@pytest.mark.parametrize(
+    ("client_fixture", "username", "localadmin", "is_superuser"),
+    [
+        pytest.param("plain_client", "plain", False, False, id="user without rights"),
+        pytest.param("staff_client", "staff", True, False, id="tenant admin"),
+        pytest.param("superuser_client", "super", True, True, id="superuser"),
+    ],
+)
+def test_signed_in_user(request, client_fixture, username, localadmin, is_superuser):
+    """A tenant administrator is a local admin only, a superuser administers every tenant."""
+    data = fetch(request.getfixturevalue(client_fixture))
 
-    assert (data["auth"], data["username"], data["localadmin"], data["superuser"]) == (True, "plain", False, False)
-
-
-def test_tenant_admin(staff_client):
-    """A tenant administrator is a local admin only."""
-    data = fetch(staff_client)
-
-    assert (data["localadmin"], data["superuser"]) == (True, False)
-
-
-def test_superuser(superuser_client):
-    """A superuser administers every tenant."""
-    data = fetch(superuser_client)
-
-    assert (data["localadmin"], data["superuser"]) == (True, True)
+    assert (data["auth"], data["username"], data["localadmin"], data["superuser"]) == (
+        True,
+        username,
+        localadmin,
+        is_superuser,
+    )
 
 
 def test_never_stored(anon_client, tenant):

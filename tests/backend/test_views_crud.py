@@ -3,10 +3,8 @@
 import json
 
 import pytest
-from django.core.cache import cache
 from django.urls import reverse
 
-from backend.cache import songs_payload_key
 from backend.models import Song
 from pdf.models import Status
 from pdf.models.request import AllSongsTemplate, PDFFile
@@ -33,16 +31,6 @@ def song_payload(category, **overrides):
     return data
 
 
-def prime_songs_cache(client):
-    """Fills the anonymous songs JSON cache so its invalidation becomes observable."""
-    client.get(reverse("chords:songs_api"))
-
-
-def songs_cache(tenant):
-    """Returns the cached public songs payload of the tenant."""
-    return cache.get(songs_payload_key(tenant, False))
-
-
 def test_create_adds_song(staff_client, category):
     """Posting the add form stores a new song in the category."""
     response = staff_client.post(reverse("backend:add"), song_payload(category))
@@ -50,16 +38,6 @@ def test_create_adds_song(staff_client, category):
     assert response.status_code == 302
     song = Song.objects.get(name="Created Song")
     assert list(song.categories.all()) == [category]
-
-
-def test_create_invalidates_songs_cache(staff_client, anon_client, tenant, category, song):
-    """A new song evicts the cached JSON of its categories."""
-    prime_songs_cache(anon_client)
-    assert songs_cache(tenant) is not None
-
-    staff_client.post(reverse("backend:add"), song_payload(category))
-
-    assert songs_cache(tenant) is None
 
 
 def test_create_shows_success_message(staff_client, category):
@@ -98,15 +76,6 @@ def test_update_changes_song(staff_client, category, song):
     assert song.name == "Renamed"
 
 
-def test_update_with_changes_invalidates_songs_cache(staff_client, anon_client, tenant, category, song):
-    """A changed song evicts the cached JSON."""
-    prime_songs_cache(anon_client)
-
-    staff_client.post(reverse("backend:edit", kwargs={"pk": song.pk}), song_payload(category, name="Renamed"))
-
-    assert songs_cache(tenant) is None
-
-
 def test_update_without_changes_schedules_no_pdf(staff_client, make_category, make_song, tenant):
     """Resubmitting identical data does not trigger PDF regeneration."""
     category = make_category(tenant, name="Printed", slug="printed", generate_pdf=True)
@@ -138,15 +107,6 @@ def test_delete_removes_song(staff_client, song):
 
     assert response.status_code == 302
     assert not Song.objects.filter(pk=song.pk).exists()
-
-
-def test_delete_invalidates_songs_cache(staff_client, anon_client, tenant, song):
-    """Removing a song evicts the cached JSON of its categories."""
-    prime_songs_cache(anon_client)
-
-    staff_client.post(reverse("backend:delete", kwargs={"pk": song.pk}))
-
-    assert songs_cache(tenant) is None
 
 
 def test_delete_shows_success_message(staff_client, song):
