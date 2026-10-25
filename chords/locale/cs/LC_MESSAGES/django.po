@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: chords\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 14:45-0500\n"
+"POT-Creation-Date: 2026-10-25 15:29-0500\n"
 "PO-Revision-Date: 2026-10-25 12:00+0000\n"
 "Last-Translator: pehala <halapetr@selfnet.cz>\n"
 "Language-Team: Czech\n"
@@ -397,6 +397,9 @@ msgstr "Název"
 msgid "Page"
 msgstr "Strana"
 
+msgid "Generate now"
+msgstr "Generovat hned"
+
 msgid "Filename"
 msgstr "Název souboru"
 
@@ -473,6 +476,14 @@ msgstr "Zrušit výběr"
 
 msgid "Finish selecting"
 msgstr "Dokončit výběr"
+
+#, python-format
+msgid "File %(id)s is not waiting to be generated"
+msgstr "Soubor %(id)s nečeká na vytvoření"
+
+#, python-format
+msgid "Generating file %(id)s now"
+msgstr "Soubor %(id)s se vytváří hned"
 
 #, python-format
 msgid "File %(id)s does not have a template"

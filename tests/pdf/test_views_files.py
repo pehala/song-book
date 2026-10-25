@@ -232,3 +232,67 @@ def test_progress_of_a_file_of_another_tenant_is_not_found(anon_client, foreign_
     response = anon_client.get(reverse(name, kwargs={"pk": foreign_file.pk}))
 
     assert response.status_code == 404
+
+
+def test_generate_now_generates_the_file_and_shows_its_progress(staff_client, make_pdf_file, category, mock_weasyprint):
+    """Posting to the generate now page generates the scheduled file and leads to its waiting page."""
+    file = make_pdf_file(category)
+
+    response = staff_client.post(reverse("pdf:files:generate_now", kwargs={"pk": file.pk}))
+
+    assert response.status_code == 302
+    assert response["Location"] == reverse("pdf:files:wait", kwargs={"pk": file.pk})
+    file.refresh_from_db()
+    assert file.status == Status.DONE
+
+
+def test_generate_now_refuses_a_file_that_is_not_scheduled(staff_client, make_pdf_file, category, mock_weasyprint):
+    """A file that is already done is left alone and the list is shown again."""
+    file = make_pdf_file(category, status=Status.DONE)
+
+    response = staff_client.post(reverse("pdf:files:generate_now", kwargs={"pk": file.pk}))
+
+    assert response["Location"] == reverse("pdf:files:list")
+    mock_weasyprint.assert_not_called()
+
+
+def test_generate_now_needs_a_post(staff_client, make_pdf_file, category):
+    """Generating is not started by opening a link."""
+    file = make_pdf_file(category)
+
+    response = staff_client.get(reverse("pdf:files:generate_now", kwargs={"pk": file.pk}))
+
+    assert response.status_code == 405
+
+
+def test_generate_now_is_for_local_admins(anon_client, plain_client, make_pdf_file, category, mock_weasyprint):
+    """Neither visitors nor users without rights can generate a scheduled file now."""
+    file = make_pdf_file(category)
+    url = reverse("pdf:files:generate_now", kwargs={"pk": file.pk})
+
+    assert anon_client.post(url).status_code == 302
+    assert plain_client.post(url).status_code == 403
+    mock_weasyprint.assert_not_called()
+
+
+def test_generate_now_of_a_file_of_another_tenant_is_not_found(staff_client, foreign_file, mock_weasyprint):
+    """A local admin cannot generate the file of another tenant."""
+    foreign_file.status = Status.SCHEDULED
+    foreign_file.save()
+
+    response = staff_client.post(reverse("pdf:files:generate_now", kwargs={"pk": foreign_file.pk}))
+
+    assert response.status_code == 404
+    mock_weasyprint.assert_not_called()
+
+
+def test_only_scheduled_files_offer_generating_now(staff_client, make_pdf_file, category):
+    """The file list offers to generate a scheduled file now, and not a finished one."""
+    scheduled = make_pdf_file(category)
+    url = reverse("pdf:files:generate_now", kwargs={"pk": scheduled.pk})
+
+    assert url in staff_client.get(reverse("pdf:files:list")).content.decode()
+
+    PDFFile.objects.filter(pk=scheduled.pk).update(status=Status.DONE)
+
+    assert url not in staff_client.get(reverse("pdf:files:list")).content.decode()

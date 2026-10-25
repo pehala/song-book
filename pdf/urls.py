@@ -4,6 +4,7 @@ from django.urls import include, path
 
 from pdf.views.files import (
     FileDeleteView,
+    FileGenerateNowView,
     FileListView,
     FileTemplateEditView,
     FileUpdateView,
@@ -34,6 +35,7 @@ file_patterns = [
     path("info/<int:pk>", RenderInfoView.as_view(), name="info"),
     path("delete/<int:pk>", FileDeleteView.as_view(), name="delete"),
     path("edit/<int:pk>", FileUpdateView.as_view(), name="edit"),
+    path("generate_now/<int:pk>", FileGenerateNowView.as_view(), name="generate_now"),
     path("template/edit/<int:pk>", FileTemplateEditView.as_view(), name="template_edit"),
     path("", FileListView.as_view(), name="list"),
 ]

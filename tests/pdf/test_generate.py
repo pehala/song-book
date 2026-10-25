@@ -10,6 +10,7 @@ from django.utils.timezone import now
 from pdf.generate import (
     ProgressFilter,
     Timer,
+    generate_file_now,
     generate_pdf,
     generate_pdf_file,
     generate_pdf_job,
@@ -77,12 +78,13 @@ def test_generating_writes_a_pdf(printable):
 @pytest.mark.slow
 def test_the_background_task_renders_the_pdf(printable):
     """Running the queued job produces the file the worker was asked for."""
-    file = generate_pdf_file(printable)
+    file = generate_pdf_file(printable, delay=600)
 
     generate_pdf_job.call_local(file, printable)
 
     file.refresh_from_db()
     assert file.status == Status.DONE
+    assert file.file.read().startswith(b"%PDF")
 
 
 @pytest.mark.slow
@@ -175,3 +177,60 @@ def test_progress_filter_skips_repeated_steps(tenant):
 
     file.refresh_from_db()
     assert file.progress == 2
+
+
+def test_generating_now_runs_a_scheduled_file(category, mock_weasyprint):
+    """A file waiting for its time is generated at once."""
+    file = generate_pdf_file(category, delay=600)
+
+    assert generate_file_now(file)
+
+    file.refresh_from_db()
+    assert file.status == Status.DONE
+    assert (now() - file.scheduled_at).total_seconds() < 60
+
+
+@pytest.mark.parametrize("status", [Status.IN_PROGRESS, Status.DONE, Status.FAILED])
+def test_a_file_that_is_not_scheduled_is_not_generated_now(category, mock_weasyprint, status):
+    """Only a scheduled file can be generated now."""
+    file = generate_pdf_file(category, delay=600)
+    PDFFile.objects.filter(pk=file.pk).update(status=status)
+    file.refresh_from_db()
+
+    assert not generate_file_now(file)
+
+    mock_weasyprint.assert_not_called()
+    file.refresh_from_db()
+    assert file.status == status
+
+
+def test_a_file_without_a_template_is_not_generated_now(category, mock_weasyprint):
+    """A file whose template was deleted cannot be generated."""
+    file = generate_pdf_file(category, delay=600)
+    PDFFile.objects.filter(pk=file.pk).update(template=None)
+    file.refresh_from_db()
+
+    assert not generate_file_now(file)
+
+    mock_weasyprint.assert_not_called()
+
+
+def test_the_original_job_leaves_a_file_that_was_generated_now(category, mock_weasyprint):
+    """The job still due at the original time does not generate the file a second time."""
+    file = generate_pdf_file(category, delay=600)
+    generate_file_now(file)
+
+    generate_pdf_job.call_local(file, category)
+
+    assert mock_weasyprint.call_count == 1
+
+
+def test_a_job_leaves_a_deleted_file(category, mock_weasyprint):
+    """A file deleted while it waited is neither generated nor brought back."""
+    file = generate_pdf_file(category, delay=600)
+    file.delete()
+
+    generate_pdf_job.call_local(file, category)
+
+    mock_weasyprint.assert_not_called()
+    assert not PDFFile.objects.filter(pk=file.pk).exists()

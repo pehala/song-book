@@ -1,0 +1,5 @@
+{% load i18n %}
+<form method="post" action="{% url "pdf:files:generate_now" pk=pdf.pk %}">
+  {% csrf_token %}
+  <button type="submit" class="dropdown-item text-primary"><i class="icon-file-pdf"></i>{% trans "Generate now" %}</button>
+</form>

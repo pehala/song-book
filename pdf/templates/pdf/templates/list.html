@@ -79,6 +79,11 @@
                 <span class="visually-hidden">{% trans "Toggle Dropdown" %}</span>
               </button>
               <ul class="dropdown-menu dropdown-menu-end">
+                {% with template.latest_file as pdf %}
+                  {% if pdf.status == "SC" %}
+                    <li>{% include "pdf/files/generate_now_item.html" %}</li>
+                  {% endif %}
+                {% endwith %}
                 <li>
                   <a type="button" class="dropdown-item text-info"
                          href="{% url "pdf:templates:edit" pk=template.pk %}"><i class="icon-edit"></i>{% trans "Edit" %}</a>

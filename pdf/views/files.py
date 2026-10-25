@@ -1,6 +1,7 @@
 """PDFFile related views."""
 
 from django.conf import settings
+from django.contrib import messages
 from django.core.cache import cache
 from django.http import Http404, JsonResponse
 from django.shortcuts import redirect
@@ -13,6 +14,7 @@ from django.views.generic.detail import SingleObjectMixin
 from backend.generic import UniversalDeleteView, UniversalUpdateView
 from backend.mixins import LocalAdminRequired, TenantObjectsMixin
 from pdf.forms import PDFFileEditForm
+from pdf.generate import generate_file_now
 from pdf.models import Status
 from pdf.models.request import AllSongsTemplate, ManualPDFTemplate, PDFFile
 from tenants.utils import tenant_cache_key
@@ -51,6 +53,22 @@ class FileUpdateView(LocalAdminRequired, TenantObjectsMixin, UniversalUpdateView
         response = super().post(request, *args, **kwargs)
         cache.delete(tenant_cache_key(self.object.tenant, settings.PDF_CACHE_KEY))
         return response
+
+
+class FileGenerateNowView(LocalAdminRequired, TenantObjectsMixin, SingleObjectMixin, View):
+    """Generates a scheduled file right away instead of waiting for its scheduled time."""
+
+    model = PDFFile
+    http_method_names = ["post", "options"]
+
+    def post(self, request, *args, **kwargs):
+        """Starts the generation and shows its progress, or says the file is not waiting to be generated."""
+        file = self.get_object()
+        if not generate_file_now(file):
+            messages.error(request, _("File %(id)s is not waiting to be generated") % {"id": file.id})
+            return redirect("pdf:files:list")
+        messages.success(request, _("Generating file %(id)s now") % {"id": file.id})
+        return redirect("pdf:files:wait", pk=file.id)
 
 
 class WaitForFileView(TenantObjectsMixin, DetailView):

@@ -104,7 +104,15 @@ def generate_pdf(pdf_file: PDFFile, template: AllowedTemplates):
 
 @task()
 def generate_pdf_job(file: PDFFile, template: AllowedTemplates):
-    """Generates PDF from request in the background."""
+    """Generates PDF from request in the background, unless the file is no longer scheduled.
+
+    A file is taken over by the first job that finds it scheduled, so a file generated at once by `generate_file_now`
+    is not generated again when its original job comes due, and a file deleted before its job starts is not generated.
+    """
+    if not PDFFile.objects.filter(pk=file.pk, status=Status.SCHEDULED).update(status=Status.IN_PROGRESS):
+        logger.info("Skipping file %s, it is not scheduled", file.pk)
+        return
+    file.refresh_from_db()
     generate_pdf(file, template)
 
 
@@ -131,6 +139,18 @@ def generate_pdf_file(template: AllowedTemplates, delay: int = 0):
     else:
         logger.info("Scheduled File (%s) generation from template %s", file.id, template.name)
     return file
+
+
+def generate_file_now(file: PDFFile):
+    """Generates a scheduled file now instead of at its scheduled time, returns False if it cannot be."""
+    template = file.template
+    if file.status != Status.SCHEDULED or template is None:
+        return False
+    file.scheduled_at = now()
+    file.save(update_fields=["scheduled_at"])
+    generate_pdf_job(file, template)
+    logger.info("Generating scheduled file %s from template %s", file.id, template.name)
+    return True
 
 
 class ProgressFilter(logging.Filter):
