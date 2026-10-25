@@ -8,11 +8,7 @@ from playwright.sync_api import expect
 
 from analytics.models import DayStatistic
 
-
-@pytest.fixture(autouse=True)
-def offline_cdn(page):
-    """Bootstrap comes from a CDN; the pages do not need it, so tests do not wait for it."""
-    page.route("https://cdn.jsdelivr.net/**", lambda route: route.fulfill(body="", content_type="text/plain"))
+pytestmark = pytest.mark.usefixtures("offline_cdn")
 
 
 @pytest.fixture

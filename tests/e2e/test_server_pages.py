@@ -3,11 +3,7 @@
 import pytest
 from playwright.sync_api import expect
 
-
-@pytest.fixture(autouse=True)
-def offline_cdn(page):
-    """Bootstrap comes from a CDN; the header does not need it, so tests do not wait for it."""
-    page.route("https://cdn.jsdelivr.net/**", lambda route: route.fulfill(body="", content_type="text/plain"))
+pytestmark = pytest.mark.usefixtures("offline_cdn")
 
 
 def has_language_cookie(page):

@@ -64,6 +64,12 @@ def sign_in(context, live_server):
 
 
 @pytest.fixture
+def offline_cdn(page):
+    """Bootstrap comes from a CDN; the server pages work without it, so tests do not wait for it."""
+    page.route("https://cdn.jsdelivr.net/**", lambda route: route.fulfill(body="", content_type="text/plain"))
+
+
+@pytest.fixture
 def requests_made(page):
     """Every request the page makes, as (method, url) pairs."""
     made = []
