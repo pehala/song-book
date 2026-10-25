@@ -55,10 +55,10 @@
  .contents-title {
      break-after: avoid;
      page-break-before: avoid;
-     font-size: 20pt;
+     font-size: 14pt;
      font-weight: 400;
-     margin-bottom: 10pt;
-     margin-top: 10pt;
+     margin-bottom: 6pt;
+     margin-top: 6pt;
      width: 100%;
      text-align: center;
 }
@@ -115,17 +115,83 @@
  .contents-list {
      list-style: none;
      padding-left: 0;
-     columns: 2;
-     column-gap: 1cm;
-     column-rule-style: solid;
-     column-rule-width: 1px;
+     margin-top: 0;
+     columns: 3;
+     column-gap: .8cm;
+     font-size: 9pt;
      break-before: avoid;
 }
  .contents-list li {
-     border-top: .25pt solid #c1c1c1;
-     margin: .25cm 0;
-     padding-top: .25cm;
+     line-height: 1.4;
+     break-inside: avoid;
+}
+ .contents-list a {
+     display: block;
+     position: relative;
+     padding-left: 26pt;
+     text-decoration: none;
+}
+ .contents-list .number {
+     position: absolute;
+     left: 0;
+     top: 0;
+     display: block;
+     width: 22pt;
+     text-align: right;
+     font-weight: bold;
+}
+ .contents-list .last-word {
+     white-space: nowrap;
+}
+ .contents-list .last-word::after {
+     content: '\00a0' leader('.') '\00a0' target-counter(attr(href), page);
+}
+ .contents-head {
+     display: flex;
+     gap: .8cm;
+     font-size: 8pt;
+     color: #555;
+     border-bottom: .5pt solid #999;
+     margin-bottom: 3pt;
+     padding-bottom: 2pt;
+}
+ .contents-head > div {
+     flex: 1;
+     display: flex;
+}
+ .head-number {
+     flex: none;
+     width: 26pt;
+}
+ .head-title {
+     flex: 1;
+     padding-left: 2pt;
+}
+ .head-page {
+     text-align: right;
+}
+ .running-head {
+     position: running(contents-head);
+     box-sizing: border-box;
+     width: 100%;
+     padding: 0 8px;
 }
  #contents {
-     padding-top: 1cm;
+     page: contents;
+}
+ @page contents {
+     @top-center {
+         content: element(contents-head);
+         vertical-align: bottom;
+    }
+}
+ @page contents:first {
+     @top-center {
+         content: string(title);
+    }
+}
+ @page contents:nth(n+2) {
+     @top-right {
+         vertical-align: top;
+    }
 }

@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 10:24-0500\n"
+"POT-Creation-Date: 2026-10-25 11:49-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -63,7 +63,7 @@ msgstr "Nová %(class)s"
 msgid "Name"
 msgstr "Jméno"
 
-#: backend/models.py:38 pdf/templates/pdf/index.html:54
+#: backend/models.py:38 pdf/templates/pdf/index.html:59
 msgid "Capo"
 msgstr "Capo"
 
@@ -505,6 +505,18 @@ msgstr "Soubory"
 msgid "Song number"
 msgstr "Číslo písničky"
 
+#: pdf/templates/pdf/contents_head.html:4
+msgid "No."
+msgstr "Číslo"
+
+#: pdf/templates/pdf/contents_head.html:4
+msgid "Song title"
+msgstr "Název"
+
+#: pdf/templates/pdf/contents_head.html:4
+msgid "Page"
+msgstr "Strana"
+
 #: pdf/templates/pdf/files/list.html:26
 #: pdf/templates/pdf/templates/list.html:32
 msgid "Filename"
@@ -536,7 +548,7 @@ msgstr "Upravit Šablonu"
 msgid "Waiting for render of %(filename)s"
 msgstr "Čekání na vygenerování %(filename)s"
 
-#: pdf/templates/pdf/index.html:44
+#: pdf/templates/pdf/index.html:48
 msgid "Table of Contents"
 msgstr "Obsah"
 

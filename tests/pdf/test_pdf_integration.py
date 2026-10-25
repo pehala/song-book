@@ -14,8 +14,10 @@ which they are as part of the source tree (pdf/static/).
 """
 
 import pytest
+from django_weasyprint.utils import DjangoURLFetcher
+from weasyprint import HTML
 
-from pdf.generate import generate_pdf
+from pdf.generate import generate_pdf, get_base_url
 from pdf.models import Status
 
 pytestmark = [pytest.mark.django_db, pytest.mark.slow]
@@ -51,3 +53,16 @@ def test_full_pdf_generation_produces_valid_pdf_bytes(pdf_category, pdf_song, ma
 
     # Clean up the generated file so it does not accumulate between test runs
     pdf_file.file.delete(save=False)
+
+
+def test_contents_of_a_long_songbook_fit_on_the_first_page(mock_weasyprint, pdf_category, make_pdf_file, make_song):
+    """120 songs are listed on the page of the title, so the first song starts on the second page"""
+    songs = [make_song(pdf_category, name=f"Song {number}", text="Hello") for number in range(120)]
+    generate_pdf(make_pdf_file(pdf_category), pdf_category)
+
+    document = HTML(
+        string=mock_weasyprint.call_args.kwargs["string"], url_fetcher=DjangoURLFetcher(), base_url=get_base_url()
+    ).render()
+
+    first_song_page = next(index for index, page in enumerate(document.pages) if f"{songs[0].id}-title" in page.anchors)
+    assert first_song_page == 1

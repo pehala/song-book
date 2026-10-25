@@ -1,5 +1,6 @@
 {% load i18n %}
 {% load static %}
+{% load contents %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -19,6 +20,8 @@
           @top-center { content: none; }
           @bottom-right { content: none; }
       }
+      @page contents:first { @top-center { content: none; } }
+      @page contents:nth(2) { @top-center { content: string(title); } }
       .date { break-after: avoid; page-break-before: always; }
 </style>
 {% endif %}
@@ -37,14 +40,16 @@
 </style>
 {% endif %}
 <body>
-    {% if link_url %}<a class="link" href="{{ link_url }}">{{ link_url }}</a>{% endif %}
     <article id="contents">
+      {% if link_url %}<a class="link" href="{{ link_url }}">{{ link_url }}</a>{% endif %}
+      <div class="running-head">{% include "pdf/contents_head.html" %}</div>
       <h1 class="title">{% if request.title %}{{ name }}{% endif %}</h1>
       <p class="date">{% if request.show_date %}{% now "d.m.Y" %}{% endif %}</p>
       <h3 class="contents-title name">{% trans "Table of Contents" %}</h3>
+      {% include "pdf/contents_head.html" %}
       <ul class="contents-list">
         {% for number,song in sorted_songs %}
-            <li><a href="#{{ song.id }}-title">{{ number }}. {{ song.name }}</a></li>
+            <li><a href="#{{ song.id }}-title"><span class="number">{{ number }}</span>{{ song.name|without_last_word }}<span class="last-word" href="#{{ song.id }}-title">{{ song.name|last_word }}</span></a></li>
         {% endfor %}
       </ul>
     </article>
