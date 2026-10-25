@@ -29,7 +29,7 @@ make coverage                       # the same, with a branch coverage report
 make e2e                            # Playwright tests of the reader (needs `uv run playwright install --with-deps chromium`)
 make commit-acceptance              # what CI gates on: ruff --fix + ruff format + check-fuzzy + check-messages
 make migrations                     # makemigrations
-make messages                       # makemessages -l cs
+make messages                       # makemessages -l cs --no-location
 make deploy                         # migrate + prerender + compilemessages + collectstatic
 make image                          # podman build of the Containerfile
 make help                           # all targets
@@ -274,7 +274,8 @@ drop a closing quote).
 - Every user-visible string goes through `gettext_lazy`/`gettext_noop`. Czech is the default
   language; `make check-messages` also regenerates `chords/locale/cs/LC_MESSAGES/django.po` and fails when it
   differs from the committed file, and `make check-fuzzy` fails the build if either catalogue contains fuzzy
-  entries, so run `make messages`, resolve them and commit both files.
+  entries, so run `make messages`, resolve them and commit both files. The catalogues carry no source locations
+  (`--no-location`), so they change only when a string or its translation does.
 - ruff, line length 120, target `py314` (`.python-version` is 3.14).
 - Dev dependencies: `uv add --group dev <pkg>`.
 - One logical change per commit.
