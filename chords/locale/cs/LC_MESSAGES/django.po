@@ -132,7 +132,7 @@ msgstr "Jazyk"
 #: category/templates/category/list.html:15
 #: pdf/templates/pdf/templates/list.html:34
 msgid "Number of songs"
-msgstr "Počet písníček"
+msgstr "Počet písniček"
 
 #: category/templates/category/list.html:17
 #: pdf/templates/pdf/templates/list.html:35
