@@ -60,6 +60,14 @@ def test_new_page_offers_the_songs_of_this_tenant(staff_client, song, other_cate
     assert foreign not in offered
 
 
+def test_new_page_translates_the_song_table_headers(staff_client):
+    """The headers of the table of selectable songs are in the language of the page"""
+    html = staff_client.get(reverse("pdf:templates:new")).content.decode()
+
+    assert "<th>Autor</th>" in html
+    assert '<th class="d-none">Kategorie</th>' in html
+
+
 def test_new_page_lists_the_categories(staff_client, category):
     """The category filter is filled with this tenant's categories"""
     response = staff_client.get(reverse("pdf:templates:new"))
