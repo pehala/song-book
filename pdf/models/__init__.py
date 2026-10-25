@@ -4,12 +4,14 @@ import re
 from abc import abstractmethod
 from collections.abc import Iterable
 from dataclasses import dataclass
+from itertools import groupby
 from typing import TYPE_CHECKING
 
 from django.conf import settings
 from django.db.models import BooleanField, CharField, FloatField, ImageField, TextChoices
 from django.db.models.signals import post_delete
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import pgettext_lazy
 from polymorphic.models import PolymorphicModel
 
 from pdf.storage import file_cleanup
@@ -29,6 +31,24 @@ class Section:
 
     title: str | None
     songs: list[tuple[int, Song]]
+
+
+# Title of a section without one that follows a titled one, whose songs would otherwise look like its own
+OTHER_SECTION = pgettext_lazy("title of the songs outside the sections", "Other")
+
+
+def group_sections(rows: Iterable[tuple[int, Song, str]]) -> list[Section]:
+    """Groups numbered songs, each with the label of its section, into sections: a run of one label is a section.
+
+    Only the first section may be untitled; a later one without a label is titled "Other".
+    """
+    sections = [
+        Section(title or None, [(number, song) for number, song, _title in run])
+        for title, run in groupby(rows, key=lambda row: row[2])
+    ]
+    for section in sections[1:]:
+        section.title = section.title or OTHER_SECTION
+    return sections
 
 
 class Status(TextChoices):

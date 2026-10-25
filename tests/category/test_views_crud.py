@@ -73,6 +73,13 @@ def test_create_adds_category(staff_client, tenant):
     assert Category.objects.filter(slug="created", tenant=tenant).exists()
 
 
+def test_create_schedules_the_all_songs_pdf(staff_client, tenant, all_songs_template):
+    """A new category is a section of the all songs PDF."""
+    staff_client.post(reverse("category:add"), category_payload(tenant))
+
+    assert PDFFile.objects.filter(template=all_songs_template).count() == 1
+
+
 def test_create_drops_the_menu_cache(staff_client, tenant):
     """A new category has to show up in the navigation."""
     prime_menu_cache(tenant)
@@ -116,6 +123,27 @@ def test_update_schedules_pdf_when_enabled(staff_client, tenant, make_category):
     assert PDFFile.objects.filter(template=category).exists()
 
 
+def test_update_schedules_the_all_songs_pdf(staff_client, tenant, category, all_songs_template):
+    """The section titles of the all songs PDF are the category names, so a changed category queues a fresh PDF."""
+    staff_client.post(
+        reverse("category:edit", kwargs={"pk": category.pk}),
+        category_payload(tenant, name="Renamed", slug=category.slug),
+    )
+
+    assert PDFFile.objects.filter(template=all_songs_template).count() == 1
+
+
+def test_update_without_changes_schedules_no_all_songs_pdf(staff_client, tenant, category, all_songs_template):
+    """Resubmitting identical data does not queue the all songs PDF."""
+    unchanged = category_payload(
+        tenant, name=category.name, slug=category.slug, filename=category.filename, locale=category.locale
+    )
+
+    staff_client.post(reverse("category:edit", kwargs={"pk": category.pk}), unchanged)
+
+    assert not PDFFile.objects.filter(template=all_songs_template).exists()
+
+
 def test_update_without_changes_schedules_nothing(staff_client, tenant, make_category):
     """Resubmitting identical data does not queue a PDF."""
     category = make_category(tenant, name="Printed", slug="printed", generate_pdf=True)
@@ -132,6 +160,13 @@ def test_delete_removes_category(staff_client, category):
 
     assert response.status_code == 302
     assert not Category.objects.filter(pk=category.pk).exists()
+
+
+def test_delete_schedules_the_all_songs_pdf(staff_client, category, all_songs_template):
+    """A deleted category is no longer a section of the all songs PDF."""
+    staff_client.post(reverse("category:delete", kwargs={"pk": category.pk}))
+
+    assert PDFFile.objects.filter(template=all_songs_template).count() == 1
 
 
 def test_delete_drops_the_menu_cache(staff_client, tenant, category):
