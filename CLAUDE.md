@@ -331,5 +331,6 @@ not want a real PDF use the `mock_weasyprint` fixture, and the few that do are m
 (`pytest -m "not slow"` skips them). Passwords are hashed with MD5 there: the default PBKDF2
 hasher costs ~200 ms per user and the tests sign in with `force_login()`.
 
-Coverage is configured in `pyproject.toml` (branch coverage, migrations/`apps.py`/`wsgi.py` and
-the uncommitted `production.py` omitted) and currently sits at 100%; `make coverage` reports it.
+Coverage is configured in `pyproject.toml` (branch coverage, migrations/`apps.py`/`wsgi.py`, the
+uncommitted `production.py` and the env-driven `container.py` omitted) and currently sits at 100%; `make coverage`
+reports it.
