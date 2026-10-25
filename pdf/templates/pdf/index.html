@@ -1,6 +1,5 @@
 {% load i18n %}
 {% load static %}
-{% load contents %}
 
 <!DOCTYPE html>
 <html lang="en">
@@ -49,9 +48,9 @@
       {% include "pdf/contents_head.html" %}
       <ul class="contents-list">
         {% for section, sorted_songs in contents %}
-            {% if section.title %}<li class="contents-section"><a href="#section-{{ forloop.counter }}"><span class="last-word" href="#section-{{ forloop.counter }}">{{ section.title }}</span></a></li>{% endif %}
+            {% if section.title %}<li class="contents-section" data-target="#section-{{ forloop.counter }}"><a href="#section-{{ forloop.counter }}">{{ section.title }}</a></li>{% endif %}
             {% for number,song in sorted_songs %}
-                <li><a href="#{{ song.id }}-title"><span class="number">{{ number }}</span>{{ song.name|without_last_word }}<span class="last-word" href="#{{ song.id }}-title">{{ song.name|last_word }}</span></a></li>
+                <li data-number="{{ number }}" data-target="#{{ song.id }}-title"><a href="#{{ song.id }}-title">{{ song.name }}</a></li>
             {% endfor %}
         {% endfor %}
       </ul>

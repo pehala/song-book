@@ -61,30 +61,16 @@ def test_contents_entries_do_not_set_the_footer_name(mock_weasyprint, category, 
     assert 'class="name"' not in contents
 
 
-def test_contents_entry_keeps_its_last_word_with_the_page_number(mock_weasyprint, category, make_song, pdf_file):
-    """The last word of a title is a span of its own that carries the link to the song.
-
-    The dots and the page number are drawn after it and wrap with it.
-    """
+def test_contents_entry_links_only_the_title(mock_weasyprint, category, make_song, pdf_file):
+    """The link wraps the plain title; the number and the page come from the entry's own pseudo-elements."""
     song = make_song(category, name="Hlupák Váhá", text="Hello")
 
     generate_pdf(pdf_file, category)
 
     html = mock_weasyprint.call_args.kwargs["string"]
     assert (
-        f'<a href="#{song.id}-title"><span class="number">1</span>Hlupák '
-        f'<span class="last-word" href="#{song.id}-title">Váhá</span></a>'
+        f'<li data-number="1" data-target="#{song.id}-title"><a href="#{song.id}-title">Hlupák Váhá</a></li>'
     ) in html
-
-
-def test_contents_entry_of_a_one_word_title_is_all_last_word(mock_weasyprint, category, make_song, pdf_file):
-    """A title of one word has nothing before the span."""
-    song = make_song(category, name="Amazonka", text="Hello")
-
-    generate_pdf(pdf_file, category)
-
-    html = mock_weasyprint.call_args.kwargs["string"]
-    assert f'<span class="number">1</span><span class="last-word" href="#{song.id}-title">Amazonka</span>' in html
 
 
 def test_contents_have_a_header_over_every_column_in_the_language_of_the_template(
@@ -364,7 +350,7 @@ def test_contents_head_each_section_with_a_link_to_its_label(mock_weasyprint, ca
     html = mock_weasyprint.call_args.kwargs["string"]
     contents = html.split('<ul class="contents-list">')[1].split("</ul>")[0]
     assert contents.count('class="contents-section"') == 2
-    heading = '<li class="contents-section"><a href="#section-1"><span class="last-word" href="#section-1">Hymns'
+    heading = '<li class="contents-section" data-target="#section-1"><a href="#section-1">Hymns</a></li>'
     assert heading in contents
     order = [contents.index(text) for text in ("Hymns", "Mule", "Zebra", "Camp", "Apple")]
     assert order == sorted(order)
