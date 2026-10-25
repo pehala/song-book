@@ -8,11 +8,7 @@ from backend.models import Song
 from pdf.models import Section
 from pdf.models.request import ManualPDFTemplate, PDFSong
 
-
-@pytest.fixture(autouse=True)
-def offline_cdn(page):
-    """Bootstrap comes from a CDN; the page works without it, so tests do not wait for it."""
-    page.route("https://cdn.jsdelivr.net/**", lambda route: route.fulfill(body="", content_type="text/plain"))
+pytestmark = pytest.mark.usefixtures("offline_cdn")
 
 
 @pytest.fixture
