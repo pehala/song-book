@@ -29,17 +29,33 @@ function scrollBehavior() {
     return matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
 }
 
-// Scrolls the open song by about a screen: to the next paragraph below the first one fully in view
+const SCROLL_GAP = 8;
+
+function openVerses() {
+    return [...document.querySelectorAll("details.song[open] .song-text p")].map(element => element.getBoundingClientRect());
+}
+
+// How far the open song can still be scrolled: until its last verse ends just above the bottom edge
+function songRemaining(verses) {
+    return verses.length ? Math.max(...verses.map(rect => rect.bottom)) - innerHeight + SCROLL_GAP : 0;
+}
+
+// Scrolls the open song by up to 80% of the screen, so that what is being read stays in view: the last verse start
+// within that distance moves up under the title, but never past the end of the song
 function scrollDown() {
-    const paragraphs = [...document.querySelectorAll(".song-text p")];
-    const inView = element => {
-        const rect = element.getBoundingClientRect();
-        return rect.top >= 0 && rect.bottom <= innerHeight;
-    };
-    const index = paragraphs.findIndex(inView);
-    if (index >= 0 && index < paragraphs.length - 1 && !inView(paragraphs[paragraphs.length - 1])) {
-        scrollBy({top: 0.8 * paragraphs[index + 1].getBoundingClientRect().top, behavior: scrollBehavior()});
+    const title = document.querySelector("details.song[open] > summary");
+    const verses = openVerses();
+    const remaining = songRemaining(verses);
+    if (!title || remaining <= 1) {
+        return;
     }
+    // where the title's bottom edge sticks: the search bar sticks to the top of the screen, the title right under it
+    const top = document.querySelector(".search").offsetHeight + title.offsetHeight;
+    const reach = 0.8 * (innerHeight - top);
+    const distances = verses.map(rect => rect.top - top - SCROLL_GAP).filter(distance => distance > 1 && distance <= reach);
+    // with no verse start in reach (one taller than the screen), move by the whole reach
+    const distance = distances.length ? Math.max(...distances) : reach;
+    scrollBy({top: Math.min(distance, remaining), behavior: scrollBehavior()});
 }
 
 function App() {
@@ -50,6 +66,7 @@ function App() {
     const [query, setQuery] = useState("");
     const [openId, setOpenId] = useState(null);
     const [scrolled, setScrolled] = useState(false);
+    const [canScrollDown, setCanScrollDown] = useState(false);
     const [scrollToOpen, setScrollToOpen] = useState(false);
     const site = useSiteHeader({boot});
     const {_, toast} = site;
@@ -96,6 +113,37 @@ function App() {
             removeEventListener("scroll", onScroll);
         };
     }, []);
+
+    // Scroll down is offered while the open song continues below the screen; the song's size changes as it opens
+    // and with the columns, the chords and the window
+    useEffect(() => {
+        const update = () => setCanScrollDown(openId !== null && songRemaining(openVerses()) > 1);
+        const resized = new ResizeObserver(update);
+        resized.observe(document.querySelector("main"));
+        addEventListener("scroll", update, {passive: true});
+        addEventListener("resize", update);
+        update();
+        return () => {
+            resized.disconnect();
+            removeEventListener("scroll", update);
+            removeEventListener("resize", update);
+        };
+    }, [openId]);
+
+    // Back to top sits under the open song's sticky title, whatever height the title has
+    useEffect(() => {
+        const title = openId === null ? null : document.querySelector("details.song[open] > summary");
+        if (!title) {
+            return;
+        }
+        const update = () => document.documentElement.style.setProperty("--title-height", `${title.offsetHeight}px`);
+        const resized = new ResizeObserver(update);
+        resized.observe(title);
+        return () => {
+            resized.disconnect();
+            document.documentElement.style.removeProperty("--title-height");
+        };
+    }, [openId]);
 
     useEffect(() => {
         setQuery("");
@@ -182,10 +230,8 @@ function App() {
         <${SiteHeader} site=${site} navigate=${navigate} onReload=${reload} />
         ${songs !== null && progress && html`<${Progress} progress=${progress} label=${_("Updating songs…")} retryLabel=${_("Fetching the whole list…")} />`}
         <main>${content}</main>
-        <div class="fabs">
-            ${scrolled && html`<button class="sb-btn sb-primary" title=${_("Back to top")} aria-label=${_("Back to top")} onClick=${() => scrollTo({top: 0, behavior: scrollBehavior()})}><${Icon} name="up" /></button>`}
-            ${openId !== null && html`<button class="sb-btn sb-primary" title=${_("Scroll down")} aria-label=${_("Scroll down")} onClick=${scrollDown}><${Icon} name="down" /></button>`}
-        </div>`;
+        ${scrolled && html`<button class="sb-btn sb-primary to-top" title=${_("Back to top")} aria-label=${_("Back to top")} onClick=${() => scrollTo({top: 0, behavior: scrollBehavior()})}><${Icon} name="up" /></button>`}
+        ${canScrollDown && html`<button class="sb-btn sb-primary to-bottom" title=${_("Scroll down")} aria-label=${_("Scroll down")} onClick=${scrollDown}><${Icon} name="down" /></button>`}`;
 }
 
 function formatSize(bytes) {

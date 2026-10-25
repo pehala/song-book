@@ -6,6 +6,7 @@ from urllib.parse import urlsplit
 
 import pytest
 from django.contrib.staticfiles import finders
+from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 from playwright.sync_api import expect
 
 from frontend.views import ASSETS
@@ -349,6 +350,105 @@ def test_open_song_keeps_its_title_in_view(page, library, make_song):
     assert long.locator("summary").bounding_box()["y"] == search["y"] + search["height"]
 
 
+def open_long_song(page, library, make_song, verse="{C}Verse"):
+    make_song(
+        library.category_set.get(slug="cs"),
+        name="Long",
+        author="Someone",
+        text="\n\n".join(f"{verse} {n}" for n in range(60)),
+    )
+    page.emulate_media(reduced_motion="reduce")
+    page.goto("/categories/cs")
+    long = page.locator("details.song", has_text="Long")
+    long.locator("summary").click()
+    expect(long.locator(".song-text p")).to_have_count(60)
+    page.wait_for_function("document.getAnimations({subtree: true}).length === 0")
+    return long
+
+
+def press_scroll_down(page):
+    """Presses Scroll down until it goes away at the end of the song; returns the scroll positions before each press"""
+    button = page.get_by_role("button", name="Scroll down")
+    positions = []
+    while button.count() and len(positions) < 30:
+        positions.append(page.evaluate("scrollY"))
+        try:
+            button.click(timeout=1000)
+        except PlaywrightTimeoutError:
+            break
+    return positions
+
+
+def test_scroll_down_keeps_what_is_read_in_view(page, library, make_song):
+    """A press moves a verse start up under the title by at most 80% of the screen, so what is read stays in view"""
+    long = open_long_song(page, library, make_song)
+    verses = long.locator(".song-text p")
+    last_read = verses.evaluate_all(
+        "verses => verses.findLastIndex(verse => verse.getBoundingClientRect().bottom <= innerHeight)"
+    )
+    before = page.evaluate("scrollY")
+
+    page.get_by_role("button", name="Scroll down").click()
+
+    title = long.locator("summary").bounding_box()
+    below_title = title["y"] + title["height"]
+    tops = verses.evaluate_all("verses => verses.map(verse => verse.getBoundingClientRect().top)")
+    assert any(abs(top - (below_title + 8)) <= 1 for top in tops)
+    assert page.evaluate("scrollY") - before <= 0.8 * (page.viewport_size["height"] - below_title)
+    assert verses.nth(last_read).bounding_box()["y"] > below_title
+
+
+def test_scroll_down_moves_on_when_a_verse_is_taller_than_the_screen(page, library, make_song):
+    """With no verse start to align to, the button still scrolls most of a screen"""
+    page.set_viewport_size({"width": 667, "height": 300})
+    open_long_song(page, library, make_song, verse="word " * 300)
+    before = page.evaluate("scrollY")
+
+    page.get_by_role("button", name="Scroll down").click()
+
+    assert page.evaluate("scrollY") > before
+
+
+def test_scroll_down_never_goes_up_in_columns(page, library, make_song):
+    """With several columns each press moves forward, whichever column the verses at the edge are in"""
+    page.add_init_script("localStorage.setItem('columns', '2')")
+    page.set_viewport_size({"width": 1280, "height": 800})
+    open_long_song(page, library, make_song)
+
+    positions = press_scroll_down(page)
+
+    assert len(positions) > 2
+    assert positions == sorted(set(positions))
+
+
+def test_scroll_down_is_offered_only_while_the_song_continues(page, library, make_song):
+    """A song that fits the screen has no button, a long one has it until its end is in view"""
+    page.emulate_media(reduced_motion="reduce")
+    page.goto("/categories/cs")
+    songs(page).nth(1).locator("summary").click()
+    expect(page.locator(".song-text p")).to_have_count(1)
+    expect(page.get_by_role("button", name="Scroll down")).to_have_count(0)
+
+    open_long_song(page, library, make_song)
+    button = page.get_by_role("button", name="Scroll down")
+    expect(button).to_be_visible()
+    page.evaluate("scrollTo(0, document.documentElement.scrollHeight)")
+    expect(button).to_have_count(0)
+    page.evaluate("scrollTo(0, 0)")
+    expect(button).to_be_visible()
+
+
+def test_scroll_down_stops_at_the_end_of_the_song(page, library, make_song):
+    """The last press leaves the end of the song at the bottom edge, with the next songs still below the screen"""
+    long = open_long_song(page, library, make_song)
+
+    press_scroll_down(page)
+
+    expect(page.get_by_role("button", name="Scroll down")).to_have_count(0)
+    last = long.locator(".song-text p").last.bounding_box()
+    assert 0 <= page.viewport_size["height"] - (last["y"] + last["height"]) <= 9
+
+
 def test_one_song_is_open_at_a_time(page, library):
     """Opening a song closes the previous one"""
     page.goto("/categories/cs")
@@ -385,16 +485,15 @@ def test_random_song_button_follows_the_search(page, library):
     expect(page.get_by_role("button", name="Random song")).to_be_disabled()
 
 
-def test_floating_buttons_stay_clear_of_the_search_bar(page, library):
-    """Back to top and Scroll down share the bottom corner without covering each other or the random song button"""
-    page.goto("/categories/cs")
-    songs(page).nth(0).locator("summary").click()
-    page.evaluate("document.querySelector('main').style.minHeight = '4000px'")
+def test_floating_buttons_stay_clear_of_the_search_bar(page, library, make_song):
+    """Back to top hangs under the sticky title, Scroll down sits in the bottom corner, and none covers another"""
+    long = open_long_song(page, library, make_song)
     page.evaluate("scrollTo(0, 1000)")
     boxes = {
         name: page.get_by_role("button", name=name).bounding_box()
         for name in ("Random song", "Back to top", "Scroll down")
     }
+    title = long.locator("summary").bounding_box()
 
     def overlap(one, other):
         return (
@@ -407,9 +506,23 @@ def test_floating_buttons_stay_clear_of_the_search_bar(page, library):
     for name, box in boxes.items():
         assert box["x"] >= 0 and box["x"] + box["width"] <= viewport["width"], name
         assert box["y"] >= 0 and box["y"] + box["height"] <= viewport["height"], name
+    assert boxes["Back to top"]["y"] >= title["y"] + title["height"]
     assert not overlap(boxes["Random song"], boxes["Back to top"])
     assert not overlap(boxes["Random song"], boxes["Scroll down"])
     assert not overlap(boxes["Back to top"], boxes["Scroll down"])
+
+
+def test_back_to_top_stays_put_when_scroll_down_goes_away(page, library, make_song):
+    """Back to top keeps its place at the top when Scroll down hides at the end of the song"""
+    open_long_song(page, library, make_song)
+    page.evaluate("scrollTo(0, 1000)")
+    to_top = page.get_by_role("button", name="Back to top")
+    before = to_top.bounding_box()
+
+    page.evaluate("scrollTo(0, document.documentElement.scrollHeight)")
+
+    expect(page.get_by_role("button", name="Scroll down")).to_have_count(0)
+    assert to_top.bounding_box() == before
 
 
 def test_capo_and_video_link_are_shown(page, library):
