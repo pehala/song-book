@@ -50,13 +50,14 @@ The entries are sorted by title in the collation of the template's language and 
 
 * The list has `CONTENTS_COLUMNS` columns (`pdf/generate.py`); the `columns` of `.contents-list` in `pdf.css` must
   match.
-* An entry is `<span class="number">`, the title and `<span class="last-word" href="…">`. The number is positioned
-  absolutely in a 26 pt gutter and the link has `padding-left` of the same width, so a title that wraps hangs under its
-  first line. `without_last_word` and `last_word` (`pdf/templatetags/contents.py`) split the title.
-* `.last-word::after` is a no-break space, `leader('.')`, a no-break space and `target-counter(attr(href), page)`, the
-  page of the song heading. `white-space: nowrap` on the span keeps the last word, the dots and the page number on one
-  line, so a wrapped title has them on its last line only and never a line made of dots. `attr(href)` is read from the
-  span, which is why it carries the `href`.
+* An entry is an `li` with `data-number` (the number of the song) and `data-target` (the `#id` of the song heading)
+  around an `<a>` holding the plain title. WeasyPrint makes a link of every box inside an `<a>`, so the link has no
+  boxes in it and is one link (one per line of a title that wraps); the number and the page are not part of it.
+  `li::before` draws the number absolutely in a 26 pt gutter and the `li` has `padding-left` of the same width, so a
+  title that wraps hangs under its first line.
+* `li::after` is a no-break space, `leader('.')`, a no-break space and `target-counter(attr(data-target), page)`, the
+  page of the song heading. The no-break space keeps the dots with the last word of the title, so a wrapped title has
+  them on its last line only and never a line made of dots.
 * The number is not a negative `text-indent` because WeasyPrint then sizes the leader of the first line without
   that indent and the dots stop short of the right edge.
 * `contents_head.html` is the header (number, song title, page) of every column. It is included twice: in the flow

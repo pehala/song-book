@@ -125,29 +125,25 @@
      break-before: avoid;
 }
  .contents-list li {
+     position: relative;
+     padding-left: 26pt;
      line-height: 1.4;
      break-inside: avoid;
 }
- .contents-list a {
-     display: block;
-     position: relative;
-     padding-left: 26pt;
-     text-decoration: none;
-}
- .contents-list .number {
+ .contents-list li::before {
+     content: attr(data-number);
      position: absolute;
      left: 0;
      top: 0;
-     display: block;
      width: 22pt;
      text-align: right;
      font-weight: bold;
 }
- .contents-list .last-word {
-     white-space: nowrap;
+ .contents-list li::after {
+     content: '\00a0' leader('.') '\00a0' target-counter(attr(data-target), page);
 }
- .contents-list .last-word::after {
-     content: '\00a0' leader('.') '\00a0' target-counter(attr(href), page);
+ .contents-list a {
+     text-decoration: none;
 }
  .contents-head {
      display: flex;
@@ -200,15 +196,13 @@
 }
 
  .contents-list .contents-section {
+     padding-left: 0;
      break-after: avoid;
      break-inside: avoid;
      margin-top: 8pt;
      font-size: 10pt;
      font-weight: bold;
      border-bottom: .5pt solid #999;
-}
- .contents-list .contents-section a {
-     padding-left: 0;
 }
  .section-start {
      break-before: page;

@@ -66,3 +66,16 @@ def test_contents_of_a_long_songbook_fit_on_the_first_page(mock_weasyprint, pdf_
 
     first_song_page = next(index for index, page in enumerate(document.pages) if f"{songs[0].id}-title" in page.anchors)
     assert first_song_page == 1
+
+
+def test_contents_entry_is_a_single_link(mock_weasyprint, pdf_category, make_pdf_file, make_song):
+    """A short entry of the table of contents is one link, not one for the number, the words and the dots."""
+    songs = [make_song(pdf_category, name=f"Song number {number}", text="Hello") for number in range(3)]
+    generate_pdf(make_pdf_file(pdf_category), pdf_category)
+
+    document = HTML(
+        string=mock_weasyprint.call_args.kwargs["string"], url_fetcher=DjangoURLFetcher(), base_url=get_base_url()
+    ).render()
+
+    targets = [target for link_type, target, *_ in document.pages[0].links if link_type == "internal"]
+    assert sorted(targets) == sorted(f"{song.id}-title" for song in songs)
