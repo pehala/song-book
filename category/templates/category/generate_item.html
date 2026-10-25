@@ -1,0 +1,13 @@
+{% load i18n %}
+<li>
+  {% if item.filename %}
+    {% if item.has_scheduled_file %}
+      <span class="dropdown-item text-secondary"><i class="icon-file-pdf"></i>{% trans "Already in queue" %}</span>
+    {% else %}
+      <a href="{% url "pdf:templates:generate" pk=item.id %}"
+         class="dropdown-item text-primary"><i class="icon-file-pdf"></i>{% trans "Generate PDF" %}</a>
+    {% endif %}
+  {% else %}
+    <span class="dropdown-item text-secondary"><i class="icon-file-pdf"></i>{% trans "Filename required for PDF generation" %}</span>
+  {% endif %}
+</li>
