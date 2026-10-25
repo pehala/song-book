@@ -86,26 +86,36 @@ def test_missing_field_falls_back_to_the_default(tenant_request):
     assert form.get_list_field_value("songs", ["fallback"]) == ["fallback"]
 
 
-def test_distinct_song_numbers_are_accepted(song, make_song, category):
+def test_distinct_song_numbers_are_accepted(tenant_request, song, make_song, category):
     """Every song may hold its own position."""
     second = make_song(category, name="Second Song")
 
-    formset = Formset(formset_data((song, 1), (second, 2)), prefix="songs")
+    formset = Formset(formset_data((song, 1), (second, 2)), prefix="songs", form_kwargs={"request": tenant_request})
 
     assert formset.is_valid()
 
 
-def test_duplicate_song_numbers_are_refused(song, make_song, category):
+def test_duplicate_song_numbers_are_refused(tenant_request, song, make_song, category):
     """Two songs cannot share a position."""
     second = make_song(category, name="Second Song")
 
-    formset = Formset(formset_data((song, 1), (second, 1)), prefix="songs")
+    formset = Formset(formset_data((song, 1), (second, 1)), prefix="songs", form_kwargs={"request": tenant_request})
 
     assert not formset.is_valid()
 
 
-def test_invalid_entries_short_circuit_the_check(song):
+def test_invalid_entries_short_circuit_the_check(tenant_request, song):
     """The uniqueness check is skipped while a form is already broken."""
-    formset = Formset(formset_data((song, 0)), prefix="songs")
+    formset = Formset(formset_data((song, 0)), prefix="songs", form_kwargs={"request": tenant_request})
 
     assert not formset.is_valid()
+
+
+def test_numbering_refuses_a_song_of_another_tenant(tenant_request, song, other_category, make_song):
+    """A song outside this tenant cannot be put into its template."""
+    foreign = make_song(other_category, name="Foreign Song")
+
+    formset = Formset(formset_data((song, 1), (foreign, 2)), prefix="songs", form_kwargs={"request": tenant_request})
+
+    assert not formset.is_valid()
+    assert "song" in formset.forms[1].errors

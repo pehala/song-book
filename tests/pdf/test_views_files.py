@@ -186,3 +186,49 @@ def test_template_edit_without_a_template(staff_client, tenant):
     response = staff_client.get(reverse("pdf:files:template_edit", kwargs={"pk": file.pk}))
 
     assert response.status_code == 404
+
+
+@pytest.fixture
+def foreign_file(other_category):
+    """A file of another tenant."""
+    return PDFFile.objects.create(
+        tenant=other_category.tenant, template=other_category, filename="foreign", update_date=now()
+    )
+
+
+@pytest.mark.parametrize(
+    "name",
+    ["pdf:files:delete", "pdf:files:edit", "pdf:files:template_edit"],
+)
+def test_admin_pages_of_a_file_of_another_tenant_are_not_found(staff_client, foreign_file, name):
+    """A local admin cannot reach files of another tenant."""
+    response = staff_client.get(reverse(name, kwargs={"pk": foreign_file.pk}))
+
+    assert response.status_code == 404
+
+
+def test_file_of_another_tenant_cannot_be_deleted(staff_client, foreign_file):
+    """Confirming the deletion of a foreign file leaves it in place."""
+    response = staff_client.post(reverse("pdf:files:delete", kwargs={"pk": foreign_file.pk}))
+
+    assert response.status_code == 404
+    assert PDFFile.objects.filter(pk=foreign_file.pk).exists()
+
+
+def test_file_of_another_tenant_cannot_be_edited(staff_client, foreign_file):
+    """Saving the edit form of a foreign file changes nothing."""
+    response = staff_client.post(
+        reverse("pdf:files:edit", kwargs={"pk": foreign_file.pk}), {"display_name": "Renamed", "public": "on"}
+    )
+
+    assert response.status_code == 404
+    foreign_file.refresh_from_db()
+    assert foreign_file.display_name is None
+
+
+@pytest.mark.parametrize("name", ["pdf:files:wait", "pdf:files:info"])
+def test_progress_of_a_file_of_another_tenant_is_not_found(anon_client, foreign_file, name):
+    """The waiting page and its polling endpoint only know files of the tenant being served."""
+    response = anon_client.get(reverse(name, kwargs={"pk": foreign_file.pk}))
+
+    assert response.status_code == 404

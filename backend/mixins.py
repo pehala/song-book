@@ -32,6 +32,14 @@ class PassRequestToFormMixin:
         return kwargs
 
 
+class TenantObjectsMixin:
+    """Limits the objects a view can reach to those of the current Tenant."""
+
+    def get_queryset(self):
+        """Returns the objects of the current Tenant."""
+        return super().get_queryset().filter(tenant=self.request.tenant)
+
+
 class LocalAdminRequired(LoginRequiredMixin, UserPassesTestMixin):
     """Mixin for checking if the user can administer current Tenant."""
 
