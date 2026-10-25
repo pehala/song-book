@@ -4,7 +4,7 @@ import pytest
 from django.urls import reverse
 
 from pdf.models import Status
-from pdf.models.request import ManualPDFTemplate, PDFFile, PDFSong
+from pdf.models.request import AllSongsTemplate, ManualPDFTemplate, PDFFile, PDFSong
 
 pytestmark = pytest.mark.django_db
 
@@ -165,6 +165,47 @@ def test_duplicate_song_numbers_are_rejected(staff_client, manual_template, pdf_
     assert manual_template.get_songs() == [(1, pdf_song_entry.song)]
 
 
+def test_assigning_numbers_to_a_template_of_another_tenant_is_refused(staff_client, song, other_tenant):
+    """The numbering step only reaches templates of the tenant being served."""
+    foreign = ManualPDFTemplate.objects.create(tenant=other_tenant, name="Foreign", filename="foreign", locale="en")
+
+    response = staff_client.post(
+        reverse("pdf:templates:assign", kwargs={"pk": foreign.pk}),
+        songs_formset_payload((song, 1)),
+    )
+
+    assert response.status_code == 404
+    assert not PDFSong.objects.filter(request=foreign).exists()
+
+
+def test_assigning_a_song_of_another_tenant_is_refused(staff_client, manual_template, song, other_category, make_song):
+    """Only songs of this tenant can be numbered into its template."""
+    foreign = make_song(other_category, name="Foreign Song")
+
+    response = staff_client.post(
+        reverse("pdf:templates:assign", kwargs={"pk": manual_template.pk}),
+        songs_formset_payload((song, 1), (foreign, 2)),
+    )
+
+    assert response.status_code == 200
+    assert response.context["formset"].errors[1]
+    assert manual_template.get_songs() == []
+
+
+def test_editing_a_template_of_another_tenant_is_refused(staff_client, song, other_tenant):
+    """Neither opening nor saving reaches a template of another tenant."""
+    foreign = ManualPDFTemplate.objects.create(tenant=other_tenant, name="Foreign", filename="foreign", locale="en")
+    url = reverse("pdf:templates:edit", kwargs={"pk": foreign.pk})
+
+    assert staff_client.get(url).status_code == 404
+    response = staff_client.post(url, template_payload(**{"template-name": "Stolen"}) | {"songs": [str(song.pk)]})
+
+    assert response.status_code == 404
+    foreign.refresh_from_db()
+    assert foreign.name == "Foreign"
+    assert foreign.tenant == other_tenant
+
+
 def test_opening_the_numbering_page_directly_redirects(staff_client, manual_template):
     """The second step is not reachable on its own."""
     response = staff_client.get(reverse("pdf:templates:assign", kwargs={"pk": manual_template.pk}))
@@ -227,3 +268,31 @@ def test_generate_from_the_all_songs_template(staff_client, song, all_songs_temp
 
     assert response.status_code == 302
     assert PDFFile.objects.get(template=all_songs_template).status == "DO"
+
+
+def test_deleting_a_template_of_another_tenant_is_refused(staff_client, other_tenant):
+    """A local admin cannot remove templates of another tenant."""
+    foreign = ManualPDFTemplate.objects.create(tenant=other_tenant, name="Foreign", filename="foreign", locale="en")
+
+    response = staff_client.post(reverse("pdf:templates:delete", kwargs={"pk": foreign.pk}))
+
+    assert response.status_code == 404
+    assert ManualPDFTemplate.objects.filter(pk=foreign.pk).exists()
+
+
+@pytest.fixture(params=["manual", "category", "all_songs"])
+def foreign_template(request, other_tenant, other_category):
+    """A template of every kind, belonging to another tenant."""
+    if request.param == "manual":
+        return ManualPDFTemplate.objects.create(tenant=other_tenant, name="Foreign", filename="foreign", locale="en")
+    if request.param == "category":
+        return other_category
+    return AllSongsTemplate.objects.create(tenant=other_tenant, filename="all-songs", locale="en")
+
+
+def test_generating_from_a_template_of_another_tenant_is_refused(staff_client, foreign_template):
+    """Files can only be generated from the templates of the tenant being served."""
+    response = staff_client.get(reverse("pdf:templates:generate", kwargs={"pk": foreign_template.pk}))
+
+    assert response.status_code == 404
+    assert not PDFFile.objects.filter(template=foreign_template).exists()

@@ -4,9 +4,9 @@ from collections.abc import Iterable
 
 from django.contrib import messages
 from django.db import transaction
-from django.db.models import Count
+from django.db.models import Count, Q
 from django.forms import formset_factory
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils.translation import gettext_lazy as _
 from django.views import View
@@ -14,7 +14,7 @@ from django.views.generic import ListView, TemplateView
 from django.views.generic.detail import SingleObjectMixin
 
 from backend.generic import UniversalDeleteView
-from backend.mixins import LocalAdminRequired
+from backend.mixins import LocalAdminRequired, TenantObjectsMixin
 from backend.models import Song
 from category.forms import NameForm
 from category.models import Category
@@ -25,7 +25,7 @@ from pdf.models.request import ManualPDFTemplate
 from tenants.views import AdminMoveView
 
 
-class TemplateListView(LocalAdminRequired, ListView):
+class TemplateListView(LocalAdminRequired, TenantObjectsMixin, ListView):
     """Lists all the requests."""
 
     model = ManualPDFTemplate
@@ -33,17 +33,11 @@ class TemplateListView(LocalAdminRequired, ListView):
     context_object_name = "templates"
 
     def get_queryset(self):
-        """Returns the templates of the tenant along with the count of their songs."""
-        return (
-            super()
-            .get_queryset()
-            .filter(tenant=self.request.tenant)
-            .annotate(song_count=Count("songs"))
-            .annotate(file_count=Count("pdffile"))
-        )
+        """Returns the templates of the tenant along with the count of their songs and files."""
+        return super().get_queryset().annotate(song_count=Count("songs")).annotate(file_count=Count("pdffile"))
 
 
-class TemplateDeleteView(LocalAdminRequired, UniversalDeleteView):
+class TemplateDeleteView(LocalAdminRequired, TenantObjectsMixin, UniversalDeleteView):
     """Removes Template."""
 
     model = ManualPDFTemplate
@@ -54,6 +48,17 @@ class GenerateFromTemplateView(LocalAdminRequired, View, SingleObjectMixin):
     """Regenerates the PDF request."""
 
     model = PDFTemplate
+
+    def get_queryset(self):
+        """Returns the templates of every kind that belong to the tenant."""
+        tenant = self.request.tenant
+        return (
+            super()
+            .get_queryset()
+            .filter(
+                Q(category__tenant=tenant) | Q(manualpdftemplate__tenant=tenant) | Q(allsongstemplate__tenant=tenant)
+            )
+        )
 
     def get(self, request, pk):
         """Processes the request."""
@@ -82,6 +87,7 @@ class TemplateNumberingMixin:
         """Renders assign template."""
         formset = formset or self.PDFSongFormset(
             prefix="songs",
+            form_kwargs={"request": self.request},
             initial=[
                 {"name": song.name, "song_number": number, "song": song} for number, song in enumerate(songs, start=1)
             ],
@@ -105,12 +111,9 @@ class UpdateTemplateView(LocalAdminRequired, TemplateNumberingMixin, TemplateVie
         songs = []
         if not template_form:
             if "pk" in self.kwargs:
-                template = ManualPDFTemplate.objects.get(pk=self.kwargs["pk"], tenant=self.request.tenant)
+                template = self.get_template()
                 songs = list(template.songs.values_list("id", flat=True).distinct())
-                template_form = ManualTemplateForm(
-                    instance=ManualPDFTemplate.objects.get(pk=self.kwargs["pk"], tenant=self.request.tenant),
-                    prefix=self.PREFIX,
-                )
+                template_form = ManualTemplateForm(instance=template, prefix=self.PREFIX)
             else:
                 template_form = ManualTemplateForm(
                     initial={"tenant": self.request.tenant, "locale": self.request.LANGUAGE_CODE},
@@ -129,15 +132,17 @@ class UpdateTemplateView(LocalAdminRequired, TemplateNumberingMixin, TemplateVie
         ctx["slugs"] = list(queryset.values_list("slug", flat=True))
         return ctx
 
+    def get_template(self):
+        """Returns the edited template, which has to belong to the current tenant."""
+        return get_object_or_404(ManualPDFTemplate, pk=self.kwargs["pk"], tenant=self.request.tenant)
+
     def post(self, request, *args, **kwargs):
         """Handles post request, shows assign.html to user to assign numbers to requested songs."""
-        template_form = ManualTemplateForm(self.request.POST, request.FILES, prefix=self.PREFIX)
+        instance = self.get_template() if "pk" in self.kwargs else ManualPDFTemplate(tenant=self.request.tenant)
+        template_form = ManualTemplateForm(self.request.POST, request.FILES, instance=instance, prefix=self.PREFIX)
         songs_form = SongSelectionForm(self.request.POST, request.FILES, request=self.request)
         if template_form.is_valid() and songs_form.is_valid():
-            template = template_form.instance
-            template.tenant = self.request.tenant
-            template.pdftemplate_ptr_id = self.kwargs.get("pk", None)
-            template_form.save()
+            template = template_form.save()
             if "pk" in self.kwargs:
                 messages.success(
                     self.request,
@@ -148,7 +153,7 @@ class UpdateTemplateView(LocalAdminRequired, TemplateNumberingMixin, TemplateVie
                     self.request,
                     _("File Template '%(name)s' was successfully created") % {"name": template.name},
                 )
-            return self.render_assign_template(pk=template_form.instance.pk, songs=songs_form.cleaned_data["songs"])
+            return self.render_assign_template(pk=template.pk, songs=songs_form.cleaned_data["songs"])
         return self.render_to_response(self.get_context_data(template_form=template_form, songs_form=songs_form))
 
 
@@ -163,8 +168,8 @@ class TemplateNumberSelectView(LocalAdminRequired, TemplateNumberingMixin, View)
 
     def post(self, request, *args, **kwargs):
         """POST request method handler."""
-        template = ManualPDFTemplate.objects.get(pk=self.kwargs["pk"])
-        formset = self.PDFSongFormset(self.request.POST, prefix="songs")
+        template = get_object_or_404(ManualPDFTemplate, pk=self.kwargs["pk"], tenant=self.request.tenant)
+        formset = self.PDFSongFormset(self.request.POST, prefix="songs", form_kwargs={"request": self.request})
         if formset.is_valid():
             with transaction.atomic():
                 template.songs.clear()

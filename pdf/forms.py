@@ -74,6 +74,11 @@ class PDFSongForm(ModelForm):
         fields = ["song_number", "song"]
         widgets = {"song": HiddenInput()}
 
+    def __init__(self, *args, **kwargs):
+        self.request = kwargs.pop("request")
+        super().__init__(*args, **kwargs)
+        self.fields["song"].queryset = Song.objects.filter(categories__tenant=self.request.tenant).distinct()
+
 
 class BasePDFSongFormset(BaseFormSet):
     """FormSet for PDFSongForm that checks if song_numbers are unique."""

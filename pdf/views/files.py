@@ -11,26 +11,22 @@ from django.views.generic import DetailView, ListView
 from django.views.generic.detail import SingleObjectMixin
 
 from backend.generic import UniversalDeleteView, UniversalUpdateView
-from backend.mixins import LocalAdminRequired
+from backend.mixins import LocalAdminRequired, TenantObjectsMixin
 from pdf.forms import PDFFileEditForm
 from pdf.models import Status
 from pdf.models.request import AllSongsTemplate, ManualPDFTemplate, PDFFile
 from tenants.utils import tenant_cache_key
 
 
-class FileListView(LocalAdminRequired, ListView):
+class FileListView(LocalAdminRequired, TenantObjectsMixin, ListView):
     """Lists all the files."""
 
     model = PDFFile
     template_name = "pdf/files/list.html"
     context_object_name = "files"
 
-    def get_queryset(self):
-        """Returns the files of the tenant."""
-        return super().get_queryset().filter(tenant=self.request.tenant)
 
-
-class FileDeleteView(LocalAdminRequired, UniversalDeleteView):
+class FileDeleteView(LocalAdminRequired, TenantObjectsMixin, UniversalDeleteView):
     """Deletes File."""
 
     model = PDFFile
@@ -43,7 +39,7 @@ class FileDeleteView(LocalAdminRequired, UniversalDeleteView):
         return response
 
 
-class FileUpdateView(LocalAdminRequired, UniversalUpdateView):
+class FileUpdateView(LocalAdminRequired, TenantObjectsMixin, UniversalUpdateView):
     """Updates File."""
 
     form_class = PDFFileEditForm
@@ -57,7 +53,7 @@ class FileUpdateView(LocalAdminRequired, UniversalUpdateView):
         return response
 
 
-class WaitForFileView(DetailView):
+class WaitForFileView(TenantObjectsMixin, DetailView):
     """Shows wait page for PDF generation; the browser polls `RenderInfoView` and draws the progress."""
 
     model = PDFFile
@@ -74,7 +70,7 @@ class WaitForFileView(DetailView):
         return context
 
 
-class RenderInfoView(View, SingleObjectMixin):
+class RenderInfoView(TenantObjectsMixin, SingleObjectMixin, View):
     """Returns JSON response containing info about PDFFile."""
 
     model = PDFFile
@@ -94,7 +90,7 @@ class RenderInfoView(View, SingleObjectMixin):
         )
 
 
-class FileTemplateEditView(LocalAdminRequired, SingleObjectMixin, View):
+class FileTemplateEditView(LocalAdminRequired, TenantObjectsMixin, SingleObjectMixin, View):
     """Redirects to correct edit page based on the class of the template."""
 
     model = PDFFile
