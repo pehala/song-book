@@ -1,18 +1,15 @@
-# SOME DESCRIPTIVE TITLE.
-# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# Czech translation of the chords songbook.
+# This file is distributed under the same license as the chords package.
 #
-#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: chords\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 13:15-0500\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"POT-Creation-Date: 2026-10-25 13:17-0500\n"
+"PO-Revision-Date: 2026-10-25 12:00+0000\n"
+"Last-Translator: pehala <halapetr@selfnet.cz>\n"
+"Language-Team: Czech\n"
+"Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -35,34 +32,34 @@ msgstr "Statistiky"
 #: backend/generic.py:32
 #, python-format
 msgid "%(class)s %(identifier)s was successfully deleted"
-msgstr "%(class)s %(identifier)s byla úspěšně smazána"
+msgstr "Úspěšně smazáno: %(class)s %(identifier)s"
 
 #: backend/generic.py:59 backend/generic.py:74
 #, python-format
 msgid "%(class)s %(identifier)s was successfully updated"
-msgstr "%(class)s %(identifier)s byla úspěšně upravena"
+msgstr "Úspěšně upraveno: %(class)s %(identifier)s"
 
 #: backend/generic.py:75
 #, python-format
 msgid "Update %(class)s %(identifier)s"
-msgstr "%(class)s %(identifier)s"
+msgstr "Úprava: %(class)s %(identifier)s"
 
 #: backend/generic.py:92
 #, python-format
 msgid "%(class)s %(identifier)s was successfully created"
-msgstr "%(class)s %(identifier)s byla úspěšně vytvořena"
+msgstr "Úspěšně vytvořeno: %(class)s %(identifier)s"
 
 #: backend/generic.py:93
 #, python-format
 msgid "Create %(class)s"
-msgstr "Nová %(class)s"
+msgstr "Vytvořit: %(class)s"
 
 #: backend/models.py:35 category/forms.py:46 category/models.py:20
 #: category/templates/category/list.html:12
 #: pdf/templates/pdf/templates/list.html:31
 #: pdf/templates/pdf/templates/select.html:43 tenants/models.py:41
 msgid "Name"
-msgstr "Jméno"
+msgstr "Název"
 
 #: backend/models.py:38 pdf/templates/pdf/index.html:59
 #: pdf/templates/pdf/templates/select.html:45
@@ -75,7 +72,7 @@ msgstr "Autor"
 
 #: backend/models.py:40
 msgid "YouTube link"
-msgstr "Odkaz na Youtube"
+msgstr "Odkaz na YouTube"
 
 #: backend/models.py:41 category/models.py:39
 #: category/templates/category/list.html:5
@@ -86,7 +83,7 @@ msgstr "Kategorie"
 
 #: backend/models.py:42
 msgid "Archived"
-msgstr "Archivovat"
+msgstr "Archivováno"
 
 #: backend/models.py:43
 msgid "Lyrics"
@@ -106,7 +103,7 @@ msgstr "Přesunout Kategorie do jiného Zpěvníku"
 
 #: category/models.py:22 category/templates/category/list.html:13
 msgid "URL Slug"
-msgstr "URL vzor"
+msgstr "Slug (část URL)"
 
 #: category/models.py:23
 msgid "URL Slug, under which the category should be accessible"
@@ -115,14 +112,14 @@ msgstr "Část URL, pod kterou bude kategorie dostupná"
 #: category/models.py:27 category/templates/category/list.html:16
 #: pdf/models/request.py:69
 msgid "PDF generation"
-msgstr "Automatické Generování PDF"
+msgstr "Automatické generování PDF"
 
 #: category/models.py:28
 msgid ""
 "Check to generate the PDF file automatically when a category or song changes"
 msgstr ""
-"Zaškrknětě, pokud má být vygenerován PDF soubor když se kategorie nebo "
-"písnička změní?"
+"Zaškrtněte, pokud se má PDF soubor automaticky generovat při změně kategorie "
+"nebo písničky"
 
 #: category/models.py:38
 msgid "Category"
@@ -164,7 +161,7 @@ msgstr "Poslední soubor"
 #: pdf/templates/pdf/files/list.html:30
 #: pdf/templates/pdf/templates/list.html:37
 msgid "Status"
-msgstr "Status"
+msgstr "Stav"
 
 #: category/templates/category/list.html:20
 #: pdf/templates/pdf/files/list.html:31
@@ -214,7 +211,7 @@ msgstr "Přidat Kategorii"
 #: pdf/templates/pdf/files/list.html:43
 #: pdf/templates/pdf/templates/list.html:56
 msgid "None"
-msgstr "Nic"
+msgstr "Žádný"
 
 #: category/templates/category/pdf_cells.html:17
 #: pdf/templates/pdf/templates/list.html:62
@@ -235,11 +232,11 @@ msgstr "PDF všech písniček bylo úspěšně upraveno"
 
 #: frontend/templates/400.html:4 frontend/templates/400.html:5
 msgid "Bad Request"
-msgstr "Špatný dotaz"
+msgstr "Neplatný požadavek"
 
 #: frontend/templates/400.html:9
 msgid "Invalid request"
-msgstr "Špatný požadavek"
+msgstr "Neplatný požadavek"
 
 #: frontend/templates/403.html:4 frontend/templates/403.html:5
 msgid "Permission denied"
@@ -270,12 +267,12 @@ msgstr "Odeslat"
 #: frontend/templates/base/verbs/delete.html:5
 #: frontend/templates/base/verbs/delete.html:6
 msgid "Please confirm removal"
-msgstr "Prosím potrvďte odstranění"
+msgstr "Potvrďte prosím odstranění"
 
 #: frontend/templates/base/verbs/delete.html:10
 #, python-format
 msgid "Are you sure you want to delete %(model_verbose_name)s"
-msgstr "Jste si jistí že chcete smazat %(model_verbose_name)s"
+msgstr "Opravdu chcete smazat %(model_verbose_name)s"
 
 #: frontend/templates/base/verbs/delete.html:13
 msgid "No"
@@ -304,7 +301,7 @@ msgstr "Přidá N mezer"
 #: frontend/templates/registration/login.html:4
 #: frontend/templates/registration/login.html:5
 msgid "Login"
-msgstr "Přihlásit se"
+msgstr "Přihlášení"
 
 #: frontend/templates/registration/password_change_done.html:3
 #: frontend/templates/registration/password_change_done.html:4
@@ -327,7 +324,7 @@ msgstr "Zpěvník %(name)s: texty s akordy, které fungují i offline"
 
 #: pdf/admin.py:28
 msgid "Move Template to a different Tenant"
-msgstr "Přesunout požadavky do jiného Tenanta"
+msgstr "Přesunout Šablony do jiného Zpěvníku"
 
 #: pdf/forms.py:62
 msgid "No songs selected"
@@ -335,7 +332,7 @@ msgstr "Nevybrány žádné písničky"
 
 #: pdf/forms.py:87
 msgid "Each song must have a distinct number"
-msgstr "Každá písnička musí mít unikátní číslo"
+msgstr "Každá písnička musí mít jedinečné číslo"
 
 #: pdf/models/__init__.py:28
 msgid "Queued"
@@ -362,8 +359,8 @@ msgid ""
 "(Optional) Display name for the generated files. If empty, the file name "
 "will be used"
 msgstr ""
-"(Nepovinné) Veřejné jméno pro vytvořené soubory. V případě že necháte pole "
-"prázdné, veřejné jméno bude vytvořeno na zákaldě jména souboru"
+"(Nepovinné) Veřejné jméno pro vytvořené soubory. Pokud pole necháte prázdné, "
+"použije se název souboru"
 
 #: pdf/models/__init__.py:43 pdf/models/request.py:114
 msgid "Display name"
@@ -379,7 +376,7 @@ msgstr "Název souboru"
 
 #: pdf/models/__init__.py:54
 msgid "Check to show the file in the menu"
-msgstr "Zaškrkněte, pokud chcete aby byl PDF soubor veřejně viditelný v menu"
+msgstr "Zaškrtněte, pokud chcete, aby byl PDF soubor veřejně viditelný v menu"
 
 #: pdf/models/__init__.py:55 pdf/models/request.py:125
 msgid "Public file"
@@ -394,8 +391,8 @@ msgid ""
 "Name for the title page of the PDF, usually only this or the title image is "
 "needed"
 msgstr ""
-"Jméno pro titulní stranu pdf souboru. Obvykle stačí vyplnit pouze Nadpis "
-"nebo Úvodné obrázek"
+"Jméno pro titulní stranu PDF souboru. Obvykle stačí vyplnit pouze Nadpis "
+"nebo Úvodní obrázek"
 
 #: pdf/models/__init__.py:67 pdf/templates/pdf/files/list.html:29
 #: tenants/models.py:42
@@ -408,7 +405,7 @@ msgstr "Vložit datum"
 
 #: pdf/models/__init__.py:72
 msgid "Check to include the date in the PDF"
-msgstr "Zaškrkněte, pokud chcete aby v PDF souboru bylo datum"
+msgstr "Zaškrtněte, pokud chcete, aby v PDF souboru bylo datum"
 
 #: pdf/models/__init__.py:75
 msgid "Title image"
@@ -429,7 +426,7 @@ msgstr ""
 
 #: pdf/models/__init__.py:89
 msgid "(Optional) URL to include in the PDF"
-msgstr "(Nepovinné) URL adresa, zobrazená v PDF."
+msgstr "(Nepovinné) URL adresa zobrazená v PDF"
 
 #: pdf/models/__init__.py:90 pdf/templates/pdf/files/list.html:27
 #: tenants/models.py:31
@@ -464,7 +461,7 @@ msgstr "Šablony"
 #: pdf/models/request.py:70
 msgid "Check to generate the PDF file automatically when a song changes"
 msgstr ""
-"Zaškrkněte, pokud má být PDF soubor generován automaticky při změně písničky"
+"Zaškrtněte, pokud má být PDF soubor generován automaticky při změně písničky"
 
 #: pdf/models/request.py:77
 msgctxt "all songs PDF template"
@@ -482,12 +479,12 @@ msgstr "PDF všech písniček"
 #: pdf/models/request.py:113
 msgid "Display name for the file, if empty, the file name will be used"
 msgstr ""
-"Veřejné jméno pro vytvořené soubory. V případě že necháte pole prázdné, "
-"veřejné jméno bude vytvořeno na zákaldě jména souboru"
+"Veřejné jméno pro vytvořené soubory. Pokud pole necháte prázdné, použije se "
+"název souboru"
 
 #: pdf/models/request.py:124
 msgid "Check to make the file public"
-msgstr "Zaškrkněte, pokud chcete aby byl PDF soubor veřejně viditelný"
+msgstr "Zaškrtněte, pokud chcete, aby byl PDF soubor veřejně viditelný"
 
 #: pdf/models/request.py:141
 msgid "File"
@@ -564,7 +561,7 @@ msgstr "Čísla písniček"
 
 #: pdf/templates/pdf/templates/assign.html:39
 msgid "Sort by name"
-msgstr "Seřadit podle jména"
+msgstr "Seřadit podle názvu"
 
 #: pdf/templates/pdf/templates/assign.html:40
 msgid "Finish"
@@ -610,7 +607,7 @@ msgstr "Soubor %(id)s není vytvořený ze šablony"
 #: pdf/views/templates.py:64
 #, python-format
 msgid "Another file %(id)s for %(name)s is already in queue"
-msgstr "Jiný Soubor (%(id)s) for %(name)s je již ve frontě"
+msgstr "Jiný soubor (%(id)s) pro %(name)s je již ve frontě"
 
 #: pdf/views/templates.py:70
 #, python-format
@@ -625,7 +622,7 @@ msgstr "Šablona %(name)s byla úspěšně upravena"
 #: pdf/views/templates.py:147
 #, python-format
 msgid "File Template '%(name)s' was successfully created"
-msgstr "Šablona %(name)s byl úspěšně vytvořena"
+msgstr "Šablona %(name)s byla úspěšně vytvořena"
 
 #: pdf/views/templates.py:174
 #, python-format
@@ -646,7 +643,7 @@ msgstr "URL odkaz"
 
 #: tenants/models.py:25
 msgid "Display Name"
-msgstr "Jméno"
+msgstr "Zobrazený název"
 
 #: tenants/models.py:32
 msgid "Links"
@@ -662,7 +659,7 @@ msgstr "Přesné doménové jméno pod kterým bude Zpěvník dostupný"
 
 #: tenants/models.py:41
 msgid "Internal name for this Tenant"
-msgstr "Interní název tohoto Zpevníku"
+msgstr "Interní název tohoto Zpěvníku"
 
 #: tenants/models.py:42
 msgid "Title on the main site"
@@ -674,16 +671,15 @@ msgstr "Cíl přesměrování úvodní stránky"
 
 #: tenants/models.py:45
 msgid "Where the index page redirects to, usually a category slug"
-msgstr ""
-"Kam by měla úvodní stránka přesměrovat uživatele, většinou URL kategorie"
+msgstr "Kam se přesměruje úvodní stránka, většinou na URL kategorie"
 
 #: tenants/models.py:50
 msgid "All Songs"
-msgstr "Všechno"
+msgstr "Všechny písničky"
 
 #: tenants/models.py:51
 msgid "Check to add a link to all songs to the navigation"
-msgstr "Pokud je zaškrknuto tak se do navigace přidá odkaz na všechny písničky"
+msgstr "Zaškrtněte, pokud se má do navigace přidat odkaz na všechny písničky"
 
 #: tenants/models.py:54
 msgid "Logo"
@@ -692,8 +688,8 @@ msgstr "Logo"
 #: tenants/models.py:55
 msgid "Optional site logo, around 50×50 px and in PNG format"
 msgstr ""
-"Logo zpěvníčku, nepovinné, mělo by mít rozměry kolem 50x50 a být v PNG "
-"formátu"
+"Nepovinné logo zpěvníku, mělo by mít rozměry kolem 50×50 px a být ve formátu "
+"PNG"
 
 #: tenants/models.py:61
 msgid "See also"

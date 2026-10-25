@@ -54,7 +54,7 @@ def test_server_pages_leave_messages_to_the_page(staff_client, song):
     response = staff_client.get(reverse("category:list"))
 
     assert inlined(response, "me")["messages"] == []
-    assert "byla úspěšně smazána" in response.content.decode()
+    assert "Úspěšně smazáno" in response.content.decode()
 
 
 def test_server_pages_set_the_csrf_cookie(anon_client, tenant):
