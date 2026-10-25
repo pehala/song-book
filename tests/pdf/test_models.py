@@ -6,8 +6,8 @@ import pytest
 from django.urls import reverse
 from django.utils.timezone import now
 
-from pdf.models import Status
-from pdf.models.request import AllSongsTemplate, PDFFile, upload_path
+from pdf.models import Section, Status
+from pdf.models.request import AllSongsTemplate, PDFFile, PDFSong, upload_path
 
 pytestmark = pytest.mark.django_db
 
@@ -118,6 +118,20 @@ def test_link_url_adds_the_missing_scheme(category, link, url):
 def test_manual_template_returns_numbered_songs(manual_template, pdf_song_entry, pdf_song):
     """Manual templates print the songs in the order the user assigned."""
     assert manual_template.get_songs() == [(1, pdf_song)]
+
+
+def test_a_template_prints_one_untitled_section_by_default(category, song):
+    """Templates without sections hand the renderer all their songs as a single section without a title."""
+    assert category.get_sections() == [Section(None, [(1, song)])]
+
+
+def test_the_default_section_is_in_song_number_order(manual_template, pdf_song, make_song):
+    """The songs of a section are printed by number, whatever order the template returned them in."""
+    PDFSong.objects.create(song=pdf_song, request=manual_template, song_number=2)
+    first = make_song(name="First")
+    PDFSong.objects.create(song=first, request=manual_template, song_number=1)
+
+    assert manual_template.get_sections() == [Section(None, [(1, first), (2, pdf_song)])]
 
 
 def test_upload_path_is_namespaced_by_tenant(tenant):
