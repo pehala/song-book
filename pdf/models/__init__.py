@@ -3,6 +3,7 @@
 import re
 from abc import abstractmethod
 from collections.abc import Iterable
+from dataclasses import dataclass
 from typing import TYPE_CHECKING
 
 from django.conf import settings
@@ -20,6 +21,14 @@ if TYPE_CHECKING:
 
 # A link that names its scheme, such as https://example.org or mailto:someone@example.org
 LINK_SCHEME_RE = re.compile(r"[a-z][a-z0-9+.-]*://|mailto:", re.IGNORECASE)
+
+
+@dataclass
+class Section:
+    """A titled run of songs of a PDF; the song numbers are those of the whole PDF."""
+
+    title: str | None
+    songs: list[tuple[int, Song]]
 
 
 class Status(TextChoices):
@@ -111,6 +120,10 @@ class PDFTemplate(PolymorphicModel):
     @abstractmethod
     def get_songs(self) -> Iterable[tuple[int, Song]]:
         """Returns iterable of Song objects and their song number, that should be included in the PDF."""
+
+    def get_sections(self) -> list[Section]:
+        """Returns the songs of the PDF grouped into sections in print order, one untitled section by default."""
+        return [Section(None, sorted(self.get_songs(), key=lambda numbered: numbered[0]))]
 
     def copy_options(self, options: PDFTemplate):
         """Copy all options from another PDFOptions object."""

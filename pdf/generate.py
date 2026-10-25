@@ -51,9 +51,12 @@ def get_base_url():
 
 def generate_pdf(pdf_file: PDFFile, template: AllowedTemplates):
     """Generates PDF."""
-    songs = sorted(template.get_songs(), key=lambda x: x[0])
+    sections = template.get_sections()
     with changed_locale(lang_to_locale(template.locale)):
-        sorted_songs = sorted(songs, key=lambda x: locale.strxfrm(x[1].name))
+        contents = [
+            (section, sorted(section.songs, key=lambda numbered: locale.strxfrm(numbered[1].name)))
+            for section in sections
+        ]
 
     update_status(pdf_file, Status.IN_PROGRESS)
 
@@ -68,8 +71,8 @@ def generate_pdf(pdf_file: PDFFile, template: AllowedTemplates):
                 string = render_to_string(
                     template_name="pdf/index.html",
                     context={
-                        "songs": songs,
-                        "sorted_songs": sorted_songs,
+                        "sections": sections,
+                        "contents": contents,
                         "contents_columns": range(CONTENTS_COLUMNS),
                         "name": template.title or template.tenant.display_name,
                         "request": template,
