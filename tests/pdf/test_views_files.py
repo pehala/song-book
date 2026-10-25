@@ -162,6 +162,16 @@ def test_template_edit_redirects_to_the_manual_template(staff_client, tenant, ma
     assert response["Location"] == reverse("pdf:templates:edit", kwargs={"pk": manual_template.pk})
 
 
+def test_template_edit_redirects_to_the_all_songs_form(staff_client, tenant, all_songs_template):
+    """Files generated from the all songs template lead back to its form"""
+    file = PDFFile.objects.create(tenant=tenant, template=all_songs_template, filename="all", update_date=now())
+
+    response = staff_client.get(reverse("pdf:files:template_edit", kwargs={"pk": file.pk}))
+
+    assert response.status_code == 302
+    assert response["Location"] == reverse("category:edit_all")
+
+
 def test_template_edit_without_a_template(staff_client, tenant):
     """A file whose template is gone answers with a 404
 

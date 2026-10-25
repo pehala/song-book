@@ -14,7 +14,7 @@ from backend.generic import UniversalDeleteView, UniversalUpdateView
 from backend.mixins import LocalAdminRequired
 from pdf.forms import PDFFileEditForm
 from pdf.models import Status
-from pdf.models.request import ManualPDFTemplate, PDFFile
+from pdf.models.request import AllSongsTemplate, ManualPDFTemplate, PDFFile
 from tenants.utils import tenant_cache_key
 
 
@@ -102,5 +102,7 @@ class FileTemplateEditView(LocalAdminRequired, SingleObjectMixin, View):
             template = file.template
             if isinstance(template, ManualPDFTemplate):
                 return redirect("pdf:templates:edit", pk=template.pk)
+            if isinstance(template, AllSongsTemplate):
+                return redirect("category:edit_all")
             return redirect("category:edit", pk=template.pk)
         raise Http404(_("File %(id)s does not have a template") % {"id": file.id})

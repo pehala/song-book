@@ -16,7 +16,7 @@ from backend.models import Song
 from category.models import Category
 from frontend.catalogues import reader_catalogues
 from pdf.models import Status
-from pdf.models.request import ManualPDFTemplate, PDFFile, PDFSong
+from pdf.models.request import AllSongsTemplate, ManualPDFTemplate, PDFFile, PDFSong
 from tenants.models import Tenant
 
 REAL_ON_COMMIT = transaction.on_commit
@@ -155,6 +155,12 @@ def manual_template(tenant, song):
     )
     PDFSong.objects.create(request=template, song=song, song_number=1)
     return template
+
+
+@pytest.fixture
+def all_songs_template(tenant):
+    """The all songs template of the tenant, generating its PDF automatically"""
+    return AllSongsTemplate.objects.create(tenant=tenant, filename="all-songs", locale="en", generate_pdf=True)
 
 
 @pytest.fixture

@@ -29,6 +29,7 @@ LOCAL_ADMIN_URLS = [
     url("category:add"),
     url("category:edit", "category"),
     url("category:delete", "category"),
+    url("category:edit_all"),
     url("pdf:files:list"),
     url("pdf:files:edit", "pdf_file"),
     url("pdf:files:delete", "pdf_file"),

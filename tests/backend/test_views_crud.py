@@ -8,7 +8,8 @@ from django.urls import reverse
 
 from backend.cache import songs_payload_key
 from backend.models import Song
-from pdf.models.request import PDFFile
+from pdf.models import Status
+from pdf.models.request import AllSongsTemplate, PDFFile
 
 pytestmark = pytest.mark.django_db
 
@@ -171,3 +172,99 @@ def test_saving_does_not_schedule_pdf_twice(staff_client, make_category, tenant,
     staff_client.post(reverse("backend:add"), song_payload(category, name="Another"))
 
     assert PDFFile.objects.filter(template=category).count() == 1
+
+
+def test_saving_schedules_the_all_songs_pdf(staff_client, category, all_songs_template):
+    """A song change also schedules the PDF with every song of the tenant"""
+    staff_client.post(reverse("backend:add"), song_payload(category))
+
+    assert PDFFile.objects.filter(template=all_songs_template).count() == 1
+
+
+def test_saving_schedules_the_all_songs_pdf_once_for_many_categories(
+    staff_client, tenant, category, make_category, all_songs_template
+):
+    """A song in two categories of one tenant schedules a single all songs file"""
+    second = make_category(tenant, name="Second", slug="second")
+
+    staff_client.post(reverse("backend:add"), song_payload(category, categories=[category.pk, second.pk]))
+
+    assert PDFFile.objects.filter(template=all_songs_template).count() == 1
+
+
+def test_saving_skips_the_all_songs_pdf_when_disabled(staff_client, category, all_songs_template):
+    """The all songs PDF is only generated when the template asks for it"""
+    all_songs_template.generate_pdf = False
+    all_songs_template.save()
+
+    staff_client.post(reverse("backend:add"), song_payload(category))
+
+    assert not PDFFile.objects.filter(template=all_songs_template).exists()
+
+
+def test_saving_skips_the_all_songs_pdf_without_the_list(staff_client, tenant, category, all_songs_template):
+    """A tenant without the all songs list gets no all songs PDF"""
+    tenant.all_songs_category = False
+    tenant.save()
+
+    staff_client.post(reverse("backend:add"), song_payload(category))
+
+    assert not PDFFile.objects.filter(template=all_songs_template).exists()
+
+
+def test_saving_without_an_all_songs_template_schedules_nothing(staff_client, category):
+    """The template is created by whoever opens the category list, not by a song change"""
+    staff_client.post(reverse("backend:add"), song_payload(category))
+
+    assert not AllSongsTemplate.objects.exists()
+
+
+def test_deleting_a_song_schedules_the_all_songs_pdf(staff_client, song, all_songs_template):
+    """A removed song changes the all songs PDF as well"""
+    staff_client.post(reverse("backend:delete", kwargs={"pk": song.pk}))
+
+    assert PDFFile.objects.filter(template=all_songs_template).exists()
+
+
+@pytest.fixture
+def printed_category(tenant, make_category):
+    """A category whose PDF is generated automatically"""
+    return make_category(tenant, name="Printed", slug="printed", generate_pdf=True)
+
+
+@pytest.fixture(params=["printed_category", "all_songs_template"])
+def printed(request, printed_category, all_songs_template):
+    """Each template an edit of a song in `printed_category` schedules a PDF for"""
+    return request.getfixturevalue(request.param)
+
+
+def test_several_edits_schedule_one_file(staff_client, printed_category, printed):
+    """Edits landing while a file is pending do not queue more of them"""
+    staff_client.post(reverse("backend:add"), song_payload(printed_category, name="First"))
+    staff_client.post(reverse("backend:add"), song_payload(printed_category, name="Second"))
+    first = Song.objects.get(name="First")
+    staff_client.post(reverse("backend:edit", kwargs={"pk": first.pk}), song_payload(printed_category, name="Renamed"))
+
+    assert PDFFile.objects.filter(template=printed).count() == 1
+
+
+@pytest.mark.parametrize("status", [Status.DONE, Status.FAILED])
+def test_an_edit_after_the_file_finished_schedules_another(staff_client, printed_category, printed, status):
+    """Once the pending file is finished, the next edit queues a fresh one"""
+    staff_client.post(reverse("backend:add"), song_payload(printed_category, name="First"))
+    PDFFile.objects.filter(template=printed).update(status=status)
+
+    staff_client.post(reverse("backend:add"), song_payload(printed_category, name="Second"))
+
+    assert list(PDFFile.objects.filter(template=printed).order_by("pk").values_list("status", flat=True)) == [
+        status,
+        Status.SCHEDULED,
+    ]
+
+
+def test_an_edit_and_a_delete_schedule_one_file(staff_client, printed_category, printed):
+    """Removing a song that was just added joins the file already pending"""
+    staff_client.post(reverse("backend:add"), song_payload(printed_category, name="First"))
+    staff_client.post(reverse("backend:delete", kwargs={"pk": Song.objects.get(name="First").pk}))
+
+    assert PDFFile.objects.filter(template=printed).count() == 1
