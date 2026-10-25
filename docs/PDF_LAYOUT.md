@@ -72,6 +72,23 @@ The entries are sorted by title in the collation of the template's language and 
   `@top-center` and page 2, which has the header in the flow, shows the `title` string; the running header starts on
   page 3.
 
+## Sections
+
+`PDFTemplate.get_sections()` returns the songs as `Section`s, a title and the numbered songs of one run; the numbers
+are those of the whole PDF. A section without a title (the default) adds nothing to the layout.
+
+* The first song of a titled section starts with `<h1 class="section-title">`: a small uppercase label over a rule,
+  on the page of the song and not on a page of its own. `.section-start` breaks before the article, so the song
+  heading, which breaks before every `h2`, does not leave the label alone on a page. `h1` and `h2` nest the PDF
+  bookmarks by section.
+* The label sets the `title` string, which the `@top-center` box of the song pages prints as
+  `string(title, first-except)`: the section name on the pages after the label and nothing on the page that
+  carries it. Pages before any section (the cover and contents have their own boxes) keep the title of the
+  document.
+* The contents list one `li.contents-section` per titled section before its songs, in the style of an entry: the
+  title, dots and the page of the label, linked to `#section-<n>`. The songs of a section are sorted by title
+  among themselves, so the numbers of a section need not ascend.
+
 ## Header link
 
 * `PDFTemplate.link` is free text. `PDFTemplate.link_url` returns it with `https://` in front unless it names a

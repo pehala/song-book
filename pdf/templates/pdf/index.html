@@ -49,6 +49,7 @@
       {% include "pdf/contents_head.html" %}
       <ul class="contents-list">
         {% for section, sorted_songs in contents %}
+            {% if section.title %}<li class="contents-section"><a href="#section-{{ forloop.counter }}"><span class="last-word" href="#section-{{ forloop.counter }}">{{ section.title }}</span></a></li>{% endif %}
             {% for number,song in sorted_songs %}
                 <li><a href="#{{ song.id }}-title"><span class="number">{{ number }}</span>{{ song.name|without_last_word }}<span class="last-word" href="#{{ song.id }}-title">{{ song.name|last_word }}</span></a></li>
             {% endfor %}
@@ -57,7 +58,8 @@
     </article>
     {% for section in sections %}
         {% for song_number, song in section.songs %}
-            <article class="columns">
+            <article class="columns{% if forloop.first and section.title %} section-start{% endif %}">
+              {% if forloop.first and section.title %}<h1 class="section-title" id="section-{{ forloop.parentloop.counter }}">{{ section.title }}</h1>{% endif %}
               <h2 id="{{ song.id }}-title">{{ song_number }}. <span class="name">{{ song.name }}</span></h2>
               <h3 class="">{{ song.author }} {% if song.capo > 0 %}<span class="right">{% trans "Capo" %} {{ song.capo }}</span> {% endif %}</h3>
 

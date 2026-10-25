@@ -15,7 +15,7 @@ from django.core.cache import cache
 from django.utils.timezone import now
 
 from pdf.generate import CONTENTS_COLUMNS, generate_pdf, generate_pdf_file, generate_pdf_job
-from pdf.models import Status
+from pdf.models import Section, Status
 from pdf.models.request import PDFFile
 from tenants.utils import tenant_cache_key
 
@@ -323,3 +323,59 @@ def test_has_scheduled_file_false(pdf_category, make_pdf_file, status):
         file.status = status
         file.save()
     assert pdf_category.has_scheduled_file() is False
+
+
+@pytest.fixture
+def two_sections(monkeypatch, category, make_song):
+    """The category prints two songs in a section called Hymns and one in Camp."""
+    songs = [make_song(category, name=name, text="Hello") for name in ("Zebra", "Mule", "Apple")]
+    monkeypatch.setattr(
+        type(category),
+        "get_sections",
+        lambda self: [Section("Hymns", [(1, songs[0]), (2, songs[1])]), Section("Camp", [(3, songs[2])])],
+    )
+    return songs
+
+
+def test_a_titled_section_starts_with_a_label_on_the_page_of_its_first_song(
+    mock_weasyprint, category, pdf_file, two_sections
+):
+    """The label sits in the article of the first song, which therefore starts the section's page.
+
+    The later songs of the section get none.
+    """
+    zebra, mule, apple = two_sections
+
+    generate_pdf(pdf_file, category)
+
+    html = mock_weasyprint.call_args.kwargs["string"]
+    assert 'section-start">\n              <h1 class="section-title" id="section-1">Hymns</h1>' in html
+    assert '<h1 class="section-title" id="section-2">Camp</h1>' in html
+    assert html.count('class="section-title"') == 2
+    positions = [html.index(marker) for marker in ('id="section-1"', f'id="{zebra.id}-title"', f'id="{mule.id}-title"')]
+    assert positions == sorted(positions)
+    assert html.index(f'id="{mule.id}-title"') < html.index('id="section-2"') < html.index(f'id="{apple.id}-title"')
+
+
+def test_contents_head_each_section_with_a_link_to_its_label(mock_weasyprint, category, pdf_file, two_sections):
+    """The contents have a heading per titled section that links to the label, and sort the songs inside sections."""
+    generate_pdf(pdf_file, category)
+
+    html = mock_weasyprint.call_args.kwargs["string"]
+    contents = html.split('<ul class="contents-list">')[1].split("</ul>")[0]
+    assert contents.count('class="contents-section"') == 2
+    heading = '<li class="contents-section"><a href="#section-1"><span class="last-word" href="#section-1">Hymns'
+    assert heading in contents
+    order = [contents.index(text) for text in ("Hymns", "Mule", "Zebra", "Camp", "Apple")]
+    assert order == sorted(order)
+
+
+def test_untitled_sections_print_no_labels(mock_weasyprint, category, make_song, pdf_file):
+    """A template without sections renders no section label and no section heading in the contents."""
+    make_song(category, text="Hello")
+
+    generate_pdf(pdf_file, category)
+
+    html = mock_weasyprint.call_args.kwargs["string"]
+    assert "section-title" not in html
+    assert "contents-section" not in html
