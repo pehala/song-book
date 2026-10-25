@@ -1,8 +1,6 @@
 """Tests for moving categories between tenants."""
 
 import pytest
-from django.conf import settings
-from django.core.cache import cache
 from django.urls import reverse
 from django.utils import translation
 from django.utils.timezone import now
@@ -10,26 +8,11 @@ from django.utils.timezone import now
 from backend.models import Song
 from category.models import Category
 from pdf.models.request import AllSongsTemplate, PDFFile
-from tenants.utils import tenant_cache_key
+from tests.test_move_views import move_payload
 
 pytestmark = pytest.mark.django_db
 
 MOVE_URL = reverse("category:move")
-
-
-def move_payload(target, *categories):
-    """Form plus formset data for the move page."""
-    data = {
-        "tenant": target.pk,
-        "form-TOTAL_FORMS": str(len(categories)),
-        "form-INITIAL_FORMS": str(len(categories)),
-        "form-MIN_NUM_FORMS": "0",
-        "form-MAX_NUM_FORMS": "1000",
-    }
-    for index, category in enumerate(categories):
-        data[f"form-{index}-pk"] = str(category.pk)
-        data[f"form-{index}-name"] = category.name
-    return data
 
 
 def test_page_lists_the_selected_categories(superuser_client, category):
@@ -57,34 +40,16 @@ def test_page_names_the_models_involved(superuser_client, category):
 
 
 def test_invalid_submission_moves_nothing(superuser_client, category, tenant, other_tenant):
-    """A submission without a target tenant redisplays the page and changes nothing."""
+    """A submission without a target tenant redisplays the page with the errors and changes nothing."""
     data = move_payload(other_tenant, category)
     data["tenant"] = ""
 
     response = superuser_client.post(MOVE_URL, data)
 
     assert response.status_code == 200
+    assert response.context["form"].errors
     category.refresh_from_db()
     assert category.tenant == tenant
-
-
-def test_invalid_submission_shows_the_errors(superuser_client, category, other_tenant):
-    """The user is told what was wrong with the submission."""
-    data = move_payload(other_tenant, category)
-    data["tenant"] = ""
-
-    response = superuser_client.post(MOVE_URL, data)
-
-    assert response.context["form"].errors
-
-
-def test_move_reassigns_the_category(superuser_client, category, other_tenant):
-    """Moving a category hands it over to the target tenant."""
-    response = superuser_client.post(MOVE_URL, move_payload(other_tenant, category))
-
-    assert response.status_code == 302
-    category.refresh_from_db()
-    assert category.tenant == other_tenant
 
 
 def test_move_schedules_the_all_songs_pdf_of_both_tenants(
@@ -99,25 +64,6 @@ def test_move_schedules_the_all_songs_pdf_of_both_tenants(
 
     assert PDFFile.objects.filter(template=all_songs_template).count() == 1
     assert PDFFile.objects.filter(template=other_template).count() == 1
-
-
-def test_move_takes_the_generated_files_along(superuser_client, category, pdf_file, other_tenant):
-    """Files printed from the category follow it to the new tenant."""
-    superuser_client.post(MOVE_URL, move_payload(other_tenant, category))
-
-    pdf_file.refresh_from_db()
-    assert pdf_file.tenant == other_tenant
-
-
-def test_move_drops_the_files_menu_of_both_tenants(superuser_client, category, tenant, other_tenant):
-    """The files of the category leave the menu of one tenant and enter the menu of the other."""
-    for each in (tenant, other_tenant):
-        cache.set(tenant_cache_key(each, settings.PDF_CACHE_KEY), ["stale"], 60)
-
-    superuser_client.post(MOVE_URL, move_payload(other_tenant, category))
-
-    for each in (tenant, other_tenant):
-        assert cache.get(tenant_cache_key(each, settings.PDF_CACHE_KEY)) is None
 
 
 def test_move_leaves_other_tenants_files_alone(superuser_client, category, other_tenant, tenant):
@@ -143,7 +89,7 @@ def test_move_takes_the_songs_along(superuser_client, category, song, other_tena
 
 
 def test_song_in_two_tenants_is_split(superuser_client, category, song, make_category, other_tenant):
-    """A song that also lives in a category staying behind is duplicated."""
+    """A song that also lives in a category staying behind is duplicated, lyrics and all."""
     staying = make_category(category.tenant, name="Staying", slug="staying")
     song.categories.add(staying)
 
@@ -153,18 +99,7 @@ def test_song_in_two_tenants_is_split(superuser_client, category, song, make_cat
     copy = Song.objects.exclude(pk=song.pk).get(name=song.name)
     assert list(song.categories.all()) == [category]
     assert list(copy.categories.all()) == [staying]
-
-
-def test_splitting_keeps_the_lyrics(superuser_client, category, song, make_category, other_tenant):
-    """The copy left behind is a faithful duplicate."""
-    staying = make_category(category.tenant, name="Staying", slug="staying")
-    song.categories.add(staying)
-
-    superuser_client.post(MOVE_URL, move_payload(other_tenant, category))
-
-    copy = Song.objects.exclude(pk=song.pk).get(name=song.name)
-    assert copy.text == song.text
-    assert copy.capo == song.capo
+    assert (copy.text, copy.capo) == (song.text, song.capo)
 
 
 def test_moving_several_categories_at_once(superuser_client, category, make_category, tenant, other_tenant):

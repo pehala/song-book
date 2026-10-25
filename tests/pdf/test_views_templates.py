@@ -1,13 +1,10 @@
 """Tests for the manual PDF template pages."""
 
 import pytest
-from django.conf import settings
-from django.core.cache import cache
 from django.urls import reverse
 
 from pdf.models import Section, Status
 from pdf.models.request import AllSongsTemplate, ManualPDFTemplate, PDFFile, PDFSong
-from tenants.utils import tenant_cache_key
 
 pytestmark = pytest.mark.django_db
 
@@ -374,55 +371,12 @@ def test_deleting_removes_the_template(staff_client, manual_template):
     assert not PDFSong.objects.filter(request_id=manual_template.pk).exists()
 
 
-def move_payload(target, template):
-    """Form plus formset data for the move page."""
-    return {
-        "tenant": target.pk,
-        "form-TOTAL_FORMS": "1",
-        "form-INITIAL_FORMS": "1",
-        "form-MIN_NUM_FORMS": "0",
-        "form-MAX_NUM_FORMS": "1000",
-        "form-0-pk": str(template.pk),
-        "form-0-name": template.name,
-    }
-
-
-def test_move_reassigns_the_template(superuser_client, manual_template, other_tenant):
-    """Templates can be handed over to another tenant."""
-    response = superuser_client.post(reverse("pdf:templates:move"), move_payload(other_tenant, manual_template))
-
-    assert response.status_code == 302
-    manual_template.refresh_from_db()
-    assert manual_template.tenant == other_tenant
-
-
 def test_generate_from_the_all_songs_template(staff_client, song, all_songs_template, mock_weasyprint):
     """The generate action of the row builds the file from every song of the tenant."""
     response = staff_client.get(reverse("pdf:templates:generate", kwargs={"pk": all_songs_template.pk}))
 
     assert response.status_code == 302
     assert PDFFile.objects.get(template=all_songs_template).status == "DO"
-
-
-def test_move_takes_the_generated_files_along(superuser_client, manual_template, make_pdf_file, other_tenant):
-    """Files printed from the template follow it to the new tenant."""
-    file = make_pdf_file(manual_template, status=Status.DONE)
-
-    superuser_client.post(reverse("pdf:templates:move"), move_payload(other_tenant, manual_template))
-
-    file.refresh_from_db()
-    assert file.tenant == other_tenant
-
-
-def test_move_drops_the_files_menu_of_both_tenants(superuser_client, manual_template, tenant, other_tenant):
-    """The file leaves the menu of one tenant and enters the menu of the other."""
-    for each in (tenant, other_tenant):
-        cache.set(tenant_cache_key(each, settings.PDF_CACHE_KEY), ["stale"], 60)
-
-    superuser_client.post(reverse("pdf:templates:move"), move_payload(other_tenant, manual_template))
-
-    for each in (tenant, other_tenant):
-        assert cache.get(tenant_cache_key(each, settings.PDF_CACHE_KEY)) is None
 
 
 def test_deleting_a_template_of_another_tenant_is_refused(staff_client, other_tenant):

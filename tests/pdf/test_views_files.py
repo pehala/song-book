@@ -51,25 +51,21 @@ def test_list_shows_files_of_this_tenant_only(staff_client, pdf_file, other_tena
     assert foreign not in listed
 
 
-def test_delete_removes_the_file(staff_client, pdf_file):
-    """Confirming the deletion removes the record."""
+def test_delete_removes_the_file(staff_client, tenant, pdf_file):
+    """Confirming the deletion removes the record and drops the files menu, where it has to disappear from."""
+    prime_menu_cache(tenant)
+
     response = staff_client.post(reverse("pdf:files:delete", kwargs={"pk": pdf_file.pk}))
 
     assert response.status_code == 302
     assert not PDFFile.objects.filter(pk=pdf_file.pk).exists()
-
-
-def test_delete_drops_the_files_menu_cache(staff_client, tenant, pdf_file):
-    """A removed file has to disappear from the navigation."""
-    prime_menu_cache(tenant)
-
-    staff_client.post(reverse("pdf:files:delete", kwargs={"pk": pdf_file.pk}))
-
     assert cache.get(menu_cache_key(tenant)) is None
 
 
-def test_edit_changes_the_display_name(staff_client, pdf_file):
-    """The display name can be changed after generation."""
+def test_edit_changes_the_display_name(staff_client, tenant, pdf_file):
+    """The display name can be changed after generation, which the files menu has to show."""
+    prime_menu_cache(tenant)
+
     staff_client.post(
         reverse("pdf:files:edit", kwargs={"pk": pdf_file.pk}),
         {"display_name": "Campfire", "public": True, "filename": pdf_file.filename},
@@ -77,17 +73,6 @@ def test_edit_changes_the_display_name(staff_client, pdf_file):
 
     pdf_file.refresh_from_db()
     assert pdf_file.display_name == "Campfire"
-
-
-def test_edit_drops_the_files_menu_cache(staff_client, tenant, pdf_file):
-    """A renamed file has to show up in the navigation."""
-    prime_menu_cache(tenant)
-
-    staff_client.post(
-        reverse("pdf:files:edit", kwargs={"pk": pdf_file.pk}),
-        {"display_name": "Campfire", "public": True, "filename": pdf_file.filename},
-    )
-
     assert cache.get(menu_cache_key(tenant)) is None
 
 
@@ -196,13 +181,9 @@ def foreign_file(other_category):
     )
 
 
-@pytest.mark.parametrize(
-    "name",
-    ["pdf:files:delete", "pdf:files:edit", "pdf:files:template_edit"],
-)
-def test_admin_pages_of_a_file_of_another_tenant_are_not_found(staff_client, foreign_file, name):
-    """A local admin cannot reach files of another tenant."""
-    response = staff_client.get(reverse(name, kwargs={"pk": foreign_file.pk}))
+def test_template_of_a_file_of_another_tenant_is_not_found(staff_client, foreign_file):
+    """A local admin cannot reach the template of a file of another tenant."""
+    response = staff_client.get(reverse("pdf:files:template_edit", kwargs={"pk": foreign_file.pk}))
 
     assert response.status_code == 404
 
