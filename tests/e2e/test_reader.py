@@ -509,6 +509,20 @@ def test_columns_default_to_the_width_of_the_screen(page, library, width, column
     expect(page.locator("html")).to_have_css("--chords-grid-columns", columns)
 
 
+def test_short_song_gets_no_empty_columns(page, library):
+    """A song of two verses fills two of three columns, and both start at the same height"""
+    page.add_init_script("localStorage.setItem('columns', '3')")
+    page.emulate_media(reduced_motion="reduce")
+    page.goto("/categories/cs")
+    songs(page).nth(0).locator("summary").click()
+    text = songs(page).nth(0).locator(".song-text")
+    expect(text.locator("p")).to_have_count(2)
+
+    expect(text).to_have_css("column-count", "2")
+    tops = text.locator("p").evaluate_all("verses => verses.map(verse => verse.getBoundingClientRect().top)")
+    assert tops[0] == tops[1]
+
+
 def test_chosen_columns_win_over_the_screen(page, library):
     """A stored choice is kept whatever the screen"""
     page.add_init_script("localStorage.setItem('columns', '1')")
