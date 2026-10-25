@@ -6,6 +6,7 @@ from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse_lazy
 from django.utils.cache import get_conditional_response
 from django.views import View
+from markdownx.views import ImageUploadView, MarkdownifyView
 
 from analytics.views import ALL_SONGS_KEY, analytics
 from backend.forms import SongForm
@@ -134,3 +135,11 @@ class SongDeleteView(LocalAdminRequired, TenantSongsMixin, UniversalDeleteView):
             self.object.categories.remove(*own)
             return HttpResponseRedirect(self.get_success_url())
         return super().form_valid(form)
+
+
+class SongImageUploadView(LocalAdminRequired, ImageUploadView):
+    """Stores an image dropped into the song editor."""
+
+
+class SongPreviewView(LocalAdminRequired, MarkdownifyView):
+    """Renders the preview of the song editor."""
