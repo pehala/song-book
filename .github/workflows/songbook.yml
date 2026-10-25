@@ -48,8 +48,21 @@ jobs:
         run: |
           uv python install
           uv sync --locked --group dev
+      - name: Get Playwright version
+        id: playwright
+        run: echo "version=$(uv run playwright --version | awk '{print $NF}')" >> "$GITHUB_OUTPUT"
+      - name: Cache Chromium
+        id: chromium-cache
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: chromium-shell-${{ runner.os }}-${{ steps.playwright.outputs.version }}
       - name: Install Chromium
-        run: uv run playwright install --with-deps chromium
+        if: steps.chromium-cache.outputs.cache-hit != 'true'
+        run: uv run playwright install --with-deps --only-shell chromium
+      - name: Install Chromium system packages
+        if: steps.chromium-cache.outputs.cache-hit == 'true'
+        run: uv run playwright install-deps chromium
       - name: Run browser tests
         run: |
           make e2e
