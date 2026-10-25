@@ -34,18 +34,18 @@ def test_server_pages_carry_the_bootstrap(staff_client, tenant, category):
     assert boot == json.loads(json.dumps(bootstrap_payload(tenant)))
 
 
-def test_server_pages_carry_the_user(staff_client, tenant):
-    """Who is signed in comes inlined, so the header needs no request."""
-    me = inlined(staff_client.get(reverse("category:list")), "me")
+@pytest.mark.parametrize(
+    ("client_fixture", "url", "user"),
+    [
+        pytest.param("staff_client", reverse("category:list"), (True, "staff", True, False), id="signed in"),
+        pytest.param("anon_client", "/accounts/login/", (False, None, False, False), id="anonymous"),
+    ],
+)
+def test_server_pages_carry_the_user(request, tenant, client_fixture, url, user):
+    """Who is signed in, if anybody, comes inlined, so the header needs no request."""
+    me = inlined(request.getfixturevalue(client_fixture).get(url), "me")
 
-    assert (me["auth"], me["username"], me["localadmin"], me["superuser"]) == (True, "staff", True, False)
-
-
-def test_anonymous_server_page_carries_an_anonymous_user(anon_client, tenant):
-    """The login page tells the header that nobody is signed in."""
-    me = inlined(anon_client.get("/accounts/login/"), "me")
-
-    assert me["auth"] is False
+    assert (me["auth"], me["username"], me["localadmin"], me["superuser"]) == user
 
 
 def test_server_pages_leave_messages_to_the_page(staff_client, song):
