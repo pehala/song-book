@@ -276,7 +276,12 @@ drop a closing quote).
   differs from the committed file, and `make check-fuzzy` fails the build if either catalogue contains fuzzy
   entries, so run `make messages`, resolve them and commit both files. The catalogues carry no source locations
   (`--no-location`), so they change only when a string or its translation does.
-- ruff, line length 120, target `py314` (`.python-version` is 3.14).
+- ruff, line length 120, target `py314` (`.python-version` is 3.14). The `D` (pydocstyle) rules run with the Google
+  convention, so every module, package, class, function and method has a docstring: a summary line ending in a period,
+  in the descriptive third person (`"""Returns ..."""`; D401 is off), with a blank line before any further text.
+  `__init__`, magic methods and nested `Meta` classes are exempt (the class docstring covers them), and migrations
+  and the `__init__.py` files of `tests/` are not checked. A method that overrides a framework hook still says what
+  it does here.
 - Dev dependencies: `uv add --group dev <pkg>`.
 - One logical change per commit.
 - No fixup commits in the final history: a fix to code a commit of the same branch introduced is
