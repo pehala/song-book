@@ -383,6 +383,21 @@ rt.chord {
     .num {
         font-size: 1.25rem;
     }
+
+    /* room between the open song's text and its title row and highlight bar */
+    .tools,
+    .song-text {
+        margin-left: 1rem;
+    }
+
+    .song-text {
+        max-width: calc(100% - 1rem);
+    }
+
+    .tools {
+        margin-top: 1rem;
+        margin-bottom: 1rem;
+    }
 }
 
 /* Back to top over Scroll down, in the corner the thumb reaches */
