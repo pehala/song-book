@@ -77,6 +77,15 @@ def test_page_is_named_after_the_tenant(tenant, other_tenant):
     assert f"<title>{escape(other_tenant.display_name)}</title>" in response.content.decode()
 
 
+def test_page_is_described_in_the_language_of_the_page(tenant):
+    """Search engines get a description; it is Czech like <html lang> for every reader, so the body stays shared"""
+    english = Client(HTTP_HOST="localhost", HTTP_ACCEPT_LANGUAGE="en").get("/").content.decode()
+    czech = Client(HTTP_HOST="localhost").get("/").content.decode()
+
+    assert english == czech
+    assert f'<meta name="description" content="Zpěvník {escape(tenant.display_name)}:' in czech
+
+
 def test_unknown_category_gets_the_page_with_404(anon_client, tenant):
     """The client says the category is missing; the status keeps it out of the service worker's cache"""
     response = anon_client.get(reverse("category:index", kwargs={"slug": "nope"}))

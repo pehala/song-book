@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>{{ boot.name }}</title>
+<meta name="description" content="{{ description }}">
 <link rel="manifest" href="{% url 'frontend:manifest' %}">
 {% if boot.icon %}<link rel="icon" type="image/png" href="{{ boot.icon }}">{% endif %}
 <script>try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.bsTheme=t}catch(e){}</script>
