@@ -4,6 +4,7 @@ import json
 from pathlib import Path
 from urllib.parse import urlsplit
 
+import pytest
 from django.contrib.staticfiles import finders
 from playwright.sync_api import expect
 
@@ -497,6 +498,24 @@ def test_columns_option_is_remembered(page, library):
     expect(page.locator("html")).to_have_css("--chords-grid-columns", "3")
     page.reload()
     expect(page.locator("html")).to_have_css("--chords-grid-columns", "3")
+
+
+@pytest.mark.parametrize(("width", "columns"), [(375, "1"), (1280, "2"), (1920, "3")])
+def test_columns_default_to_the_width_of_the_screen(page, library, width, columns):
+    """Until the reader chooses, wider screens get more columns"""
+    page.set_viewport_size({"width": width, "height": 800})
+    page.goto("/categories/cs")
+
+    expect(page.locator("html")).to_have_css("--chords-grid-columns", columns)
+
+
+def test_chosen_columns_win_over_the_screen(page, library):
+    """A stored choice is kept whatever the screen"""
+    page.add_init_script("localStorage.setItem('columns', '1')")
+    page.set_viewport_size({"width": 1920, "height": 800})
+    page.goto("/categories/cs")
+
+    expect(page.locator("html")).to_have_css("--chords-grid-columns", "1")
 
 
 def test_theme_is_applied_and_remembered(page, library):
