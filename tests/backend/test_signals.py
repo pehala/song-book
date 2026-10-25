@@ -22,14 +22,17 @@ URL = reverse("chords:songs_api")
 
 
 def payload_key(tenant):
+    """The cache key of the public songs payload of the tenant."""
     return songs_payload_key(tenant, False)
 
 
 def prime_payload(client):
+    """Requests the songs so that their payload lands in the cache."""
     client.get(URL)
 
 
 def songs(client):
+    """Returns the songs the API lists for the client, by name."""
     return {entry["name"]: entry for entry in json.loads(client.get(URL).content)}
 
 
@@ -159,7 +162,7 @@ def test_save_leaves_prerendered_alone_when_disabled(category):
 
 @pytest.mark.parametrize("change", ["remove", "clear"])
 def test_list_rebuilt_before_the_membership_change_is_dropped_after_it(anon_client, song, tenant, category, change):
-    """A request between the invalidation and the change caches the old links, so the change invalidates again"""
+    """A request between the invalidation and the change caches the old links, so the change invalidates again."""
 
     def rebuild_in_between(sender, action, **kwargs):
         if action.startswith("pre_"):
@@ -180,7 +183,7 @@ def test_list_rebuilt_before_the_membership_change_is_dropped_after_it(anon_clie
 def test_invalidation_inside_a_transaction_waits_for_the_commit(
     anon_client, song, tenant, real_on_commit, django_capture_on_commit_callbacks
 ):
-    """The Django admin saves inside atomic(); a list rebuilt before the commit would keep the old rows"""
+    """The Django admin saves inside atomic(); a list rebuilt before the commit would keep the old rows."""
     prime_payload(anon_client)
 
     with django_capture_on_commit_callbacks() as callbacks:
@@ -197,6 +200,7 @@ def test_invalidation_inside_a_transaction_waits_for_the_commit(
 def test_category_menu_invalidation_waits_for_the_commit(
     category, tenant, real_on_commit, django_capture_on_commit_callbacks
 ):
+    """Saving a category drops its menu from the cache only once the transaction has committed."""
     key = tenant_cache_key(tenant, CATEGORY_CACHE_KEY)
     cache.set(key, "menu")
 

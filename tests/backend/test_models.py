@@ -8,17 +8,17 @@ pytestmark = pytest.mark.django_db
 
 
 def test_str_contains_name_and_id(song):
-    """Songs identify themselves by name and primary key"""
+    """Songs identify themselves by name and primary key."""
     assert str(song) == f"Test Song ({song.id})"
 
 
 def test_hash_is_stable_for_the_same_song(song):
-    """Hashing the same song twice gives the same value"""
+    """Hashing the same song twice gives the same value."""
     assert hash(song) == hash(song)
 
 
 def test_equal_songs_hash_equally(song):
-    """Two instances of one row are interchangeable as set members or dict keys"""
+    """Two instances of one row are interchangeable as set members or dict keys."""
     reloaded = Song.objects.get(pk=song.pk)
 
     assert reloaded == song
@@ -26,7 +26,7 @@ def test_equal_songs_hash_equally(song):
 
 
 def test_hash_identifies_the_row_not_its_contents(song):
-    """Editing a song in memory does not move it in a set"""
+    """Editing a song in memory does not move it in a set."""
     before = hash(song)
 
     song.name = "Renamed"
@@ -36,7 +36,7 @@ def test_hash_identifies_the_row_not_its_contents(song):
 
 
 def test_prerender_stores_html(song):
-    """prerender() renders the markdown and saves it by default"""
+    """prerender() renders the markdown and saves it by default."""
     html = song.prerender()
 
     song.refresh_from_db()
@@ -45,7 +45,7 @@ def test_prerender_stores_html(song):
 
 
 def test_prerender_without_save_leaves_database_untouched(song):
-    """prerender(save=False) only fills the attribute"""
+    """prerender(save=False) only fills the attribute."""
     song.prerender(save=False)
 
     assert song.prerendered is not None
@@ -53,7 +53,7 @@ def test_prerender_without_save_leaves_database_untouched(song):
 
 
 def test_rendered_markdown_renders_on_the_fly_by_default(settings, song):
-    """With prerendering disabled the markdown is rendered per request"""
+    """With prerendering disabled the markdown is rendered per request."""
     settings.USE_PRERENDERED_MARKDOWN = False
     song.prerendered = "stale"
 
@@ -62,7 +62,7 @@ def test_rendered_markdown_renders_on_the_fly_by_default(settings, song):
 
 
 def test_prerender_uses_the_configured_renderer(settings, song):
-    """SONG_RENDERER decides how the chords of a song are written"""
+    """SONG_RENDERER decides how the chords of a song are written."""
     settings.SONG_RENDERER = "chords.markdown.RUBY_RENDERER"
 
     assert "<ruby>" in song.prerender(save=False)
@@ -73,7 +73,7 @@ def test_prerender_uses_the_configured_renderer(settings, song):
 
 
 def test_pdf_markdown_raises_the_chords_whatever_the_renderer(settings, song):
-    """The PDF raises the chords above their words whatever SONG_RENDERER says"""
+    """The PDF raises the chords above their words whatever SONG_RENDERER says."""
     settings.SONG_RENDERER = "chords.markdown.RUBY_RENDERER"
     song.text = "{Ami}Hello"
 
@@ -83,7 +83,7 @@ def test_pdf_markdown_raises_the_chords_whatever_the_renderer(settings, song):
 
 
 def test_pdf_markdown_ignores_the_prerendered_field(settings, song):
-    """The stored html is written for the web, so the PDF renders the text itself"""
+    """The stored html is written for the web, so the PDF renders the text itself."""
     settings.USE_PRERENDERED_MARKDOWN = True
     song.text = "{Ami}Hello"
     song.prerendered = "<p>stored</p>"
@@ -93,7 +93,7 @@ def test_pdf_markdown_ignores_the_prerendered_field(settings, song):
 
 
 def test_rendered_markdown_uses_prerendered_field(settings, song):
-    """With prerendering enabled the stored html wins"""
+    """With prerendering enabled the stored html wins."""
     settings.USE_PRERENDERED_MARKDOWN = True
     song.prerendered = "<p>stored</p>"
 
@@ -101,7 +101,7 @@ def test_rendered_markdown_uses_prerendered_field(settings, song):
 
 
 def test_rendered_markdown_renders_dynamically_when_missing(settings, song):
-    """An empty prerendered field is filled in on access when allowed"""
+    """An empty prerendered field is filled in on access when allowed."""
     settings.USE_PRERENDERED_MARKDOWN = True
     settings.USE_DYNAMIC_PRERENDER = True
 
@@ -112,7 +112,7 @@ def test_rendered_markdown_renders_dynamically_when_missing(settings, song):
 
 
 def test_rendered_markdown_raises_without_dynamic_prerender(settings, song):
-    """Refuse to render on the fly when the deployment forbids it"""
+    """Refuse to render on the fly when the deployment forbids it."""
     settings.USE_PRERENDERED_MARKDOWN = True
     settings.USE_DYNAMIC_PRERENDER = False
 

@@ -1,15 +1,16 @@
-"""Middlewares for cache manipulation"""
+"""Middlewares for cache manipulation."""
 
 from django.utils.cache import add_never_cache_headers
 
 
 class DisableClientSideCachingMiddleware:
-    """Disables client side caching"""
+    """Disables client side caching."""
 
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
+        """Marks the response as uncacheable."""
         response = self.get_response(request)
 
         add_never_cache_headers(response)

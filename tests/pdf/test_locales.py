@@ -16,12 +16,12 @@ from pdf.locales import changed_locale, lang_to_locale
     ],
 )
 def test_django_languages_map_to_system_locales(language, expected):
-    """Django language codes are translated to system locale names"""
+    """Django language codes are translated to system locale names."""
     assert lang_to_locale(language) == expected
 
 
 def test_locale_is_restored_afterwards():
-    """The collation locale is put back when the block ends"""
+    """The collation locale is put back when the block ends."""
     before = locale.getlocale(locale.LC_COLLATE)
 
     with changed_locale(None):
@@ -31,7 +31,7 @@ def test_locale_is_restored_afterwards():
 
 
 def test_locale_is_restored_after_an_error():
-    """The collation locale is put back even when the block raises"""
+    """The collation locale is put back even when the block raises."""
     before = locale.getlocale(locale.LC_COLLATE)
 
     with pytest.raises(RuntimeError), changed_locale(None):

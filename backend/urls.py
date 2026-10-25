@@ -1,4 +1,4 @@
-"""Backend app URL Configuration"""
+"""Backend app URL Configuration."""
 
 from django.urls import path
 

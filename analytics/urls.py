@@ -1,4 +1,4 @@
-"""Analytics URLs configuration"""
+"""Analytics URLs configuration."""
 
 from django.urls import path
 

@@ -16,7 +16,7 @@ def test_module_imports_are_rewritten():
 
 @pytest.mark.django_db
 def test_collectstatic_hashes_module_imports(tmp_path):
-    """collectstatic produces modules whose imports point at hashed files."""
+    """Collectstatic produces modules whose imports point at hashed files."""
     storages = {
         "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
         "staticfiles": {"BACKEND": "chords.storage.ManifestStorage"},

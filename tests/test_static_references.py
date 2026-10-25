@@ -12,6 +12,7 @@ ROOT = Path(settings.BASE_DIR).parent
 
 
 def template_references():
+    """Yields a test parameter for every `{% static %}` literal in the templates."""
     for template in sorted(ROOT.glob("*/templates/**/*")):
         if template.is_file():
             for match in STATIC_TAG.finditer(template.read_text()):

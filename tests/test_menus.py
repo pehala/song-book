@@ -8,10 +8,12 @@ from tenants.models import Link
 
 
 def titles(menu, tenant):
+    """Returns the names of the menu's entries for the tenant."""
     return [item["name"] for item in menu.children_of(tenant)]
 
 
 def test_categories_are_scoped_to_the_tenant(tenant, other_tenant, category):
+    """A tenant's menu lists its own categories and nobody else's."""
     Category.objects.create(tenant=other_tenant, name="Other Category", slug="other-cat", generate_pdf=False)
 
     assert "Test Category" in titles(CATEGORIES_MENU, tenant)
@@ -20,10 +22,12 @@ def test_categories_are_scoped_to_the_tenant(tenant, other_tenant, category):
 
 
 def test_links_are_empty_without_links(tenant):
+    """A tenant without links has an empty links menu."""
     assert LINKS_MENU.children_of(tenant) == []
 
 
 def test_links_follow_assignment_and_edits(tenant, other_tenant):
+    """The links menu shows the links assigned to the tenant and no others."""
     link = Link.objects.create(link="https://example.com", display_name="Example")
     assert LINKS_MENU.children_of(tenant) == []
 
@@ -51,7 +55,7 @@ def test_links_follow_assignment_and_edits(tenant, other_tenant):
 
 @pytest.mark.django_db
 def test_header_of_server_pages_lists_links_only_when_there_are_some(tenant, client):
-    """The links reach the pages the server renders through the header's inlined bootstrap"""
+    """The links reach the pages the server renders through the header's inlined bootstrap."""
     html = client.get("/accounts/login/", HTTP_HOST="localhost").content.decode()
     assert "https://example.com" not in html
 

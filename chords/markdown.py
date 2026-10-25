@@ -1,4 +1,4 @@
-"""Module containing Rendering function for converting Markdown to HTML"""
+"""Module containing Rendering function for converting Markdown to HTML."""
 
 from functools import cache
 
@@ -14,14 +14,15 @@ from chords.plugins.spaces import spaces
 
 
 class CustomHTMLRenderer(mistune.HTMLRenderer):
-    """Soft breaks are also breaks"""
+    """Soft breaks are also breaks."""
 
     def softbreak(self) -> str:
+        """Renders a soft line break as a hard one."""
         return r"<br />"
 
 
 def create_renderer(chords_plugin):
-    """Markdown renderer whose chords are handled by the given plugin"""
+    """Markdown renderer whose chords are handled by the given plugin."""
     return mistune.create_markdown(
         escape=False, plugins=[paragraph, chords_plugin, spaces], renderer=CustomHTMLRenderer(escape=False)
     )
@@ -34,10 +35,10 @@ PDF_RENDERER = create_renderer(raised_chords)
 
 @cache
 def load_renderer(path: str):
-    """The renderer at the dotted path"""
+    """The renderer at the dotted path."""
     return import_string(path)
 
 
 def song_renderer():
-    """The renderer configured by SONG_RENDERER"""
+    """The renderer configured by SONG_RENDERER."""
     return load_renderer(settings.SONG_RENDERER)

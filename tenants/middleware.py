@@ -1,4 +1,4 @@
-"""Middleware for Tenants"""
+"""Middleware for Tenants."""
 
 from functools import partial
 from urllib.parse import urlparse
@@ -11,7 +11,7 @@ from tenants.models import Tenant
 
 
 def with_localadmin(request, user):
-    """Marks whether the user administers the request's tenant; reading the user is deferred until it is needed"""
+    """Marks whether the user administers the request's tenant; reading the user is deferred until it is needed."""
     user.is_localadmin = (
         user.is_authenticated and request.tenant.admins.filter(id=user.id).exists() or user.is_superuser
     )
@@ -19,12 +19,13 @@ def with_localadmin(request, user):
 
 
 class RecognizeTenantMiddleware:
-    """Fills in current Tenant being used"""
+    """Fills in current Tenant being used."""
 
     def __init__(self, get_response):
         self.get_response = get_response
 
     def __call__(self, request):
+        """Resolves the tenant by hostname and sets it, with the lazy local admin flag, on the request."""
         try:
             # if "admin" not in path:
             hostname = urlparse(request.build_absolute_uri()).hostname

@@ -1,4 +1,4 @@
-"""Tenant forms"""
+"""Tenant forms."""
 
 from django.forms import CharField, Form, ModelChoiceField, ModelForm
 
@@ -6,7 +6,7 @@ from tenants.models import Link, Tenant
 
 
 class TenantForm(ModelForm):
-    """Specific Form for Tenants, used only in Admin"""
+    """Specific Form for Tenants, used only in Admin."""
 
     index_redirect = CharField(initial="/")
 
@@ -16,7 +16,7 @@ class TenantForm(ModelForm):
 
 
 class LinkForm(ModelForm):
-    """Specific Form for Link, used only in Admin"""
+    """Specific Form for Link, used only in Admin."""
 
     class Meta:
         model = Link
@@ -24,7 +24,7 @@ class LinkForm(ModelForm):
 
 
 class UserTenantForm(ModelForm):
-    """Tenant Model Form with disabled hostname"""
+    """Tenant Model Form with disabled hostname."""
 
     hostname = CharField(disabled=True)
 
@@ -34,7 +34,7 @@ class UserTenantForm(ModelForm):
 
 
 class ChooseTenantForm(Form):
-    """Form to choose Tenant"""
+    """Form to choose Tenant."""
 
     tenant = ModelChoiceField(
         queryset=Tenant.objects.all(), label=Tenant._meta.verbose_name, blank=False, empty_label=None

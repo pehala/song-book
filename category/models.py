@@ -1,4 +1,4 @@
-"""Models"""
+"""Models."""
 
 from collections.abc import Iterable
 from typing import TYPE_CHECKING
@@ -14,7 +14,7 @@ if TYPE_CHECKING:
 
 
 class Category(PDFTemplate):
-    """Song Category"""
+    """Song Category."""
 
     tenant = ForeignKey(Tenant, on_delete=CASCADE)
     name = CharField(verbose_name=_("Name"), max_length=100)
@@ -29,6 +29,7 @@ class Category(PDFTemplate):
     )
 
     def get_songs(self) -> Iterable[tuple[int, Song]]:
+        """Returns the numbered songs that are not archived."""
         return list(enumerate(self.song_set.filter(archived=False), start=1))
 
     def __str__(self):

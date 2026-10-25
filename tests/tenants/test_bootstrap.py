@@ -16,12 +16,12 @@ pytestmark = pytest.mark.django_db
 
 
 def test_payload_is_json_serializable(tenant, category):
-    """It is inlined into the shell as JSON"""
+    """It is inlined into the shell as JSON."""
     assert json.loads(json.dumps(bootstrap_payload(tenant)))["v"] == SCHEMA_VERSION
 
 
 def test_payload_names_the_tenant(tenant):
-    """The header is drawn from the tenant's own settings"""
+    """The header is drawn from the tenant's own settings."""
     payload = bootstrap_payload(tenant)
 
     assert (payload["name"], payload["index"], payload["all_songs"]) == (
@@ -32,12 +32,12 @@ def test_payload_names_the_tenant(tenant):
 
 
 def test_icon_is_absent_without_a_logo(tenant):
-    """No logo, no icon url"""
+    """No logo, no icon url."""
     assert bootstrap_payload(tenant)["icon"] is None
 
 
 def test_icon_points_at_the_logo(tenant):
-    """The url of the uploaded logo is passed on"""
+    """The url of the uploaded logo is passed on."""
     tenant.icon = "uploads/logo.png"
     tenant.save()
 
@@ -45,7 +45,7 @@ def test_icon_points_at_the_logo(tenant):
 
 
 def test_categories_are_listed_without_the_all_songs_entry(tenant, category):
-    """Every category of the tenant is listed by slug; the all songs list is a flag instead"""
+    """Every category of the tenant is listed by slug; the all songs list is a flag instead."""
     payload = bootstrap_payload(tenant)
 
     assert {"slug": "test-cat", "name": "Test Category"} in payload["categories"]
@@ -54,12 +54,12 @@ def test_categories_are_listed_without_the_all_songs_entry(tenant, category):
 
 
 def test_categories_of_other_tenants_are_left_out(tenant, other_category):
-    """Each tenant gets its own navigation"""
+    """Each tenant gets its own navigation."""
     assert "other-cat" not in [entry["slug"] for entry in bootstrap_payload(tenant)["categories"]]
 
 
 def test_all_songs_flag_follows_the_tenant(tenant):
-    """The all songs list is offered only when the tenant wants it"""
+    """The all songs list is offered only when the tenant wants it."""
     tenant.all_songs_category = False
     tenant.save()
 
@@ -67,7 +67,7 @@ def test_all_songs_flag_follows_the_tenant(tenant):
 
 
 def test_new_category_shows_up_through_the_menu_cache(tenant, make_category):
-    """The categories share the menu's cache entry, which category signals already clear"""
+    """The categories share the menu's cache entry, which category signals already clear."""
     bootstrap_payload(tenant)
 
     make_category(tenant, name="Fresh", slug="fresh")
@@ -76,14 +76,14 @@ def test_new_category_shows_up_through_the_menu_cache(tenant, make_category):
 
 
 def test_links_are_listed(tenant):
-    """Links of the tenant are passed on with their display name"""
+    """Links of the tenant are passed on with their display name."""
     tenant.links.add(Link.objects.create(link="https://example.com", display_name="Example"))
 
     assert bootstrap_payload(tenant)["links"] == [{"name": "Example", "url": "https://example.com"}]
 
 
 def test_files_are_listed(tenant, category):
-    """The latest public finished PDF of every template is listed"""
+    """The latest public finished PDF of every template is listed."""
     PDFFile.objects.create(
         tenant=tenant,
         template=category,
@@ -101,7 +101,7 @@ def test_files_are_listed(tenant, category):
 
 
 def test_urls_point_at_the_pages_the_reader_links_to(tenant):
-    """Ids are given as 0 for the client to replace"""
+    """Ids are given as 0 for the client to replace."""
     urls = bootstrap_payload(tenant)["urls"]
 
     assert (urls["songs"], urls["me"], urls["edit"], urls["delete"]) == (
@@ -118,5 +118,5 @@ def test_urls_point_at_the_pages_the_reader_links_to(tenant):
 
 
 def test_payload_carries_the_readers_translations(tenant):
-    """The reader translates its strings from the bootstrap, so it needs no further request"""
+    """The reader translates its strings from the bootstrap, so it needs no further request."""
     assert bootstrap_payload(tenant)["i18n"] == reader_catalogues()

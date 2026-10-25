@@ -1,4 +1,4 @@
-"""PDFFile related views"""
+"""PDFFile related views."""
 
 from django.conf import settings
 from django.core.cache import cache
@@ -19,49 +19,53 @@ from tenants.utils import tenant_cache_key
 
 
 class FileListView(LocalAdminRequired, ListView):
-    """Lists all the files"""
+    """Lists all the files."""
 
     model = PDFFile
     template_name = "pdf/files/list.html"
     context_object_name = "files"
 
     def get_queryset(self):
+        """Returns the files of the tenant."""
         return super().get_queryset().filter(tenant=self.request.tenant)
 
 
 class FileDeleteView(LocalAdminRequired, UniversalDeleteView):
-    """Deletes File"""
+    """Deletes File."""
 
     model = PDFFile
     success_url = reverse_lazy("pdf:files:list")
 
     def post(self, request, *args, **kwargs):
+        """Deletes the file and drops the cached list of the tenant's PDFs."""
         response = super().post(request, *args, **kwargs)
         cache.delete(tenant_cache_key(self.object.tenant, settings.PDF_CACHE_KEY))
         return response
 
 
 class FileUpdateView(LocalAdminRequired, UniversalUpdateView):
-    """Updates File"""
+    """Updates File."""
 
     form_class = PDFFileEditForm
     model = PDFFile
     success_url = reverse_lazy("pdf:files:list")
 
     def post(self, request, *args, **kwargs):
+        """Updates the file and drops the cached list of the tenant's PDFs."""
         response = super().post(request, *args, **kwargs)
         cache.delete(tenant_cache_key(self.object.tenant, settings.PDF_CACHE_KEY))
         return response
 
 
 class WaitForFileView(DetailView):
-    """Shows wait page for PDF generation; the browser polls `RenderInfoView` and draws the progress"""
+    """Shows wait page for PDF generation; the browser polls `RenderInfoView` and draws the progress."""
 
     model = PDFFile
     context_object_name = "pdf"
     template_name = "pdf/files/wait.html"
 
     def get_context_data(self, **kwargs):
+        """Adds the filename and the endpoint that reports the progress."""
         context = super().get_context_data(**kwargs)
         context["page"] = {
             "filename": self.object.filename,
@@ -71,12 +75,12 @@ class WaitForFileView(DetailView):
 
 
 class RenderInfoView(View, SingleObjectMixin):
-    """Returns JSON response containing info about PDFFile"""
+    """Returns JSON response containing info about PDFFile."""
 
     model = PDFFile
 
     def get(self, request, *args, **kwargs):
-        """Process GET request"""
+        """Process GET request."""
         pdf_file = self.get_object()
         ready = pdf_file.status == Status.DONE
         return JsonResponse(
@@ -91,12 +95,12 @@ class RenderInfoView(View, SingleObjectMixin):
 
 
 class FileTemplateEditView(LocalAdminRequired, SingleObjectMixin, View):
-    """Redirects to correct edit page based on the class of the template"""
+    """Redirects to correct edit page based on the class of the template."""
 
     model = PDFFile
 
     def get(self, request, *args, **kwargs):
-        """Process GET request"""
+        """Process GET request."""
         file = self.get_object()
         if file.template:
             template = file.template

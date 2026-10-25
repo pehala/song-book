@@ -1,4 +1,4 @@
-"""Settings for testing — overrides production cache with in-memory backend"""
+"""Settings for testing — overrides production cache with in-memory backend."""
 
 from chords.settings.base import *  # noqa: F403
 

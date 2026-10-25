@@ -1,4 +1,4 @@
-"""The data the reader needs before it can draw anything: navigation, links and URLs"""
+"""The data the reader needs before it can draw anything: navigation, links and URLs."""
 
 from django.urls import reverse
 
@@ -10,7 +10,7 @@ SCHEMA_VERSION = 1
 
 
 def named_urls():
-    """URLs of the pages the reader links to; `0` stands for the id or key the client fills in"""
+    """URLs of the pages the reader links to; `0` stands for the id or key the client fills in."""
     return {
         "login": reverse("login"),
         "logout": reverse("logout"),
@@ -33,8 +33,7 @@ def named_urls():
 
 
 def bootstrap_payload(tenant):
-    """
-    Returns the JSON-serializable bootstrap of the tenant's reader.
+    """Returns the JSON-serializable bootstrap of the tenant's reader.
 
     Categories, PDFs and links come from the entries the navigation menus keep in the cache,
     so whatever invalidates the menus invalidates this too.

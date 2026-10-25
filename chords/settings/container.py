@@ -9,12 +9,12 @@ from chords.settings.base import *  # noqa: F403
 
 
 def env_int(name, default):
-    """Integer environment variable, the default when it is unset"""
+    """Integer environment variable, the default when it is unset."""
     return int(os.environ.get(name, default))
 
 
 def env_list(name):
-    """Comma separated environment variable as a list"""
+    """Comma separated environment variable as a list."""
     return [item.strip() for item in os.environ.get(name, "").split(",") if item.strip()]
 
 

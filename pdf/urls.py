@@ -1,4 +1,4 @@
-"""Url configuration for PDF app"""
+"""Url configuration for PDF app."""
 
 from django.urls import include, path
 

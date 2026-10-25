@@ -11,11 +11,12 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture
 def song_admin():
+    """The admin of songs, outside of a site."""
     return SongAdmin(Song, AdminSite())
 
 
 def test_categories_column_lists_every_category(song_admin, song, category, make_category, tenant):
-    """The admin list shows all categories a song belongs to"""
+    """The admin list shows all categories a song belongs to."""
     second = make_category(tenant, name="Second", slug="second")
     song.categories.add(second)
 
@@ -26,10 +27,10 @@ def test_categories_column_lists_every_category(song_admin, song, category, make
 
 
 def test_categories_column_is_empty_without_categories(song_admin, make_song):
-    """A song in no category renders an empty column"""
+    """A song in no category renders an empty column."""
     assert song_admin.get_categories(make_song()) == ""
 
 
 def test_admin_changelist_renders(superuser_client, song):
-    """The song changelist is reachable for site administrators"""
+    """The song changelist is reachable for site administrators."""
     assert superuser_client.get("/admin/backend/song/").status_code == 200

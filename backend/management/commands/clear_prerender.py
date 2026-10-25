@@ -1,4 +1,4 @@
-"""Clear prerender command"""
+"""Clear prerender command."""
 
 from django.core.management import BaseCommand
 
@@ -7,9 +7,10 @@ from backend.models import Song
 
 
 class Command(BaseCommand):
-    """Erases all prerendered html from all songs"""
+    """Erases all prerendered html from all songs."""
 
     def handle(self, *args, **options):
+        """Clears the prerendered HTML of every song."""
         Song.objects.all().update(prerendered=None)
         touch_songs(Song.objects.all())
         print("Removed all prerendered markdowns")

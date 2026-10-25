@@ -1,9 +1,9 @@
-"""Category Application"""
+"""Category Application."""
 
 from django.apps import AppConfig
 
 
 class CategoryConfig(AppConfig):
-    """Category configuration"""
+    """Category configuration."""
 
     name = "category"

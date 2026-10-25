@@ -1,4 +1,4 @@
-"""The reader's translations: the `djangojs` gettext catalogue, one JSON object per language"""
+"""The reader's translations: the `djangojs` gettext catalogue, one JSON object per language."""
 
 from functools import cache
 
@@ -11,8 +11,7 @@ SOURCE_LANGUAGE = "en"
 
 @cache
 def reader_catalogues():
-    """
-    Maps each language that translates the reader to `{msgid: translation}`; read from disk once per process.
+    """Maps each language that translates the reader to `{msgid: translation}`; read from disk once per process.
 
     Only the project's own catalogue is read and Django's fallback to the default language is left out,
     so a language without translations is absent instead of showing the default language's strings.

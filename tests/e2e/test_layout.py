@@ -20,6 +20,7 @@ SIZES = """(selector) => [...document.querySelectorAll(selector)]
 
 
 def luminance(color):
+    """Returns the relative luminance of a CSS `rgb()`/`rgba()` colour as defined by WCAG."""
     channels = [
         int(value) / 255 for value in color.removeprefix("rgb(").removeprefix("rgba(").removesuffix(")").split(",")[:3]
     ]
@@ -28,11 +29,13 @@ def luminance(color):
 
 
 def contrast(foreground, background):
+    """Returns the WCAG contrast ratio between two CSS colours."""
     lighter, darker = sorted([luminance(foreground), luminance(background)], reverse=True)
     return (lighter + 0.05) / (darker + 0.05)
 
 
 def colors(page, selector):
+    """Returns the text colour and the effective background colour of the first element matching the selector."""
     return page.evaluate(
         """(selector) => {
             const element = document.querySelector(selector);
@@ -48,6 +51,7 @@ def colors(page, selector):
 
 
 def open_everything(page):
+    """Opens the burger menu, every dropdown and the first song."""
     page.locator(".sb-burger").click()
     for dropdown in page.locator("details.sb-dd").all():
         dropdown.locator("summary").click()
@@ -56,6 +60,7 @@ def open_everything(page):
 
 @pytest.fixture
 def phone(page, library):
+    """The reader of a category on a phone-sized viewport."""
     page.set_viewport_size(PHONE)
     page.goto("/categories/cs")
     expect(page.locator("details.song").first).to_be_visible()
@@ -63,7 +68,7 @@ def phone(page, library):
 
 
 def test_controls_are_at_least_44px_on_a_phone(phone):
-    """Header, menus, options and the song's tools are big enough for a thumb"""
+    """Header, menus, options and the song's tools are big enough for a thumb."""
     open_everything(phone)
 
     too_small = [item[:3] for item in phone.evaluate(SIZES, CONTROLS) if item[1] < 44 or item[2] < 44]
@@ -72,7 +77,7 @@ def test_controls_are_at_least_44px_on_a_phone(phone):
 
 
 def test_form_fields_use_at_least_16px_text(phone):
-    """Smaller text makes iOS zoom the page when a field gets focus"""
+    """Smaller text makes iOS zoom the page when a field gets focus."""
     open_everything(phone)
 
     fields = phone.evaluate(SIZES, "select, input:not([type=checkbox])")
@@ -81,14 +86,14 @@ def test_form_fields_use_at_least_16px_text(phone):
 
 
 def test_phone_layout_does_not_scroll_sideways(phone):
-    """Everything fits the width of the screen"""
+    """Everything fits the width of the screen."""
     open_everything(phone)
 
     assert phone.evaluate("document.documentElement.scrollWidth <= innerWidth")
 
 
 def test_desktop_menu_is_a_row_without_hamburger(page, library):
-    """Wide screens get the menu in the bar, the phone layout is the base"""
+    """Wide screens get the menu in the bar, the phone layout is the base."""
     page.set_viewport_size({"width": 1200, "height": 700})
     page.goto("/categories/cs")
 
@@ -98,7 +103,7 @@ def test_desktop_menu_is_a_row_without_hamburger(page, library):
 
 @pytest.mark.parametrize("theme", ["light", "dark"])
 def test_text_has_enough_contrast(page, library, theme):
-    """Menu entries, muted text and primary buttons meet WCAG AA (4.5:1) in both themes"""
+    """Menu entries, muted text and primary buttons meet WCAG AA (4.5:1) in both themes."""
     page.add_init_script(f"localStorage.setItem('theme', '{theme}')")
     page.goto("/categories/cs")
     page.locator("details.song summary").first.click()
@@ -113,7 +118,7 @@ def test_text_has_enough_contrast(page, library, theme):
 
 
 def test_reduced_motion_stops_the_animations(page, library):
-    """Songs open and the chevron turns without transition for readers who ask for less motion"""
+    """Songs open and the chevron turns without transition for readers who ask for less motion."""
     page.emulate_media(reduced_motion="reduce")
     page.goto("/categories/cs")
     expect(page.locator("details.song").first).to_be_visible()
@@ -133,7 +138,7 @@ def test_reduced_motion_stops_the_animations(page, library):
 
 
 def test_drawing_the_list_does_not_shift_the_page(page, library):
-    """The list takes the place of the loader without moving what is around it"""
+    """The list takes the place of the loader without moving what is around it."""
     page.add_init_script(
         """window.shifts = [];
         new PerformanceObserver(list => window.shifts.push(...list.getEntries().map(entry => entry.value)))
@@ -146,7 +151,7 @@ def test_drawing_the_list_does_not_shift_the_page(page, library):
 
 
 def test_lines_with_and_without_chords_are_spaced_alike(page, library, make_song):
-    """A chord over a line does not push it away from its neighbours"""
+    """A chord over a line does not push it away from its neighbours."""
     make_song(
         library.category_set.get(slug="cs"), name="Rhythm", text="{C}First line\nSecond line\n{G}Third line\nFourth"
     )

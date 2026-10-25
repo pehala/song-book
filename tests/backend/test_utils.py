@@ -58,7 +58,7 @@ def test_new_song_visible_after_cache_invalidation(anon_client, song, category):
 
 @pytest.fixture
 def clear_version_cache():
-    """Both version helpers memoize their result for the whole process"""
+    """Both version helpers memoize their result for the whole process."""
     get_version.cache_clear()
     get_git_revision.cache_clear()
     yield
@@ -68,7 +68,7 @@ def clear_version_cache():
 
 @pytest.mark.usefixtures("clear_version_cache")
 def test_build_settings_take_precedence_over_git(settings, monkeypatch):
-    """With BUILD_DATE/BUILD_REVISION set, as in the container image, git is never run"""
+    """With BUILD_DATE/BUILD_REVISION set, as in the container image, git is never run."""
     settings.BUILD_DATE = "2026/10/23"
     settings.BUILD_REVISION = "abc1234"
     monkeypatch.setattr("backend.utils.subprocess.check_output", pytest.fail)

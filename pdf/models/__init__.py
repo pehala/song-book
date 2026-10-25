@@ -1,4 +1,4 @@
-"""Common classes for PDF"""
+"""Common classes for PDF."""
 
 import re
 from abc import abstractmethod
@@ -23,7 +23,7 @@ LINK_SCHEME_RE = re.compile(r"[a-z][a-z0-9+.-]*://|mailto:", re.IGNORECASE)
 
 
 class Status(TextChoices):
-    """Status of PDF Request"""
+    """Status of PDF Request."""
 
     QUEUED = "QU", _("Queued")
     SCHEDULED = "SC", _("Scheduled")
@@ -33,7 +33,7 @@ class Status(TextChoices):
 
 
 class PDFTemplate(PolymorphicModel):
-    """All options for PDF Generation in a form of an abstract model"""
+    """All options for PDF Generation in a form of an abstract model."""
 
     display_name = CharField(
         max_length=30,
@@ -92,7 +92,7 @@ class PDFTemplate(PolymorphicModel):
 
     @property
     def link_url(self) -> str:
-        """The link as a URL: https:// is put in front of a link that names no scheme"""
+        """The link as a URL: https:// is put in front of a link that names no scheme."""
         link = self.link.strip()
         if link and not LINK_SCHEME_RE.match(link):
             return f"https://{link}"
@@ -100,22 +100,20 @@ class PDFTemplate(PolymorphicModel):
 
     @property
     def latest_file(self) -> PDFFile:
-        """Returns latest generated file for this template"""
+        """Returns latest generated file for this template."""
         return self.pdffile_set.first()
 
     def has_scheduled_file(self) -> bool:
-        """True, if the latest file created from this template is scheduled to be generated"""
+        """True, if the latest file created from this template is scheduled to be generated."""
         file = self.latest_file
         return bool(file and not file.finished)
 
     @abstractmethod
     def get_songs(self) -> Iterable[tuple[int, Song]]:
-        """
-        Returns iterable of Song objects and their song number, that should be included in the PDF
-        """
+        """Returns iterable of Song objects and their song number, that should be included in the PDF."""
 
     def copy_options(self, options: PDFTemplate):
-        """Copy all options from another PDFOptions object"""
+        """Copy all options from another PDFOptions object."""
         self.filename = options.filename
         self.locale = options.locale
         self.title = options.title

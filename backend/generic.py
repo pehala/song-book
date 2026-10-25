@@ -1,4 +1,4 @@
-"""Generic CRUD views"""
+"""Generic CRUD views."""
 
 from django.contrib import messages
 from django.contrib.messages.views import SuccessMessageMixin
@@ -9,29 +9,30 @@ from backend.mixins import RedirectToNextMixin
 
 
 class UniversalView(RedirectToNextMixin):
-    """Mixing for rest of the classes, simplifies object identifier and verbose name retrieval"""
+    """Mixing for rest of the classes, simplifies object identifier and verbose name retrieval."""
 
     def get_verbose_name(self):
-        """Returns model verbose name"""
+        """Returns model verbose name."""
         return self.model._meta.verbose_name
 
     def get_object_identifier(self, obj):
-        """Returns Object identifier"""
+        """Returns Object identifier."""
         if hasattr(obj, "name"):
             return obj.name
         return obj.id
 
 
 class UniversalDeleteView(UniversalView, DeleteView):
-    """
-    Universal Delete view for all Models
-    You need to add 'success_url' and 'model' class parameters
+    """Universal Delete view for all Models.
+
+    You need to add 'success_url' and 'model' class parameters.
     """
 
     template_name = "base/verbs/delete.html"
     success_message = _("%(class)s %(identifier)s was successfully deleted")
 
     def get_context_data(self, **kwargs):
+        """Adds the success URL, the model name and the identifier of the object to delete."""
         ctx = super().get_context_data(**kwargs)
         obj = ctx["object"]
         ctx["success_url"] = self.success_url
@@ -40,6 +41,7 @@ class UniversalDeleteView(UniversalView, DeleteView):
         return ctx
 
     def post(self, request, *args, **kwargs):
+        """Deletes the object and reports it with a success message."""
         obj = self.get_object()
         response = super().post(request, *args, **kwargs)
         messages.success(
@@ -53,12 +55,13 @@ class UniversalEditView(
     UniversalView,
     SuccessMessageMixin,
 ):
-    """UniversalEditView base class"""
+    """UniversalEditView base class."""
 
     template_name = "base/verbs/add.html"
     success_message = _("%(class)s %(identifier)s was successfully updated")
 
     def get_success_message(self, cleaned_data):
+        """Returns the success message naming the saved object."""
         return self.success_message % {
             "class": self.get_verbose_name(),
             "identifier": self.get_object_identifier(self.object),
@@ -66,15 +69,16 @@ class UniversalEditView(
 
 
 class UniversalUpdateView(UniversalEditView, UpdateView):
-    """
-    Universal Update view for all Models
-    You need to add 'success_url', 'form_class' and 'model' class parameters
+    """Universal Update view for all Models.
+
+    You need to add 'success_url', 'form_class' and 'model' class parameters.
     """
 
     success_message = _("%(class)s %(identifier)s was successfully updated")
     title_message = _("Update %(class)s %(identifier)s")
 
     def get_context_data(self, **kwargs):
+        """Adds the page title naming the object to update."""
         ctx = super().get_context_data(**kwargs)
         ctx["title"] = self.title_message % {
             "class": self.get_verbose_name(),
@@ -84,15 +88,16 @@ class UniversalUpdateView(UniversalEditView, UpdateView):
 
 
 class UniversalCreateView(UniversalEditView, CreateView):
-    """
-    Universal Update view for all Models
-    You need to add 'success_url', 'form_class' and 'model' class parameters
+    """Universal Update view for all Models.
+
+    You need to add 'success_url', 'form_class' and 'model' class parameters.
     """
 
     success_message = _("%(class)s %(identifier)s was successfully created")
     title_message = _("Create %(class)s")
 
     def get_context_data(self, **kwargs):
+        """Adds the page title naming the model to create."""
         ctx = super().get_context_data(**kwargs)
         ctx["title"] = self.title_message % {"class": self.get_verbose_name()}
         return ctx

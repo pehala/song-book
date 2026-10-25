@@ -1,4 +1,4 @@
-"""Initialize PDF module, specifically create media directory if it doesn't exist"""
+"""Initialize PDF module, specifically create media directory if it doesn't exist."""
 
 from pathlib import Path
 

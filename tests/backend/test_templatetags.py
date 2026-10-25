@@ -7,7 +7,7 @@ from backend.templatetags.utils import datatables_language
 
 
 class FakeContext(dict):
-    """Template context stub exposing both item access and .request"""
+    """Template context stub exposing both item access and .request."""
 
     def __init__(self, request, **kwargs):
         super().__init__(**kwargs)
@@ -16,6 +16,8 @@ class FakeContext(dict):
 
 @pytest.fixture
 def request_with_language():
+    """Returns a factory of requests whose language is the given one."""
+
     def build(language):
         request = RequestFactory().get("/")
         request.LANGUAGE_CODE = language
@@ -25,12 +27,12 @@ def request_with_language():
 
 
 def test_datatables_language_for_czech(request_with_language):
-    """Czech pages load the translated datatables strings"""
+    """Czech pages load the translated datatables strings."""
     result = datatables_language(FakeContext(request_with_language("cs")))
 
     assert "datatables/cs.json" in result
 
 
 def test_datatables_language_for_english(request_with_language):
-    """Other languages use the datatables defaults"""
+    """Other languages use the datatables defaults."""
     assert datatables_language(FakeContext(request_with_language("en"))) == ""

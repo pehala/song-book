@@ -23,7 +23,7 @@ USER_FIXTURES = {PLAIN: "plain_user", TENANT_ADMIN: "staff_user", SUPERUSER: "su
 
 @pytest.fixture
 def visitor_request(request):
-    """Builds a request for the named visitor, with the flags the tenant middleware sets"""
+    """Builds a request for the named visitor, with the flags the tenant middleware sets."""
 
     def build(visitor):
         user = AnonymousUser() if visitor == ANONYMOUS else request.getfixturevalue(USER_FIXTURES[visitor])
@@ -46,7 +46,7 @@ def visitor_request(request):
     ],
 )
 def test_who_passes_each_check(visitor_request, visitor, superadmin, localadmin):
-    """A tenant admin administers only their own tenant; only a superuser administers the site"""
+    """A tenant admin administers only their own tenant; only a superuser administers the site."""
     http_request = visitor_request(visitor)
 
     assert is_superadmin(http_request) is superadmin

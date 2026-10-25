@@ -1,4 +1,4 @@
-"""Template tags for transforming PDFRequest column types"""
+"""Template tags for transforming PDFRequest column types."""
 
 from django import template
 
@@ -9,7 +9,7 @@ register = template.Library()
 
 @register.filter(is_safe=True)
 def get_status_color(status):
-    """Converts status to color"""
+    """Converts status to color."""
     if status == str(Status.QUEUED) or status == str(Status.SCHEDULED):
         return "yellow"
     if status == str(Status.IN_PROGRESS):

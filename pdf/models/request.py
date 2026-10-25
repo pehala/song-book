@@ -1,4 +1,4 @@
-"""Models for PDF module"""
+"""Models for PDF module."""
 
 from collections.abc import Iterable
 
@@ -31,26 +31,26 @@ from tenants.models import Tenant
 
 
 class RequestType(TextChoices):
-    """Type of PDF Request"""
+    """Type of PDF Request."""
 
     EVENT = "EV", _("Automated")
     MANUAL = "MA", _("Manual")
 
 
 def upload_path(instance, filename):
-    """Returns upload path for this request"""
+    """Returns upload path for this request."""
     return now().strftime(f"pdfs/{instance.tenant_id}/%y%m%d/{filename}")
 
 
 class ManualPDFTemplate(PDFTemplate):
-    """Template for creating PDF files. Used by users"""
+    """Template for creating PDF files. Used by users."""
 
     tenant = ForeignKey(Tenant, on_delete=CASCADE)
     songs = ManyToManyField(Song, through="PDFSong")
     name = CharField(_("Template Name"), help_text=_("Name of this template, only shown internally"), max_length=255)
 
     def get_songs(self) -> Iterable[tuple[int, Song]]:
-        """Returns all songs for PDFTemplate"""
+        """Returns all songs for PDFTemplate."""
         return [
             (pdf_song.song_number, pdf_song.song)
             for pdf_song in PDFSong.objects.filter(request=self).select_related("song")
@@ -62,7 +62,7 @@ class ManualPDFTemplate(PDFTemplate):
 
 
 class AllSongsTemplate(PDFTemplate):
-    """Template of the PDF with every song of a Tenant, the printable counterpart of the all songs list"""
+    """Template of the PDF with every song of a Tenant, the printable counterpart of the all songs list."""
 
     tenant = OneToOneField(Tenant, on_delete=CASCADE)
     generate_pdf = BooleanField(
@@ -73,19 +73,20 @@ class AllSongsTemplate(PDFTemplate):
 
     @property
     def name(self):
-        """Name shown wherever the template is listed"""
+        """Name shown wherever the template is listed."""
         return pgettext_lazy("all songs PDF template", "All Songs")
 
     def songs(self):
-        """Non-archived songs of every category of the Tenant, in the order of the all songs list"""
+        """Non-archived songs of every category of the Tenant, in the order of the all songs list."""
         return Song.objects.filter(categories__tenant=self.tenant, archived=False).distinct()
 
     def get_songs(self) -> Iterable[tuple[int, Song]]:
+        """Returns the numbered songs of the template."""
         return list(enumerate(self.songs(), start=1))
 
     @classmethod
     def for_tenant(cls, tenant: Tenant, **defaults) -> AllSongsTemplate:
-        """Returns the template of the Tenant, creating it with `defaults` on first use"""
+        """Returns the template of the Tenant, creating it with `defaults` on first use."""
         return cls.objects.get_or_create(tenant=tenant, defaults=defaults)[0]
 
     class Meta:
@@ -94,7 +95,7 @@ class AllSongsTemplate(PDFTemplate):
 
 
 class PDFFile(Model):
-    """PDF File, that is either already generated or await generation"""
+    """PDF File, that is either already generated or await generation."""
 
     template = ForeignKey(PDFTemplate, on_delete=SET_NULL, null=True)
     tenant = ForeignKey(Tenant, on_delete=CASCADE)
@@ -127,14 +128,14 @@ class PDFFile(Model):
 
     @property
     def name(self):
-        """Returns publicly visible name"""
+        """Returns publicly visible name."""
         if self.display_name:
             return self.display_name
         return f"{self.filename}.pdf"
 
     @property
     def finished(self):
-        """True, if file generation finished"""
+        """True, if file generation finished."""
         return self.status in [Status.DONE, Status.FAILED]
 
     class Meta:
@@ -147,7 +148,7 @@ post_delete.connect(file_cleanup, sender=PDFFile, dispatch_uid="pdffile.file_cle
 
 
 class PDFSong(Model):
-    """Through table for PDFRequest and Song"""
+    """Through table for PDFRequest and Song."""
 
     song = ForeignKey(Song, on_delete=CASCADE)
     request = ForeignKey(ManualPDFTemplate, on_delete=CASCADE)

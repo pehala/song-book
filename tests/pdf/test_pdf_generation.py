@@ -23,7 +23,7 @@ pytestmark = pytest.mark.django_db
 
 
 def test_chords_are_raised_whatever_the_song_renderer(settings, mock_weasyprint, category, make_song, pdf_file):
-    """WeasyPrint cannot lay out ruby text, so the document raises the chords with plain inline boxes"""
+    """WeasyPrint cannot lay out ruby text, so the document raises the chords with plain inline boxes."""
     settings.SONG_RENDERER = "chords.markdown.RUBY_RENDERER"
     make_song(category, text="{Ami}Hello {C}World")
 
@@ -37,7 +37,7 @@ def test_chords_are_raised_whatever_the_song_renderer(settings, mock_weasyprint,
 
 
 def test_link_is_a_clickable_anchor_with_a_scheme(mock_weasyprint, category, make_song, pdf_file):
-    """The link of the template is printed and points to its URL, with https:// when none was typed"""
+    """The link of the template is printed and points to its URL, with https:// when none was typed."""
     make_song(category, text="Hello")
     category.link = "jerry.crazycactus.eu"
 
@@ -48,8 +48,10 @@ def test_link_is_a_clickable_anchor_with_a_scheme(mock_weasyprint, category, mak
 
 
 def test_contents_entries_do_not_set_the_footer_name(mock_weasyprint, category, make_song, pdf_file):
-    """Only the contents heading and the song headings set the running name, so a contents page that continues
-    on the next one keeps the heading in its footer"""
+    """Only the contents heading and the song headings set the running name.
+
+    A contents page that continues on the next one therefore keeps the heading in its footer.
+    """
     make_song(category, text="Hello")
 
     generate_pdf(pdf_file, category)
@@ -60,8 +62,10 @@ def test_contents_entries_do_not_set_the_footer_name(mock_weasyprint, category, 
 
 
 def test_contents_entry_keeps_its_last_word_with_the_page_number(mock_weasyprint, category, make_song, pdf_file):
-    """The last word of a title is a span of its own that carries the link to the song, so the dots and the page
-    number are drawn after it and wrap with it"""
+    """The last word of a title is a span of its own that carries the link to the song.
+
+    The dots and the page number are drawn after it and wrap with it.
+    """
     song = make_song(category, name="Hlupák Váhá", text="Hello")
 
     generate_pdf(pdf_file, category)
@@ -74,7 +78,7 @@ def test_contents_entry_keeps_its_last_word_with_the_page_number(mock_weasyprint
 
 
 def test_contents_entry_of_a_one_word_title_is_all_last_word(mock_weasyprint, category, make_song, pdf_file):
-    """A title of one word has nothing before the span"""
+    """A title of one word has nothing before the span."""
     song = make_song(category, name="Amazonka", text="Hello")
 
     generate_pdf(pdf_file, category)
@@ -86,8 +90,10 @@ def test_contents_entry_of_a_one_word_title_is_all_last_word(mock_weasyprint, ca
 def test_contents_have_a_header_over_every_column_in_the_language_of_the_template(
     mock_weasyprint, category, make_song, pdf_file
 ):
-    """The header names the columns of each of the contents columns, once in the page and once as the running
-    element that repeats it on the later contents pages"""
+    """The header names the columns of each of the contents columns.
+
+    It is in the page once and once more as the running element that repeats it on the later contents pages.
+    """
     category.locale = "cs"
     make_song(category, text="Hello")
 
@@ -105,7 +111,7 @@ def test_contents_have_a_header_over_every_column_in_the_language_of_the_templat
 
 
 def test_no_anchor_without_a_link(mock_weasyprint, category, make_song, pdf_file):
-    """A template without a link prints no anchor"""
+    """A template without a link prints no anchor."""
     make_song(category, text="Hello")
     category.link = ""
 

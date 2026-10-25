@@ -11,13 +11,13 @@ from analytics.models import DayStatistic
 
 @pytest.fixture(autouse=True)
 def offline_cdn(page):
-    """Bootstrap comes from a CDN; the pages do not need it, so tests do not wait for it"""
+    """Bootstrap comes from a CDN; the pages do not need it, so tests do not wait for it."""
     page.route("https://cdn.jsdelivr.net/**", lambda route: route.fulfill(body="", content_type="text/plain"))
 
 
 @pytest.fixture
 def render_info(page):
-    """Answers the progress page's polling with the given states, the last one for good"""
+    """Answers the progress page's polling with the given states, the last one for good."""
     states = []
 
     def answer(route):
@@ -29,11 +29,12 @@ def render_info(page):
 
 
 def info(progress=0, ready=False, failed=False, link=None):
+    """Returns the answer of the render progress endpoint for the given state."""
     return {"ready": ready, "failed": failed, "progress": progress, "link": link, "scheduled_at": None}
 
 
 def test_progress_follows_the_render(page, library, pdf_file, render_info):
-    """The steps of the render are shown until the finished file can be downloaded"""
+    """The steps of the render are shown until the finished file can be downloaded."""
     render_info.extend([info(), info(progress=2), info(progress=7, ready=True, link="/media/songbook.pdf")])
 
     page.goto(reverse("pdf:files:wait", kwargs={"pk": pdf_file.pk}))
@@ -45,7 +46,7 @@ def test_progress_follows_the_render(page, library, pdf_file, render_info):
 
 
 def test_progress_reports_a_failed_render(page, library, pdf_file, render_info):
-    """A render that failed is not polled for ever"""
+    """A render that failed is not polled for ever."""
     render_info.append(info(progress=3, failed=True))
 
     page.goto(reverse("pdf:files:wait", kwargs={"pk": pdf_file.pk}))
@@ -55,7 +56,7 @@ def test_progress_reports_a_failed_render(page, library, pdf_file, render_info):
 
 
 def test_progress_is_polled_from_the_server(page, library, pdf_file):
-    """Without stubs the page shows what the server reports about a queued file"""
+    """Without stubs the page shows what the server reports about a queued file."""
     page.goto(reverse("pdf:files:wait", kwargs={"pk": pdf_file.pk}))
 
     expect(page.get_by_role("status").filter(has_text="Waiting for start")).to_be_visible()
@@ -77,6 +78,7 @@ window.Chart = class {
 
 @pytest.fixture
 def chart(page):
+    """Replaces the Chart.js library from the CDN with a stub that records what is drawn."""
     page.route(
         "https://cdn.jsdelivr.net/npm/chart.js@*/**",
         lambda route: route.fulfill(body=FAKE_CHART, content_type="application/javascript"),
@@ -85,12 +87,13 @@ def chart(page):
 
 @pytest.fixture
 def statistics(library):
+    """Today's hits of the library: five on its category, three on all songs."""
     DayStatistic.objects.create(tenant=library, key="cs", hits=5)
     DayStatistic.objects.create(tenant=library, key="all", hits=3)
 
 
 def wait_until(page, expression):
-    """Polls through evaluate: wait_for_function would need the eval the page's CSP forbids"""
+    """Polls through evaluate: wait_for_function would need the eval the page's CSP forbids."""
     for _ in range(50):
         if page.evaluate(expression):
             return
@@ -99,11 +102,12 @@ def wait_until(page, expression):
 
 
 def drawn(page):
+    """Returns the labels and the hits the stub chart was given."""
     return page.evaluate("({labels: window.chart?.data.labels, hits: window.chart?.data.datasets[0].data})")
 
 
 def test_analytics_draws_the_hits(page, statistics, staff_user, sign_in, chart):
-    """The chart shows a week of hits of every page, today last"""
+    """The chart shows a week of hits of every page, today last."""
     sign_in(staff_user)
     page.goto(reverse("analytics:index"))
 
@@ -114,7 +118,7 @@ def test_analytics_draws_the_hits(page, statistics, staff_user, sign_in, chart):
 
 
 def test_analytics_follows_the_choices(page, statistics, staff_user, sign_in, chart):
-    """Picking a key and a range redraws the chart with their hits"""
+    """Picking a key and a range redraws the chart with their hits."""
     sign_in(staff_user)
     page.goto(reverse("analytics:index"))
     expect(page.get_by_label("Keys").locator("option")).to_have_count(3)
@@ -128,7 +132,7 @@ def test_analytics_follows_the_choices(page, statistics, staff_user, sign_in, ch
 
 
 def test_analytics_without_chart_library(page, statistics, staff_user, sign_in):
-    """Without the CDN the page says why there is no chart"""
+    """Without the CDN the page says why there is no chart."""
     sign_in(staff_user)
     page.goto(reverse("analytics:index"))
 

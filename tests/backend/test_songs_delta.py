@@ -13,10 +13,12 @@ URL = reverse("chords:songs_api")
 
 
 def delta(client, since=0, **headers):
+    """Requests the songs changed since the given time, with extra request headers."""
     return client.get(URL, {"since": since}, **headers)
 
 
 def test_delta_lists_all_ids_and_the_changed_songs(anon_client, category, make_song):
+    """The delta numbers every song through `ids` but carries the full rows of the recently changed ones only."""
     old = make_song(category, name="Old")
     Song.objects.filter(pk=old.pk).update(updated_at="2020-01-01T00:00:00Z")
     edited = make_song(category, name="Edited")
@@ -30,16 +32,19 @@ def test_delta_lists_all_ids_and_the_changed_songs(anon_client, category, make_s
 
 
 def test_delta_is_not_stored(anon_client, song):
+    """The delta is never stored by the browser or a proxy."""
     assert delta(anon_client)["Cache-Control"] == "no-store"
 
 
 def test_matching_etag_still_answers_304(anon_client, song):
+    """A client whose stored list is current gets no body."""
     etag = anon_client.get(URL)["ETag"]
 
     assert delta(anon_client, HTTP_IF_NONE_MATCH=etag).status_code == 304
 
 
 def test_deleted_song_leaves_the_ids(anon_client, category, make_song):
+    """A deleted song is no longer numbered."""
     kept = make_song(category, name="Kept")
     gone = make_song(category, name="Gone")
     gone.delete()
@@ -53,6 +58,7 @@ def test_deleted_song_leaves_the_ids(anon_client, category, make_song):
 def test_archived_songs_are_numbered_last_and_only_shown_to_superusers(
     anon_client, superuser_client, category, make_song, archived_song
 ):
+    """Archived songs follow the others in `ids` for superusers and are hidden from everybody else."""
     first = make_song(category, name="First")
 
     assert delta(anon_client).json()["ids"] == [first.id]
@@ -61,6 +67,7 @@ def test_archived_songs_are_numbered_last_and_only_shown_to_superusers(
 
 
 def test_same_second_edit_is_included(anon_client, song):
+    """A song changed in the second the client asks from is sent again."""
     since = int(song.updated_at.timestamp())
 
     assert [row["id"] for row in delta(anon_client, since=since).json()["changed"]] == [song.id]
@@ -68,18 +75,22 @@ def test_same_second_edit_is_included(anon_client, song):
 
 @pytest.mark.parametrize("since", ["", "abc", "-1", "99999999999999"])
 def test_bad_since_gives_the_whole_list(anon_client, song, since):
+    """A `since` that is not a usable time falls back to the whole list."""
     assert isinstance(anon_client.get(URL, {"since": since}).json(), list)
 
 
 def stale(song):
+    """Sets the song's updated_at far in the past, bypassing `auto_now`."""
     Song.objects.filter(pk=song.pk).update(updated_at="2020-01-01T00:00:00Z")
 
 
 def changed_ids(client):
+    """Returns the ids of the songs the delta of the last few seconds carries in full."""
     return [row["id"] for row in delta(client, since=int(time.time()) - 5).json()["changed"]]
 
 
 def test_category_rename_marks_its_songs(anon_client, song, category):
+    """Saving a category marks its songs as changed."""
     stale(song)
     category.name = "Renamed"
     category.save()
@@ -88,6 +99,7 @@ def test_category_rename_marks_its_songs(anon_client, song, category):
 
 
 def test_category_delete_marks_its_songs(anon_client, song, category, make_category, tenant):
+    """Deleting a category marks the songs it held as changed."""
     other = make_category(tenant, name="Other", slug="other")
     song.categories.add(other)
     stale(song)
@@ -97,6 +109,7 @@ def test_category_delete_marks_its_songs(anon_client, song, category, make_categ
 
 
 def test_membership_change_marks_the_song(anon_client, song, make_category, tenant):
+    """Adding a song to a category marks the song as changed."""
     other = make_category(tenant, name="Other", slug="other")
     stale(song)
     song.categories.add(other)
@@ -105,6 +118,7 @@ def test_membership_change_marks_the_song(anon_client, song, make_category, tena
 
 
 def test_reverse_membership_change_marks_the_songs(anon_client, song, make_category, tenant):
+    """Clearing the songs of a category marks them as changed."""
     other = make_category(tenant, name="Other", slug="other")
     song.categories.add(other)
     stale(song)
@@ -114,6 +128,7 @@ def test_reverse_membership_change_marks_the_songs(anon_client, song, make_categ
 
 
 def test_responses_carry_their_uncompressed_size(anon_client, song):
+    """Both the whole list and the delta report their size."""
     whole = anon_client.get(URL)
     part = delta(anon_client)
 
