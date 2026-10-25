@@ -1,12 +1,16 @@
 """Tests for creating, updating and deleting categories."""
 
+from datetime import timedelta
+
 import pytest
 from django.conf import settings
 from django.core.cache import cache
 from django.urls import reverse
+from django.utils.timezone import now
 
 from backend.cache import songs_payload_key
 from category.models import Category
+from pdf.models import Status
 from pdf.models.request import PDFFile
 from tenants.utils import tenant_cache_key
 
@@ -48,6 +52,17 @@ def test_list_shows_categories_of_this_tenant_only(staff_client, category, other
 
     assert category in listed
     assert other_category not in listed
+
+
+def test_list_links_the_last_generated_file_while_a_newer_one_waits(staff_client, tenant, category):
+    """The newest file being scheduled does not replace the link to the last finished one."""
+    common = {"tenant": tenant, "template": category, "filename": "songbook"}
+    PDFFile.objects.create(status=Status.DONE, file="songbook.pdf", update_date=now() - timedelta(days=1), **common)
+    PDFFile.objects.create(status=Status.SCHEDULED, update_date=now(), **common)
+
+    content = staff_client.get(reverse("category:list")).content.decode()
+
+    assert 'target="_blank">songbook.pdf</a>' in content
 
 
 def test_list_counts_active_songs(staff_client, category, song, archived_song):
