@@ -1,5 +1,7 @@
 """Browser tests of the reader's layout rules: touch targets, form fonts, contrast and reduced motion."""
 
+import itertools
+
 import pytest
 from playwright.sync_api import expect
 
@@ -138,3 +140,32 @@ def test_drawing_the_list_does_not_shift_the_page(page, library):
     expect(page.locator("details.song").first).to_be_visible()
 
     assert page.evaluate("window.shifts") == []
+
+
+def test_lines_with_and_without_chords_are_spaced_alike(page, library, make_song):
+    """A chord over a line does not push it away from its neighbours"""
+    make_song(
+        library.category_set.get(slug="cs"), name="Rhythm", text="{C}First line\nSecond line\n{G}Third line\nFourth"
+    )
+    page.goto("/categories/cs")
+    page.locator("details.song", has_text="Rhythm").locator("summary").click()
+
+    bottoms = page.evaluate(
+        """() => {
+            const text = [...document.querySelectorAll(".song-text")].at(-1);
+            const walker = document.createTreeWalker(text, NodeFilter.SHOW_TEXT);
+            const bottoms = [];
+            for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+                if (!node.parentElement.closest("rt") && node.textContent.trim()) {
+                    const range = document.createRange();
+                    range.selectNodeContents(node);
+                    bottoms.push(Math.round(range.getBoundingClientRect().bottom));
+                }
+            }
+            return [...new Set(bottoms)];
+        }"""
+    )
+    gaps = {after - before for before, after in itertools.pairwise(bottoms)}
+
+    assert len(bottoms) == 4
+    assert max(gaps) - min(gaps) <= 1, bottoms

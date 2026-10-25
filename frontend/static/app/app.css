@@ -224,6 +224,11 @@ main {
     width: fit-content;
     max-width: 100%;
     font-size: 1.0625rem;
+    /* tall enough for a chord over every line, so lines with and without chords are spaced alike */
+    line-height: 2;
+}
+
+.hide-chords .song-text {
     line-height: 1.7;
 }
 
@@ -249,7 +254,8 @@ span.chord {
 }
 
 rt.chord {
-    line-height: 1.2;
+    font-size: .85em;
+    line-height: 1;
 }
 
 .hide-chords .chord {
