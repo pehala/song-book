@@ -9,7 +9,7 @@ from django.utils.timezone import now
 
 from backend.models import Song
 from category.models import Category
-from pdf.models.request import PDFFile
+from pdf.models.request import AllSongsTemplate, PDFFile
 from tenants.utils import tenant_cache_key
 
 pytestmark = pytest.mark.django_db
@@ -85,6 +85,20 @@ def test_move_reassigns_the_category(superuser_client, category, other_tenant):
     assert response.status_code == 302
     category.refresh_from_db()
     assert category.tenant == other_tenant
+
+
+def test_move_schedules_the_all_songs_pdf_of_both_tenants(
+    superuser_client, category, all_songs_template, other_tenant, tenant
+):
+    """Both tenants have another set of categories, so the all songs PDF of each is queued again."""
+    other_template = AllSongsTemplate.objects.create(
+        tenant=other_tenant, filename="other-all", locale="en", generate_pdf=True
+    )
+
+    superuser_client.post(MOVE_URL, move_payload(other_tenant, category))
+
+    assert PDFFile.objects.filter(template=all_songs_template).count() == 1
+    assert PDFFile.objects.filter(template=other_template).count() == 1
 
 
 def test_move_takes_the_generated_files_along(superuser_client, category, pdf_file, other_tenant):

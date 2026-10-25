@@ -75,7 +75,9 @@ The entries are sorted by title in the collation of the template's language and 
 ## Sections
 
 `PDFTemplate.get_sections()` returns the songs as `Section`s, a title and the numbered songs of one run; the numbers
-are those of the whole PDF. A section without a title (the default) adds nothing to the layout.
+are those of the whole PDF. A section without a title (the default) adds nothing to the layout, so only the first
+section of a PDF may be untitled: `group_sections` titles a later one "Other", or its songs would be printed under the
+heading and the running name of the section before it.
 
 * The first song of a titled section starts with `<h1 class="section-title">`: a small uppercase label over a rule,
   on the page of the song and not on a page of its own. `.section-start` breaks before the article, so the song

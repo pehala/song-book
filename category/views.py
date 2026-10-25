@@ -65,6 +65,12 @@ class CategoryCreateView(LocalAdminRequired, PassRequestToFormMixin, UniversalCr
     model = Category
     success_url = reverse_lazy("category:list")
 
+    def form_valid(self, form):
+        """Creates the category and queues the all songs PDF again, whose sections it changes."""
+        response = super().form_valid(form)
+        request_all_songs_pdf_regeneration(self.object.tenant)
+        return response
+
     def get_initial(self):
         """Returns the defaults of a new category in the current language."""
         with translation.override(get_language()):
@@ -93,6 +99,8 @@ class CategoryUpdateView(
         response = super().post(request, *args, **kwargs)
         if self.regenerate and self.object.generate_pdf:
             request_pdf_regeneration(self.object)
+        if self.regenerate:
+            request_all_songs_pdf_regeneration(self.object.tenant)
         return response
 
 
@@ -122,6 +130,13 @@ class CategoryDeleteView(LocalAdminRequired, TenantObjectsMixin, UniversalDelete
 
     model = Category
     success_url = reverse_lazy("category:list")
+
+    def post(self, request, *args, **kwargs):
+        """Deletes the category and queues the all songs PDF again, whose sections it changes."""
+        tenant = self.get_object().tenant
+        response = super().post(request, *args, **kwargs)
+        request_all_songs_pdf_regeneration(tenant)
+        return response
 
 
 class CategoryMoveView(AdminMoveView):
@@ -165,3 +180,4 @@ class CategoryMoveView(AdminMoveView):
             invalidate_tenant_songs_cache(tenant)
             cache.delete(tenant_cache_key(tenant, settings.CATEGORY_CACHE_KEY))
             cache.delete(tenant_cache_key(tenant, settings.PDF_CACHE_KEY))
+            request_all_songs_pdf_regeneration(tenant)

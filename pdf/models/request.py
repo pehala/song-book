@@ -25,7 +25,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.translation import pgettext_lazy
 
 from backend.models import Song
-from pdf.models import PDFTemplate, Status
+from pdf.models import PDFTemplate, Section, Status, group_sections
 from pdf.storage import file_cleanup
 from tenants.models import Tenant
 
@@ -70,6 +70,11 @@ class AllSongsTemplate(PDFTemplate):
         help_text=_("Check to generate the PDF file automatically when a song changes"),
         default=False,
     )
+    category_sections = BooleanField(
+        verbose_name=_("Sections by category"),
+        help_text=_("True, if the songs should be divided into a section for each category"),
+        default=False,
+    )
 
     @property
     def name(self):
@@ -83,6 +88,23 @@ class AllSongsTemplate(PDFTemplate):
     def get_songs(self) -> Iterable[tuple[int, Song]]:
         """Returns the numbered songs of the template."""
         return list(enumerate(self.songs(), start=1))
+
+    def get_sections(self) -> list[Section]:
+        """Returns one section per Category of the Tenant, or a single one without `category_sections`.
+
+        Each song is in the first Category it is in. The songs are numbered one after another and, within a
+        Category, in the order of its list.
+        """
+        if not self.category_sections:
+            return super().get_sections()
+        rows = []
+        printed = set()
+        for category in self.tenant.category_set.order_by("pk"):
+            for song in category.song_set.filter(archived=False):
+                if song.pk not in printed:
+                    printed.add(song.pk)
+                    rows.append((len(rows) + 1, song, category.name))
+        return group_sections(rows)
 
     @classmethod
     def for_tenant(cls, tenant: Tenant, **defaults) -> AllSongsTemplate:

@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: chords\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 13:20-0500\n"
+"POT-Creation-Date: 2026-10-25 14:33-0500\n"
 "PO-Revision-Date: 2026-10-25 12:00+0000\n"
 "Last-Translator: pehala <halapetr@selfnet.cz>\n"
 "Language-Team: Czech\n"
@@ -231,6 +231,10 @@ msgstr "Nevybrány žádné písničky"
 msgid "Each song must have a distinct number"
 msgstr "Každá písnička musí mít jedinečné číslo"
 
+msgctxt "title of the songs outside the sections"
+msgid "Other"
+msgstr "Ostatní"
+
 msgid "Queued"
 msgstr "Ve frontě"
 
@@ -327,6 +331,12 @@ msgstr "Šablony"
 msgid "Check to generate the PDF file automatically when a song changes"
 msgstr ""
 "Zaškrtněte, pokud má být PDF soubor generován automaticky při změně písničky"
+
+msgid "Sections by category"
+msgstr "Sekce podle kategorií"
+
+msgid "True, if the songs should be divided into a section for each category"
+msgstr "Pokud je zaškrtnuto, písničky se rozdělí do sekcí podle kategorií"
 
 msgctxt "all songs PDF template"
 msgid "All Songs"

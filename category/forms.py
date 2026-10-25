@@ -55,6 +55,7 @@ class AllSongsForm(ModelForm):
         model = AllSongsTemplate
         fields = [
             "generate_pdf",
+            "category_sections",
             "title",
             "display_name",
             "filename",

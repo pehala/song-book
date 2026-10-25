@@ -19,6 +19,7 @@ def all_songs_payload(**overrides):
         "display_name": "",
         "link": "",
         "generate_pdf": False,
+        "category_sections": False,
         "public": True,
         "show_date": True,
     }
@@ -124,6 +125,17 @@ def test_update_stores_the_values(staff_client, all_songs_template):
     assert response.status_code == 302
     all_songs_template.refresh_from_db()
     assert all_songs_template.filename == "renamed"
+
+
+def test_update_stores_the_sections_choice(staff_client, all_songs_template):
+    """The sections by category are switched on and off with the form."""
+    staff_client.post(EDIT_URL, all_songs_payload(category_sections=True))
+    all_songs_template.refresh_from_db()
+    assert all_songs_template.category_sections
+
+    staff_client.post(EDIT_URL, all_songs_payload())
+    all_songs_template.refresh_from_db()
+    assert not all_songs_template.category_sections
 
 
 def test_update_schedules_pdf_when_enabled(staff_client, all_songs_template):

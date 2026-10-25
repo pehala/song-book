@@ -6,7 +6,7 @@ import pytest
 from django.urls import reverse
 from django.utils.timezone import now
 
-from pdf.models import Section, Status
+from pdf.models import Section, Status, group_sections
 from pdf.models.request import AllSongsTemplate, PDFFile, PDFSong, upload_path
 
 pytestmark = pytest.mark.django_db
@@ -174,6 +174,99 @@ def test_all_songs_template_numbers_like_the_reader(anon_client, all_songs_templ
     listed = {row["id"]: row["number"] for row in json.loads(anon_client.get(reverse("chords:songs_api")).content)}
 
     assert {song.pk: number for number, song in all_songs_template.get_songs()} == listed
+
+
+def test_all_songs_template_is_one_section_without_category_sections(all_songs_template, song):
+    """The default is the plain list, numbered like the all songs list."""
+    assert all_songs_template.get_sections() == [Section(None, [(1, song)])]
+
+
+@pytest.fixture
+def sectioned(all_songs_template, category, make_category, make_song):
+    """The all songs template with sections, over `category` and a second one that shares a song with it."""
+    all_songs_template.category_sections = True
+    all_songs_template.save()
+    second = make_category(all_songs_template.tenant, name="Second", slug="second")
+    shared = make_song(category, second, name="Shared")
+    return all_songs_template, category, second, shared
+
+
+def test_all_songs_template_has_a_section_per_category(sectioned, make_song):
+    """The sections are titled after the categories, in the order they were made, and numbered one after another."""
+    template, category, second, shared = sectioned
+    only_first = make_song(category, name="Only first")
+    only_second = make_song(second, name="Only second")
+
+    assert template.get_sections() == [
+        Section(category.name, [(1, shared), (2, only_first)]),
+        Section("Second", [(3, only_second)]),
+    ]
+
+
+def test_all_songs_template_prints_a_song_in_the_first_category_it_is_in(sectioned):
+    """A song of several categories is not repeated in the later ones, which would also repeat its number."""
+    template, category, _second, shared = sectioned
+
+    sections = template.get_sections()
+
+    assert sections == [Section(category.name, [(1, shared)])]
+
+
+def test_all_songs_template_skips_empty_sections(sectioned, make_category, make_song):
+    """A category without printable songs has no section; neither do archived songs make one."""
+    template, category, *_ = sectioned
+    make_song(make_category(template.tenant, name="Empty", slug="empty"), archived=True)
+
+    assert [section.title for section in template.get_sections()] == [category.name]
+
+
+def test_all_songs_template_sections_ignore_other_tenants(sectioned, other_category, make_song):
+    """Categories and songs of other tenants are not printed."""
+    template, category, *_ = sectioned
+    make_song(other_category)
+
+    assert [section.title for section in template.get_sections()] == [category.name]
+
+
+def test_all_songs_template_sections_keep_the_list_order_in_a_category(sectioned, make_song):
+    """Within a category the songs come in the order of its list, which is the order of the reader."""
+    template, category, _second, shared = sectioned
+    later = make_song(category, name="Later")
+
+    assert template.get_sections()[0].songs == [(1, shared), (2, later)]
+
+
+def test_group_sections_starts_a_section_where_the_label_changes():
+    """A run of one label is a section, and the same label again is a new section."""
+    rows = [(1, "a", "One"), (2, "b", "One"), (3, "c", "Two"), (4, "d", "One")]
+
+    assert group_sections(rows) == [
+        Section("One", [(1, "a"), (2, "b")]),
+        Section("Two", [(3, "c")]),
+        Section("One", [(4, "d")]),
+    ]
+
+
+def test_group_sections_leaves_the_first_section_untitled():
+    """Songs before the first label need no title."""
+    assert group_sections([(1, "a", ""), (2, "b", "One")]) == [Section(None, [(1, "a")]), Section("One", [(2, "b")])]
+
+
+def test_group_sections_titles_a_later_untitled_section():
+    """Songs without a label after a titled section would look like its own, so they get a title."""
+    rows = [(1, "a", "One"), (2, "b", ""), (3, "c", "Two"), (4, "d", "")]
+
+    assert group_sections(rows) == [
+        Section("One", [(1, "a")]),
+        Section("Ostatní", [(2, "b")]),
+        Section("Two", [(3, "c")]),
+        Section("Ostatní", [(4, "d")]),
+    ]
+
+
+def test_group_sections_of_nothing_is_empty():
+    """No songs, no sections."""
+    assert group_sections([]) == []
 
 
 def test_all_songs_template_ignores_other_tenants(all_songs_template, other_category, make_song):

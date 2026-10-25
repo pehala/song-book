@@ -19,6 +19,9 @@
 #### AllSongsTemplate
 * One per tenant, created with the defaults of the form the first time the category list is opened
 * Prints every non-archived song of the tenant, numbered like the all songs list
+* With `category_sections` it prints one section per category instead, in the order the categories were created. A
+  song is printed once, in the first category it is in; the songs are numbered one after another through the
+  sections, in the order of each category's list, so the numbers no longer match the all songs list
 * Scheduled automatically while the tenant has the all songs list (`Tenant.all_songs_category`), but can be manually triggered
 * Edited on its own row of the category list, which has no URL slug and cannot be deleted
 
