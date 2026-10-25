@@ -35,6 +35,7 @@ class CategoryForm(ModelForm):
 
     def __init__(self, request, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        self.fields["tenant"].queryset = Tenant.objects.filter(pk=request.tenant.pk)
         self.fields["slug"].widget = PrependWidget(
             request.build_absolute_uri(reverse("category:index", args=("i",)))[:-1]
         )

@@ -12,7 +12,7 @@ from django.views.generic import ListView
 
 from backend.cache import invalidate_tenant_songs_cache, touch_songs
 from backend.generic import UniversalCreateView, UniversalDeleteView, UniversalUpdateView
-from backend.mixins import LocalAdminRequired, PassRequestToFormMixin, RegenerateViewMixin
+from backend.mixins import LocalAdminRequired, PassRequestToFormMixin, RegenerateViewMixin, TenantObjectsMixin
 from backend.models import Song
 from category.forms import AllSongsForm, CategoryForm, NameForm
 from category.models import Category
@@ -31,7 +31,7 @@ def all_songs_defaults(request):
     }
 
 
-class CategoryListView(LocalAdminRequired, ListView):
+class CategoryListView(LocalAdminRequired, TenantObjectsMixin, ListView):
     """Lists all categories."""
 
     model = Category
@@ -43,7 +43,6 @@ class CategoryListView(LocalAdminRequired, ListView):
         return (
             super()
             .get_queryset()
-            .filter(tenant=self.request.tenant)
             .annotate(song_count=Count("song", filter=Q(song__archived=False)))
             .annotate(file_count=Count("pdffile"))
         )
@@ -76,7 +75,13 @@ class CategoryCreateView(LocalAdminRequired, PassRequestToFormMixin, UniversalCr
             }
 
 
-class CategoryUpdateView(LocalAdminRequired, PassRequestToFormMixin, RegenerateViewMixin, UniversalUpdateView):
+class CategoryUpdateView(
+    LocalAdminRequired,
+    TenantObjectsMixin,
+    PassRequestToFormMixin,
+    RegenerateViewMixin,
+    UniversalUpdateView,
+):
     """Updates category."""
 
     form_class = CategoryForm
@@ -112,7 +117,7 @@ class AllSongsUpdateView(LocalAdminRequired, RegenerateViewMixin, UniversalUpdat
         return response
 
 
-class CategoryDeleteView(LocalAdminRequired, UniversalDeleteView):
+class CategoryDeleteView(LocalAdminRequired, TenantObjectsMixin, UniversalDeleteView):
     """Removes category."""
 
     model = Category
