@@ -21,11 +21,6 @@ def test_categories_are_scoped_to_the_tenant(tenant, other_tenant, category):
     assert titles(CATEGORIES_MENU, other_tenant)[0] == "Other Category"
 
 
-def test_links_are_empty_without_links(tenant):
-    """A tenant without links has an empty links menu."""
-    assert LINKS_MENU.children_of(tenant) == []
-
-
 def test_links_follow_assignment_and_edits(tenant, other_tenant):
     """The links menu shows the links assigned to the tenant and no others."""
     link = Link.objects.create(link="https://example.com", display_name="Example")

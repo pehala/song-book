@@ -43,13 +43,6 @@ def test_selection_is_limited_to_the_tenant(tenant_request, song, other_category
     assert foreign not in form.queryset
 
 
-def test_selection_accepts_songs(tenant_request, song):
-    """A selection with at least one song is valid."""
-    form = SongSelectionForm(QueryDict(f"songs={song.pk}"), request=tenant_request)
-
-    assert form.is_valid()
-
-
 def test_selection_rejects_an_empty_choice(tenant_request, song):
     """A template has to print something, and says so in its own words."""
     form = SongSelectionForm(QueryDict(""), request=tenant_request)

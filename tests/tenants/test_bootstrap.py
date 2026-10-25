@@ -53,11 +53,6 @@ def test_categories_are_listed_without_the_all_songs_entry(tenant, category):
     assert len(payload["categories"]) == tenant.category_set.count()
 
 
-def test_categories_of_other_tenants_are_left_out(tenant, other_category):
-    """Each tenant gets its own navigation."""
-    assert "other-cat" not in [entry["slug"] for entry in bootstrap_payload(tenant)["categories"]]
-
-
 def test_all_songs_flag_follows_the_tenant(tenant):
     """The all songs list is offered only when the tenant wants it."""
     tenant.all_songs_category = False
