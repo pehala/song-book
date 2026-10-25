@@ -115,11 +115,13 @@ main {
     border-left-color: var(--accent);
 }
 
+/* Number, then the title with the author on a line of its own, then the chevron */
 .song > summary {
     min-height: var(--tap);
-    display: flex;
+    display: grid;
+    grid-template-columns: 2.4em 1fr auto;
     align-items: baseline;
-    gap: .5rem;
+    column-gap: .75rem;
     padding: .5rem 0;
     cursor: pointer;
     list-style: none;
@@ -131,7 +133,9 @@ main {
 
 .song > summary::after {
     content: "";
-    margin: 0 .5rem 0 auto;
+    grid-column: 3;
+    grid-row: 1 / span 2;
+    margin: 0 .5rem;
     align-self: center;
     width: .6em;
     height: .6em;
@@ -157,18 +161,20 @@ main {
 
 .song h2,
 .num {
-    font-size: min(2rem, calc(1.325rem + .9vw));
-    font-weight: 500;
-    line-height: 1.2;
+    font-size: 1.125rem;
+    line-height: 1.3;
     margin: 0;
 }
 
 .song h2 {
-    display: inline;
+    grid-column: 2;
+    font-weight: 600;
 }
 
 .song small {
+    grid-column: 2;
     color: var(--muted);
+    font-size: .875rem;
 }
 
 .song.archived h2,
@@ -177,7 +183,10 @@ main {
 }
 
 .num {
-    min-width: 1.8em;
+    grid-row: 1;
+    text-align: right;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
 }
 
 .tools {
@@ -336,6 +345,13 @@ rt.chord {
     .progress.indeterminate > div {
         width: 100%;
         animation: none;
+    }
+}
+
+@media (min-width: 768px) {
+    .song h2,
+    .num {
+        font-size: 1.25rem;
     }
 }
 
