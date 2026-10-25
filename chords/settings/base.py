@@ -38,9 +38,9 @@ INSTALLED_APPS = [
     "huey.contrib.djhuey",
 ]
 
-# Dotted path of the markdown renderer of songs: chords.markdown.INLINE_RENDERER keeps chords inline,
-# chords.markdown.RUBY_RENDERER writes them above the text (prerendered songs have to be rendered again)
-SONG_RENDERER = "chords.markdown.INLINE_RENDERER"
+# Dotted path of the markdown renderer of songs: chords.markdown.RUBY_RENDERER writes chords above the text,
+# chords.markdown.INLINE_RENDERER keeps them inline (prerendered songs have to be rendered again)
+SONG_RENDERER = "chords.markdown.RUBY_RENDERER"
 MARKDOWNX_MARKDOWNIFY_FUNCTION = SONG_RENDERER
 
 MIDDLEWARE = [

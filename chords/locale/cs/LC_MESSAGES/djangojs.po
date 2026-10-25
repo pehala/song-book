@@ -338,23 +338,23 @@ msgstr "Odkaz"
 msgid "Back to all files"
 msgstr "Zpátky na seznam souborů"
 
-#: frontend/static/app/songs.js:64 frontend/static/app/songs.js:65
-#: frontend/static/app/songs.js:66 frontend/static/app/songs.js:67
+#: frontend/static/app/songs.js:68 frontend/static/app/songs.js:69
+#: frontend/static/app/songs.js:70 frontend/static/app/songs.js:71
 msgid "Transpose"
 msgstr "Transponovat"
 
-#: frontend/static/app/songs.js:69
+#: frontend/static/app/songs.js:73
 msgid "Capo"
 msgstr "Capo"
 
-#: frontend/static/app/songs.js:72
+#: frontend/static/app/songs.js:76
 msgid "Edit"
 msgstr "Upravit"
 
-#: frontend/static/app/songs.js:73
+#: frontend/static/app/songs.js:77
 msgid "Delete"
 msgstr "Smazat"
 
-#: frontend/static/app/songs.js:106
+#: frontend/static/app/songs.js:110
 msgid "No songs found"
 msgstr "Nic nenalezeno"

@@ -132,11 +132,11 @@ def test_other_tenant_untouched(anon_client, song, tenant):
 def test_save_prerenders_when_enabled(category):
     """With prerendering on, every save fills the prerendered column from the text."""
     song = Song.objects.create(name="Pre", text="{Ami}Hello")
-    assert '<span class="chord">Ami</span>' in song.prerendered
+    assert '<rt class="chord">Ami</rt>' in song.prerendered
     song.text = "{C}Changed"
     song.save()
     song.refresh_from_db()
-    assert '<span class="chord">C</span>' in song.prerendered
+    assert '<rt class="chord">C</rt>' in song.prerendered
     assert "Ami" not in song.prerendered
 
 

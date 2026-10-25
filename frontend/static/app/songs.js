@@ -20,9 +20,13 @@ export function transposeHtml(text, amount) {
 
 const decoder = document.createElement("textarea");
 
+const ANNOTATION = /<rt[^>]*>([^<]*)<\/rt>/g;
+
+// Chords written above the words are moved to the end, so they do not split the words they stand on
 function plainText(text) {
-    const stripped = text.replace(/<\/p>|<br\s*\/?>/g, " ").replace(/<[^>]*>/g, "");
-    decoder.innerHTML = stripped;
+    const chords = Array.from(text.matchAll(ANNOTATION), match => match[1]);
+    const stripped = text.replace(ANNOTATION, "").replace(/<\/p>|<br\s*\/?>/g, " ").replace(/<[^>]*>/g, "");
+    decoder.innerHTML = `${stripped} ${chords.join(" ")}`;
     return decoder.value;
 }
 

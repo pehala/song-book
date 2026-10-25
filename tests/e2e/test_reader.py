@@ -296,6 +296,8 @@ def test_search_looks_into_the_text_and_the_author(page, library):
 
     search.fill("stojí hrad")
     expect(songs(page)).to_have_count(1)
+    search.fill("emi")
+    expect(titles(page)).to_have_text(["Jožin z bažin"])
     search.fill("mládek")
     expect(titles(page)).to_have_text(["Jožin z bažin"])
 
@@ -327,7 +329,7 @@ def test_opening_a_song_shows_its_text(page, library):
 
     songs(page).nth(1).locator("summary").click()
 
-    expect(songs(page).nth(1).locator(".song-text")).to_contain_text("stojí hrad")
+    expect(songs(page).nth(1).locator(".song-text")).to_contain_text("vrchu stojí")
 
 
 def test_one_song_is_open_at_a_time(page, library):
@@ -418,9 +420,8 @@ def test_transposing_changes_the_chords(page, library):
     expect(chords).to_have_text(["G#mi", "H", "A#", "D#mi"])
 
 
-def test_chords_can_stand_above_the_text(page, library, settings):
-    """With the above renderer the chords are annotations over their words and still transpose"""
-    settings.SONG_RENDERER = "chords.markdown.RUBY_RENDERER"
+def test_chords_stand_above_the_text(page, library):
+    """By default the chords are annotations over their words and still transpose"""
     page.goto("/categories/cs")
     songs(page).nth(0).locator("summary").click()
     chords = songs(page).nth(0).locator("rt.chord")
@@ -433,6 +434,16 @@ def test_chords_can_stand_above_the_text(page, library, settings):
     page.get_by_role("button", name="Transpose +1").click()
 
     expect(chords).to_have_text(["A#mi", "C#", "C", "Fmi"])
+
+
+def test_chords_can_stay_in_the_line(page, library, settings):
+    """The inline renderer keeps the chords in the line of text"""
+    settings.SONG_RENDERER = "chords.markdown.INLINE_RENDERER"
+    page.goto("/categories/cs")
+    songs(page).nth(0).locator("summary").click()
+
+    expect(songs(page).nth(0).locator("span.chord")).to_have_text(["Ami", "C", "H", "Emi"])
+    expect(songs(page).nth(0).locator("ruby")).to_have_count(0)
 
 
 def test_transposing_starts_again_for_the_next_song(page, library):

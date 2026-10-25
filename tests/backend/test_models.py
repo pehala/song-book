@@ -83,6 +83,7 @@ def test_inline_markdown_keeps_the_chords_inline(settings, song):
 
 def test_inline_markdown_reuses_the_prerendered_field(settings, song):
     """With the inline renderer configured the stored html is served"""
+    settings.SONG_RENDERER = "chords.markdown.INLINE_RENDERER"
     settings.USE_PRERENDERED_MARKDOWN = True
     song.prerendered = "<p>stored</p>"
 
