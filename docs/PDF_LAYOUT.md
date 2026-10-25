@@ -45,3 +45,13 @@ to.
   `content` would only be text, while an element keeps its hyperlink.
 * `.link` sets the 9 pt size of the margin box and no underline, because a running element keeps the font size of the
   body.
+
+## Running strings
+
+`string-set` copies text into the margin boxes: `title` (top centre), `date` (bottom centre) and `name` (bottom
+right). `string(name)` is the first value set on the page, and a page that sets none keeps the last one of the pages
+before it.
+
+* The contents heading and the song headings carry `.name`. The entries of the table of contents do not, so every page
+  of a contents that spans several pages shows "Table of Contents" in its footer. Give an element `.name` only when it
+  should replace the footer text.
