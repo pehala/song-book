@@ -310,7 +310,7 @@ and uploads never reach the source tree. A session-scoped autouse fixture, `comp
 temporary directory and points `LOCALE_PATHS` there, so the tests run in the default language (Czech) with real translations whatever
 `.mo` files lie in the source tree; assert the Czech strings. The e2e browser is pinned to `en-US`
 (`browser_context_args`), so the reader is English there until a test switches the language. `tests/pdf/conftest.py` adds the PDF-only fixtures and
-overrides `manual_template` and `media_root` for that directory; fixtures used by a single
+overrides `manual_template` for that directory; fixtures used by a single
 module live in that module. The initial migration already seeds a category for the default
 tenant, so tests look categories up by slug rather than assume the fixture is the only one.
 `tests/backend/test_signals.py` covers the signal-driven invalidation and prerender-on-save;

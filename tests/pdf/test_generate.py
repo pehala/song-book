@@ -7,6 +7,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.utils.timezone import now
 
+from backend.utils import regenerate_pdf
 from pdf.generate import (
     ProgressFilter,
     Timer,
@@ -32,11 +33,14 @@ def printable(category, song, archived_song):
 
 
 def test_scheduling_creates_a_file_for_the_template(category, mock_weasyprint):
-    """The file records which tenant and template it came from."""
+    """The file records which tenant and template it came from, and is scheduled for now."""
+    before = now()
     file = generate_pdf_file(category)
 
+    assert PDFFile.objects.get(template=category) == file
     assert file.tenant == category.tenant
     assert file.filename == category.filename
+    assert before <= file.scheduled_at <= now()
 
 
 def test_a_delayed_request_waits_to_be_rendered(category):
@@ -54,6 +58,26 @@ def test_scheduling_honours_the_delay(category):
     assert (file.scheduled_at - now()).total_seconds() > 300
 
 
+def test_scheduling_takes_the_display_name_of_the_template(category, mock_weasyprint):
+    """The file is named publicly as the template is."""
+    category.display_name = "Campfire"
+    category.save()
+
+    file = generate_pdf_file(category)
+
+    assert (file.display_name, file.name) == ("Campfire", "Campfire")
+
+
+def test_song_edit_regenerates_the_all_songs_file_with_the_display_name(mock_weasyprint, song, all_songs_template):
+    """The automatically regenerated all songs file keeps the public name set on the template."""
+    all_songs_template.display_name = "Everything"
+    all_songs_template.save()
+
+    regenerate_pdf(song)
+
+    assert PDFFile.objects.get(template=all_songs_template).display_name == "Everything"
+
+
 def test_scheduling_copies_visibility(make_category, tenant):
     """A private template produces a private file."""
     category = make_category(tenant, name="Private", slug="private", public=False)
@@ -61,22 +85,7 @@ def test_scheduling_copies_visibility(make_category, tenant):
     assert generate_pdf_file(category).public is False
 
 
-@pytest.mark.slow
-def test_generating_writes_a_pdf(printable):
-    """Rendering a category produces a real PDF file."""
-    file = generate_pdf_file(printable)
-
-    success, duration = generate_pdf(file, printable)
-
-    file.refresh_from_db()
-    assert success
-    assert duration > 0
-    assert file.status == Status.DONE
-    assert file.file.read().startswith(b"%PDF")
-
-
-@pytest.mark.slow
-def test_the_background_task_renders_the_pdf(printable):
+def test_the_background_task_renders_the_pdf(printable, mock_weasyprint):
     """Running the queued job produces the file the worker was asked for."""
     file = generate_pdf_file(printable, delay=600)
 
@@ -87,27 +96,37 @@ def test_the_background_task_renders_the_pdf(printable):
     assert file.file.read().startswith(b"%PDF")
 
 
-@pytest.mark.slow
-def test_generating_records_how_long_it_took(printable):
-    """The elapsed time is stored with the file."""
-    file = generate_pdf_file(printable)
+def test_generating_stores_the_file_and_how_long_it_took(printable, pdf_file, mock_weasyprint):
+    """The rendered file, the elapsed time and the time it was done, which orders the files, are stored."""
+    before = now()
 
-    generate_pdf(file, printable)
+    generate_pdf(pdf_file, printable)
 
-    file.refresh_from_db()
-    assert file.time_elapsed >= 0
+    pdf_file.refresh_from_db()
+    assert pdf_file.file.name.endswith(".pdf")
+    assert pdf_file.time_elapsed >= 0
+    assert pdf_file.update_date >= before
 
 
-@pytest.mark.slow
-def test_generating_drops_the_files_menu_cache(printable, tenant):
+def test_generating_drops_the_files_menu_cache(printable, pdf_file, tenant, mock_weasyprint):
     """A finished PDF has to appear in the navigation."""
     key = tenant_cache_key(tenant, settings.PDF_CACHE_KEY)
     cache.set(key, ["stale"], 60)
-    file = generate_pdf_file(printable)
 
-    generate_pdf(file, printable)
+    generate_pdf(pdf_file, printable)
 
     assert cache.get(key) is None
+
+
+def test_generating_a_manual_template(manual_template, pdf_song_entry, mock_weasyprint):
+    """Templates whose songs were picked by hand are rendered as well."""
+    file = generate_pdf_file(manual_template)
+
+    success, _ = generate_pdf(file, manual_template)
+
+    file.refresh_from_db()
+    assert success
+    assert file.status == Status.DONE
 
 
 def test_failed_generation_is_recorded(printable, monkeypatch):

@@ -138,6 +138,11 @@ def test_manual_template_returns_numbered_songs(manual_template, pdf_song_entry,
     assert manual_template.get_songs() == [(1, pdf_song)]
 
 
+def test_manual_template_without_songs_prints_nothing(manual_template):
+    """A template nobody picked songs for has nothing to print."""
+    assert manual_template.get_songs() == []
+
+
 def test_a_template_prints_one_untitled_section_by_default(category, song):
     """Templates without sections hand the renderer all their songs as a single section without a title."""
     assert category.get_sections() == [Section(None, [(1, song)])]
