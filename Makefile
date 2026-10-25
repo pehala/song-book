@@ -84,13 +84,13 @@ init: ## Initializes project for development
 	$(MANAGE) migrate
 
 test: ## Runs the test suite
-	$(RUN_DEV) pytest tests/
+	$(RUN_DEV) pytest tests/ -n 4
 
 e2e: ## Runs the browser tests of the reader (needs: uv run playwright install --with-deps chromium)
-	$(RUN_DEV) pytest tests/e2e -m e2e --tracing retain-on-failure
+	$(RUN_DEV) pytest tests/e2e -m e2e -n 4 --tracing retain-on-failure
 
 coverage: ## Runs the test suite and reports coverage
-	$(RUN_DEV) pytest tests/ --cov
+	$(RUN_DEV) pytest tests/ -n 4 --cov
 
 run: ## Runs the development server
 	$(MANAGE) runserver --settings $(SETTINGS)
