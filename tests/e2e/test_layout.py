@@ -103,6 +103,9 @@ def test_text_has_enough_contrast(page, library, theme):
     page.goto("/categories/cs")
     page.locator("details.song summary").first.click()
     expect(page.locator(".song-text")).to_be_visible()
+    page.evaluate("document.querySelector('main').style.minHeight = '4000px'")
+    page.evaluate("scrollTo(0, 1000)")
+    expect(page.get_by_role("button", name="Back to top")).to_be_visible()
 
     for selector in ("header .sb-dd > summary", "header .sb-brand", ".song small", ".sb-btn.sb-primary", ".song h2"):
         foreground, background = colors(page, selector)

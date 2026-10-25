@@ -400,14 +400,19 @@ rt.chord {
     }
 }
 
-/* Back to top over Scroll down, in the corner the thumb reaches */
-.fabs {
+/* Back to top hangs under the sticky bars at the top, Scroll down is in the corner the thumb reaches */
+.to-top,
+.to-bottom {
     position: fixed;
     right: 20px;
-    bottom: 20px;
     z-index: var(--z-fab);
-    display: flex;
-    flex-direction: column;
-    gap: .75rem;
     font-size: 1.25rem;
+}
+
+.to-top {
+    top: calc(var(--search-height) + var(--title-height, 0px) + .75rem);
+}
+
+.to-bottom {
+    bottom: 20px;
 }

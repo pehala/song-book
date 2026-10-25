@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 09:47-0500\n"
+"POT-Creation-Date: 2026-10-25 12:39-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n == 1 && n % 1 == 0) ? 0 : (n >= 2 && n "
 "<= 4 && n % 1 == 0) ? 1: (n % 1 != 0 ) ? 2 : 3;\n"
 
-#: frontend/static/app/analytics.js:13 frontend/static/app/app.js:103
+#: frontend/static/app/analytics.js:13 frontend/static/app/app.js:151
 #: frontend/static/app/header.js:146
 msgid "All songs"
 msgstr "Všechno"
@@ -64,84 +64,84 @@ msgstr "Vše"
 msgid "Date range"
 msgstr "Rozsah"
 
-#: frontend/static/app/app.js:81
+#: frontend/static/app/app.js:98
 msgid "The songs were reloaded"
 msgstr "Písničky byly načteny znovu"
 
-#: frontend/static/app/app.js:82 frontend/static/app/app.js:166
+#: frontend/static/app/app.js:99 frontend/static/app/app.js:214
 msgid "The songs could not be loaded"
 msgstr "Písničky se nepodařilo načíst"
 
-#: frontend/static/app/app.js:103
+#: frontend/static/app/app.js:151
 msgid "Not found"
 msgstr "Nenalezeno"
 
-#: frontend/static/app/app.js:113
+#: frontend/static/app/app.js:161
 msgid "A new version is available"
 msgstr "Je dostupná nová verze"
 
-#: frontend/static/app/app.js:114
+#: frontend/static/app/app.js:162
 msgid "Reload"
 msgstr "Načíst znovu"
 
-#: frontend/static/app/app.js:163
+#: frontend/static/app/app.js:211
 msgid "This category does not exist."
 msgstr "Tato kategorie neexistuje."
 
-#: frontend/static/app/app.js:163
+#: frontend/static/app/app.js:211
 msgid "Back to homepage"
 msgstr "Zpátky domů"
 
-#: frontend/static/app/app.js:166
+#: frontend/static/app/app.js:214
 msgid "Try again"
 msgstr "Zkusit znovu"
 
-#: frontend/static/app/app.js:167
+#: frontend/static/app/app.js:215
 msgid "Loading songs…"
 msgstr "Načítání písniček…"
 
-#: frontend/static/app/app.js:167 frontend/static/app/app.js:183
+#: frontend/static/app/app.js:215 frontend/static/app/app.js:231
 msgid "Fetching the whole list…"
 msgstr "Stahuje se celý seznam…"
 
-#: frontend/static/app/app.js:172
+#: frontend/static/app/app.js:220
 msgid "Search"
 msgstr "Vyhledávání"
 
-#: frontend/static/app/app.js:173
+#: frontend/static/app/app.js:221
 msgid "Number, text or author"
 msgstr "Číslo, text nebo autor"
 
-#: frontend/static/app/app.js:174
+#: frontend/static/app/app.js:222
 msgid "Songs matching the search"
 msgstr "Písničky odpovídající hledání"
 
-#: frontend/static/app/app.js:174
+#: frontend/static/app/app.js:222
 msgid "{found} of {total}"
 msgstr "{found} z {total}"
 
-#: frontend/static/app/app.js:175
+#: frontend/static/app/app.js:223
 msgid "Random song"
 msgstr "Náhodná písnička"
 
-#: frontend/static/app/app.js:183
+#: frontend/static/app/app.js:231
 msgid "Updating songs…"
 msgstr "Aktualizace písniček…"
 
-#: frontend/static/app/app.js:186
+#: frontend/static/app/app.js:233
 msgid "Back to top"
 msgstr "Nahoru"
 
-#: frontend/static/app/app.js:187
+#: frontend/static/app/app.js:234
 msgid "Scroll down"
 msgstr "Posunout dolů"
 
-#: frontend/static/app/app.js:200
+#: frontend/static/app/app.js:246
 #, javascript-format
 msgid "%s s left"
 msgstr "zbývá asi %s s"
 
-#: frontend/static/app/app.js:201
+#: frontend/static/app/app.js:247
 #, javascript-format
 msgid "%s min left"
 msgstr "zbývá asi %s min"
