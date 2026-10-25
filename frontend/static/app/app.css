@@ -33,6 +33,7 @@ a[aria-current] {
 
 :root {
     --chords-grid-columns: 1;
+    --search-height: calc(var(--tap) + 1.5rem);
     interpolate-size: allow-keywords;
 }
 
@@ -46,6 +47,7 @@ main {
     position: sticky;
     top: 0;
     z-index: var(--z-search);
+    height: var(--search-height);
     padding: .75rem 0;
     background: var(--bg);
 }
@@ -115,7 +117,7 @@ main {
 }
 
 .song {
-    scroll-margin-top: calc(var(--tap) + 1.5rem);
+    scroll-margin-top: var(--search-height);
     padding-left: .5rem;
     border-bottom: 1px solid var(--line);
     border-left: .25rem solid transparent;
@@ -123,6 +125,15 @@ main {
 
 .song[open] {
     border-left-color: var(--accent);
+}
+
+/* The open song keeps its title in view under the search bar while its text scrolls past */
+.song[open] > summary {
+    position: sticky;
+    top: var(--search-height);
+    z-index: var(--z-title);
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
 }
 
 /* Number, then the title with the author on a line of its own, then the chevron */
@@ -371,13 +382,14 @@ rt.chord {
     }
 }
 
-.fab {
+/* Back to top over Scroll down, in the corner the thumb reaches */
+.fabs {
     position: fixed;
     right: 20px;
+    bottom: 20px;
     z-index: var(--z-fab);
+    display: flex;
+    flex-direction: column;
+    gap: .75rem;
     font-size: 1.25rem;
-}
-
-.fab-top {
-    top: calc(var(--tap) + 2rem);
 }

@@ -332,6 +332,22 @@ def test_opening_a_song_shows_its_text(page, library):
     expect(songs(page).nth(1).locator(".song-text")).to_contain_text("vrchu stojí")
 
 
+def test_open_song_keeps_its_title_in_view(page, library, make_song):
+    """The title of a long song stays under the search bar while its text scrolls past"""
+    make_song(library.category_set.get(slug="cs"), name="Long", text="\n\n".join(f"{{C}}Verse {n}" for n in range(60)))
+    page.emulate_media(reduced_motion="reduce")
+    page.goto("/categories/cs")
+    long = page.locator("details.song", has_text="Long")
+    long.locator("summary").click()
+    expect(long.locator(".song-text p")).to_have_count(60)
+
+    page.evaluate("scrollTo(0, 1500)")
+
+    search = page.locator(".search").bounding_box()
+    expect(long.locator("summary")).to_be_in_viewport()
+    assert long.locator("summary").bounding_box()["y"] == search["y"] + search["height"]
+
+
 def test_one_song_is_open_at_a_time(page, library):
     """Opening a song closes the previous one"""
     page.goto("/categories/cs")
@@ -369,7 +385,7 @@ def test_random_song_button_follows_the_search(page, library):
 
 
 def test_floating_buttons_stay_clear_of_the_search_bar(page, library):
-    """Back to top sits below the search bar and, like Scroll down, does not cover the random song button"""
+    """Back to top and Scroll down share the bottom corner without covering each other or the random song button"""
     page.goto("/categories/cs")
     songs(page).nth(0).locator("summary").click()
     page.evaluate("document.querySelector('main').style.minHeight = '4000px'")

@@ -182,8 +182,10 @@ function App() {
         <${SiteHeader} site=${site} navigate=${navigate} onReload=${reload} />
         ${songs !== null && progress && html`<${Progress} progress=${progress} label=${_("Updating songs…")} retryLabel=${_("Fetching the whole list…")} />`}
         <main>${content}</main>
-        ${scrolled && html`<button class="sb-btn sb-primary fab fab-top" title=${_("Back to top")} aria-label=${_("Back to top")} onClick=${() => scrollTo({top: 0, behavior: scrollBehavior()})}><${Icon} name="up" /></button>`}
-        ${openId !== null && html`<button class="sb-btn sb-primary fab" style="bottom:20px" title=${_("Scroll down")} aria-label=${_("Scroll down")} onClick=${scrollDown}><${Icon} name="down" /></button>`}`;
+        <div class="fabs">
+            ${scrolled && html`<button class="sb-btn sb-primary" title=${_("Back to top")} aria-label=${_("Back to top")} onClick=${() => scrollTo({top: 0, behavior: scrollBehavior()})}><${Icon} name="up" /></button>`}
+            ${openId !== null && html`<button class="sb-btn sb-primary" title=${_("Scroll down")} aria-label=${_("Scroll down")} onClick=${scrollDown}><${Icon} name="down" /></button>`}
+        </div>`;
 }
 
 function formatSize(bytes) {

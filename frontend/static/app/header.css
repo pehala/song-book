@@ -23,6 +23,7 @@
     --radius-pill: 1rem;
     --scrim: rgb(0 0 0 / .5);
     --shadow: 0 .5rem 1rem rgb(0 0 0 / .15);
+    --z-title: 4;
     --z-search: 5;
     --z-fab: 10;
     --z-panel: 20;
