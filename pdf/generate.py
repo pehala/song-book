@@ -70,7 +70,7 @@ def generate_pdf(pdf_file: PDFFile, template: AllowedTemplates):
                         "sorted_songs": sorted_songs,
                         "name": template.title or template.tenant.display_name,
                         "request": template,
-                        "link": template.link,
+                        "link_url": template.link_url,
                     },
                 )
                 PROGRESS_LOGGER.setLevel(logging.INFO)
