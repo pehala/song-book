@@ -7,6 +7,7 @@
     --fg: #212529;
     --muted: #5c636a;
     --accent: #4a63d8;
+    --link: #1d6295;
     --on-accent: #fff;
     --hi: #d11a1a;
     --line: #dee2e6;
@@ -34,6 +35,7 @@
     --fg: #dee2e6;
     --muted: #9ca3af;
     --accent: #7793f3;
+    --link: #6cb6ff;
     --on-accent: #000;
     --hi: #ff6b6b;
     --line: #343a40;
@@ -71,7 +73,7 @@
 }
 
 .sb-bar a {
-    color: var(--accent);
+    color: var(--link);
 }
 
 .sb-bar a:hover,
@@ -81,6 +83,11 @@
 
 .sb-bar a[aria-current] {
     text-decoration: underline;
+}
+
+.sb-bar .sb-brand {
+    color: var(--fg);
+    font-weight: 600;
 }
 
 .sb-brand {
@@ -189,7 +196,7 @@
 .sb-dd > summary {
     list-style: none;
     cursor: pointer;
-    color: var(--accent);
+    color: var(--link);
 }
 
 .sb-dd > summary::-webkit-details-marker {
@@ -231,7 +238,7 @@
     border: 0;
     background: none;
     font: inherit;
-    color: var(--accent);
+    color: var(--link);
     cursor: pointer;
 }
 
