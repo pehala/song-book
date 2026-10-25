@@ -563,7 +563,7 @@ def test_qr_code_dialog(page, library):
     """The QR code of the current address opens in a dialog"""
     page.goto("/categories/cs")
 
-    page.get_by_role("button", name="QR").click()
+    page.get_by_role("button", name="QR code").click()
 
     dialog = page.get_by_role("dialog")
     expect(dialog.get_by_role("img")).to_be_visible()
