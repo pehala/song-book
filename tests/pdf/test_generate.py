@@ -174,9 +174,9 @@ def record(message):
     return logging.LogRecord("test", logging.INFO, __file__, 1, message, None, None)
 
 
-def test_progress_filter_stores_the_step(tenant):
+def test_progress_filter_stores_the_step(make_pdf_file):
     """Weasyprint progress messages are mirrored onto the file."""
-    file = PDFFile.objects.create(tenant=tenant, filename="songbook", update_date=now())
+    file = make_pdf_file()
 
     assert ProgressFilter(file).filter(record("Step 4 - Creating formatting structure"))
 
@@ -184,9 +184,9 @@ def test_progress_filter_stores_the_step(tenant):
     assert file.progress == 4
 
 
-def test_progress_filter_skips_repeated_steps(tenant):
+def test_progress_filter_skips_repeated_steps(make_pdf_file):
     """The same step is not written to the database twice."""
-    file = PDFFile.objects.create(tenant=tenant, filename="songbook", update_date=now())
+    file = make_pdf_file()
     log_filter = ProgressFilter(file)
     log_filter.filter(record("Step 2 - Fetching and parsing CSS"))
 

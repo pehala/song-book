@@ -41,14 +41,18 @@ def songs_formset_payload(*pairs):
     return data
 
 
-def test_list_shows_templates_of_this_tenant_only(staff_client, manual_template, other_tenant):
-    """The template list is scoped to the tenant being served."""
-    foreign = ManualPDFTemplate.objects.create(tenant=other_tenant, name="Foreign", filename="foreign", locale="en")
+@pytest.fixture
+def foreign_manual_template(other_tenant):
+    """A manual template of another tenant."""
+    return ManualPDFTemplate.objects.create(tenant=other_tenant, name="Foreign", filename="foreign", locale="en")
 
+
+def test_list_shows_templates_of_this_tenant_only(staff_client, manual_template, foreign_manual_template):
+    """The template list is scoped to the tenant being served."""
     listed = staff_client.get(reverse("pdf:templates:list")).context["templates"]
 
     assert manual_template in listed
-    assert foreign not in listed
+    assert foreign_manual_template not in listed
 
 
 def test_new_page_offers_the_songs_of_this_tenant(staff_client, song, other_category, make_song):
@@ -294,17 +298,15 @@ def test_duplicate_song_numbers_are_rejected(staff_client, manual_template, pdf_
     assert manual_template.get_songs() == [(1, pdf_song_entry.song)]
 
 
-def test_assigning_numbers_to_a_template_of_another_tenant_is_refused(staff_client, song, other_tenant):
+def test_assigning_numbers_to_a_template_of_another_tenant_is_refused(staff_client, song, foreign_manual_template):
     """The numbering step only reaches templates of the tenant being served."""
-    foreign = ManualPDFTemplate.objects.create(tenant=other_tenant, name="Foreign", filename="foreign", locale="en")
-
     response = staff_client.post(
-        reverse("pdf:templates:assign", kwargs={"pk": foreign.pk}),
+        reverse("pdf:templates:assign", kwargs={"pk": foreign_manual_template.pk}),
         songs_formset_payload((song, 1)),
     )
 
     assert response.status_code == 404
-    assert not PDFSong.objects.filter(request=foreign).exists()
+    assert not PDFSong.objects.filter(request=foreign_manual_template).exists()
 
 
 def test_assigning_a_song_of_another_tenant_is_refused(staff_client, manual_template, song, other_category, make_song):
@@ -321,18 +323,17 @@ def test_assigning_a_song_of_another_tenant_is_refused(staff_client, manual_temp
     assert manual_template.get_songs() == []
 
 
-def test_editing_a_template_of_another_tenant_is_refused(staff_client, song, other_tenant):
+def test_editing_a_template_of_another_tenant_is_refused(staff_client, song, other_tenant, foreign_manual_template):
     """Neither opening nor saving reaches a template of another tenant."""
-    foreign = ManualPDFTemplate.objects.create(tenant=other_tenant, name="Foreign", filename="foreign", locale="en")
-    url = reverse("pdf:templates:edit", kwargs={"pk": foreign.pk})
+    url = reverse("pdf:templates:edit", kwargs={"pk": foreign_manual_template.pk})
 
     assert staff_client.get(url).status_code == 404
     response = staff_client.post(url, template_payload(**{"template-name": "Stolen"}) | {"songs": [str(song.pk)]})
 
     assert response.status_code == 404
-    foreign.refresh_from_db()
-    assert foreign.name == "Foreign"
-    assert foreign.tenant == other_tenant
+    foreign_manual_template.refresh_from_db()
+    assert foreign_manual_template.name == "Foreign"
+    assert foreign_manual_template.tenant == other_tenant
 
 
 def test_opening_the_numbering_page_directly_redirects(staff_client, manual_template):
@@ -379,21 +380,19 @@ def test_generate_from_the_all_songs_template(staff_client, song, all_songs_temp
     assert PDFFile.objects.get(template=all_songs_template).status == "DO"
 
 
-def test_deleting_a_template_of_another_tenant_is_refused(staff_client, other_tenant):
+def test_deleting_a_template_of_another_tenant_is_refused(staff_client, foreign_manual_template):
     """A local admin cannot remove templates of another tenant."""
-    foreign = ManualPDFTemplate.objects.create(tenant=other_tenant, name="Foreign", filename="foreign", locale="en")
-
-    response = staff_client.post(reverse("pdf:templates:delete", kwargs={"pk": foreign.pk}))
+    response = staff_client.post(reverse("pdf:templates:delete", kwargs={"pk": foreign_manual_template.pk}))
 
     assert response.status_code == 404
-    assert ManualPDFTemplate.objects.filter(pk=foreign.pk).exists()
+    assert ManualPDFTemplate.objects.filter(pk=foreign_manual_template.pk).exists()
 
 
 @pytest.fixture(params=["manual", "category", "all_songs"])
 def foreign_template(request, other_tenant, other_category):
     """A template of every kind, belonging to another tenant."""
     if request.param == "manual":
-        return ManualPDFTemplate.objects.create(tenant=other_tenant, name="Foreign", filename="foreign", locale="en")
+        return request.getfixturevalue("foreign_manual_template")
     if request.param == "category":
         return other_category
     return AllSongsTemplate.objects.create(tenant=other_tenant, filename="all-songs", locale="en")

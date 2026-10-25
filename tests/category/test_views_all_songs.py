@@ -45,10 +45,11 @@ def test_list_reuses_the_template(staff_client, all_songs_template):
     assert AllSongsTemplate.objects.count() == 1
 
 
-def test_list_counts_active_songs_and_files(staff_client, song, archived_song, all_songs_template, make_category):
+@pytest.mark.usefixtures("archived_song")
+def test_list_counts_active_songs_and_files(staff_client, song, all_songs_template, make_category, make_pdf_file):
     """The row counts the songs of every category once, archived ones excluded, and the files made so far."""
     song.categories.add(make_category(all_songs_template.tenant, name="Second", slug="second"))
-    PDFFile.objects.create(tenant=all_songs_template.tenant, template=all_songs_template, filename="all")
+    make_pdf_file(all_songs_template)
 
     listed = staff_client.get(reverse("category:list")).context["all_songs"]
 

@@ -3,10 +3,8 @@
 import pytest
 from django.urls import reverse
 from django.utils import translation
-from django.utils.timezone import now
 
 from backend.models import Song
-from category.models import Category
 from pdf.models.request import AllSongsTemplate, PDFFile
 from tests.test_move_views import move_payload
 
@@ -66,17 +64,14 @@ def test_move_schedules_the_all_songs_pdf_of_both_tenants(
     assert PDFFile.objects.filter(template=other_template).count() == 1
 
 
-def test_move_leaves_other_tenants_files_alone(superuser_client, category, other_tenant, tenant):
+def test_move_leaves_other_tenants_files_alone(superuser_client, category, other_tenant, make_category, make_pdf_file):
     """Files of a category that stays behind keep their tenant."""
-    staying = Category.objects.create(
-        tenant=tenant, name="Staying", slug="staying", generate_pdf=False, filename="stay", locale="en"
-    )
-    file = PDFFile.objects.create(tenant=tenant, template=staying, filename="stay", update_date=now())
+    file = make_pdf_file(make_category(category.tenant, name="Staying", slug="staying"))
 
     superuser_client.post(MOVE_URL, move_payload(other_tenant, category))
 
     file.refresh_from_db()
-    assert file.tenant == tenant
+    assert file.tenant == category.tenant
 
 
 def test_move_takes_the_songs_along(superuser_client, category, song, other_tenant):

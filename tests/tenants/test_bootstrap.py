@@ -4,11 +4,9 @@ import json
 
 import pytest
 from django.core.cache import cache
-from django.utils.timezone import now
 
 from frontend.catalogues import reader_catalogues
 from pdf.models import Status
-from pdf.models.request import PDFFile
 from tenants.bootstrap import SCHEMA_VERSION, bootstrap_payload
 from tenants.models import Link
 
@@ -77,17 +75,9 @@ def test_links_are_listed(tenant):
     assert bootstrap_payload(tenant)["links"] == [{"name": "Example", "url": "https://example.com"}]
 
 
-def test_files_are_listed(tenant, category):
+def test_files_are_listed(tenant, category, make_pdf_file):
     """The latest public finished PDF of every template is listed."""
-    PDFFile.objects.create(
-        tenant=tenant,
-        template=category,
-        filename="songbook",
-        status=Status.DONE,
-        public=True,
-        file="pdfs/songbook.pdf",
-        update_date=now(),
-    )
+    make_pdf_file(category, status=Status.DONE, file="pdfs/songbook.pdf")
     cache.clear()
 
     pdfs = bootstrap_payload(tenant)["pdfs"]

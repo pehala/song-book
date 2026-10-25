@@ -8,27 +8,19 @@ from django.urls import reverse
 from django.utils.timezone import now
 
 from pdf.models import Section, Status, group_sections
-from pdf.models.request import AllSongsTemplate, PDFFile, PDFSong, category_rows, upload_path
+from pdf.models.request import AllSongsTemplate, PDFSong, category_rows, upload_path
 
 pytestmark = pytest.mark.django_db
 
 
-def make_file(tenant, template=None, **kwargs):
-    """Creates a PDF file of the tenant, queued unless told otherwise."""
-    kwargs.setdefault("filename", "songbook")
-    kwargs.setdefault("status", Status.QUEUED)
-    kwargs.setdefault("update_date", now())
-    return PDFFile.objects.create(tenant=tenant, template=template, **kwargs)
-
-
-def test_name_falls_back_to_the_filename(tenant):
+def test_name_falls_back_to_the_filename(make_pdf_file):
     """Without a display name the file is named after its filename."""
-    assert make_file(tenant).name == "songbook.pdf"
+    assert make_pdf_file().name == "songbook.pdf"
 
 
-def test_display_name_wins(tenant):
+def test_display_name_wins(make_pdf_file):
     """A display name replaces the filename entirely."""
-    assert make_file(tenant, display_name="Campfire").name == "Campfire"
+    assert make_pdf_file(display_name="Campfire").name == "Campfire"
 
 
 @pytest.mark.parametrize(
@@ -41,15 +33,15 @@ def test_display_name_wins(tenant):
         pytest.param(Status.FAILED, True, id="failed"),
     ],
 )
-def test_finished_reflects_the_status(tenant, status, finished):
+def test_finished_reflects_the_status(make_pdf_file, status, finished):
     """Only done and failed files are finished."""
-    assert make_file(tenant, status=status).finished is finished
+    assert make_pdf_file(status=status).finished is finished
 
 
-def test_latest_file_is_the_most_recent_one(tenant, category):
+def test_latest_file_is_the_most_recent_one(category, make_pdf_file):
     """Templates expose the newest file they produced."""
-    make_file(tenant, category, update_date=now())
-    newest = make_file(tenant, category, update_date=now())
+    make_pdf_file(category)
+    newest = make_pdf_file(category)
 
     assert category.latest_file == newest
 
@@ -59,19 +51,19 @@ def test_latest_file_is_none_without_files(category):
     assert category.latest_file is None
 
 
-def test_latest_generated_file_skips_files_still_waiting(tenant, category):
+def test_latest_generated_file_skips_files_still_waiting(category, make_pdf_file):
     """A file queued after a finished one does not hide the finished one."""
-    done = make_file(tenant, category, status=Status.DONE, file="songbook.pdf", update_date=now() - timedelta(days=1))
-    make_file(tenant, category, status=Status.SCHEDULED)
+    done = make_pdf_file(category, status=Status.DONE, file="songbook.pdf", update_date=now() - timedelta(days=1))
+    make_pdf_file(category, status=Status.SCHEDULED)
 
     assert category.latest_generated_file == done
     assert category.latest_file.status == Status.SCHEDULED
 
 
-def test_latest_generated_file_is_none_without_a_finished_file(tenant, category):
+def test_latest_generated_file_is_none_without_a_finished_file(category, make_pdf_file):
     """Failed and waiting files are not generated files."""
-    make_file(tenant, category, status=Status.FAILED)
-    make_file(tenant, category, status=Status.QUEUED)
+    make_pdf_file(category, status=Status.FAILED)
+    make_pdf_file(category, status=Status.QUEUED)
 
     assert category.latest_generated_file is None
 
@@ -86,9 +78,9 @@ def test_latest_generated_file_is_none_without_a_finished_file(tenant, category)
         pytest.param(Status.FAILED, False, id="failed"),
     ],
 )
-def test_has_scheduled_file(tenant, category, status, scheduled):
+def test_has_scheduled_file(category, make_pdf_file, status, scheduled):
     """A template is busy while its newest file is unfinished."""
-    make_file(tenant, category, status=status)
+    make_pdf_file(category, status=status)
 
     assert bool(category.has_scheduled_file()) is scheduled
 
@@ -180,9 +172,9 @@ def test_manual_template_titles_songs_without_a_section_after_a_titled_one(
     assert manual_template.get_sections() == [Section("Camp", [(1, pdf_song)]), Section("Ostatní", [(2, added)])]
 
 
-def test_upload_path_is_namespaced_by_tenant(tenant):
+def test_upload_path_is_namespaced_by_tenant(tenant, make_pdf_file):
     """Uploaded files are stored per tenant and day."""
-    file = make_file(tenant)
+    file = make_pdf_file()
 
     path = upload_path(file, "songbook.pdf")
 
