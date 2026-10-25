@@ -6,13 +6,17 @@ from functools import cache
 
 from django.conf import settings
 
-from category.utils import request_pdf_regeneration
+from category.utils import request_all_songs_pdf_regeneration, request_pdf_regeneration
 
 
 def regenerate_pdf(song):
-    """Regenerates PDFs for each category song is in"""
-    for category in song.categories.all():
+    """Regenerates PDFs for each category song is in and the all songs PDF of their tenants"""
+    tenants = {}
+    for category in song.categories.select_related("tenant"):
         request_pdf_regeneration(category)
+        tenants[category.tenant_id] = category.tenant
+    for tenant in tenants.values():
+        request_all_songs_pdf_regeneration(tenant)
 
 
 @cache

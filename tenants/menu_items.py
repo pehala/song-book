@@ -3,7 +3,7 @@
 from django.db.models import Prefetch
 
 from category.models import Category
-from pdf.models.request import ManualPDFTemplate, PDFFile, Status
+from pdf.models.request import AllSongsTemplate, ManualPDFTemplate, PDFFile, Status
 
 
 def categories(tenant):
@@ -23,7 +23,7 @@ def distinct_requests(tenant):
         to_attr="prefetched_files",
     )
     data = []
-    for model in [Category, ManualPDFTemplate]:
+    for model in [Category, ManualPDFTemplate, AllSongsTemplate]:
         for template in model.objects.filter(tenant=tenant).prefetch_related(latest_files_prefetch):
             file = template.prefetched_files[0] if template.prefetched_files else None
             if file and file.file:

@@ -14,6 +14,7 @@ from django.db.models import (
     IntegerField,
     ManyToManyField,
     Model,
+    OneToOneField,
     PositiveIntegerField,
     TextChoices,
     UniqueConstraint,
@@ -21,6 +22,7 @@ from django.db.models import (
 from django.db.models.signals import post_delete
 from django.utils.timezone import now
 from django.utils.translation import gettext_lazy as _
+from django.utils.translation import pgettext_lazy
 
 from backend.models import Song
 from pdf.models import PDFTemplate, Status
@@ -57,6 +59,38 @@ class ManualPDFTemplate(PDFTemplate):
     class Meta:
         verbose_name = _("File Template")
         verbose_name_plural = _("File Templates")
+
+
+class AllSongsTemplate(PDFTemplate):
+    """Template of the PDF with every song of a Tenant, the printable counterpart of the all songs list"""
+
+    tenant = OneToOneField(Tenant, on_delete=CASCADE)
+    generate_pdf = BooleanField(
+        verbose_name=_("PDF generation"),
+        help_text=_("True, if the PDF file should be generated automatically when a song changes"),
+        default=False,
+    )
+
+    @property
+    def name(self):
+        """Name shown wherever the template is listed"""
+        return pgettext_lazy("all songs PDF template", "All Songs")
+
+    def songs(self):
+        """Non-archived songs of every category of the Tenant, in the order of the all songs list"""
+        return Song.objects.filter(categories__tenant=self.tenant, archived=False).distinct()
+
+    def get_songs(self) -> Iterable[tuple[int, Song]]:
+        return list(enumerate(self.songs(), start=1))
+
+    @classmethod
+    def for_tenant(cls, tenant: Tenant, **defaults) -> AllSongsTemplate:
+        """Returns the template of the Tenant, creating it with `defaults` on first use"""
+        return cls.objects.get_or_create(tenant=tenant, defaults=defaults)[0]
+
+    class Meta:
+        verbose_name = _("All Songs PDF")
+        verbose_name_plural = _("All Songs PDFs")
 
 
 class PDFFile(Model):

@@ -7,18 +7,28 @@ from django.db.models import Count, Q
 from django.urls import reverse_lazy
 from django.utils import translation
 from django.utils.translation import get_language, gettext
+from django.utils.translation import gettext_lazy as _
 from django.views.generic import ListView
 
 from backend.cache import invalidate_tenant_songs_cache, touch_songs
 from backend.generic import UniversalCreateView, UniversalDeleteView, UniversalUpdateView
 from backend.mixins import LocalAdminRequired, PassRequestToFormMixin, RegenerateViewMixin
 from backend.models import Song
-from category.forms import CategoryForm, NameForm
+from category.forms import AllSongsForm, CategoryForm, NameForm
 from category.models import Category
-from category.utils import request_pdf_regeneration
-from pdf.models.request import PDFFile
+from category.utils import request_all_songs_pdf_regeneration, request_pdf_regeneration
+from pdf.models.request import AllSongsTemplate, PDFFile
 from tenants.utils import tenant_cache_key
 from tenants.views import AdminMoveView
+
+
+def all_songs_defaults(request):
+    """Initial values of the all songs PDF of the current tenant"""
+    return {
+        "filename": "all-songs",
+        "locale": request.LANGUAGE_CODE,
+        "title": request.tenant.display_name,
+    }
 
 
 class CategoryListView(LocalAdminRequired, ListView):
@@ -36,6 +46,15 @@ class CategoryListView(LocalAdminRequired, ListView):
             .annotate(song_count=Count("song", filter=Q(song__archived=False)))
             .annotate(file_count=Count("pdffile"))
         )
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        tenant = self.request.tenant
+        all_songs = AllSongsTemplate.for_tenant(tenant, **all_songs_defaults(self.request))
+        all_songs.song_count = all_songs.songs().count()
+        all_songs.file_count = all_songs.pdffile_set.count()
+        context["all_songs"] = all_songs
+        return context
 
 
 class CategoryCreateView(LocalAdminRequired, PassRequestToFormMixin, UniversalCreateView):
@@ -65,6 +84,25 @@ class CategoryUpdateView(LocalAdminRequired, PassRequestToFormMixin, RegenerateV
         response = super().post(request, *args, **kwargs)
         if self.regenerate and self.object.generate_pdf:
             request_pdf_regeneration(self.object)
+        return response
+
+
+class AllSongsUpdateView(LocalAdminRequired, RegenerateViewMixin, UniversalUpdateView):
+    """Updates the all songs PDF of the current tenant"""
+
+    form_class = AllSongsForm
+    model = AllSongsTemplate
+    success_url = reverse_lazy("category:list")
+    title_message = _("Update the All Songs PDF")
+    success_message = _("The All Songs PDF was successfully updated")
+
+    def get_object(self, queryset=None):
+        return AllSongsTemplate.for_tenant(self.request.tenant, **all_songs_defaults(self.request))
+
+    def post(self, request, *args, **kwargs):
+        response = super().post(request, *args, **kwargs)
+        if self.regenerate:
+            request_all_songs_pdf_regeneration(self.object.tenant)
         return response
 
 

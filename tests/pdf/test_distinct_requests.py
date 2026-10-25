@@ -23,10 +23,11 @@ def test_distinct_requests_empty_when_no_files(tenant, pdf_category):
     [
         pytest.param("pdf_category", id="category"),
         pytest.param("manual_template", id="manual_template"),
+        pytest.param("all_songs_template", id="all_songs_template"),
     ],
 )
 def test_distinct_requests_shows_template_file(request, tenant, make_pdf_file, template_fixture):
-    """Returns one entry for a template (Category or ManualPDFTemplate) with a public DONE PDFFile."""
+    """Returns one entry for a template of any kind with a public DONE PDFFile."""
     template = request.getfixturevalue(template_fixture)
     make_pdf_file(template, status=Status.DONE, file=FAKE_PATH)
     assert len(distinct_requests(tenant)) == 1

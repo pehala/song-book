@@ -1,10 +1,13 @@
 """Tests for the PDF template and file models."""
 
+import json
+
 import pytest
+from django.urls import reverse
 from django.utils.timezone import now
 
 from pdf.models import Status
-from pdf.models.request import PDFFile, upload_path
+from pdf.models.request import AllSongsTemplate, PDFFile, upload_path
 
 pytestmark = pytest.mark.django_db
 
@@ -124,3 +127,51 @@ def test_upload_path_is_namespaced_by_tenant(tenant):
 
     assert path.startswith(f"pdfs/{tenant.id}/")
     assert path.endswith("songbook.pdf")
+
+
+def test_all_songs_template_is_named_after_the_list(all_songs_template):
+    """The template is listed under the name of the list it prints"""
+    assert all_songs_template.name == "Všechny Písničky"
+
+
+def test_all_songs_template_numbers_songs_from_one(all_songs_template, song):
+    """Songs are handed to the PDF renderer with their position"""
+    assert all_songs_template.get_songs() == [(1, song)]
+
+
+def test_all_songs_template_skips_archived_songs(all_songs_template, song, archived_song):
+    """Archived songs are never printed"""
+    assert [entry[1] for entry in all_songs_template.get_songs()] == [song]
+
+
+def test_all_songs_template_lists_a_song_of_two_categories_once(all_songs_template, song, make_category):
+    """The numbering follows the all songs list, where every song appears once"""
+    song.categories.add(make_category(all_songs_template.tenant, name="Second", slug="second"))
+
+    assert all_songs_template.get_songs() == [(1, song)]
+
+
+def test_all_songs_template_numbers_like_the_reader(anon_client, all_songs_template, category, make_song):
+    """The song numbers are the ones the all songs list shows"""
+    make_song(category, name="First")
+    make_song(category, name="Second")
+
+    listed = {row["id"]: row["number"] for row in json.loads(anon_client.get(reverse("chords:songs_api")).content)}
+
+    assert {song.pk: number for number, song in all_songs_template.get_songs()} == listed
+
+
+def test_all_songs_template_ignores_other_tenants(all_songs_template, other_category, make_song):
+    """Songs of other tenants are not printed"""
+    make_song(other_category)
+
+    assert all_songs_template.get_songs() == []
+
+
+def test_for_tenant_creates_the_template_once(tenant):
+    """The first call creates the template with the defaults, later calls return it"""
+    created = AllSongsTemplate.for_tenant(tenant, filename="first", locale="en")
+
+    assert AllSongsTemplate.for_tenant(tenant, filename="second", locale="cs") == created
+    assert created.filename == "first"
+    assert not created.generate_pdf

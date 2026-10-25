@@ -23,13 +23,13 @@ from weasyprint.logger import PROGRESS_LOGGER
 
 from category.models import Category
 from pdf.locales import changed_locale, lang_to_locale
-from pdf.models.request import ManualPDFTemplate, PDFFile, Status
+from pdf.models.request import AllSongsTemplate, ManualPDFTemplate, PDFFile, Status
 from tenants.utils import tenant_cache_key
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-AllowedTemplates = Category | ManualPDFTemplate
+AllowedTemplates = Category | ManualPDFTemplate | AllSongsTemplate
 
 
 def update_status(file: PDFFile, status: Status):

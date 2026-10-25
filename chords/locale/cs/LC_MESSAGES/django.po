@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 10:12-0500\n"
+"POT-Creation-Date: 2026-10-25 10:24-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -57,7 +57,7 @@ msgstr "%(class)s %(identifier)s byla úspěšně vytvořena"
 msgid "Create %(class)s"
 msgstr "Nová %(class)s"
 
-#: backend/models.py:35 category/models.py:20
+#: backend/models.py:35 category/forms.py:46 category/models.py:20
 #: category/templates/category/list.html:12
 #: pdf/templates/pdf/templates/list.html:31 tenants/models.py:41
 msgid "Name"
@@ -110,6 +110,7 @@ msgid "URL Slug, under which the category should be accessible"
 msgstr "Část URL, pod kterou bude kategorie dostupná"
 
 #: category/models.py:27 category/templates/category/list.html:16
+#: pdf/models/request.py:69
 msgid "PDF generation"
 msgstr "Automatické Generování PDF"
 
@@ -124,6 +125,19 @@ msgstr ""
 #: category/models.py:38
 msgid "Category"
 msgstr "Kategorie"
+
+#: category/templates/category/generate_item.html:5
+#: pdf/templates/pdf/templates/list.html:70
+msgid "Already in queue"
+msgstr "Již ve frontě"
+
+#: category/templates/category/generate_item.html:8
+msgid "Generate PDF"
+msgstr "Vygenerovat PDF"
+
+#: category/templates/category/generate_item.html:11
+msgid "Filename required for PDF generation"
+msgstr "Chybí jméno souboru pro generování PDF"
 
 #: category/templates/category/list.html:14 pdf/models/__init__.py:59
 msgid "Language"
@@ -162,55 +176,60 @@ msgstr "Poslední změna"
 msgid "Actions"
 msgstr "Akce"
 
-#: category/templates/category/list.html:40
-#: pdf/templates/pdf/files/list.html:43
-#: pdf/templates/pdf/templates/list.html:56
-msgid "None"
-msgstr "Nic"
+#: category/templates/category/list.html:29
+msgid "Hidden from navigation"
+msgstr "Skryto v navigaci"
 
-#: category/templates/category/list.html:48
-#: pdf/templates/pdf/templates/list.html:62
-msgid "No generated files"
-msgstr "Žádné soubory"
+#: category/templates/category/list.html:30
+msgid "Tenant settings"
+msgstr "Nastavení zpěvníku"
 
-#: category/templates/category/list.html:55
+#: category/templates/category/list.html:41
+#: category/templates/category/list.html:64
 #: pdf/templates/pdf/files/list.html:59
 #: pdf/templates/pdf/templates/list.html:82
 msgid "Edit"
 msgstr "Upravit"
 
-#: category/templates/category/list.html:58
+#: category/templates/category/list.html:44
+#: category/templates/category/list.html:67
 #: pdf/templates/pdf/files/list.html:65
 #: pdf/templates/pdf/templates/list.html:77
 msgid "Toggle Dropdown"
 msgstr "Otevřít menu"
 
-#: category/templates/category/list.html:64
-#: pdf/templates/pdf/templates/list.html:70
-msgid "Already in queue"
-msgstr "Již ve frontě"
-
-#: category/templates/category/list.html:67
-msgid "Generate PDF"
-msgstr "Vygenerovat PDF"
-
-#: category/templates/category/list.html:70
-msgid "Filename required for PDF generation"
-msgstr "Chybí jméno souboru pro generování PDF"
-
-#: category/templates/category/list.html:74
+#: category/templates/category/list.html:72
 #: pdf/templates/pdf/files/list.html:76
 #: pdf/templates/pdf/templates/list.html:84
 msgid "Delete"
 msgstr "Smazat"
 
-#: category/templates/category/list.html:83
+#: category/templates/category/list.html:81
 msgid "Add Category"
 msgstr "Přidat Kategorii"
 
-#: category/views.py:52
+#: category/templates/category/pdf_cells.html:9
+#: pdf/templates/pdf/files/list.html:43
+#: pdf/templates/pdf/templates/list.html:56
+msgid "None"
+msgstr "Nic"
+
+#: category/templates/category/pdf_cells.html:17
+#: pdf/templates/pdf/templates/list.html:62
+msgid "No generated files"
+msgstr "Žádné soubory"
+
+#: category/views.py:71
 msgid "songbook"
 msgstr "zpevnicek"
+
+#: category/views.py:96
+msgid "Update the All Songs PDF"
+msgstr "Upravit PDF všech písniček"
+
+#: category/views.py:97
+msgid "The All Songs PDF was successfully updated"
+msgstr "PDF všech písniček bylo úspěšně upraveno"
 
 #: frontend/templates/400.html:4 frontend/templates/400.html:5
 msgid "Bad Request"
@@ -348,15 +367,15 @@ msgstr ""
 "(Nepovinné) Veřejné jméno pro vytvořené soubory. V případě že necháte pole "
 "prázdné, veřejné jméno bude vytvořeno na zákaldě jména souboru"
 
-#: pdf/models/__init__.py:43 pdf/models/request.py:80
+#: pdf/models/__init__.py:43 pdf/models/request.py:114
 msgid "Display name"
 msgstr "Veřejné jméno"
 
-#: pdf/models/__init__.py:49 pdf/models/request.py:72
+#: pdf/models/__init__.py:49 pdf/models/request.py:106
 msgid "File name of the generated PDF"
 msgstr "Název vygenerovaného PDF"
 
-#: pdf/models/__init__.py:50 pdf/models/request.py:73
+#: pdf/models/__init__.py:50 pdf/models/request.py:107
 msgid "File name"
 msgstr "Název souboru"
 
@@ -364,7 +383,7 @@ msgstr "Název souboru"
 msgid "True, if the file should be visible in the menu"
 msgstr "Zaškrkněte, pokud chcete aby byl PDF soubor veřejně viditelný v menu"
 
-#: pdf/models/__init__.py:55 pdf/models/request.py:91
+#: pdf/models/__init__.py:55 pdf/models/request.py:125
 msgid "Public file"
 msgstr "Veřejný soubor"
 
@@ -419,51 +438,70 @@ msgstr "(Nepovinné) URL adresa, zobrazená v PDF."
 msgid "Link"
 msgstr "Odkaz"
 
-#: pdf/models/request.py:34
+#: pdf/models/request.py:36
 msgid "Automated"
 msgstr "Automaticky"
 
-#: pdf/models/request.py:35
+#: pdf/models/request.py:37
 msgid "Manual"
 msgstr "Manuální"
 
-#: pdf/models/request.py:48
+#: pdf/models/request.py:50
 msgid "Template Name"
 msgstr "Název Šablony"
 
-#: pdf/models/request.py:48
+#: pdf/models/request.py:50
 msgid "Name of this template, only shown internally"
 msgstr "Název šablony, viditelný pouze interně"
 
-#: pdf/models/request.py:58
+#: pdf/models/request.py:60
 msgid "File Template"
 msgstr "Šablona"
 
-#: pdf/models/request.py:59 pdf/templates/pdf/templates/list.html:7
+#: pdf/models/request.py:61 pdf/templates/pdf/templates/list.html:7
 #: pdf/templates/pdf/templates/list.html:8
 msgid "File Templates"
 msgstr "Šablony"
 
-#: pdf/models/request.py:79
+#: pdf/models/request.py:70
+msgid ""
+"True, if the PDF file should be generated automatically when a song changes"
+msgstr ""
+"Zaškrkněte, pokud má být PDF soubor generován automaticky při změně písničky"
+
+#: pdf/models/request.py:77
+msgctxt "all songs PDF template"
+msgid "All Songs"
+msgstr "Všechny Písničky"
+
+#: pdf/models/request.py:92
+msgid "All Songs PDF"
+msgstr "PDF všech písniček"
+
+#: pdf/models/request.py:93
+msgid "All Songs PDFs"
+msgstr "PDF všech písniček"
+
+#: pdf/models/request.py:113
 msgid "Display name for the file, if empty filename will be used"
 msgstr ""
 "Veřejné jméno pro vytvořené soubory. V případě že necháte pole prázdné, "
 "veřejné jméno bude vytvořeno na zákaldě jména souboru"
 
-#: pdf/models/request.py:90
+#: pdf/models/request.py:124
 msgid "True, if the file should be public"
 msgstr "Zaškrkněte, pokud chcete aby byl PDF soubor veřejně viditelný"
 
-#: pdf/models/request.py:107
+#: pdf/models/request.py:141
 msgid "File"
 msgstr "Soubor"
 
-#: pdf/models/request.py:108 pdf/templates/pdf/files/list.html:8
+#: pdf/models/request.py:142 pdf/templates/pdf/files/list.html:8
 #: pdf/templates/pdf/files/list.html:9
 msgid "Files"
 msgstr "Soubory"
 
-#: pdf/models/request.py:120
+#: pdf/models/request.py:154
 msgid "Song number"
 msgstr "Číslo písničky"
 
@@ -556,7 +594,7 @@ msgstr "Zrušit výběr"
 msgid "Finish selecting"
 msgstr "Dokončit výběr"
 
-#: pdf/views/files.py:106
+#: pdf/views/files.py:108
 #, python-format
 msgid "File %(id)s does not have a template"
 msgstr "Soubor %(id)s není vytvořený ze šablony"

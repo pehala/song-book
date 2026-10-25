@@ -211,3 +211,11 @@ def test_move_reassigns_the_template(superuser_client, manual_template, other_te
     assert response.status_code == 302
     manual_template.refresh_from_db()
     assert manual_template.tenant == other_tenant
+
+
+def test_generate_from_the_all_songs_template(staff_client, song, all_songs_template, mock_weasyprint):
+    """The generate action of the row builds the file from every song of the tenant"""
+    response = staff_client.get(reverse("pdf:templates:generate", kwargs={"pk": all_songs_template.pk}))
+
+    assert response.status_code == 302
+    assert PDFFile.objects.get(template=all_songs_template).status == "DO"

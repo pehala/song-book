@@ -22,6 +22,33 @@
     </tr>
     </thead>
     <tbody>
+    <tr{% if not request.tenant.all_songs_category %} class="table-secondary"{% endif %}>
+      <td>
+        {{ all_songs.name }}
+        {% if not request.tenant.all_songs_category %}
+          <div class="small">{% trans "Hidden from navigation" %}
+            (<a href="{% url "tenants:edit" %}">{% trans "Tenant settings" %}</a>)</div>
+        {% endif %}
+      </td>
+      <td><a href="{% url "backend:all" %}">{% url "backend:all" %}</a></td>
+      <td>{{ all_songs.locale }}</td>
+      <td>{{ all_songs.song_count }}</td>
+      <td>{{ all_songs.generate_pdf|yesno }}</td>
+      <td>{{ all_songs.file_count }}</td>
+      {% include "category/pdf_cells.html" with item=all_songs %}
+      <td>
+        <div class="btn-group me-1">
+          <a href="{% url "category:edit_all" %}" class="btn btn-primary"><i class="icon-edit"></i>{% trans "Edit" %}</a>
+          <button type="button" class="btn btn-secondary dropdown-toggle dropdown-toggle-split"
+                  data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="visually-hidden">{% trans "Toggle Dropdown" %}</span>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end">
+            {% include "category/generate_item.html" with item=all_songs %}
+          </ul>
+        </div>
+      </td>
+    </tr>
     {% for category in categories %}
       <tr>
         <td>{{ category.name }}</td>
