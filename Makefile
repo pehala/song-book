@@ -31,10 +31,10 @@ check-messages: messages
 	@ if [ ! -z "$$(msgattrib chords/locale/cs/LC_MESSAGES/djangojs.po --untranslated)" ]; then echo "djangojs.po contains untranslated strings" && exit 1; fi
 
 messages: messages-js
-	$(MANAGE) makemessages -l cs --settings $(DEV_SETTINGS)
+	$(MANAGE) makemessages -l cs --no-location --settings $(DEV_SETTINGS)
 
 messages-js:
-	$(MANAGE) makemessages -l cs -d djangojs -i "*/vendor/*" -i "backend/static/*" -i "pdf/static/*" -i "*/templates/*" -i "staticfiles/*" --settings $(DEV_SETTINGS)
+	$(MANAGE) makemessages -l cs --no-location -d djangojs -i "*/vendor/*" -i "backend/static/*" -i "pdf/static/*" -i "*/templates/*" -i "staticfiles/*" --settings $(DEV_SETTINGS)
 
 migrations:
 	$(MANAGE) makemigrations --settings $(DEV_SETTINGS)
