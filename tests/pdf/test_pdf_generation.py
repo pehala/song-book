@@ -21,15 +21,17 @@ from tenants.utils import tenant_cache_key
 pytestmark = pytest.mark.django_db
 
 
-def test_chords_stay_inline_whatever_the_song_renderer(settings, mock_weasyprint, category, make_song, pdf_file):
-    """WeasyPrint cannot lay out ruby text, so the document keeps the inline chords"""
+def test_chords_are_raised_whatever_the_song_renderer(settings, mock_weasyprint, category, make_song, pdf_file):
+    """WeasyPrint cannot lay out ruby text, so the document raises the chords with plain inline boxes"""
     settings.SONG_RENDERER = "chords.markdown.RUBY_RENDERER"
     make_song(category, text="{Ami}Hello {C}World")
 
     generate_pdf(pdf_file, category)
 
     html = mock_weasyprint.call_args.kwargs["string"]
-    assert '<span class="chord">Ami</span>' in html
+    assert '<span class="chord" style="margin-right: -' in html
+    assert ">Ami</span>Hello" in html
+    assert ">C</span>World" in html
     assert "<ruby>" not in html
 
 

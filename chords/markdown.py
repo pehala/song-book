@@ -8,6 +8,7 @@ from django.utils.module_loading import import_string
 
 from chords.plugins.inline import inline_chords
 from chords.plugins.paragraph import paragraph
+from chords.plugins.raised import raised_chords
 from chords.plugins.ruby import ruby_chords
 from chords.plugins.spaces import spaces
 
@@ -28,6 +29,7 @@ def create_renderer(chords_plugin):
 
 INLINE_RENDERER = create_renderer(inline_chords)
 RUBY_RENDERER = create_renderer(ruby_chords)
+PDF_RENDERER = create_renderer(raised_chords)
 
 
 @cache
