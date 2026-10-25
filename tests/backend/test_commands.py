@@ -85,4 +85,4 @@ def test_import_prerenders_when_enabled(settings, category, tmp_path):
 
     call_command("import", str(source), category=category.id)
 
-    assert '<span class="chord">C</span>' in Song.objects.get(name="Imported").prerendered
+    assert '<rt class="chord">C</rt>' in Song.objects.get(name="Imported").prerendered

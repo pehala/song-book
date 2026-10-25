@@ -66,13 +66,13 @@ def test_plain_text_is_wrapped_in_a_paragraph():
 
 
 def test_song_renderer_follows_the_setting(settings):
-    """SONG_RENDERER picks the renderer by its dotted path"""
-    assert song_renderer() is INLINE_RENDERER
-
-    settings.SONG_RENDERER = "chords.markdown.RUBY_RENDERER"
-
+    """SONG_RENDERER picks the renderer by its dotted path, chords above the text by default"""
     assert song_renderer() is RUBY_RENDERER
-    assert load_renderer("chords.markdown.RUBY_RENDERER") is RUBY_RENDERER
+
+    settings.SONG_RENDERER = "chords.markdown.INLINE_RENDERER"
+
+    assert song_renderer() is INLINE_RENDERER
+    assert load_renderer("chords.markdown.INLINE_RENDERER") is INLINE_RENDERER
 
 
 @pytest.mark.parametrize(

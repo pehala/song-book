@@ -113,7 +113,7 @@ Cross-app glue worth knowing before editing:
 Markdown → HTML happens through the mistune instances of `chords/markdown.py`, each with three
 local plugins in `chords/plugins/`: `inline` (`{Ami}` → `<span class="chord">`) or `ruby`
 (`{Ami}word` → `<ruby>word<rt class="chord">`), `paragraph`, `spaces`. `INLINE_RENDERER` uses the
-first, `RUBY_RENDERER` the second, and the `SONG_RENDERER` setting (a dotted path, `INLINE_RENDERER` by
+first, `RUBY_RENDERER` the second, and the `SONG_RENDERER` setting (a dotted path, `RUBY_RENDERER` by
 default) picks the one used for songs and for django-markdownx's preview. PDFs always keep the chords
 inline (`Song.inline_markdown`; WeasyPrint cannot lay out ruby text); a changed renderer needs
 `manage.py prerender`.

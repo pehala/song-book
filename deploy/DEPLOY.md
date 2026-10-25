@@ -170,7 +170,7 @@ In the env file, set at least:
 - `TENANT_HOSTNAME`, the default tenant that the first migration creates.
 - `POSTGRES_DB`, the database of the instance (`songbook_camp` above; the default is `songbook`), and
   `POSTGRES_PORT` if the cluster is not on 5432 (`POSTGRES_USER` too, if the role is not `songbook`).
-- optionally `SONG_RENDERER` (`chords.markdown.RUBY_RENDERER` draws the chords above the words), `TIME_ZONE`,
+- optionally `SONG_RENDERER` (`chords.markdown.INLINE_RENDERER` keeps the chords in the line of text), `TIME_ZONE`,
   `TENANT_NAME` and the timings and log level listed, commented out with their defaults, in the example file.
 
 The file is also read by systemd, so write values without quotes. Any other setting can be changed by editing
