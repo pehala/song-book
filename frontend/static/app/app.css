@@ -218,6 +218,12 @@ main {
     border: 0;
 }
 
+.stepper-name {
+    padding-left: .75rem;
+    color: var(--muted);
+    font-size: .875rem;
+}
+
 .stepper output {
     min-width: 2.5em;
     text-align: center;
@@ -237,7 +243,7 @@ main {
 }
 
 .song-text {
-    padding: 1rem 0;
+    padding: 0 0 1rem;
     column-count: var(--chords-grid-columns);
     column-gap: 5em;
     width: fit-content;
