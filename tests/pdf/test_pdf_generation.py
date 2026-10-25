@@ -35,6 +35,16 @@ def test_chords_are_raised_whatever_the_song_renderer(settings, mock_weasyprint,
     assert "<ruby>" not in html
 
 
+def test_link_is_printed_with_a_scheme(mock_weasyprint, category, make_song, pdf_file):
+    """The link of the template is printed in the header with https:// when none was typed"""
+    make_song(category, text="Hello")
+    category.link = "jerry.crazycactus.eu"
+
+    generate_pdf(pdf_file, category)
+
+    assert 'content: "https://jerry.crazycactus.eu"' in mock_weasyprint.call_args.kwargs["string"]
+
+
 # ---------------------------------------------------------------------------
 # Group 1 — generate_pdf_file() scheduling
 # ---------------------------------------------------------------------------

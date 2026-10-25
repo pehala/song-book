@@ -22,11 +22,11 @@
       .date { break-after: avoid; page-break-before: always; }
 </style>
 {% endif %}
-{% if link %}
+{% if link_url %}
 <style>
     @page {
         @top-right {
-            content: "{{ link }}";
+            content: "{{ link_url }}";
             font-size: 9pt;
             height: 1cm;
             vertical-align: middle;

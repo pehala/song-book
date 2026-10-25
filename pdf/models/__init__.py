@@ -1,5 +1,6 @@
 """Common classes for PDF"""
 
+import re
 from abc import abstractmethod
 from collections.abc import Iterable
 from typing import TYPE_CHECKING
@@ -16,6 +17,9 @@ if TYPE_CHECKING:
     from backend.models import Song
 
     from .request import PDFFile
+
+# A link that names its scheme, such as https://example.org or mailto:someone@example.org
+LINK_SCHEME_RE = re.compile(r"[a-z][a-z0-9+.-]*://|mailto:", re.IGNORECASE)
 
 
 class Status(TextChoices):
@@ -85,6 +89,14 @@ class PDFTemplate(PolymorphicModel):
         help_text=_("(Optional) URL Link to include in the PDF"),
         verbose_name=_("Link"),
     )
+
+    @property
+    def link_url(self) -> str:
+        """The link as a URL: https:// is put in front of a link that names no scheme"""
+        link = self.link.strip()
+        if link and not LINK_SCHEME_RE.match(link):
+            return f"https://{link}"
+        return link
 
     @property
     def latest_file(self) -> PDFFile:

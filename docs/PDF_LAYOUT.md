@@ -35,3 +35,9 @@ to.
 * A short word under a long chord leaves a gap after it.
 * Copying text out of the PDF gives `AmiMám`, with no space between chord and word.
 * Rows with chords are taller, so a song with many chords may need an extra page.
+
+## Header link
+
+* `PDFTemplate.link` is free text. `PDFTemplate.link_url` returns it with `https://` in front unless it names a
+  scheme (`scheme://` or `mailto:`), and the template only uses `link_url`.
+* It is printed in the `@top-right` margin box of every page.

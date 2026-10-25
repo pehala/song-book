@@ -92,6 +92,25 @@ def test_copy_options_takes_over_the_print_settings(category, manual_template):
     assert category.name == "Test Category"
 
 
+@pytest.mark.parametrize(
+    ("link", "url"),
+    [
+        ("", ""),
+        ("jerry.crazycactus.eu", "https://jerry.crazycactus.eu"),
+        ("  jerry.crazycactus.eu/songs ", "https://jerry.crazycactus.eu/songs"),
+        ("localhost:8000", "https://localhost:8000"),
+        ("https://jerry.crazycactus.eu", "https://jerry.crazycactus.eu"),
+        ("HTTP://jerry.crazycactus.eu", "HTTP://jerry.crazycactus.eu"),
+        ("mailto:jerry@example.test", "mailto:jerry@example.test"),
+    ],
+)
+def test_link_url_adds_the_missing_scheme(category, link, url):
+    """A link typed without a scheme gets https://, one that names a scheme is kept"""
+    category.link = link
+
+    assert category.link_url == url
+
+
 def test_manual_template_returns_numbered_songs(manual_template, pdf_song_entry, pdf_song):
     """Manual templates print the songs in the order the user assigned"""
     assert manual_template.get_songs() == [(1, pdf_song)]

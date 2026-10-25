@@ -125,7 +125,7 @@ msgstr ""
 msgid "Category"
 msgstr "Kategorie"
 
-#: category/templates/category/list.html:14 pdf/models/__init__.py:55
+#: category/templates/category/list.html:14 pdf/models/__init__.py:59
 msgid "Language"
 msgstr "Jazyk"
 
@@ -320,27 +320,27 @@ msgstr "Nevybrány žádné písničky"
 msgid "Each song has to have distinct song number"
 msgstr "Každá písnička musí mít unikátní číslo"
 
-#: pdf/models/__init__.py:24
+#: pdf/models/__init__.py:28
 msgid "Queued"
 msgstr "Ve frontě"
 
-#: pdf/models/__init__.py:25
+#: pdf/models/__init__.py:29
 msgid "Scheduled"
 msgstr "Naplánováno"
 
-#: pdf/models/__init__.py:26
+#: pdf/models/__init__.py:30
 msgid "In progress"
 msgstr "Generuje se"
 
-#: pdf/models/__init__.py:27
+#: pdf/models/__init__.py:31
 msgid "Done"
 msgstr "Hotovo"
 
-#: pdf/models/__init__.py:28
+#: pdf/models/__init__.py:32
 msgid "Failed"
 msgstr "Chyba"
 
-#: pdf/models/__init__.py:38
+#: pdf/models/__init__.py:42
 msgid ""
 "(Optional) Display name for the generated files. If empty filename will be "
 "used"
@@ -348,31 +348,31 @@ msgstr ""
 "(Nepovinné) Veřejné jméno pro vytvořené soubory. V případě že necháte pole "
 "prázdné, veřejné jméno bude vytvořeno na zákaldě jména souboru"
 
-#: pdf/models/__init__.py:39 pdf/models/request.py:80
+#: pdf/models/__init__.py:43 pdf/models/request.py:80
 msgid "Display name"
 msgstr "Veřejné jméno"
 
-#: pdf/models/__init__.py:45 pdf/models/request.py:72
+#: pdf/models/__init__.py:49 pdf/models/request.py:72
 msgid "File name of the generated PDF"
 msgstr "Název vygenerovaného PDF"
 
-#: pdf/models/__init__.py:46 pdf/models/request.py:73
+#: pdf/models/__init__.py:50 pdf/models/request.py:73
 msgid "File name"
 msgstr "Název souboru"
 
-#: pdf/models/__init__.py:50
+#: pdf/models/__init__.py:54
 msgid "True, if the file should be visible in the menu"
 msgstr "Zaškrkněte, pokud chcete aby byl PDF soubor veřejně viditelný v menu"
 
-#: pdf/models/__init__.py:51 pdf/models/request.py:91
+#: pdf/models/__init__.py:55 pdf/models/request.py:91
 msgid "Public file"
 msgstr "Veřejný soubor"
 
-#: pdf/models/__init__.py:57
+#: pdf/models/__init__.py:61
 msgid "Language of the generated PDF"
 msgstr "Jazyk PDF souboru"
 
-#: pdf/models/__init__.py:62
+#: pdf/models/__init__.py:66
 msgid ""
 "Name to be used on the title page of the PDF, usually only this or Title "
 "image should be used"
@@ -380,41 +380,41 @@ msgstr ""
 "Jméno pro titulní stranu pdf souboru. Obvykle stačí vyplnit pouze Nadpis "
 "nebo Úvodné obrázek"
 
-#: pdf/models/__init__.py:63 pdf/templates/pdf/files/list.html:29
+#: pdf/models/__init__.py:67 pdf/templates/pdf/files/list.html:29
 #: tenants/models.py:42
 msgid "Title"
 msgstr "Nadpis"
 
-#: pdf/models/__init__.py:67
+#: pdf/models/__init__.py:71
 msgid "Show date"
 msgstr "Vložit datum"
 
-#: pdf/models/__init__.py:68
+#: pdf/models/__init__.py:72
 msgid "True, if the date should be included in the PDF"
 msgstr "Zaškrkněte, pokud chcete aby v PDF souboru bylo datum"
 
-#: pdf/models/__init__.py:71
+#: pdf/models/__init__.py:75
 msgid "Title Image"
 msgstr "Úvodní obrázek"
 
-#: pdf/models/__init__.py:72
+#: pdf/models/__init__.py:76
 msgid "(Optional) title image for the PDF"
 msgstr "(Nepovinný) Obrázek na úvodní stránku PDF souboru"
 
-#: pdf/models/__init__.py:78
+#: pdf/models/__init__.py:82
 msgid "Title Image margins"
 msgstr "Odsazení úvodního obrázku"
 
-#: pdf/models/__init__.py:79
+#: pdf/models/__init__.py:83
 msgid "Margins for title image, might be needed for some printers"
 msgstr ""
 "Odsazení obrázku na úvodní stránce, může být nutné pro některé tiskárny"
 
-#: pdf/models/__init__.py:85
+#: pdf/models/__init__.py:89
 msgid "(Optional) URL Link to include in the PDF"
 msgstr "(Nepovinné) URL adresa, zobrazená v PDF."
 
-#: pdf/models/__init__.py:86 pdf/templates/pdf/files/list.html:27
+#: pdf/models/__init__.py:90 pdf/templates/pdf/files/list.html:27
 #: tenants/models.py:31
 msgid "Link"
 msgstr "Odkaz"
