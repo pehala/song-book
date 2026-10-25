@@ -6,6 +6,7 @@ from pathlib import Path
 import pytest
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.contrib.staticfiles import finders
 from django.core.cache import cache
 from django.core.files.base import ContentFile
 from django.db import transaction
@@ -69,6 +70,19 @@ def media_root(settings, tmp_path):
     """Redirects uploads and generated PDFs away from the source tree."""
     settings.MEDIA_ROOT = str(tmp_path)
     return tmp_path
+
+
+@pytest.fixture
+def development_stylesheet(tmp_path, monkeypatch, settings):
+    """Development: static files are not hashed, and the header stylesheet is a copy the test can edit."""
+    settings.DEBUG = True
+    stylesheet = tmp_path / "header.css"
+    stylesheet.write_text(Path(finders.find("app/header.css")).read_text())
+    find = finders.find
+    monkeypatch.setattr(
+        "frontend.views.finders.find", lambda path: stylesheet if path == "app/header.css" else find(path)
+    )
+    return stylesheet
 
 
 @pytest.fixture

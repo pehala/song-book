@@ -88,41 +88,34 @@ def statistics(library):
     DayStatistic.objects.create(tenant=library, key="all", hits=3)
 
 
-def wait_until(page, expression):
-    """Polls through evaluate: wait_for_function would need the eval the page's CSP forbids."""
-    for _ in range(50):
-        if page.evaluate(expression):
-            return
-        page.wait_for_timeout(100)
-    raise AssertionError(f"{expression} never held")
-
-
 def drawn(page):
     """Returns the labels and the hits the stub chart was given."""
     return page.evaluate("({labels: window.chart?.data.labels, hits: window.chart?.data.datasets[0].data})")
 
 
-def test_analytics_draws_the_hits(page, statistics, staff_user, sign_in, chart):
+@pytest.mark.usefixtures("statistics")
+def test_analytics_draws_the_hits(page, staff_user, sign_in, chart, poll):
     """The chart shows a week of hits of every page, today last."""
     sign_in(staff_user)
     page.goto(reverse("analytics:index"))
 
     expect(page.get_by_label("Keys").locator("option")).to_have_text(["All", "All songs", "Česky"])
-    wait_until(page, "window.chart !== undefined")
+    poll(lambda: page.evaluate("window.chart !== undefined"))
     assert len(drawn(page)["labels"]) == 7
     assert drawn(page)["hits"][-1] == 8
 
 
-def test_analytics_follows_the_choices(page, statistics, staff_user, sign_in, chart):
+@pytest.mark.usefixtures("statistics")
+def test_analytics_follows_the_choices(page, staff_user, sign_in, chart, poll):
     """Picking a key and a range redraws the chart with their hits."""
     sign_in(staff_user)
     page.goto(reverse("analytics:index"))
     expect(page.get_by_label("Keys").locator("option")).to_have_count(3)
 
     page.get_by_label("Keys").select_option(label="Česky")
-    wait_until(page, "window.chart?.data.datasets[0].data.at(-1) === 5")
+    poll(lambda: page.evaluate("window.chart?.data.datasets[0].data.at(-1) === 5"))
     page.get_by_label("Date range").select_option(label="Month")
-    wait_until(page, "window.chart?.data.labels.length === 30")
+    poll(lambda: page.evaluate("window.chart?.data.labels.length === 30"))
 
     assert drawn(page)["hits"][-1] == 5
 

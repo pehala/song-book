@@ -8,19 +8,25 @@ from frontend.catalogues import reader_catalogues
 
 
 @pytest.fixture
-def locale_dir(tmp_path, settings):
+def empty_locale_dir(tmp_path, settings):
+    """An empty locale directory the catalogues are read from, with their cache dropped before and after."""
+    settings.LOCALE_PATHS = [str(tmp_path)]
+    reader_catalogues.cache_clear()
+    yield tmp_path
+    reader_catalogues.cache_clear()
+
+
+@pytest.fixture
+def locale_dir(empty_locale_dir):
     """A locale directory with a compiled `djangojs` catalogue of one Czech string."""
-    messages = tmp_path / "cs" / "LC_MESSAGES"
+    messages = empty_locale_dir / "cs" / "LC_MESSAGES"
     messages.mkdir(parents=True)
     source = messages / "djangojs.po"
     source.write_text(
         'msgid ""\nmsgstr ""\n"Content-Type: text/plain; charset=UTF-8\\n"\n\nmsgid "Close"\nmsgstr "Zavřít"\n'
     )
     subprocess.run(["msgfmt", "-o", str(messages / "djangojs.mo"), str(source)], check=True)
-    settings.LOCALE_PATHS = [str(tmp_path)]
-    reader_catalogues.cache_clear()
-    yield tmp_path
-    reader_catalogues.cache_clear()
+    return empty_locale_dir
 
 
 def test_translated_languages_map_msgids_to_translations(locale_dir):
@@ -36,13 +42,10 @@ def test_language_without_translations_does_not_borrow_the_default(locale_dir, s
     assert list(reader_catalogues()) == ["cs"]
 
 
-def test_missing_catalogue_is_left_out(tmp_path, settings):
+@pytest.mark.usefixtures("empty_locale_dir")
+def test_missing_catalogue_is_left_out():
     """A language that has nothing compiled adds no entry."""
-    settings.LOCALE_PATHS = [str(tmp_path)]
-    reader_catalogues.cache_clear()
-
     assert reader_catalogues() == {}
-    reader_catalogues.cache_clear()
 
 
 def test_catalogue_is_read_once(locale_dir):

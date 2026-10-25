@@ -1,11 +1,9 @@
 """Browser tests of the reader: routing, search, song view, options and the service worker."""
 
 import json
-from pathlib import Path
 from urllib.parse import urlsplit
 
 import pytest
-from django.contrib.staticfiles import finders
 from playwright.sync_api import TimeoutError as PlaywrightTimeoutError
 from playwright.sync_api import expect
 
@@ -25,6 +23,12 @@ def titles(page):
 def numbers(page):
     """Returns the locator of the numbers of the songs shown."""
     return page.locator("details.song .num")
+
+
+def open_all_songs(page):
+    """Opens the all songs list and waits for its four songs."""
+    page.goto("/all")
+    expect(songs(page)).to_have_count(4)
 
 
 def open_menu(page, name):
@@ -67,20 +71,14 @@ def test_songs_are_numbered_and_archived_ones_hidden(page, library):
 
 def test_shell_placeholder_is_gone_once_the_reader_is_drawn(page, library):
     """The progress bar of the shell must not linger below the song list."""
-    page.goto("/all")
+    open_all_songs(page)
 
-    expect(songs(page)).to_have_count(4)
     expect(page.locator(".progress")).to_have_count(0)
 
 
-def test_progress_bar_shows_while_the_first_list_downloads(page, library):
+def test_progress_bar_shows_while_the_first_list_downloads(page, library, hold):
     """With nothing stored the reader shows a progress bar until the songs arrive."""
-    held = []
-
-    def hold(route):
-        held.append(route)
-
-    page.route("**/api/songs", hold)
+    held = hold("**/api/songs")
     page.goto("/all")
 
     expect(page.locator("[role=progressbar].centered")).to_be_visible()
@@ -93,8 +91,7 @@ def test_progress_bar_shows_while_the_first_list_downloads(page, library):
 
 def test_download_progress_follows_the_announced_size(page, library):
     """The bytes read are reported against the size the server announces, and the list is stored whole."""
-    page.goto("/all")
-    expect(songs(page)).to_have_count(4)
+    open_all_songs(page)
 
     report = page.evaluate(
         """async () => {
@@ -128,8 +125,7 @@ def test_download_progress_follows_the_announced_size(page, library):
 
 def test_progress_says_when_the_whole_list_is_fetched_again(page, library):
     """A delta that does not fit the stored list makes the reader fetch everything, which the progress reports."""
-    page.goto("/all")
-    expect(songs(page)).to_have_count(4)
+    open_all_songs(page)
 
     steps = page.evaluate(
         """async () => {
@@ -155,8 +151,7 @@ def test_progress_says_when_the_whole_list_is_fetched_again(page, library):
 
 def test_remaining_time_follows_the_recent_speed(page, library):
     """The estimate waits for a known speed and a total, and is left out for a stalled or nearly done download."""
-    page.goto("/all")
-    expect(songs(page)).to_have_count(4)
+    open_all_songs(page)
 
     estimates = page.evaluate(
         """async () => {
@@ -195,9 +190,15 @@ def throttle(page, bytes_per_second):
     )
 
 
-def test_first_download_estimates_the_time_left(page, library, make_song):
-    """Over a slow connection the caption of the bar tells how long the songs still take."""
+@pytest.fixture
+def heavy_library(library, make_song):
+    """The library with a fifth song, in every category, long enough to take seconds over a throttled connection."""
     make_song(*library.category_set.all(), name="Long", text="{C}la " * 4000)
+    return library
+
+
+def test_first_download_estimates_the_time_left(page, heavy_library):
+    """Over a slow connection the caption of the bar tells how long the songs still take."""
     errors = page_errors(page)
     throttle(page, 40_000)
     page.goto("/all")
@@ -209,8 +210,7 @@ def test_first_download_estimates_the_time_left(page, library, make_song):
 
 def test_options_reload_downloads_the_whole_list_again(page, library, requests_made):
     """The reload button fetches the full list rather than a delta and says so."""
-    page.goto("/all")
-    expect(songs(page)).to_have_count(4)
+    open_all_songs(page)
     requests_made.clear()
 
     open_menu(page, "Options")
@@ -223,9 +223,8 @@ def test_options_reload_downloads_the_whole_list_again(page, library, requests_m
     expect(songs(page)).to_have_count(4)
 
 
-def test_reload_over_a_slow_connection_draws_the_line_without_errors(page, library, make_song):
+def test_reload_over_a_slow_connection_draws_the_line_without_errors(page, heavy_library):
     """The line along the top follows a manual reload that arrives in chunks."""
-    make_song(*library.category_set.all(), name="Long", text="{C}la " * 4000)
     errors = page_errors(page)
     page.goto("/all")
     expect(songs(page)).to_have_count(5)
@@ -317,12 +316,7 @@ def test_opening_a_song_shows_its_text(page, library):
 
 def test_open_song_keeps_its_title_in_view(page, library, make_song):
     """The title of a long song stays under the search bar while its text scrolls past."""
-    make_song(library.category_set.get(slug="cs"), name="Long", text="\n\n".join(f"{{C}}Verse {n}" for n in range(60)))
-    page.emulate_media(reduced_motion="reduce")
-    page.goto("/categories/cs")
-    long = page.locator("details.song", has_text="Long")
-    long.locator("summary").click()
-    expect(long.locator(".song-text p")).to_have_count(60)
+    long = open_long_song(page, library, make_song)
 
     page.evaluate("scrollTo(0, 1500)")
 
@@ -819,6 +813,15 @@ def test_anonymous_visitor_has_no_admin_menu(page, library):
     expect(page.locator("summary", has_text="Admin")).to_have_count(0)
 
 
+def open_under_the_worker(page):
+    """Opens a category once the service worker is installed and controls the page."""
+    page.goto("/categories/cs")
+    page.evaluate("navigator.serviceWorker.ready")
+    page.reload()
+    expect(songs(page)).to_have_count(3)
+    page.wait_for_function("navigator.serviceWorker.controller !== null")
+
+
 def shell_caches(page):
     """Returns the names of the shell caches of the service worker."""
     return page.evaluate("caches.keys().then(names => names.filter(name => name.startsWith('shell-')))")
@@ -826,11 +829,7 @@ def shell_caches(page):
 
 def test_new_version_is_offered_and_installed_on_request(page, library, monkeypatch):
     """A changed worker waits until the reader agrees to reload, then replaces the old caches."""
-    page.goto("/categories/cs")
-    page.evaluate("navigator.serviceWorker.ready")
-    page.reload()
-    expect(songs(page)).to_have_count(3)
-    page.wait_for_function("navigator.serviceWorker.controller !== null")
+    open_under_the_worker(page)
     before = shell_caches(page)
     assert len(before) == 1
 
@@ -848,22 +847,11 @@ def test_new_version_is_offered_and_installed_on_request(page, library, monkeypa
     assert set(shell_caches(page)).isdisjoint(before)
 
 
-def test_edited_file_is_offered_as_a_new_version_in_development(page, library, settings, monkeypatch, tmp_path):
+def test_edited_file_is_offered_as_a_new_version_in_development(page, library, development_stylesheet):
     """With static files unhashed, changing a reader file still makes the browser offer the update."""
-    settings.DEBUG = True
-    stylesheet = tmp_path / "header.css"
-    stylesheet.write_text(Path(finders.find("app/header.css")).read_text())
-    find = finders.find
-    monkeypatch.setattr(
-        "frontend.views.finders.find", lambda path: stylesheet if path == "app/header.css" else find(path)
-    )
-    page.goto("/categories/cs")
-    page.evaluate("navigator.serviceWorker.ready")
-    page.reload()
-    expect(songs(page)).to_have_count(3)
-    page.wait_for_function("navigator.serviceWorker.controller !== null")
+    open_under_the_worker(page)
 
-    stylesheet.write_text(stylesheet.read_text() + "\n/* edited */\n")
+    development_stylesheet.write_text(development_stylesheet.read_text() + "\n/* edited */\n")
     page.reload()
 
     expect(page.get_by_text("A new version is available")).to_be_visible()
