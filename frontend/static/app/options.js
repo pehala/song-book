@@ -27,12 +27,17 @@ export function useStored(key, initial) {
     return [value, set];
 }
 
+// Columns of lyrics that suit the screen the reader is opened on, for readers who have not chosen
+function defaultColumns() {
+    return innerWidth >= 1600 ? 3 : innerWidth >= 1024 ? 2 : 1;
+}
+
 // The options every page offers (language, theme) and the ones that only matter next to songs.
 // Pages rendered by the server are in the language of the server, which the html element tells.
 export function useOptions({server = false} = {}) {
     const [lang, setLang] = useState(() => (server ? document.documentElement.lang : detectLanguage()));
     const [theme, setTheme] = useStored("theme", "auto");
-    const [columns, setColumns] = useStored("columns", 1);
+    const [columns, setColumns] = useStored("columns", defaultColumns());
     const [hideChords, setHideChords] = useStored("hide_chords", false);
     const [preventSleep, setPreventSleep] = useStored("prevent_sleep", false);
 
