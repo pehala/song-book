@@ -11,7 +11,7 @@ EDIT_URL = reverse("category:edit_all")
 
 
 def all_songs_payload(**overrides):
-    """Valid AllSongsForm data"""
+    """Valid AllSongsForm data."""
     data = {
         "filename": "everything",
         "locale": "en",
@@ -27,7 +27,7 @@ def all_songs_payload(**overrides):
 
 
 def test_list_creates_the_template_with_defaults(staff_client, tenant):
-    """The first visit creates the tenant's template, named and titled after the tenant"""
+    """The first visit creates the tenant's template, named and titled after the tenant."""
     listed = staff_client.get(reverse("category:list")).context["all_songs"]
 
     assert listed == AllSongsTemplate.objects.get(tenant=tenant)
@@ -37,7 +37,7 @@ def test_list_creates_the_template_with_defaults(staff_client, tenant):
 
 
 def test_list_reuses_the_template(staff_client, all_songs_template):
-    """Later visits show the stored template"""
+    """Later visits show the stored template."""
     listed = staff_client.get(reverse("category:list")).context["all_songs"]
 
     assert listed == all_songs_template
@@ -45,7 +45,7 @@ def test_list_reuses_the_template(staff_client, all_songs_template):
 
 
 def test_list_counts_active_songs_and_files(staff_client, song, archived_song, all_songs_template, make_category):
-    """The row counts the songs of every category once, archived ones excluded, and the files made so far"""
+    """The row counts the songs of every category once, archived ones excluded, and the files made so far."""
     song.categories.add(make_category(all_songs_template.tenant, name="Second", slug="second"))
     PDFFile.objects.create(tenant=all_songs_template.tenant, template=all_songs_template, filename="all")
 
@@ -55,14 +55,14 @@ def test_list_counts_active_songs_and_files(staff_client, song, archived_song, a
 
 
 def test_list_shows_the_row_for_the_tenant_only(staff_client, other_tenant, tenant):
-    """Other tenants' templates are not listed"""
+    """Other tenants' templates are not listed."""
     other = AllSongsTemplate.for_tenant(other_tenant, filename="other", locale="en")
 
     assert staff_client.get(reverse("category:list")).context["all_songs"] != other
 
 
 def test_list_links_the_row_to_the_all_songs_list_and_form(staff_client, all_songs_template):
-    """The row leads to /all and to the form"""
+    """The row leads to /all and to the form."""
     content = staff_client.get(reverse("category:list")).content.decode()
 
     assert f'href="{reverse("backend:all")}"' in content
@@ -70,7 +70,7 @@ def test_list_links_the_row_to_the_all_songs_list_and_form(staff_client, all_son
 
 
 def test_list_hints_when_the_list_is_hidden(staff_client, tenant, all_songs_template):
-    """A tenant without the all songs list is told where to turn it on"""
+    """A tenant without the all songs list is told where to turn it on."""
     tenant.all_songs_category = False
     tenant.save()
 
@@ -81,7 +81,7 @@ def test_list_hints_when_the_list_is_hidden(staff_client, tenant, all_songs_temp
 
 
 def test_list_has_no_hint_when_the_list_is_shown(staff_client, all_songs_template):
-    """The hint only appears for a hidden list"""
+    """The hint only appears for a hidden list."""
     content = staff_client.get(reverse("category:list")).content.decode()
 
     assert f'href="{reverse("tenants:edit")}"' not in content
@@ -89,7 +89,7 @@ def test_list_has_no_hint_when_the_list_is_shown(staff_client, all_songs_templat
 
 
 def test_form_shows_the_template_of_the_tenant(staff_client, all_songs_template):
-    """The edit page works on the template of the tenant being served"""
+    """The edit page works on the template of the tenant being served."""
     response = staff_client.get(EDIT_URL)
 
     assert response.context["object"] == all_songs_template
@@ -97,7 +97,7 @@ def test_form_shows_the_template_of_the_tenant(staff_client, all_songs_template)
 
 
 def test_form_starts_with_the_read_only_name(staff_client, all_songs_template):
-    """The name of the list is shown, but cannot be changed"""
+    """The name of the list is shown, but cannot be changed."""
     form = staff_client.get(EDIT_URL).context["form"]
 
     assert next(iter(form.fields)) == "name"
@@ -106,19 +106,19 @@ def test_form_starts_with_the_read_only_name(staff_client, all_songs_template):
 
 
 def test_update_ignores_a_posted_name(staff_client, all_songs_template):
-    """The name is not stored, wherever it comes from"""
+    """The name is not stored, wherever it comes from."""
     staff_client.post(EDIT_URL, all_songs_payload(name="Hacked"))
 
     assert staff_client.get(EDIT_URL).context["form"]["name"].value() == "Všechny Písničky"
 
 
 def test_form_is_titled_after_the_pdf(staff_client, all_songs_template):
-    """The page title names the all songs PDF"""
+    """The page title names the all songs PDF."""
     assert staff_client.get(EDIT_URL).context["title"] == "Upravit PDF všech písniček"
 
 
 def test_update_stores_the_values(staff_client, all_songs_template):
-    """Posting the form changes the template"""
+    """Posting the form changes the template."""
     response = staff_client.post(EDIT_URL, all_songs_payload(filename="renamed"))
 
     assert response.status_code == 302
@@ -127,14 +127,14 @@ def test_update_stores_the_values(staff_client, all_songs_template):
 
 
 def test_update_schedules_pdf_when_enabled(staff_client, all_songs_template):
-    """Changing a printed template queues a fresh PDF"""
+    """Changing a printed template queues a fresh PDF."""
     staff_client.post(EDIT_URL, all_songs_payload(generate_pdf=True))
 
     assert PDFFile.objects.filter(template=all_songs_template).count() == 1
 
 
 def test_update_without_changes_schedules_nothing(staff_client, tenant):
-    """Resubmitting identical data does not queue a PDF"""
+    """Resubmitting identical data does not queue a PDF."""
     template = AllSongsTemplate.for_tenant(
         tenant, filename="everything", locale="en", generate_pdf=True, title="", display_name="", link=""
     )
@@ -145,7 +145,7 @@ def test_update_without_changes_schedules_nothing(staff_client, tenant):
 
 
 def test_update_schedules_nothing_when_disabled(staff_client, all_songs_template):
-    """Without automatic generation saving only stores the values"""
+    """Without automatic generation saving only stores the values."""
     all_songs_template.generate_pdf = False
     all_songs_template.save()
 
@@ -155,7 +155,7 @@ def test_update_schedules_nothing_when_disabled(staff_client, all_songs_template
 
 
 def test_update_schedules_nothing_without_the_list(staff_client, tenant, all_songs_template):
-    """A tenant without the all songs list gets no all songs PDF"""
+    """A tenant without the all songs list gets no all songs PDF."""
     tenant.all_songs_category = False
     tenant.save()
 
@@ -165,7 +165,7 @@ def test_update_schedules_nothing_without_the_list(staff_client, tenant, all_son
 
 
 def test_invalid_update_schedules_nothing(staff_client, all_songs_template):
-    """A rejected form changes nothing"""
+    """A rejected form changes nothing."""
     response = staff_client.post(EDIT_URL, all_songs_payload(generate_pdf=True, filename=""))
 
     assert response.status_code == 200

@@ -1,4 +1,4 @@
-"""gunicorn configuration of the container image; GUNICORN_CMD_ARGS overrides any of it"""
+"""gunicorn configuration of the container image; GUNICORN_CMD_ARGS overrides any of it."""
 
 wsgi_app = "chords.wsgi:application"
 proc_name = "song-book"

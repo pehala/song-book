@@ -14,14 +14,14 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture
 def stored_file(tenant):
-    """A PDFFile with real bytes written to disk"""
+    """A PDFFile with real bytes written to disk."""
     file = PDFFile.objects.create(tenant=tenant, filename="songbook", update_date=now())
     file.file.save("songbook.pdf", ContentFile(b"%PDF-"))
     return file
 
 
 def test_existing_names_are_reused(tmp_path):
-    """Saving over an existing name overwrites it instead of suffixing"""
+    """Saving over an existing name overwrites it instead of suffixing."""
     storage = DateOverwriteStorage(location=str(tmp_path))
     (tmp_path / "songbook.pdf").write_bytes(b"old")
 
@@ -30,7 +30,7 @@ def test_existing_names_are_reused(tmp_path):
 
 
 def test_deleting_the_record_removes_the_file(stored_file):
-    """The post_delete hook cleans the file off the disk"""
+    """The post_delete hook cleans the file off the disk."""
     path = stored_file.file.path
 
     stored_file.delete()
@@ -39,7 +39,7 @@ def test_deleting_the_record_removes_the_file(stored_file):
 
 
 def test_deleting_a_record_without_a_file_is_harmless(tenant):
-    """A record that never produced a file deletes cleanly"""
+    """A record that never produced a file deletes cleanly."""
     file = PDFFile.objects.create(tenant=tenant, filename="songbook", update_date=now())
 
     file.delete()
@@ -48,7 +48,7 @@ def test_deleting_a_record_without_a_file_is_harmless(tenant):
 
 
 def test_cleanup_ignores_records_whose_file_is_gone(tenant):
-    """A record pointing at a file that is no longer there deletes cleanly"""
+    """A record pointing at a file that is no longer there deletes cleanly."""
     file = PDFFile.objects.create(tenant=tenant, filename="songbook", update_date=now(), file="pdfs/missing.pdf")
 
     file.delete()
@@ -57,7 +57,7 @@ def test_cleanup_ignores_records_whose_file_is_gone(tenant):
 
 
 def test_cleanup_survives_a_failing_storage(stored_file, monkeypatch):
-    """A storage that refuses to delete does not break the deletion"""
+    """A storage that refuses to delete does not break the deletion."""
 
     def explode(*args, **kwargs):
         raise OSError("read only file system")

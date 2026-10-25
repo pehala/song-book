@@ -1,4 +1,4 @@
-"""Storages for the PDF application"""
+"""Storages for the PDF application."""
 
 import contextlib
 import os
@@ -9,22 +9,17 @@ from django.db.models import FileField
 
 
 class DateOverwriteStorage(FileSystemStorage):
-    """
-    File storage system that saves files into folders based on current date
-    and overwrites already existing files
-    """
+    """File storage system that saves files into folders based on current date and overwrites existing files."""
 
     def get_available_name(self, name, max_length=None):
+        """Returns the name as it is, after deleting a file that already has it."""
         path = Path(name)
         self.delete(path)
         return path
 
 
 def file_cleanup(sender, **kwargs):
-    """
-    File cleanup callback used to emulate the old delete
-    behavior using signals. Initially django deleted linked
-    files when an object containing a File/ImageField was deleted.
+    """File cleanup callback that deletes the files linked from the File/ImageFields of a deleted instance.
 
     Usage:
     >>> from django.db.models.signals import post_delete

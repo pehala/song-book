@@ -39,5 +39,5 @@ def test_etag_changes_after_an_edit(anon_client, song):
 
 
 def test_etag_differs_between_public_and_archived_lists(anon_client, superuser_client, song, archived_song):
-    """The list with archived songs has an ETag of its own"""
+    """The list with archived songs has an ETag of its own."""
     assert anon_client.get(URL)["ETag"] != superuser_client.get(URL)["ETag"]

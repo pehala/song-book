@@ -13,28 +13,33 @@ from frontend.views import ASSETS
 
 
 def songs(page):
+    """Returns the locator of the songs shown."""
     return page.locator("details.song")
 
 
 def titles(page):
+    """Returns the locator of the titles of the songs shown."""
     return page.locator("details.song h2")
 
 
 def numbers(page):
+    """Returns the locator of the numbers of the songs shown."""
     return page.locator("details.song .num")
 
 
 def open_menu(page, name):
+    """Opens the header menu with the given name."""
     page.locator("summary", has_text=name).click()
 
 
 def go_to_category(page, name):
+    """Opens the categories menu and follows the link to the category."""
     open_menu(page, "Categories")
     page.get_by_role("link", name=name).click()
 
 
 def test_all_songs_is_the_first_entry_of_the_categories_menu(page, library):
-    """All songs leads the categories in the menu"""
+    """All songs leads the categories in the menu."""
     page.goto("/categories/cs")
     open_menu(page, "Categories")
 
@@ -43,7 +48,7 @@ def test_all_songs_is_the_first_entry_of_the_categories_menu(page, library):
 
 
 def test_landing_page_is_drawn_from_the_shell(page, library):
-    """/ shows the tenant's landing page without a redirect from the server"""
+    """/ shows the tenant's landing page without a redirect from the server."""
     page.goto("/")
 
     expect(page).to_have_url(page.url.split("/", 3)[0] + "//" + urlsplit(page.url).netloc + "/categories/cs")
@@ -53,7 +58,7 @@ def test_landing_page_is_drawn_from_the_shell(page, library):
 
 
 def test_songs_are_numbered_and_archived_ones_hidden(page, library):
-    """Anonymous visitors see the public songs of the category, numbered from 1"""
+    """Anonymous visitors see the public songs of the category, numbered from 1."""
     page.goto("/categories/cs")
 
     expect(numbers(page)).to_have_text(["1.", "2.", "3."])
@@ -61,14 +66,14 @@ def test_songs_are_numbered_and_archived_ones_hidden(page, library):
 
 
 def test_all_songs_lists_every_song(page, library):
-    """The all songs route shows what is in every category"""
+    """The all songs route shows what is in every category."""
     page.goto("/all")
 
     expect(songs(page)).to_have_count(4)
 
 
 def test_shell_placeholder_is_gone_once_the_reader_is_drawn(page, library):
-    """The progress bar of the shell must not linger below the song list"""
+    """The progress bar of the shell must not linger below the song list."""
     page.goto("/all")
 
     expect(songs(page)).to_have_count(4)
@@ -76,7 +81,7 @@ def test_shell_placeholder_is_gone_once_the_reader_is_drawn(page, library):
 
 
 def test_progress_bar_shows_while_the_first_list_downloads(page, library):
-    """With nothing stored the reader shows a progress bar until the songs arrive"""
+    """With nothing stored the reader shows a progress bar until the songs arrive."""
     held = []
 
     def hold(route):
@@ -94,7 +99,7 @@ def test_progress_bar_shows_while_the_first_list_downloads(page, library):
 
 
 def test_download_progress_follows_the_announced_size(page, library):
-    """The bytes read are reported against the size the server announces, and the list is stored whole"""
+    """The bytes read are reported against the size the server announces, and the list is stored whole."""
     page.goto("/all")
     expect(songs(page)).to_have_count(4)
 
@@ -129,7 +134,7 @@ def test_download_progress_follows_the_announced_size(page, library):
 
 
 def test_progress_says_when_the_whole_list_is_fetched_again(page, library):
-    """A delta that does not fit the stored list makes the reader fetch everything, which the progress reports"""
+    """A delta that does not fit the stored list makes the reader fetch everything, which the progress reports."""
     page.goto("/all")
     expect(songs(page)).to_have_count(4)
 
@@ -156,7 +161,7 @@ def test_progress_says_when_the_whole_list_is_fetched_again(page, library):
 
 
 def test_remaining_time_follows_the_recent_speed(page, library):
-    """The estimate waits for a known speed and a total, and is left out for a stalled or nearly done download"""
+    """The estimate waits for a known speed and a total, and is left out for a stalled or nearly done download."""
     page.goto("/all")
     expect(songs(page)).to_have_count(4)
 
@@ -178,7 +183,7 @@ def test_remaining_time_follows_the_recent_speed(page, library):
 
 
 def page_errors(page):
-    """The uncaught errors the page raises"""
+    """The uncaught errors the page raises."""
     errors = []
 
     def collect(error):
@@ -189,7 +194,7 @@ def page_errors(page):
 
 
 def throttle(page, bytes_per_second):
-    """Makes the page's downloads arrive in chunks over several seconds"""
+    """Makes the page's downloads arrive in chunks over several seconds."""
     session = page.context.new_cdp_session(page)
     session.send(
         "Network.emulateNetworkConditions",
@@ -198,7 +203,7 @@ def throttle(page, bytes_per_second):
 
 
 def test_first_download_estimates_the_time_left(page, library, make_song):
-    """Over a slow connection the caption of the bar tells how long the songs still take"""
+    """Over a slow connection the caption of the bar tells how long the songs still take."""
     make_song(*library.category_set.all(), name="Long", text="{C}la " * 4000)
     errors = page_errors(page)
     throttle(page, 40_000)
@@ -210,7 +215,7 @@ def test_first_download_estimates_the_time_left(page, library, make_song):
 
 
 def test_options_reload_downloads_the_whole_list_again(page, library, requests_made):
-    """The reload button fetches the full list rather than a delta and says so"""
+    """The reload button fetches the full list rather than a delta and says so."""
     page.goto("/all")
     expect(songs(page)).to_have_count(4)
     requests_made.clear()
@@ -226,7 +231,7 @@ def test_options_reload_downloads_the_whole_list_again(page, library, requests_m
 
 
 def test_reload_over_a_slow_connection_draws_the_line_without_errors(page, library, make_song):
-    """The line along the top follows a manual reload that arrives in chunks"""
+    """The line along the top follows a manual reload that arrives in chunks."""
     make_song(*library.category_set.all(), name="Long", text="{C}la " * 4000)
     errors = page_errors(page)
     page.goto("/all")
@@ -242,7 +247,7 @@ def test_reload_over_a_slow_connection_draws_the_line_without_errors(page, libra
 
 
 def test_switching_category_asks_the_server_for_nothing(page, library, requests_made):
-    """The songs are held already, so changing category is a pushState and a filter"""
+    """The songs are held already, so changing category is a pushState and a filter."""
     page.goto("/categories/cs")
     expect(songs(page)).to_have_count(3)
     seen = len(requests_made)
@@ -255,7 +260,7 @@ def test_switching_category_asks_the_server_for_nothing(page, library, requests_
 
 
 def test_back_button_returns_to_the_previous_category(page, library):
-    """Client-side routes live in the history"""
+    """Client-side routes live in the history."""
     page.goto("/categories/cs")
     go_to_category(page, "English")
     expect(songs(page)).to_have_count(2)
@@ -266,14 +271,14 @@ def test_back_button_returns_to_the_previous_category(page, library):
 
 
 def test_unknown_category_says_so(page, library):
-    """A slug nobody owns is explained, not left blank"""
+    """A slug nobody owns is explained, not left blank."""
     page.goto("/categories/nope")
 
     expect(page.get_by_text("This category does not exist.")).to_be_visible()
 
 
 def test_everything_comes_from_one_origin(page, library, requests_made):
-    """No CDN: the reader works on a connection that can reach nothing else"""
+    """No CDN: the reader works on a connection that can reach nothing else."""
     page.goto("/categories/cs")
     expect(songs(page)).to_have_count(3)
 
@@ -283,7 +288,7 @@ def test_everything_comes_from_one_origin(page, library, requests_made):
 
 
 def test_search_ignores_case_and_diacritics(page, library):
-    """Typing 'jozin' finds 'Jožin'"""
+    """Typing 'jozin' finds 'Jožin'."""
     page.goto("/categories/cs")
 
     page.get_by_label("Search").fill("JOZIN")
@@ -292,7 +297,7 @@ def test_search_ignores_case_and_diacritics(page, library):
 
 
 def test_search_looks_into_the_text_and_the_author(page, library):
-    """Lyrics and authors are searched, chords are part of the text"""
+    """Lyrics and authors are searched, chords are part of the text."""
     page.goto("/categories/cs")
     search = page.get_by_label("Search")
 
@@ -305,7 +310,7 @@ def test_search_looks_into_the_text_and_the_author(page, library):
 
 
 def test_search_terms_separated_by_semicolon_all_have_to_match(page, library):
-    """`a;b` means both a and b"""
+    """`a;b` means both a and b."""
     page.goto("/categories/cs")
     search = page.get_by_label("Search")
 
@@ -316,7 +321,7 @@ def test_search_terms_separated_by_semicolon_all_have_to_match(page, library):
 
 
 def test_search_matches_the_number_of_the_list(page, library):
-    """The numbers shown are searchable, and they follow the route"""
+    """The numbers shown are searchable, and they follow the route."""
     page.goto("/categories/en")
 
     page.get_by_label("Search").fill("2")
@@ -326,7 +331,7 @@ def test_search_matches_the_number_of_the_list(page, library):
 
 
 def test_opening_a_song_shows_its_text(page, library):
-    """The body is drawn when the song is opened"""
+    """The body is drawn when the song is opened."""
     page.goto("/categories/cs")
 
     songs(page).nth(1).locator("summary").click()
@@ -335,7 +340,7 @@ def test_opening_a_song_shows_its_text(page, library):
 
 
 def test_open_song_keeps_its_title_in_view(page, library, make_song):
-    """The title of a long song stays under the search bar while its text scrolls past"""
+    """The title of a long song stays under the search bar while its text scrolls past."""
     make_song(library.category_set.get(slug="cs"), name="Long", text="\n\n".join(f"{{C}}Verse {n}" for n in range(60)))
     page.emulate_media(reduced_motion="reduce")
     page.goto("/categories/cs")
@@ -351,6 +356,7 @@ def test_open_song_keeps_its_title_in_view(page, library, make_song):
 
 
 def open_long_song(page, library, make_song, verse="{C}Verse"):
+    """Adds a song long enough to scroll, with reduced motion, and opens it."""
     make_song(
         library.category_set.get(slug="cs"),
         name="Long",
@@ -367,7 +373,7 @@ def open_long_song(page, library, make_song, verse="{C}Verse"):
 
 
 def press_scroll_down(page):
-    """Presses Scroll down until it goes away at the end of the song; returns the scroll positions before each press"""
+    """Presses Scroll down until it goes away at the end of the song; returns the scroll positions before each press."""
     button = page.get_by_role("button", name="Scroll down")
     positions = []
     while button.count() and len(positions) < 30:
@@ -380,7 +386,7 @@ def press_scroll_down(page):
 
 
 def test_scroll_down_keeps_what_is_read_in_view(page, library, make_song):
-    """A press moves a verse start up under the title by at most 80% of the screen, so what is read stays in view"""
+    """A press moves a verse start up under the title by at most 80% of the screen, so what is read stays in view."""
     long = open_long_song(page, library, make_song)
     verses = long.locator(".song-text p")
     last_read = verses.evaluate_all(
@@ -399,7 +405,7 @@ def test_scroll_down_keeps_what_is_read_in_view(page, library, make_song):
 
 
 def test_scroll_down_moves_on_when_a_verse_is_taller_than_the_screen(page, library, make_song):
-    """With no verse start to align to, the button still scrolls most of a screen"""
+    """With no verse start to align to, the button still scrolls most of a screen."""
     page.set_viewport_size({"width": 667, "height": 300})
     open_long_song(page, library, make_song, verse="word " * 300)
     before = page.evaluate("scrollY")
@@ -410,7 +416,7 @@ def test_scroll_down_moves_on_when_a_verse_is_taller_than_the_screen(page, libra
 
 
 def test_scroll_down_never_goes_up_in_columns(page, library, make_song):
-    """With several columns each press moves forward, whichever column the verses at the edge are in"""
+    """With several columns each press moves forward, whichever column the verses at the edge are in."""
     page.add_init_script("localStorage.setItem('columns', '2')")
     page.set_viewport_size({"width": 1280, "height": 800})
     open_long_song(page, library, make_song)
@@ -422,7 +428,7 @@ def test_scroll_down_never_goes_up_in_columns(page, library, make_song):
 
 
 def test_scroll_down_is_offered_only_while_the_song_continues(page, library, make_song):
-    """A song that fits the screen has no button, a long one has it until its end is in view"""
+    """A song that fits the screen has no button, a long one has it until its end is in view."""
     page.emulate_media(reduced_motion="reduce")
     page.goto("/categories/cs")
     songs(page).nth(1).locator("summary").click()
@@ -439,7 +445,7 @@ def test_scroll_down_is_offered_only_while_the_song_continues(page, library, mak
 
 
 def test_scroll_down_stops_at_the_end_of_the_song(page, library, make_song):
-    """The last press leaves the end of the song at the bottom edge, with the next songs still below the screen"""
+    """The last press leaves the end of the song at the bottom edge, with the next songs still below the screen."""
     long = open_long_song(page, library, make_song)
 
     press_scroll_down(page)
@@ -450,7 +456,7 @@ def test_scroll_down_stops_at_the_end_of_the_song(page, library, make_song):
 
 
 def test_one_song_is_open_at_a_time(page, library):
-    """Opening a song closes the previous one"""
+    """Opening a song closes the previous one."""
     page.goto("/categories/cs")
 
     songs(page).nth(0).locator("summary").click()
@@ -461,7 +467,7 @@ def test_one_song_is_open_at_a_time(page, library):
 
 
 def test_random_song_button_opens_a_song_of_the_list(page, library):
-    """The button opens one song of the category, and another one each time"""
+    """The button opens one song of the category, and another one each time."""
     page.goto("/categories/cs")
 
     page.get_by_role("button", name="Random song").click()
@@ -474,7 +480,7 @@ def test_random_song_button_opens_a_song_of_the_list(page, library):
 
 
 def test_random_song_button_follows_the_search(page, library):
-    """Only the songs left by the search are drawn from, and the button is off when none is"""
+    """Only the songs left by the search are drawn from, and the button is off when none is."""
     page.goto("/categories/cs")
     page.get_by_label("Search").fill("hrad")
 
@@ -486,7 +492,7 @@ def test_random_song_button_follows_the_search(page, library):
 
 
 def test_floating_buttons_stay_clear_of_the_search_bar(page, library, make_song):
-    """Back to top hangs under the sticky title, Scroll down sits in the bottom corner, and none covers another"""
+    """Back to top hangs under the sticky title, Scroll down sits in the bottom corner, and none covers another."""
     long = open_long_song(page, library, make_song)
     page.evaluate("scrollTo(0, 1000)")
     boxes = {
@@ -513,7 +519,7 @@ def test_floating_buttons_stay_clear_of_the_search_bar(page, library, make_song)
 
 
 def test_back_to_top_stays_put_when_scroll_down_goes_away(page, library, make_song):
-    """Back to top keeps its place at the top when Scroll down hides at the end of the song"""
+    """Back to top keeps its place at the top when Scroll down hides at the end of the song."""
     open_long_song(page, library, make_song)
     page.evaluate("scrollTo(0, 1000)")
     to_top = page.get_by_role("button", name="Back to top")
@@ -526,7 +532,7 @@ def test_back_to_top_stays_put_when_scroll_down_goes_away(page, library, make_so
 
 
 def test_capo_and_video_link_are_shown(page, library):
-    """Songs with a capo or a link say so"""
+    """Songs with a capo or a link say so."""
     page.goto("/categories/cs")
 
     songs(page).nth(2).locator("summary").click()
@@ -536,7 +542,7 @@ def test_capo_and_video_link_are_shown(page, library):
 
 
 def test_transposing_changes_the_chords(page, library):
-    """Czech names: H is the natural B, so one up from H is C"""
+    """Czech names: H is the natural B, so one up from H is C."""
     page.goto("/categories/cs")
     songs(page).nth(0).locator("summary").click()
     chords = songs(page).nth(0).locator(".chord")
@@ -551,7 +557,7 @@ def test_transposing_changes_the_chords(page, library):
 
 
 def test_chords_stand_above_the_text(page, library):
-    """By default the chords are annotations over their words and still transpose"""
+    """By default the chords are annotations over their words and still transpose."""
     page.goto("/categories/cs")
     songs(page).nth(0).locator("summary").click()
     chords = songs(page).nth(0).locator("rt.chord")
@@ -567,7 +573,7 @@ def test_chords_stand_above_the_text(page, library):
 
 
 def test_chords_can_stay_in_the_line(page, library, settings):
-    """The inline renderer keeps the chords in the line of text"""
+    """The inline renderer keeps the chords in the line of text."""
     settings.SONG_RENDERER = "chords.markdown.INLINE_RENDERER"
     page.goto("/categories/cs")
     songs(page).nth(0).locator("summary").click()
@@ -577,7 +583,7 @@ def test_chords_can_stay_in_the_line(page, library, settings):
 
 
 def test_transposing_starts_again_for_the_next_song(page, library):
-    """The shift belongs to the open song"""
+    """The shift belongs to the open song."""
     page.goto("/categories/cs")
     songs(page).nth(0).locator("summary").click()
     page.get_by_role("button", name="Transpose +1").click()
@@ -588,7 +594,7 @@ def test_transposing_starts_again_for_the_next_song(page, library):
 
 
 def test_hide_chords_option_is_remembered(page, library):
-    """Chords can be hidden and the choice survives a reload"""
+    """Chords can be hidden and the choice survives a reload."""
     page.goto("/categories/cs")
     songs(page).nth(0).locator("summary").click()
     open_menu(page, "Options")
@@ -602,7 +608,7 @@ def test_hide_chords_option_is_remembered(page, library):
 
 
 def test_columns_option_is_remembered(page, library):
-    """The number of columns is a CSS variable and survives a reload"""
+    """The number of columns is a CSS variable and survives a reload."""
     page.goto("/categories/cs")
     open_menu(page, "Options")
 
@@ -615,7 +621,7 @@ def test_columns_option_is_remembered(page, library):
 
 @pytest.mark.parametrize(("width", "columns"), [(375, "1"), (1280, "2"), (1920, "3")])
 def test_columns_default_to_the_width_of_the_screen(page, library, width, columns):
-    """Until the reader chooses, wider screens get more columns"""
+    """Until the reader chooses, wider screens get more columns."""
     page.set_viewport_size({"width": width, "height": 800})
     page.goto("/categories/cs")
 
@@ -623,7 +629,7 @@ def test_columns_default_to_the_width_of_the_screen(page, library, width, column
 
 
 def test_short_song_gets_no_empty_columns(page, library):
-    """A song of two verses fills two of three columns, and both start at the same height"""
+    """A song of two verses fills two of three columns, and both start at the same height."""
     page.add_init_script("localStorage.setItem('columns', '3')")
     page.emulate_media(reduced_motion="reduce")
     page.goto("/categories/cs")
@@ -637,7 +643,7 @@ def test_short_song_gets_no_empty_columns(page, library):
 
 
 def test_chosen_columns_win_over_the_screen(page, library):
-    """A stored choice is kept whatever the screen"""
+    """A stored choice is kept whatever the screen."""
     page.add_init_script("localStorage.setItem('columns', '1')")
     page.set_viewport_size({"width": 1920, "height": 800})
     page.goto("/categories/cs")
@@ -646,7 +652,7 @@ def test_chosen_columns_win_over_the_screen(page, library):
 
 
 def test_theme_is_applied_and_remembered(page, library):
-    """The dark theme sets the attribute and keeps the key the old pages used"""
+    """The dark theme sets the attribute and keeps the key the old pages used."""
     page.goto("/categories/cs")
     open_menu(page, "Options")
 
@@ -659,7 +665,7 @@ def test_theme_is_applied_and_remembered(page, library):
 
 
 def test_language_can_be_switched(page, library):
-    """The interface changes language at once and remembers it"""
+    """The interface changes language at once and remembers it."""
     page.goto("/categories/cs")
     expect(page.get_by_label("Search")).to_be_visible()
     open_menu(page, "Options")
@@ -673,7 +679,7 @@ def test_language_can_be_switched(page, library):
 
 
 def test_dropdown_closes_on_escape_and_outside_click(page, library):
-    """Only one menu is open and it goes away when asked"""
+    """Only one menu is open and it goes away when asked."""
     page.goto("/categories/cs")
     open_menu(page, "Options")
     expect(page.locator("details.sb-dd[open]")).to_have_count(1)
@@ -687,7 +693,7 @@ def test_dropdown_closes_on_escape_and_outside_click(page, library):
 
 
 def test_qr_code_dialog(page, library):
-    """The QR code of the current address opens in a dialog"""
+    """The QR code of the current address opens in a dialog."""
     page.goto("/categories/cs")
 
     page.get_by_role("button", name="QR code").click()
@@ -700,7 +706,7 @@ def test_qr_code_dialog(page, library):
 
 
 def test_menu_lists_links_and_pdfs_only_when_there_are_some(page, library):
-    """Dropdowns without content are not drawn"""
+    """Dropdowns without content are not drawn."""
     page.goto("/categories/cs")
 
     expect(page.locator("summary", has_text="See also")).to_have_count(0)
@@ -708,7 +714,7 @@ def test_menu_lists_links_and_pdfs_only_when_there_are_some(page, library):
 
 
 def test_messages_of_the_server_are_shown(page, library):
-    """Messages that waited for the reader appear as a notice"""
+    """Messages that waited for the reader appear as a notice."""
     page.route(
         "**/api/me",
         lambda route: route.fulfill(
@@ -731,7 +737,7 @@ def test_messages_of_the_server_are_shown(page, library):
 
 
 def test_data_failure_offers_a_retry(page, library):
-    """A first visit that cannot load the songs says so and can try again"""
+    """A first visit that cannot load the songs says so and can try again."""
     page.route("**/api/songs", lambda route: route.abort())
     page.goto("/categories/cs")
     expect(page.get_by_text("The songs could not be loaded")).to_be_visible()
@@ -743,7 +749,7 @@ def test_data_failure_offers_a_retry(page, library):
 
 
 def test_changed_songs_replace_the_stored_ones(page, library):
-    """A returning reader gets the edit on the next visit"""
+    """A returning reader gets the edit on the next visit."""
     page.goto("/categories/cs")
     expect(songs(page)).to_have_count(3)
     page.wait_for_load_state("networkidle")  # the in-memory database is locked while the server reads it
@@ -757,7 +763,7 @@ def test_changed_songs_replace_the_stored_ones(page, library):
 
 
 def test_only_the_changed_song_is_downloaded(page, library):
-    """A returning reader asks for what changed since its copy, and gets the edit and an added song merged in"""
+    """A returning reader asks for what changed since its copy, and gets the edit and an added song merged in."""
     for category in library.category_set.all():
         category.song_set.update(updated_at="2020-01-01T00:00:00Z")
     page.goto("/categories/cs")
@@ -786,7 +792,7 @@ def test_only_the_changed_song_is_downloaded(page, library):
 
 
 def test_songs_are_kept_for_offline_use(page, context, library):
-    """After one visit the reader opens without any connection"""
+    """After one visit the reader opens without any connection."""
     page.goto("/categories/cs")
     expect(songs(page)).to_have_count(3)
     page.evaluate("navigator.serviceWorker.ready")
@@ -803,7 +809,7 @@ def test_songs_are_kept_for_offline_use(page, context, library):
 
 
 def test_admin_sees_edit_links_and_can_log_out(page, context, library, staff_user, sign_in):
-    """Tenant administrators get edit and delete links; logging out forgets them and the stored songs"""
+    """Tenant administrators get edit and delete links; logging out forgets them and the stored songs."""
     sign_in(staff_user)
     page.goto("/categories/cs")
     open_menu(page, "Account")
@@ -826,7 +832,7 @@ def test_admin_sees_edit_links_and_can_log_out(page, context, library, staff_use
 
 
 def test_superuser_sees_archived_songs_until_logout(page, library, superuser, sign_in):
-    """Archived songs come with the superuser's list and are gone with the session"""
+    """Archived songs come with the superuser's list and are gone with the session."""
     sign_in(superuser)
     page.goto("/categories/cs")
 
@@ -844,7 +850,7 @@ def test_superuser_sees_archived_songs_until_logout(page, library, superuser, si
 
 
 def test_anonymous_visitor_has_no_admin_menu(page, library):
-    """Nothing administrative is drawn for the public"""
+    """Nothing administrative is drawn for the public."""
     page.goto("/categories/cs")
 
     expect(page.get_by_role("link", name="Log in")).to_have_attribute(
@@ -854,11 +860,12 @@ def test_anonymous_visitor_has_no_admin_menu(page, library):
 
 
 def shell_caches(page):
+    """Returns the names of the shell caches of the service worker."""
     return page.evaluate("caches.keys().then(names => names.filter(name => name.startsWith('shell-')))")
 
 
 def test_new_version_is_offered_and_installed_on_request(page, library, monkeypatch):
-    """A changed worker waits until the reader agrees to reload, then replaces the old caches"""
+    """A changed worker waits until the reader agrees to reload, then replaces the old caches."""
     page.goto("/categories/cs")
     page.evaluate("navigator.serviceWorker.ready")
     page.reload()
@@ -882,7 +889,7 @@ def test_new_version_is_offered_and_installed_on_request(page, library, monkeypa
 
 
 def test_edited_file_is_offered_as_a_new_version_in_development(page, library, settings, monkeypatch, tmp_path):
-    """With static files unhashed, changing a reader file still makes the browser offer the update"""
+    """With static files unhashed, changing a reader file still makes the browser offer the update."""
     settings.DEBUG = True
     stylesheet = tmp_path / "header.css"
     stylesheet.write_text(Path(finders.find("app/header.css")).read_text())

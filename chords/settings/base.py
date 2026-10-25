@@ -1,5 +1,4 @@
-"""
-Django settings for chords project.
+"""Django settings for chords project.
 
 For more information on this file, see
 https://docs.djangoproject.com/en/6.0/topics/settings/

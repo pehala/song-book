@@ -14,10 +14,12 @@ pytestmark = pytest.mark.django_db
 
 @pytest.fixture
 def tenant_admin():
+    """The admin of tenants, outside of a site."""
     return TenantAdmin(Tenant, AdminSite())
 
 
 def new_tenant(**overrides):
+    """Returns the form data of a new tenant, with the given fields overridden."""
     data = {
         "hostname": "fresh.localhost",
         "name": "Fresh",
@@ -29,7 +31,7 @@ def new_tenant(**overrides):
 
 
 def test_hostname_column_links_to_the_site(tenant_admin, tenant):
-    """The changelist links each tenant to its own homepage"""
+    """The changelist links each tenant to its own homepage."""
     rendered = tenant_admin.hostname_link(tenant)
 
     assert tenant.hostname in rendered
@@ -37,7 +39,7 @@ def test_hostname_column_links_to_the_site(tenant_admin, tenant):
 
 
 def test_saving_creates_a_default_category(tenant_admin, rf, db):
-    """A brand new tenant is usable right away"""
+    """A brand new tenant is usable right away."""
     tenant = new_tenant()
 
     tenant_admin.save_model(rf.get("/"), tenant, TenantForm(), change=False)
@@ -46,7 +48,7 @@ def test_saving_creates_a_default_category(tenant_admin, rf, db):
 
 
 def test_saving_points_the_index_at_the_default_category(tenant_admin, rf, db):
-    """The placeholder index redirect is replaced by the default category"""
+    """The placeholder index redirect is replaced by the default category."""
     tenant = new_tenant(index_redirect="/")
 
     tenant_admin.save_model(rf.get("/"), tenant, TenantForm(), change=False)
@@ -55,7 +57,7 @@ def test_saving_points_the_index_at_the_default_category(tenant_admin, rf, db):
 
 
 def test_saving_keeps_a_configured_index_redirect(tenant_admin, rf, db):
-    """A tenant that already points somewhere is left alone"""
+    """A tenant that already points somewhere is left alone."""
     tenant = new_tenant(index_redirect="/all")
 
     tenant_admin.save_model(rf.get("/"), tenant, TenantForm(), change=False)
@@ -64,7 +66,7 @@ def test_saving_keeps_a_configured_index_redirect(tenant_admin, rf, db):
 
 
 def test_saving_does_not_duplicate_categories(tenant_admin, rf, tenant, category):
-    """A tenant that already has categories gets no extra default one"""
+    """A tenant that already has categories gets no extra default one."""
     before = Category.objects.filter(tenant=tenant).count()
 
     tenant_admin.save_model(rf.get("/"), tenant, TenantForm(), change=True)
@@ -73,10 +75,10 @@ def test_saving_does_not_duplicate_categories(tenant_admin, rf, tenant, category
 
 
 def test_changelist_renders(superuser_client, tenant):
-    """The tenant changelist is reachable for site administrators"""
+    """The tenant changelist is reachable for site administrators."""
     assert superuser_client.get("/admin/tenants/tenant/").status_code == 200
 
 
 def test_link_changelist_renders(superuser_client, tenant):
-    """The link changelist is reachable for site administrators"""
+    """The link changelist is reachable for site administrators."""
     assert superuser_client.get("/admin/tenants/link/").status_code == 200

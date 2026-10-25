@@ -1,4 +1,4 @@
-"""(Manual)PDFTemplate related views"""
+"""(Manual)PDFTemplate related views."""
 
 from collections.abc import Iterable
 
@@ -26,13 +26,14 @@ from tenants.views import AdminMoveView
 
 
 class TemplateListView(LocalAdminRequired, ListView):
-    """Lists all the requests"""
+    """Lists all the requests."""
 
     model = ManualPDFTemplate
     template_name = "pdf/templates/list.html"
     context_object_name = "templates"
 
     def get_queryset(self):
+        """Returns the templates of the tenant along with the count of their songs."""
         return (
             super()
             .get_queryset()
@@ -43,19 +44,19 @@ class TemplateListView(LocalAdminRequired, ListView):
 
 
 class TemplateDeleteView(LocalAdminRequired, UniversalDeleteView):
-    """Removes Template"""
+    """Removes Template."""
 
     model = ManualPDFTemplate
     success_url = reverse_lazy("pdf:templates:list")
 
 
 class GenerateFromTemplateView(LocalAdminRequired, View, SingleObjectMixin):
-    """Regenerates the PDF request"""
+    """Regenerates the PDF request."""
 
     model = PDFTemplate
 
     def get(self, request, pk):
-        """Processes the request"""
+        """Processes the request."""
         obj: AllowedTemplates = self.get_object()
         latest_file = obj.latest_file
         if obj.has_scheduled_file():
@@ -73,12 +74,12 @@ class GenerateFromTemplateView(LocalAdminRequired, View, SingleObjectMixin):
 
 
 class TemplateNumberingMixin:
-    """Enables rendering of assign template with all required parameters"""
+    """Enables rendering of assign template with all required parameters."""
 
     PDFSongFormset = formset_factory(PDFSongForm, formset=BasePDFSongFormset, min_num=1, validate_min=True, extra=0)
 
     def render_assign_template(self, pk=None, formset=None, songs: Iterable[Song] | None = None):
-        """Renders assign template"""
+        """Renders assign template."""
         formset = formset or self.PDFSongFormset(
             prefix="songs",
             initial=[
@@ -91,13 +92,14 @@ class TemplateNumberingMixin:
 
 
 class UpdateTemplateView(LocalAdminRequired, TemplateNumberingMixin, TemplateView):
-    """Starts process of creating new PDFRequest by selecting songs for the request"""
+    """Starts process of creating new PDFRequest by selecting songs for the request."""
 
     PREFIX = "template"
     context_object_name = "songs"
     template_name = "pdf/templates/select.html"
 
     def get_context_data(self, *, object_list=None, template_form=None, songs_form=None, **kwargs):
+        """Adds the template and song selection forms along with the categories to pick songs from."""
         ctx = super().get_context_data(object_list=object_list, **kwargs)
 
         songs = []
@@ -128,7 +130,7 @@ class UpdateTemplateView(LocalAdminRequired, TemplateNumberingMixin, TemplateVie
         return ctx
 
     def post(self, request, *args, **kwargs):
-        """Handles post request, shows assign.html to user to assign numbers to requested songs"""
+        """Handles post request, shows assign.html to user to assign numbers to requested songs."""
         template_form = ManualTemplateForm(self.request.POST, request.FILES, prefix=self.PREFIX)
         songs_form = SongSelectionForm(self.request.POST, request.FILES, request=self.request)
         if template_form.is_valid() and songs_form.is_valid():
@@ -151,16 +153,16 @@ class UpdateTemplateView(LocalAdminRequired, TemplateNumberingMixin, TemplateVie
 
 
 class TemplateNumberSelectView(LocalAdminRequired, TemplateNumberingMixin, View):
-    """Assign song numbers for PDF request"""
+    """Assign song numbers for PDF request."""
 
     PDFSongFormset = formset_factory(PDFSongForm, formset=BasePDFSongFormset, min_num=1, validate_min=True, extra=0)
 
     def get(self, *args, **kwargs):
-        """Redirect back to the start of the process"""
+        """Redirect back to the start of the process."""
         return redirect(reverse("pdf:templates:edit", kwargs={"pk": self.kwargs.get("pk")}))
 
     def post(self, request, *args, **kwargs):
-        """POST request method handler"""
+        """POST request method handler."""
         template = ManualPDFTemplate.objects.get(pk=self.kwargs["pk"])
         formset = self.PDFSongFormset(self.request.POST, prefix="songs")
         if formset.is_valid():
@@ -178,12 +180,13 @@ class TemplateNumberSelectView(LocalAdminRequired, TemplateNumberingMixin, View)
 
 
 class MovePDFTemplatesView(AdminMoveView):
-    """Moves Templates to a different Tenant"""
+    """Moves Templates to a different Tenant."""
 
     formset_form = NameForm
     model = ManualPDFTemplate
 
     def action(self, target, ids):
+        """Moves the templates to the target tenant."""
         requests = ManualPDFTemplate.objects.filter(id__in=ids).distinct()
         with transaction.atomic():
             for request in requests:

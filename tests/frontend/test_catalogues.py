@@ -9,7 +9,7 @@ from frontend.catalogues import reader_catalogues
 
 @pytest.fixture
 def locale_dir(tmp_path, settings):
-    """A locale directory with a compiled `djangojs` catalogue of one Czech string"""
+    """A locale directory with a compiled `djangojs` catalogue of one Czech string."""
     messages = tmp_path / "cs" / "LC_MESSAGES"
     messages.mkdir(parents=True)
     source = messages / "djangojs.po"
@@ -24,17 +24,17 @@ def locale_dir(tmp_path, settings):
 
 
 def test_translated_languages_map_msgids_to_translations(locale_dir):
-    """The reader looks the English text up in the catalogue of its language"""
+    """The reader looks the English text up in the catalogue of its language."""
     assert reader_catalogues() == {"cs": {"Close": "Zavřít"}}
 
 
 def test_source_language_has_no_catalogue(locale_dir):
-    """English is the msgid itself"""
+    """English is the msgid itself."""
     assert "en" not in reader_catalogues()
 
 
 def test_language_without_translations_does_not_borrow_the_default(locale_dir, settings):
-    """Django falls back to Czech for other languages; the reader would show Czech in a German page"""
+    """Django falls back to Czech for other languages; the reader would show Czech in a German page."""
     settings.LANGUAGES = (("en", "English"), ("cs", "Česky"), ("de", "Deutsch"))
     reader_catalogues.cache_clear()
 
@@ -42,7 +42,7 @@ def test_language_without_translations_does_not_borrow_the_default(locale_dir, s
 
 
 def test_missing_catalogue_is_left_out(tmp_path, settings):
-    """A language that has nothing compiled adds no entry"""
+    """A language that has nothing compiled adds no entry."""
     settings.LOCALE_PATHS = [str(tmp_path)]
     reader_catalogues.cache_clear()
 
@@ -51,5 +51,5 @@ def test_missing_catalogue_is_left_out(tmp_path, settings):
 
 
 def test_catalogue_is_read_once(locale_dir):
-    """The same object is handed out every time"""
+    """The same object is handed out every time."""
     assert reader_catalogues() is reader_catalogues()

@@ -1,4 +1,4 @@
-"""Utility methods"""
+"""Utility methods."""
 
 from typing import TYPE_CHECKING
 
@@ -7,5 +7,5 @@ if TYPE_CHECKING:
 
 
 def tenant_cache_key(tenant: Tenant, key):
-    """Creates string that contains tenant id"""
+    """Creates string that contains tenant id."""
     return f"{tenant.id}-{key}"

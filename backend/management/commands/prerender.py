@@ -1,4 +1,4 @@
-"""Prerender command"""
+"""Prerender command."""
 
 from django.core.management import BaseCommand
 
@@ -7,9 +7,10 @@ from backend.models import Song
 
 
 class Command(BaseCommand):
-    """Generates prerendered html from markdown for all songs"""
+    """Generates prerendered html from markdown for all songs."""
 
     def handle(self, *args, **options):
+        """Renders every song again and stores the HTML."""
         changed = []
         for song in Song.objects.all():
             print(f"Prerendering song {song.name}")

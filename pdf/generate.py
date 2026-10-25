@@ -1,4 +1,4 @@
-"""Module containing all things related to generating PDF"""
+"""Module containing all things related to generating PDF."""
 
 import locale
 import logging
@@ -36,22 +36,21 @@ CONTENTS_COLUMNS = 3
 
 
 def update_status(file: PDFFile, status: Status):
-    """Updates status of the request if it is in DB"""
+    """Updates status of the request if it is in DB."""
     file.status = status
     file.save()
 
 
 def get_base_url():
-    """
-    Determine base URL to fetch CSS files from `WEASYPRINT_BASEURL` or
-    fall back to using the root path of the URL used in the request.
+    """Determines the base URL to fetch CSS files from.
+
+    It is `WEASYPRINT_BASEURL`, falling back to the root path of the URL used in the request.
     """
     return getattr(settings, "WEASYPRINT_BASEURL", reverse("chords:index"))
 
 
 def generate_pdf(pdf_file: PDFFile, template: AllowedTemplates):
-    """Generates PDF"""
-
+    """Generates PDF."""
     songs = sorted(template.get_songs(), key=lambda x: x[0])
     with changed_locale(lang_to_locale(template.locale)):
         sorted_songs = sorted(songs, key=lambda x: locale.strxfrm(x[1].name))
@@ -102,12 +101,12 @@ def generate_pdf(pdf_file: PDFFile, template: AllowedTemplates):
 
 @task()
 def generate_pdf_job(file: PDFFile, template: AllowedTemplates):
-    """Generates PDF from request in the background"""
+    """Generates PDF from request in the background."""
     generate_pdf(file, template)
 
 
 def generate_pdf_file(template: AllowedTemplates, delay: int = 0):
-    """Schedules generation of a request at a specific time"""
+    """Schedules generation of a request at a specific time."""
     current_time = now()
     scheduled_time = current_time + timedelta(seconds=delay)
     file = PDFFile.objects.create(
@@ -140,6 +139,7 @@ class ProgressFilter(logging.Filter):
         self.file = file
 
     def filter(self, record):
+        """Stores the step WeasyPrint reports as the progress of the file."""
         step = self.STEP_NUMBER.search(record.getMessage()).group(0)
         if self.file.progress != step:
             self.file.progress = step
@@ -148,7 +148,7 @@ class ProgressFilter(logging.Filter):
 
 
 class Timer:
-    """Context manager for measuring time"""
+    """Context manager for measuring time."""
 
     def __init__(self):
         self.duration = 0

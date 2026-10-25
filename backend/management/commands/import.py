@@ -1,4 +1,4 @@
-"""Management command for importing Songs"""  # noqa: N999
+"""Management command for importing Songs."""  # noqa: N999
 
 import json
 import logging
@@ -17,11 +17,12 @@ logger.setLevel(logging.INFO)
 
 
 class Command(BaseCommand):
-    """Imports Songs from a JSON"""
+    """Imports Songs from a JSON."""
 
     help = "Imports Songs from JSON"
 
     def add_arguments(self, parser: ArgumentParser):
+        """Adds the target category and the JSON file to import."""
         parser.add_argument(
             "-c",
             "--category",
@@ -32,6 +33,7 @@ class Command(BaseCommand):
         parser.add_argument("input", type=Path, help="Input JSON file")
 
     def handle(self, *args, **options):
+        """Imports the songs of the JSON file into the category."""
         category = Category.objects.get(id=options["category"])
 
         with open(options["input"], encoding="UTF-8") as file:

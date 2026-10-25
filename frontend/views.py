@@ -1,4 +1,4 @@
-"""Views of the reader: the shell, the service worker and the web app manifest"""
+"""Views of the reader: the shell, the service worker and the web app manifest."""
 
 import hashlib
 import json
@@ -45,7 +45,7 @@ BACKGROUND_COLOR = "#f9f9f9"
 
 
 def modules_digest(urls):
-    """Short digest of what the reader consists of: the hashed urls, and in development the files themselves"""
+    """Short digest of what the reader consists of: the hashed urls, and in development the files themselves."""
     digest = hashlib.blake2b(json.dumps(urls).encode(), digest_size=6)
     if settings.DEBUG:  # static files are not hashed in development, so their urls never change
         for path in ASSETS:
@@ -54,20 +54,19 @@ def modules_digest(urls):
 
 
 def asset_urls():
-    """Urls of the static files the reader consists of"""
+    """Urls of the static files the reader consists of."""
     return [static(path) for path in ASSETS]
 
 
 class ShellView(View):
-    """
-    The page every reader route is served with.
+    """The page every reader route is served with.
 
     It holds nothing that depends on the user, the session or the language, so it is cached by the
     service worker and by ETag; the client draws the route from the bootstrap and the songs.
     """
 
     def get(self, request, slug=None):
-        """Renders the shell; a slug that is no category of the tenant gets the same page with status 404"""
+        """Renders the shell; a slug that is no category of the tenant gets the same page with status 404."""
         tenant = request.tenant
         # In the language of the page, whatever the user's language is: the body is the same for everyone
         with translation.override(settings.LANGUAGE_CODE):
@@ -93,8 +92,7 @@ class ShellView(View):
 
 
 class ServiceWorkerView(TemplateView):
-    """
-    The reader's service worker.
+    """The reader's service worker.
 
     The precached urls are content-hashed, so a changed file changes the worker's bytes and the browser
     installs the new worker; the tenant is part of the cache name for hostnames that change tenant.
@@ -104,6 +102,7 @@ class ServiceWorkerView(TemplateView):
     content_type = "application/javascript"
 
     def get_context_data(self, **kwargs):
+        """Adds the name of the cache and the urls to precache."""
         context = super().get_context_data(**kwargs)
         urls = asset_urls()
         tenant = self.request.tenant
@@ -115,15 +114,17 @@ class ServiceWorkerView(TemplateView):
         return context
 
     def render_to_response(self, context, **response_kwargs):
+        """Marks the response as uncacheable."""
         response = super().render_to_response(context, **response_kwargs)
         add_never_cache_headers(response)
         return response
 
 
 class ManifestView(TemplateView):
-    """The web app manifest of the tenant"""
+    """The web app manifest of the tenant."""
 
     def get(self, request, *args, **kwargs):
+        """Returns the manifest, with the logo of the tenant as its icon when there is one."""
         tenant = request.tenant
         manifest = {
             "name": tenant.display_name,

@@ -14,7 +14,7 @@ pytestmark = [pytest.mark.django_db, pytest.mark.slow]
 
 @pytest.fixture
 def rendered_html(monkeypatch):
-    """Records the HTML handed to WeasyPrint, which still renders the real PDF"""
+    """Records the HTML handed to WeasyPrint, which still renders the real PDF."""
     pages = []
     real_html = weasyprint.HTML
 
@@ -28,13 +28,13 @@ def rendered_html(monkeypatch):
 
 @pytest.fixture(params=["pdf_category", "all_songs_template"])
 def printed(request, pdf_category, all_songs_template, settings):
-    """Each template an edit of a song in `pdf_category` generates a PDF for, without the delay"""
+    """Each template an edit of a song in `pdf_category` generates a PDF for, without the delay."""
     settings.CATEGORY_PDF_DELAY = 0
     return request.getfixturevalue(request.param)
 
 
 def test_editing_a_song_generates_the_pdf(staff_client, tenant, pdf_category, printed, rendered_html):
-    """Saving a song produces a finished PDF that holds the song and is offered in the menu"""
+    """Saving a song produces a finished PDF that holds the song and is offered in the menu."""
     response = staff_client.post(
         reverse("backend:add"),
         {

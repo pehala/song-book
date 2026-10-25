@@ -8,7 +8,7 @@ from backend.middleware.settings import CacheTimeoutMiddleware, SiteNameMiddlewa
 
 
 def call(middleware_class, request):
-    """Runs a middleware over a trivial view"""
+    """Runs a middleware over a trivial view."""
     captured = {}
 
     def get_response(processed):
@@ -20,7 +20,7 @@ def call(middleware_class, request):
 
 
 def test_site_name_is_attached_to_request(settings):
-    """Templates can read the configured site name off the request"""
+    """Templates can read the configured site name off the request."""
     settings.SITE_NAME = "Testbook"
 
     request, _ = call(SiteNameMiddleware, RequestFactory().get("/"))
@@ -29,7 +29,7 @@ def test_site_name_is_attached_to_request(settings):
 
 
 def test_cache_timeout_is_attached_to_request(settings):
-    """Templates can read the configured cache timeout off the request"""
+    """Templates can read the configured cache timeout off the request."""
     settings.CACHE_TIMEOUT = 1234
 
     request, _ = call(CacheTimeoutMiddleware, RequestFactory().get("/"))
@@ -38,7 +38,7 @@ def test_cache_timeout_is_attached_to_request(settings):
 
 
 def test_client_side_caching_is_disabled():
-    """Responses are marked as never cacheable by the browser"""
+    """Responses are marked as never cacheable by the browser."""
     _, response = call(DisableClientSideCachingMiddleware, RequestFactory().get("/"))
 
     assert "no-cache" in response["Cache-Control"]

@@ -1,5 +1,4 @@
-"""
-WSGI config for chords project.
+"""WSGI config for chords project.
 
 It exposes the WSGI callable as a module-level variable named ``application``.
 

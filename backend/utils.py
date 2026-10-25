@@ -1,4 +1,4 @@
-"""Utility functions for backend app"""
+"""Utility functions for backend app."""
 
 import subprocess
 from email.utils import parsedate_to_datetime
@@ -10,7 +10,7 @@ from category.utils import request_all_songs_pdf_regeneration, request_pdf_regen
 
 
 def regenerate_pdf(song):
-    """Regenerates PDFs for each category song is in and the all songs PDF of their tenants"""
+    """Regenerates PDFs for each category song is in and the all songs PDF of their tenants."""
     tenants = {}
     for category in song.categories.select_related("tenant"):
         request_pdf_regeneration(category)
@@ -21,7 +21,7 @@ def regenerate_pdf(song):
 
 @cache
 def get_version():
-    """Returns currently used version e.g. date of the last commit, taken from BUILD_DATE when it is set"""
+    """Returns currently used version e.g. date of the last commit, taken from BUILD_DATE when it is set."""
     if settings.BUILD_DATE:
         return settings.BUILD_DATE
     date = parsedate_to_datetime(
@@ -32,7 +32,7 @@ def get_version():
 
 @cache
 def get_git_revision():
-    """Returns sha of the latest revision, taken from BUILD_REVISION when it is set"""
+    """Returns sha of the latest revision, taken from BUILD_REVISION when it is set."""
     if settings.BUILD_REVISION:
         return settings.BUILD_REVISION
     return subprocess.check_output(["git", "rev-parse", "--short", "HEAD"]).decode("ascii").strip()

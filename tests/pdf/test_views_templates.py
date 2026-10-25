@@ -10,7 +10,7 @@ pytestmark = pytest.mark.django_db
 
 
 def template_payload(**overrides):
-    """Valid ManualTemplateForm data, prefixed as the view expects"""
+    """Valid ManualTemplateForm data, prefixed as the view expects."""
     data = {
         "template-name": "Campfire",
         "template-display_name": "",
@@ -26,7 +26,7 @@ def template_payload(**overrides):
 
 
 def songs_formset_payload(*pairs):
-    """Management form plus one entry per (song, number) pair"""
+    """Management form plus one entry per (song, number) pair."""
     data = {
         "songs-TOTAL_FORMS": str(len(pairs)),
         "songs-INITIAL_FORMS": "0",
@@ -41,7 +41,7 @@ def songs_formset_payload(*pairs):
 
 
 def test_list_shows_templates_of_this_tenant_only(staff_client, manual_template, other_tenant):
-    """The template list is scoped to the tenant being served"""
+    """The template list is scoped to the tenant being served."""
     foreign = ManualPDFTemplate.objects.create(tenant=other_tenant, name="Foreign", filename="foreign", locale="en")
 
     listed = staff_client.get(reverse("pdf:templates:list")).context["templates"]
@@ -51,7 +51,7 @@ def test_list_shows_templates_of_this_tenant_only(staff_client, manual_template,
 
 
 def test_new_page_offers_the_songs_of_this_tenant(staff_client, song, other_category, make_song):
-    """Only songs reachable through this tenant can be selected"""
+    """Only songs reachable through this tenant can be selected."""
     foreign = make_song(other_category, name="Foreign Song")
 
     offered = staff_client.get(reverse("pdf:templates:new")).context["songs"]
@@ -61,7 +61,7 @@ def test_new_page_offers_the_songs_of_this_tenant(staff_client, song, other_cate
 
 
 def test_new_page_translates_the_song_table_headers(staff_client):
-    """The headers of the table of selectable songs are in the language of the page"""
+    """The headers of the table of selectable songs are in the language of the page."""
     html = staff_client.get(reverse("pdf:templates:new")).content.decode()
 
     assert "<th>Autor</th>" in html
@@ -69,7 +69,7 @@ def test_new_page_translates_the_song_table_headers(staff_client):
 
 
 def test_new_page_lists_the_categories(staff_client, category):
-    """The category filter is filled with this tenant's categories"""
+    """The category filter is filled with this tenant's categories."""
     response = staff_client.get(reverse("pdf:templates:new"))
 
     assert category in response.context["categories"]
@@ -77,7 +77,7 @@ def test_new_page_lists_the_categories(staff_client, category):
 
 
 def test_edit_page_preselects_the_stored_songs(staff_client, manual_template, pdf_song_entry, pdf_song):
-    """Reopening a template shows the songs it already holds"""
+    """Reopening a template shows the songs it already holds."""
     response = staff_client.get(reverse("pdf:templates:edit", kwargs={"pk": manual_template.pk}))
 
     assert response.context["initial_songs"] == [pdf_song.pk]
@@ -85,7 +85,7 @@ def test_edit_page_preselects_the_stored_songs(staff_client, manual_template, pd
 
 
 def test_creating_a_template_stores_it(staff_client, song):
-    """Submitting the first step creates the template"""
+    """Submitting the first step creates the template."""
     response = staff_client.post(
         reverse("pdf:templates:new"),
         template_payload() | {"songs": [str(song.pk)]},
@@ -96,7 +96,7 @@ def test_creating_a_template_stores_it(staff_client, song):
 
 
 def test_creating_a_template_asks_for_song_numbers(staff_client, song):
-    """The first step hands over to the numbering page"""
+    """The first step hands over to the numbering page."""
     response = staff_client.post(
         reverse("pdf:templates:new"),
         template_payload() | {"songs": [str(song.pk)]},
@@ -107,7 +107,7 @@ def test_creating_a_template_asks_for_song_numbers(staff_client, song):
 
 
 def test_updating_a_template_keeps_its_identity(staff_client, manual_template, song):
-    """Editing an existing template does not create a second one"""
+    """Editing an existing template does not create a second one."""
     staff_client.post(
         reverse("pdf:templates:edit", kwargs={"pk": manual_template.pk}),
         template_payload(**{"template-name": "Renamed"}) | {"songs": [str(song.pk)]},
@@ -119,7 +119,7 @@ def test_updating_a_template_keeps_its_identity(staff_client, manual_template, s
 
 
 def test_template_without_songs_is_rejected(staff_client, song):
-    """A template has to print at least one song"""
+    """A template has to print at least one song."""
     response = staff_client.post(reverse("pdf:templates:new"), template_payload())
 
     assert response.status_code == 200
@@ -128,7 +128,7 @@ def test_template_without_songs_is_rejected(staff_client, song):
 
 
 def test_invalid_template_form_is_redisplayed(staff_client, song):
-    """A template without a name comes back as a form"""
+    """A template without a name comes back as a form."""
     response = staff_client.post(
         reverse("pdf:templates:new"),
         template_payload(**{"template-name": ""}) | {"songs": [str(song.pk)]},
@@ -138,7 +138,7 @@ def test_invalid_template_form_is_redisplayed(staff_client, song):
 
 
 def test_assigning_numbers_stores_the_songs(staff_client, manual_template, song, make_song, category):
-    """The second step replaces the songs of the template"""
+    """The second step replaces the songs of the template."""
     second = make_song(category, name="Second Song")
 
     response = staff_client.post(
@@ -151,7 +151,7 @@ def test_assigning_numbers_stores_the_songs(staff_client, manual_template, song,
 
 
 def test_duplicate_song_numbers_are_rejected(staff_client, manual_template, pdf_song_entry, make_song, pdf_category):
-    """Two songs cannot share a position in the booklet"""
+    """Two songs cannot share a position in the booklet."""
     second = make_song(pdf_category, name="Second Song")
 
     response = staff_client.post(
@@ -166,7 +166,7 @@ def test_duplicate_song_numbers_are_rejected(staff_client, manual_template, pdf_
 
 
 def test_opening_the_numbering_page_directly_redirects(staff_client, manual_template):
-    """The second step is not reachable on its own"""
+    """The second step is not reachable on its own."""
     response = staff_client.get(reverse("pdf:templates:assign", kwargs={"pk": manual_template.pk}))
 
     assert response.status_code == 302
@@ -174,7 +174,7 @@ def test_opening_the_numbering_page_directly_redirects(staff_client, manual_temp
 
 
 def test_generating_schedules_a_file(staff_client, manual_template, pdf_song_entry, mock_weasyprint):
-    """The generate link creates a file and sends the user to its waiting page"""
+    """The generate link creates a file and sends the user to its waiting page."""
     response = staff_client.get(reverse("pdf:templates:generate", kwargs={"pk": manual_template.pk}))
 
     file = PDFFile.objects.get(template=manual_template)
@@ -183,7 +183,7 @@ def test_generating_schedules_a_file(staff_client, manual_template, pdf_song_ent
 
 
 def test_generating_twice_is_refused(staff_client, manual_template, make_pdf_file):
-    """A template already waiting for a file does not queue a second one"""
+    """A template already waiting for a file does not queue a second one."""
     make_pdf_file(manual_template, status=Status.SCHEDULED)
 
     response = staff_client.get(reverse("pdf:templates:generate", kwargs={"pk": manual_template.pk}))
@@ -193,7 +193,7 @@ def test_generating_twice_is_refused(staff_client, manual_template, make_pdf_fil
 
 
 def test_deleting_removes_the_template(staff_client, manual_template):
-    """Confirming the deletion removes the template and its songs"""
+    """Confirming the deletion removes the template and its songs."""
     response = staff_client.post(reverse("pdf:templates:delete", kwargs={"pk": manual_template.pk}))
 
     assert response.status_code == 302
@@ -202,7 +202,7 @@ def test_deleting_removes_the_template(staff_client, manual_template):
 
 
 def test_move_reassigns_the_template(superuser_client, manual_template, other_tenant):
-    """Templates can be handed over to another tenant"""
+    """Templates can be handed over to another tenant."""
     response = superuser_client.post(
         reverse("pdf:templates:move"),
         {
@@ -222,7 +222,7 @@ def test_move_reassigns_the_template(superuser_client, manual_template, other_te
 
 
 def test_generate_from_the_all_songs_template(staff_client, song, all_songs_template, mock_weasyprint):
-    """The generate action of the row builds the file from every song of the tenant"""
+    """The generate action of the row builds the file from every song of the tenant."""
     response = staff_client.get(reverse("pdf:templates:generate", kwargs={"pk": all_songs_template.pk}))
 
     assert response.status_code == 302

@@ -15,7 +15,7 @@ os.environ.setdefault("DJANGO_ALLOW_ASYNC_UNSAFE", "true")
 
 
 def pytest_collection_modifyitems(items):
-    """Marks everything under tests/e2e so the default run can leave it out"""
+    """Marks everything under tests/e2e so the default run can leave it out."""
     for item in items:
         if "/tests/e2e/" in str(item.fspath):
             item.add_marker(pytest.mark.e2e)
@@ -23,18 +23,19 @@ def pytest_collection_modifyitems(items):
 
 @pytest.fixture(scope="session")
 def base_url(live_server):
+    """The address of the live server, which relative `goto()` calls resolve against."""
     return live_server.url
 
 
 @pytest.fixture
 def browser_context_args(browser_context_args):
-    """Readers are English unless a test says otherwise"""
+    """Readers are English unless a test says otherwise."""
     return {**browser_context_args, "locale": "en-US"}
 
 
 @pytest.fixture
 def library(tenant, make_category, make_song):
-    """A songbook with two categories, a song in both of them and a hidden one"""
+    """A songbook with two categories, a song in both of them and a hidden one."""
     tenant.category_set.all().delete()
     tenant.index_redirect = "/categories/cs"
     tenant.save()
@@ -52,7 +53,7 @@ def library(tenant, make_category, make_song):
 
 @pytest.fixture
 def sign_in(context, live_server):
-    """Signs the browser in as the given user"""
+    """Signs the browser in as the given user."""
 
     def sign_in(user):
         client = Client()
@@ -64,7 +65,7 @@ def sign_in(context, live_server):
 
 @pytest.fixture
 def requests_made(page):
-    """Every request the page makes, as (method, url) pairs"""
+    """Every request the page makes, as (method, url) pairs."""
     made = []
     page.on("request", lambda request: made.append((request.method, request.url)))
     return made

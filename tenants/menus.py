@@ -1,4 +1,4 @@
-"""The navigation entries of a tenant, which the header is drawn from"""
+"""The navigation entries of a tenant, which the header is drawn from."""
 
 from django.conf import settings
 

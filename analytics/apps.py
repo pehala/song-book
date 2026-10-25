@@ -1,9 +1,9 @@
-"""Analytics Application configuration"""
+"""Analytics Application configuration."""
 
 from django.apps import AppConfig
 
 
 class AnalyticsConfig(AppConfig):
-    """Analytics app"""
+    """Analytics app."""
 
     name = "analytics"

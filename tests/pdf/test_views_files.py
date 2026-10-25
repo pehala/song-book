@@ -17,15 +17,18 @@ pytestmark = pytest.mark.django_db
 
 
 def menu_cache_key(tenant):
+    """The cache key of the PDF menu of the tenant."""
     return tenant_cache_key(tenant, settings.PDF_CACHE_KEY)
 
 
 def prime_menu_cache(tenant):
+    """Puts a stale entry into the tenant's PDF menu cache."""
     cache.set(menu_cache_key(tenant), ["stale"], 60)
 
 
 @pytest.fixture
 def finished_file(tenant, category):
+    """A finished PDF file of the category."""
     file = PDFFile.objects.create(
         tenant=tenant,
         template=category,
@@ -39,7 +42,7 @@ def finished_file(tenant, category):
 
 
 def test_list_shows_files_of_this_tenant_only(staff_client, pdf_file, other_tenant):
-    """The file list is scoped to the tenant being served"""
+    """The file list is scoped to the tenant being served."""
     foreign = PDFFile.objects.create(tenant=other_tenant, filename="foreign", update_date=now())
 
     listed = staff_client.get(reverse("pdf:files:list")).context["files"]
@@ -49,7 +52,7 @@ def test_list_shows_files_of_this_tenant_only(staff_client, pdf_file, other_tena
 
 
 def test_delete_removes_the_file(staff_client, pdf_file):
-    """Confirming the deletion removes the record"""
+    """Confirming the deletion removes the record."""
     response = staff_client.post(reverse("pdf:files:delete", kwargs={"pk": pdf_file.pk}))
 
     assert response.status_code == 302
@@ -57,7 +60,7 @@ def test_delete_removes_the_file(staff_client, pdf_file):
 
 
 def test_delete_drops_the_files_menu_cache(staff_client, tenant, pdf_file):
-    """A removed file has to disappear from the navigation"""
+    """A removed file has to disappear from the navigation."""
     prime_menu_cache(tenant)
 
     staff_client.post(reverse("pdf:files:delete", kwargs={"pk": pdf_file.pk}))
@@ -66,7 +69,7 @@ def test_delete_drops_the_files_menu_cache(staff_client, tenant, pdf_file):
 
 
 def test_edit_changes_the_display_name(staff_client, pdf_file):
-    """The display name can be changed after generation"""
+    """The display name can be changed after generation."""
     staff_client.post(
         reverse("pdf:files:edit", kwargs={"pk": pdf_file.pk}),
         {"display_name": "Campfire", "public": True, "filename": pdf_file.filename},
@@ -77,7 +80,7 @@ def test_edit_changes_the_display_name(staff_client, pdf_file):
 
 
 def test_edit_drops_the_files_menu_cache(staff_client, tenant, pdf_file):
-    """A renamed file has to show up in the navigation"""
+    """A renamed file has to show up in the navigation."""
     prime_menu_cache(tenant)
 
     staff_client.post(
@@ -89,21 +92,21 @@ def test_edit_drops_the_files_menu_cache(staff_client, tenant, pdf_file):
 
 
 def test_filename_cannot_be_changed(staff_client, pdf_file):
-    """The filename belongs to the template and stays read only"""
+    """The filename belongs to the template and stays read only."""
     response = staff_client.get(reverse("pdf:files:edit", kwargs={"pk": pdf_file.pk}))
 
     assert response.context["form"].fields["filename"].disabled
 
 
 def test_wait_page_shows_the_file(anon_client, pdf_file):
-    """The waiting page is about the file being generated"""
+    """The waiting page is about the file being generated."""
     response = anon_client.get(reverse("pdf:files:wait", kwargs={"pk": pdf_file.pk}))
 
     assert response.context["pdf"] == pdf_file
 
 
 def test_wait_page_tells_the_browser_what_to_poll(anon_client, pdf_file):
-    """The progress is drawn in the browser from the file's info"""
+    """The progress is drawn in the browser from the file's info."""
     response = anon_client.get(reverse("pdf:files:wait", kwargs={"pk": pdf_file.pk}))
 
     assert response.context["page"] == {
@@ -114,7 +117,7 @@ def test_wait_page_tells_the_browser_what_to_poll(anon_client, pdf_file):
 
 
 def test_info_reports_a_pending_file(anon_client, pdf_file):
-    """An unfinished file has no download link yet"""
+    """An unfinished file has no download link yet."""
     response = anon_client.get(reverse("pdf:files:info", kwargs={"pk": pdf_file.pk}))
 
     data = json.loads(response.content)
@@ -124,7 +127,7 @@ def test_info_reports_a_pending_file(anon_client, pdf_file):
 
 
 def test_info_reports_a_failed_file(anon_client, pdf_file):
-    """A file that failed to render ends the polling"""
+    """A file that failed to render ends the polling."""
     pdf_file.status = Status.FAILED
     pdf_file.save()
 
@@ -135,7 +138,7 @@ def test_info_reports_a_failed_file(anon_client, pdf_file):
 
 
 def test_info_reports_a_finished_file(anon_client, finished_file):
-    """A finished file is reported with its download link"""
+    """A finished file is reported with its download link."""
     response = anon_client.get(reverse("pdf:files:info", kwargs={"pk": finished_file.pk}))
 
     data = json.loads(response.content)
@@ -145,7 +148,7 @@ def test_info_reports_a_finished_file(anon_client, finished_file):
 
 
 def test_template_edit_redirects_to_the_category(staff_client, pdf_file, category):
-    """Files generated from a category lead back to the category form"""
+    """Files generated from a category lead back to the category form."""
     response = staff_client.get(reverse("pdf:files:template_edit", kwargs={"pk": pdf_file.pk}))
 
     assert response.status_code == 302
@@ -153,7 +156,7 @@ def test_template_edit_redirects_to_the_category(staff_client, pdf_file, categor
 
 
 def test_template_edit_redirects_to_the_manual_template(staff_client, tenant, manual_template):
-    """Files generated from a manual template lead back to the template form"""
+    """Files generated from a manual template lead back to the template form."""
     file = PDFFile.objects.create(tenant=tenant, template=manual_template, filename="manual", update_date=now())
 
     response = staff_client.get(reverse("pdf:files:template_edit", kwargs={"pk": file.pk}))
@@ -163,7 +166,7 @@ def test_template_edit_redirects_to_the_manual_template(staff_client, tenant, ma
 
 
 def test_template_edit_redirects_to_the_all_songs_form(staff_client, tenant, all_songs_template):
-    """Files generated from the all songs template lead back to its form"""
+    """Files generated from the all songs template lead back to its form."""
     file = PDFFile.objects.create(tenant=tenant, template=all_songs_template, filename="all", update_date=now())
 
     response = staff_client.get(reverse("pdf:files:template_edit", kwargs={"pk": file.pk}))
@@ -173,7 +176,7 @@ def test_template_edit_redirects_to_the_all_songs_form(staff_client, tenant, all
 
 
 def test_template_edit_without_a_template(staff_client, tenant):
-    """A file whose template is gone answers with a 404
+    """A file whose template is gone answers with a 404.
 
     The template FK is SET_NULL, so orphaned files happen whenever a category or
     manual template is deleted.

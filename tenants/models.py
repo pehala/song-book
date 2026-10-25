@@ -1,4 +1,4 @@
-"""Tenant models"""
+"""Tenant models."""
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -13,13 +13,13 @@ from tenants.utils import tenant_cache_key
 
 
 def only_png(value):
-    """Raises validation error if the file is not a PNG image"""
+    """Raises validation error if the file is not a PNG image."""
     if not value.url and value.file.content_type != "image/png":
         raise ValidationError(_("Only PNG images are allowed"))
 
 
 class Link(Model):
-    """Represents a Link to other site"""
+    """Represents a Link to other site."""
 
     link = URLField(verbose_name=_("Link URL"))
     display_name = CharField(verbose_name=_("Display Name"), null=True, blank=True, max_length=64)
@@ -33,7 +33,7 @@ class Link(Model):
 
 
 class Tenant(Model):
-    """Represents a Tenant, who has own Categories and is determined by a Host Header"""
+    """Represents a Tenant, who has own Categories and is determined by a Host Header."""
 
     hostname = CharField(
         verbose_name=_("Hostname"), help_text=_("The exact hostname for this Tenant"), unique=True, max_length=64
@@ -70,14 +70,14 @@ class Tenant(Model):
 
 
 def clear_links_menu(tenants):
-    """Deletes the cached links menu of the given tenants"""
+    """Deletes the cached links menu of the given tenants."""
     cache.delete_many([tenant_cache_key(tenant, settings.LINKS_CACHE_KEY) for tenant in tenants])
 
 
 # pylint: disable=unused-argument
 @receiver(m2m_changed, sender=Tenant.links.through)
 def invalidate_links_menu_on_assignment(sender, instance, action, reverse, pk_set, **kwargs):
-    """Drops the cached links menu of every tenant whose links changed"""
+    """Drops the cached links menu of every tenant whose links changed."""
     if action not in ("post_add", "post_remove", "post_clear"):
         return
     if not reverse:
@@ -92,12 +92,12 @@ def invalidate_links_menu_on_assignment(sender, instance, action, reverse, pk_se
 @receiver(post_save, sender=Link)
 @receiver(pre_delete, sender=Link)
 def invalidate_links_menu_on_edit(sender, instance, **kwargs):
-    """Drops the cached links menu of the tenants using the edited link"""
+    """Drops the cached links menu of the tenants using the edited link."""
     clear_links_menu(Tenant.objects.filter(links=instance))
 
 
 # pylint: disable=unused-argument
 @receiver(post_save, sender=Tenant)
 def invalidate_categories_menu(sender, instance, **kwargs):
-    """Drops the cached categories menu, which depends on the tenant's `all_songs_category`"""
+    """Drops the cached categories menu, which depends on the tenant's `all_songs_category`."""
     cache.delete(tenant_cache_key(instance, settings.CATEGORY_CACHE_KEY))

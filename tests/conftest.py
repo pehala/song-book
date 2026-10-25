@@ -24,7 +24,7 @@ REAL_ON_COMMIT = transaction.on_commit
 
 @pytest.fixture(scope="session", autouse=True)
 def compiled_messages(tmp_path_factory):
-    """Czech strings come from compiled catalogues, which are not committed; they are built outside the source tree"""
+    """Czech strings come from compiled catalogues, which are not committed; they are built outside the source tree."""
     compiled = tmp_path_factory.mktemp("locale")
     for source in Path(settings.LOCALE_PATHS[0]).glob("*/LC_MESSAGES/*.po"):
         target = compiled / source.relative_to(settings.LOCALE_PATHS[0]).with_suffix(".mo")
@@ -37,18 +37,19 @@ def compiled_messages(tmp_path_factory):
 
 @pytest.fixture(autouse=True)
 def run_on_commit_at_once(monkeypatch):
-    """The test's own transaction never commits, so callbacks that wait for the commit run straight away"""
+    """The test's own transaction never commits, so callbacks that wait for the commit run straight away."""
     monkeypatch.setattr(transaction, "on_commit", lambda func, using=None, robust=False: func())
 
 
 @pytest.fixture
 def real_on_commit(monkeypatch):
-    """Restores the deferral, for tests of what waits for a commit"""
+    """Restores the deferral, for tests of what waits for a commit."""
     monkeypatch.setattr(transaction, "on_commit", REAL_ON_COMMIT)
 
 
 @pytest.fixture(autouse=True)
 def clear_cache():
+    """Empties the cache before and after every test."""
     cache.clear()
     yield
     cache.clear()
@@ -56,7 +57,7 @@ def clear_cache():
 
 @pytest.fixture(autouse=True)
 def flush_huey():
-    """Keeps tasks enqueued by one test from leaking into the next one"""
+    """Keeps tasks enqueued by one test from leaking into the next one."""
     HUEY.storage.flush_all()
     yield
     HUEY.storage.flush_all()
@@ -64,13 +65,14 @@ def flush_huey():
 
 @pytest.fixture(autouse=True)
 def media_root(settings, tmp_path):
-    """Redirects uploads and generated PDFs away from the source tree"""
+    """Redirects uploads and generated PDFs away from the source tree."""
     settings.MEDIA_ROOT = str(tmp_path)
     return tmp_path
 
 
 @pytest.fixture
 def tenant(db):
+    """The default tenant created by the initial migration, resolved from the host `localhost`."""
     # The initial migration already creates a Tenant with hostname=TENANT_HOSTNAME
     # ("localhost" in base settings). Use get_or_create to avoid UNIQUE violations.
     obj, _ = Tenant.objects.get_or_create(
@@ -86,7 +88,7 @@ def tenant(db):
 
 @pytest.fixture
 def other_tenant(db):
-    """A second Tenant, used to prove that data does not leak between them"""
+    """A second Tenant, used to prove that data does not leak between them."""
     return Tenant.objects.create(
         hostname="other.localhost",
         name="Other",
@@ -97,7 +99,7 @@ def other_tenant(db):
 
 @pytest.fixture
 def make_category(db):
-    """Factory for Categories, defaults are enough to generate a PDF from"""
+    """Factory for Categories, defaults are enough to generate a PDF from."""
 
     def factory(tenant, **kwargs):
         kwargs.setdefault("name", "Test Category")
@@ -112,17 +114,19 @@ def make_category(db):
 
 @pytest.fixture
 def category(tenant, make_category):
+    """A category of the tenant."""
     return make_category(tenant)
 
 
 @pytest.fixture
 def other_category(other_tenant, make_category):
+    """A category of the other tenant."""
     return make_category(other_tenant, name="Other Category", slug="other-cat")
 
 
 @pytest.fixture
 def make_song(db):
-    """Factory for Songs, optionally attached to categories"""
+    """Factory for Songs, optionally attached to categories."""
 
     def factory(*categories, **kwargs):
         kwargs.setdefault("name", "Test Song")
@@ -136,17 +140,19 @@ def make_song(db):
 
 @pytest.fixture
 def song(category, make_song):
+    """A song in the category."""
     return make_song(category)
 
 
 @pytest.fixture
 def archived_song(category, make_song):
+    """An archived song in the category."""
     return make_song(category, name="Archived Song", text="x", archived=True)
 
 
 @pytest.fixture
 def manual_template(tenant, song):
-    """A ManualPDFTemplate holding a single numbered song"""
+    """A ManualPDFTemplate holding a single numbered song."""
     template = ManualPDFTemplate.objects.create(
         tenant=tenant,
         name="Manual Template",
@@ -159,13 +165,13 @@ def manual_template(tenant, song):
 
 @pytest.fixture
 def all_songs_template(tenant):
-    """The all songs template of the tenant, generating its PDF automatically"""
+    """The all songs template of the tenant, generating its PDF automatically."""
     return AllSongsTemplate.objects.create(tenant=tenant, filename="all-songs", locale="en", generate_pdf=True)
 
 
 @pytest.fixture
 def pdf_file(tenant, category):
-    """A PDFFile awaiting generation, created from the category template"""
+    """A PDFFile awaiting generation, created from the category template."""
     return PDFFile.objects.create(
         tenant=tenant,
         template=category,
@@ -177,12 +183,14 @@ def pdf_file(tenant, category):
 
 @pytest.fixture
 def superuser(db):
+    """A superuser."""
     User = get_user_model()
     return User.objects.create_superuser(username="super", password="pass")
 
 
 @pytest.fixture
 def staff_user(tenant):
+    """A user who administers the tenant."""
     User = get_user_model()
     user = User.objects.create_user(username="staff", password="pass")
     tenant.admins.add(user)
@@ -191,18 +199,20 @@ def staff_user(tenant):
 
 @pytest.fixture
 def plain_user(db):
-    """A logged in user without any administrative rights"""
+    """A logged in user without any administrative rights."""
     User = get_user_model()
     return User.objects.create_user(username="plain", password="pass")
 
 
 @pytest.fixture
 def anon_client(db):
+    """A client of the tenant's host that is not signed in."""
     return Client(HTTP_HOST="localhost")
 
 
 @pytest.fixture
 def superuser_client(superuser):
+    """A client of the tenant's host signed in as the superuser."""
     c = Client(HTTP_HOST="localhost")
     c.force_login(superuser)
     return c
@@ -210,6 +220,7 @@ def superuser_client(superuser):
 
 @pytest.fixture
 def staff_client(staff_user):
+    """A client of the tenant's host signed in as the tenant's administrator."""
     c = Client(HTTP_HOST="localhost")
     c.force_login(staff_user)
     return c
@@ -217,6 +228,7 @@ def staff_client(staff_user):
 
 @pytest.fixture
 def plain_client(plain_user):
+    """A client of the tenant's host signed in as a user without any rights."""
     c = Client(HTTP_HOST="localhost")
     c.force_login(plain_user)
     return c

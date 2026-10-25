@@ -1,4 +1,4 @@
-"""Category admin classes"""
+"""Category admin classes."""
 
 from django.contrib import admin
 from django.http import HttpResponseRedirect
@@ -13,7 +13,7 @@ from tenants.models import Tenant
 
 @admin.register(Category)
 class CategoryAdmin(admin.ModelAdmin):
-    """Category Admin Model"""
+    """Category Admin Model."""
 
     list_display = ["name", "tenant_name"]
     # list_display_links = ["tenant_name"]
@@ -21,13 +21,13 @@ class CategoryAdmin(admin.ModelAdmin):
 
     @admin.display(description=Tenant._meta.verbose_name)
     def tenant_name(self, obj):
-        """Shows Tenant name"""
+        """Shows Tenant name."""
         link = reverse("admin:tenants_tenant_change", args=[obj.tenant.id])
         return format_html('<a href="{}">{}</a>', link, obj.tenant.name)
 
     @admin.action(description=_("Move Category to a different Tenant"))
     def move_tenant(self, request, queryset):
-        """Moves Categories to a different Tenant"""
+        """Moves Categories to a different Tenant."""
         ids = queryset.values_list("id", flat=True)
         url = f"{reverse_lazy('category:move')}?{urlencode({'pk': list(ids)}, True)}"
         return HttpResponseRedirect(url)

@@ -1,4 +1,4 @@
-"""URLs for Tenant"""
+"""URLs for Tenant."""
 
 from django.urls import path
 

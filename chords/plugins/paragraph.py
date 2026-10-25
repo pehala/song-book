@@ -1,4 +1,4 @@
-"""Markdown extension for paragraphs"""
+"""Markdown extension for paragraphs."""
 
 import re
 import string
@@ -14,12 +14,12 @@ __all__ = ["paragraph"]
 
 
 def parse_paragraph(block, m, state):
-    """Parse paragraph"""
+    """Parse paragraph."""
     text = m.group(0)
     state.add_paragraph(text)
     return m.end()
 
 
 def paragraph(md):
-    """Increase the speed of parsing paragraph"""
+    """Increase the speed of parsing paragraph."""
     md.block.register("paragraph", PARAGRAPH, parse_paragraph)

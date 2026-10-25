@@ -1,4 +1,4 @@
-"""Analytics models"""
+"""Analytics models."""
 
 from django.db.models import CASCADE, CharField, DateField, ForeignKey, IntegerField, Model, UniqueConstraint, Value
 from django.utils.translation import gettext_lazy as _
@@ -7,7 +7,7 @@ from tenants.models import Tenant
 
 
 class DayStatistic(Model):
-    """Statistic data for given day/key combination"""
+    """Statistic data for given day/key combination."""
 
     tenant = ForeignKey(Tenant, on_delete=CASCADE)
     key = CharField(verbose_name=_("Key"), max_length=25)

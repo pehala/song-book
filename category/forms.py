@@ -1,4 +1,4 @@
-"""Forms for category app"""
+"""Forms for category app."""
 
 from django.forms import CharField, Form, HiddenInput, IntegerField, ModelChoiceField, ModelForm
 from django.urls import reverse
@@ -11,7 +11,7 @@ from tenants.models import Tenant
 
 
 class CategoryForm(ModelForm):
-    """Category form"""
+    """Category form."""
 
     tenant = ModelChoiceField(queryset=Tenant.objects.all(), widget=HiddenInput())
 
@@ -41,7 +41,7 @@ class CategoryForm(ModelForm):
 
 
 class AllSongsForm(ModelForm):
-    """All songs PDF form"""
+    """All songs PDF form."""
 
     name = CharField(label=_("Name"), disabled=True, required=False)
     field_order = ["name"]
@@ -67,7 +67,7 @@ class AllSongsForm(ModelForm):
 
 
 class NameForm(Form):
-    """Form to show categories name"""
+    """Form to show categories name."""
 
     pk = IntegerField(widget=HiddenInput())
     name = CharField(disabled=True, required=False)

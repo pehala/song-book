@@ -1,4 +1,4 @@
-"""Forms for backend app"""
+"""Forms for backend app."""
 
 from django.forms import CheckboxSelectMultiple, ModelForm, ModelMultipleChoiceField
 
@@ -7,7 +7,7 @@ from category.models import Category
 
 
 class AdminSongForm(ModelForm):
-    """Song form"""
+    """Song form."""
 
     categories = ModelMultipleChoiceField(widget=CheckboxSelectMultiple, queryset=Category.objects.all())
 
@@ -17,7 +17,7 @@ class AdminSongForm(ModelForm):
 
 
 class SongForm(AdminSongForm):
-    """Song Form that has only categories from current tenant"""
+    """Song Form that has only categories from current tenant."""
 
     def __init__(self, *args, **kwargs):
         self.request = kwargs.pop("request")

@@ -13,6 +13,7 @@ pytestmark = pytest.mark.django_db
 
 
 def make_file(tenant, template=None, **kwargs):
+    """Creates a PDF file of the tenant, queued unless told otherwise."""
     kwargs.setdefault("filename", "songbook")
     kwargs.setdefault("status", Status.QUEUED)
     kwargs.setdefault("update_date", now())
@@ -20,12 +21,12 @@ def make_file(tenant, template=None, **kwargs):
 
 
 def test_name_falls_back_to_the_filename(tenant):
-    """Without a display name the file is named after its filename"""
+    """Without a display name the file is named after its filename."""
     assert make_file(tenant).name == "songbook.pdf"
 
 
 def test_display_name_wins(tenant):
-    """A display name replaces the filename entirely"""
+    """A display name replaces the filename entirely."""
     assert make_file(tenant, display_name="Campfire").name == "Campfire"
 
 
@@ -40,12 +41,12 @@ def test_display_name_wins(tenant):
     ],
 )
 def test_finished_reflects_the_status(tenant, status, finished):
-    """Only done and failed files are finished"""
+    """Only done and failed files are finished."""
     assert make_file(tenant, status=status).finished is finished
 
 
 def test_latest_file_is_the_most_recent_one(tenant, category):
-    """Templates expose the newest file they produced"""
+    """Templates expose the newest file they produced."""
     make_file(tenant, category, update_date=now())
     newest = make_file(tenant, category, update_date=now())
 
@@ -53,7 +54,7 @@ def test_latest_file_is_the_most_recent_one(tenant, category):
 
 
 def test_latest_file_is_none_without_files(category):
-    """A template that never produced anything has no latest file"""
+    """A template that never produced anything has no latest file."""
     assert category.latest_file is None
 
 
@@ -68,19 +69,19 @@ def test_latest_file_is_none_without_files(category):
     ],
 )
 def test_has_scheduled_file(tenant, category, status, scheduled):
-    """A template is busy while its newest file is unfinished"""
+    """A template is busy while its newest file is unfinished."""
     make_file(tenant, category, status=status)
 
     assert bool(category.has_scheduled_file()) is scheduled
 
 
 def test_has_no_scheduled_file_without_files(category):
-    """A template that never produced anything is not busy"""
+    """A template that never produced anything is not busy."""
     assert not category.has_scheduled_file()
 
 
 def test_copy_options_takes_over_the_print_settings(category, manual_template):
-    """Options are copied between templates without touching identity"""
+    """Options are copied between templates without touching identity."""
     manual_template.filename = "other"
     manual_template.title = "Other Title"
     manual_template.margin = 2.5
@@ -108,19 +109,19 @@ def test_copy_options_takes_over_the_print_settings(category, manual_template):
     ],
 )
 def test_link_url_adds_the_missing_scheme(category, link, url):
-    """A link typed without a scheme gets https://, one that names a scheme is kept"""
+    """A link typed without a scheme gets https://, one that names a scheme is kept."""
     category.link = link
 
     assert category.link_url == url
 
 
 def test_manual_template_returns_numbered_songs(manual_template, pdf_song_entry, pdf_song):
-    """Manual templates print the songs in the order the user assigned"""
+    """Manual templates print the songs in the order the user assigned."""
     assert manual_template.get_songs() == [(1, pdf_song)]
 
 
 def test_upload_path_is_namespaced_by_tenant(tenant):
-    """Uploaded files are stored per tenant and day"""
+    """Uploaded files are stored per tenant and day."""
     file = make_file(tenant)
 
     path = upload_path(file, "songbook.pdf")
@@ -130,29 +131,29 @@ def test_upload_path_is_namespaced_by_tenant(tenant):
 
 
 def test_all_songs_template_is_named_after_the_list(all_songs_template):
-    """The template is listed under the name of the list it prints"""
+    """The template is listed under the name of the list it prints."""
     assert all_songs_template.name == "Všechny Písničky"
 
 
 def test_all_songs_template_numbers_songs_from_one(all_songs_template, song):
-    """Songs are handed to the PDF renderer with their position"""
+    """Songs are handed to the PDF renderer with their position."""
     assert all_songs_template.get_songs() == [(1, song)]
 
 
 def test_all_songs_template_skips_archived_songs(all_songs_template, song, archived_song):
-    """Archived songs are never printed"""
+    """Archived songs are never printed."""
     assert [entry[1] for entry in all_songs_template.get_songs()] == [song]
 
 
 def test_all_songs_template_lists_a_song_of_two_categories_once(all_songs_template, song, make_category):
-    """The numbering follows the all songs list, where every song appears once"""
+    """The numbering follows the all songs list, where every song appears once."""
     song.categories.add(make_category(all_songs_template.tenant, name="Second", slug="second"))
 
     assert all_songs_template.get_songs() == [(1, song)]
 
 
 def test_all_songs_template_numbers_like_the_reader(anon_client, all_songs_template, category, make_song):
-    """The song numbers are the ones the all songs list shows"""
+    """The song numbers are the ones the all songs list shows."""
     make_song(category, name="First")
     make_song(category, name="Second")
 
@@ -162,14 +163,14 @@ def test_all_songs_template_numbers_like_the_reader(anon_client, all_songs_templ
 
 
 def test_all_songs_template_ignores_other_tenants(all_songs_template, other_category, make_song):
-    """Songs of other tenants are not printed"""
+    """Songs of other tenants are not printed."""
     make_song(other_category)
 
     assert all_songs_template.get_songs() == []
 
 
 def test_for_tenant_creates_the_template_once(tenant):
-    """The first call creates the template with the defaults, later calls return it"""
+    """The first call creates the template with the defaults, later calls return it."""
     created = AllSongsTemplate.for_tenant(tenant, filename="first", locale="en")
 
     assert AllSongsTemplate.for_tenant(tenant, filename="second", locale="cs") == created

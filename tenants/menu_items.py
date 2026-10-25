@@ -1,4 +1,4 @@
-"""Generators for the items of the tenant-specific menus"""
+"""Generators for the items of the tenant-specific menus."""
 
 from django.db.models import Prefetch
 
@@ -7,15 +7,14 @@ from pdf.models.request import AllSongsTemplate, ManualPDFTemplate, PDFFile, Sta
 
 
 def categories(tenant):
-    """Returns the slug and name of every Category of the tenant"""
+    """Returns the slug and name of every Category of the tenant."""
     return [{"slug": category.slug, "name": category.name} for category in tenant.category_set.all()]
 
 
 def distinct_requests(tenant):
-    """
-    Not all databases can do DISTINCT ON, this is a replacement for the command below
-    PDFRequest.objects.filter(file__isnull=False, status=Status.DONE).distinct("filename")[:5]
+    """Replaces DISTINCT ON, which not all databases can do.
 
+    It stands in for `PDFRequest.objects.filter(file__isnull=False, status=Status.DONE).distinct("filename")[:5]`.
     """
     latest_files_prefetch = Prefetch(
         "pdffile_set",
@@ -36,5 +35,5 @@ def distinct_requests(tenant):
 
 
 def link_items(tenant):
-    """Returns the name and url of every Link of the Tenant"""
+    """Returns the name and url of every Link of the Tenant."""
     return [{"name": link.display_name, "url": link.link} for link in tenant.links.all()]

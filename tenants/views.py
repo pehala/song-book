@@ -1,4 +1,4 @@
-"""Tenant views"""
+"""Tenant views."""
 
 import abc
 
@@ -14,18 +14,19 @@ from tenants.models import Tenant
 
 
 class TenantUpdateForm(LocalAdminRequired, UniversalUpdateView):
-    """Tenant update view"""
+    """Tenant update view."""
 
     form_class = UserTenantForm
     model = Tenant
     success_url = reverse_lazy("backend:index")
 
     def get_object(self, queryset=None):
+        """Returns the tenant of the request."""
         return self.request.tenant
 
 
 class AdminMoveView(SuperAdminRequired, TemplateView):
-    """Moves Categories to a different Tenant"""
+    """Moves Categories to a different Tenant."""
 
     template_name = "admin/base/migrate.html"
     form_class = ChooseTenantForm
@@ -37,7 +38,7 @@ class AdminMoveView(SuperAdminRequired, TemplateView):
         self.formset_class = formset_factory(self.formset_form, extra=0)
 
     def initial(self, pks):
-        """Initial Form population"""
+        """Initial Form population."""
         query = self.model.objects.filter(id__in=pks)
 
         initial = []
@@ -47,7 +48,7 @@ class AdminMoveView(SuperAdminRequired, TemplateView):
         return initial
 
     def get_context_data(self, form=None, formset=None, **kwargs):
-        """Appends Form and Formset, reusing the submitted ones so errors are shown"""
+        """Appends Form and Formset, reusing the submitted ones so errors are shown."""
         context = super().get_context_data(**kwargs)
 
         initial = {}
@@ -61,7 +62,7 @@ class AdminMoveView(SuperAdminRequired, TemplateView):
         return context
 
     def post(self, request, *args, **kwargs):
-        """POST request"""
+        """POST request."""
         form = self.form_class(request.POST)
         formset = self.formset_class(request.POST)
         if form.is_valid() and formset.is_valid():
@@ -73,4 +74,4 @@ class AdminMoveView(SuperAdminRequired, TemplateView):
 
     @abc.abstractmethod
     def action(self, target, ids):
-        """What should happen on the move"""
+        """What should happen on the move."""

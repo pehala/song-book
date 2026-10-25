@@ -1,4 +1,4 @@
-"""Admin models for Tenants"""
+"""Admin models for Tenants."""
 
 from django.conf import settings
 from django.contrib import admin
@@ -13,19 +13,19 @@ from tenants.models import Link, Tenant
 
 @admin.register(Tenant)
 class TenantAdmin(admin.ModelAdmin):
-    """Tenant Admin view"""
+    """Tenant Admin view."""
 
     list_display = ["name", "hostname_link", "display_name"]
     form = TenantForm
 
     @admin.display(description=_("Tenant"))
     def hostname_link(self, obj):
-        """Shows link to the tenants homepage"""
+        """Shows link to the tenants homepage."""
         link = reverse("chords:index")
         return format_html('<a href="{}{}">{}</a>', obj.hostname, link, obj.hostname)
 
     def save_model(self, request, obj, form, change):
-        """Overrides saving method to create default category and redirect index page to it"""
+        """Overrides saving method to create default category and redirect index page to it."""
         if obj.index_redirect == "/":
             obj.index_redirect = reverse_lazy("category:index", kwargs={"slug": "default"})
         super().save_model(request, obj, form, change)
@@ -37,7 +37,7 @@ class TenantAdmin(admin.ModelAdmin):
 
 @admin.register(Link)
 class LinkAdmin(admin.ModelAdmin):
-    """Link Admin view"""
+    """Link Admin view."""
 
     list_display = ["display_name", "link"]
     form = LinkForm

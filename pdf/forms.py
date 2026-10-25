@@ -1,4 +1,4 @@
-"""Forms for PDF application"""
+"""Forms for PDF application."""
 
 from django.core.exceptions import ValidationError
 from django.forms import (
@@ -18,7 +18,7 @@ from pdf.models.request import ManualPDFTemplate, PDFFile, PDFSong
 
 
 class ManualTemplateForm(ModelForm):
-    """Form for ManualPDFTemplate"""
+    """Form for ManualPDFTemplate."""
 
     class Meta:
         model = ManualPDFTemplate
@@ -27,7 +27,7 @@ class ManualTemplateForm(ModelForm):
 
 
 class PDFFileEditForm(ModelForm):
-    """Edit form for PDFFile, allows changing only the display name"""
+    """Edit form for PDFFile, allows changing only the display name."""
 
     filename = CharField(widget=AppendWidget(".pdf"), disabled=True)
 
@@ -37,7 +37,7 @@ class PDFFileEditForm(ModelForm):
 
 
 class SongSelectionForm(Form):
-    """Song selection form"""
+    """Song selection form."""
 
     # Not required on the field itself, so that clean() can report the error in its own words
     songs = ModelMultipleChoiceField(required=False, queryset=Song.objects.all(), widget=NoopWidget)
@@ -49,12 +49,13 @@ class SongSelectionForm(Form):
         self.fields["songs"].queryset = self.queryset
 
     def get_list_field_value(self, field_name, default=None):
-        """Return current value of a List field"""
+        """Return current value of a List field."""
         if self.is_bound:
             return self.data.getlist(self.add_prefix(field_name), default)
         return self.initial.get(field_name, default)
 
     def clean(self):
+        """Requires at least one selected song."""
         data = super().clean()
         if "songs" in self.cleaned_data:
             songs = self.cleaned_data["songs"]
@@ -64,7 +65,7 @@ class SongSelectionForm(Form):
 
 
 class PDFSongForm(ModelForm):
-    """Slimmed down model form for PDFSong"""
+    """Slimmed down model form for PDFSong."""
 
     name = CharField(disabled=True, required=False)
 
@@ -75,9 +76,10 @@ class PDFSongForm(ModelForm):
 
 
 class BasePDFSongFormset(BaseFormSet):
-    """FormSet for PDFSongForm that checks if song_numbers are unique"""
+    """FormSet for PDFSongForm that checks if song_numbers are unique."""
 
     def clean(self):
+        """Requires a song number on every song and no number twice."""
         if any(self.errors):
             return
         numbers = set()
@@ -89,7 +91,7 @@ class BasePDFSongFormset(BaseFormSet):
 
 
 class FileForm(Form):
-    """Form that shows Title and filename of a request being moved"""
+    """Form that shows Title and filename of a request being moved."""
 
     pk = IntegerField(widget=HiddenInput())
     title = CharField(disabled=True, required=False)

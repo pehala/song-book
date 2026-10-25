@@ -56,7 +56,7 @@ def test_full_pdf_generation_produces_valid_pdf_bytes(pdf_category, pdf_song, ma
 
 
 def test_contents_of_a_long_songbook_fit_on_the_first_page(mock_weasyprint, pdf_category, make_pdf_file, make_song):
-    """120 songs are listed on the page of the title, so the first song starts on the second page"""
+    """120 songs are listed on the page of the title, so the first song starts on the second page."""
     songs = [make_song(pdf_category, name=f"Song {number}", text="Hello") for number in range(120)]
     generate_pdf(make_pdf_file(pdf_category), pdf_category)
 

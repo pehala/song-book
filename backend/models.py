@@ -1,4 +1,4 @@
-"""Models for backend app"""
+"""Models for backend app."""
 
 from functools import partial
 
@@ -30,7 +30,7 @@ from tenants.utils import tenant_cache_key
 
 
 class Song(Model):
-    """Song model"""
+    """Song model."""
 
     name = CharField(verbose_name=_("Name"), max_length=100)
     date = DateField(auto_now_add=True, editable=False)
@@ -44,10 +44,10 @@ class Song(Model):
     prerendered = TextField(null=True)
 
     def _get_rendered_markdown(self):
-        """
-        Returns rendered markdown for specific type of application.
+        """Returns rendered markdown for specific type of application.
+
         If USE_PRERENDERED_MARKDOWN is True, it will cache the changes indefinitely.
-        If USE_DYNAMIC_PRERENDER is False, it will fail if there is no cached version ready
+        If USE_DYNAMIC_PRERENDER is False, it will fail if there is no cached version ready.
         """
         if not settings.USE_PRERENDERED_MARKDOWN:
             return song_renderer()(self.text)
@@ -61,7 +61,7 @@ class Song(Model):
         return field
 
     def prerender(self, save: bool = True):
-        """Generates prerendered html for specific type with a specific rendered"""
+        """Generates prerendered html for specific type with a specific rendered."""
         html = song_renderer()(self.text)
         self.prerendered = html
 
@@ -71,12 +71,12 @@ class Song(Model):
 
     @property
     def rendered_markdown(self):
-        """Returns rendered markdown for web"""
+        """Returns rendered markdown for web."""
         return self._get_rendered_markdown()
 
     @property
     def pdf_markdown(self):
-        """Returns rendered markdown with the chords stacked above their words, for PDF"""
+        """Returns rendered markdown with the chords stacked above their words, for PDF."""
         return PDF_RENDERER(self.text)
 
     def __str__(self):
@@ -90,34 +90,33 @@ class Song(Model):
 
 @receiver(pre_save, sender=Song)
 def song_pre_save(sender, instance, update_fields, **kwargs):
-    """Keeps the prerendered html in step with the text on every full save (views, admin, scripts)"""
+    """Keeps the prerendered html in step with the text on every full save (views, admin, scripts)."""
     if settings.USE_PRERENDERED_MARKDOWN and update_fields is None:
         instance.prerender(save=False)
 
 
 @receiver(post_save, sender=Song)
 def song_saved(sender, instance, **kwargs):
-    """A saved song changes every list it is in"""
+    """A saved song changes every list it is in."""
     invalidate_songs_cache(instance)
 
 
 @receiver(pre_delete, sender=Song)
 def song_pre_delete(sender, instance, **kwargs):
-    """Remember the tenants before the category links are gone"""
+    """Remember the tenants before the category links are gone."""
     instance.tenants_before_delete = song_tenants(instance)
 
 
 @receiver(post_delete, sender=Song)
 def song_deleted(sender, instance, **kwargs):
-    """A deleted song changes every list it was in"""
+    """A deleted song changes every list it was in."""
     for tenant in getattr(instance, "tenants_before_delete", ()):
         invalidate_tenant_songs_cache(tenant)
 
 
 @receiver(m2m_changed, sender=Song.categories.through)
 def song_categories_changed(sender, instance, action, reverse, pk_set, **kwargs):
-    """
-    Category membership changed: lists of both the old and the new categories are stale.
+    """Category membership changed: lists of both the old and the new categories are stale.
 
     pre_remove/pre_clear run while the old links still exist, post_add once the new ones do,
     so the current links always name every affected tenant. A list rebuilt between the
@@ -145,7 +144,7 @@ def song_categories_changed(sender, instance, action, reverse, pk_set, **kwargs)
 
 @receiver(pre_save, sender=Category)
 def category_pre_save(sender, instance, **kwargs):
-    """Remember the previous tenant so its payload and menu can be cleared too"""
+    """Remember the previous tenant so its payload and menu can be cleared too."""
     instance.previous_tenant_id = None
     if instance.pk:
         instance.previous_tenant_id = (
@@ -155,7 +154,7 @@ def category_pre_save(sender, instance, **kwargs):
 
 @receiver(post_save, sender=Category)
 def category_saved(sender, instance, **kwargs):
-    """A created, renamed or moved category changes the menu and the songs payload"""
+    """A created, renamed or moved category changes the menu and the songs payload."""
     touch_songs(instance.song_set.all())
     tenants = {instance.tenant}
     previous_tenant_id = getattr(instance, "previous_tenant_id", None)
@@ -168,12 +167,12 @@ def category_saved(sender, instance, **kwargs):
 
 @receiver(pre_delete, sender=Category)
 def category_pre_delete(sender, instance, **kwargs):
-    """The songs of a deleted category lose a slug, so they count as changed"""
+    """The songs of a deleted category lose a slug, so they count as changed."""
     touch_songs(instance.song_set.all())
 
 
 @receiver(post_delete, sender=Category)
 def category_deleted(sender, instance, **kwargs):
-    """A deleted category changes the menu and the songs payload"""
+    """A deleted category changes the menu and the songs payload."""
     invalidate_tenant_songs_cache(instance.tenant)
     transaction.on_commit(partial(cache.delete, tenant_cache_key(instance.tenant, settings.CATEGORY_CACHE_KEY)))

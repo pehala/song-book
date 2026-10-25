@@ -1,4 +1,4 @@
-"""Management command for generating PDF files from requests"""
+"""Management command for generating PDF files from requests."""
 
 import logging
 from argparse import ArgumentParser
@@ -16,11 +16,12 @@ logger.setLevel(logging.INFO)
 
 
 class Command(BaseCommand):
-    """Generates PDF according to the PDF requests"""
+    """Generates PDF according to the PDF requests."""
 
     help = "Generates PDFs for all categories"
 
     def add_arguments(self, parser: ArgumentParser):
+        """Adds the tenants to generate PDFs for."""
         parser.add_argument(
             "tenants",
             metavar="Tenants",
@@ -31,6 +32,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
+        """Generates the PDFs of the given tenants, or of all of them when none is given."""
         Path(f"{settings.MEDIA_ROOT}/{settings.PDF_FILE_DIR}").mkdir(parents=True, exist_ok=True)
         tenants = set(options["tenants"])
         ids = set(Tenant.objects.filter(id__in=tenants).values_list("id", flat=True))

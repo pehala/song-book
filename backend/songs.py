@@ -1,4 +1,4 @@
-"""Builds the songs payload served to the browser and keeps it in the cache"""
+"""Builds the songs payload served to the browser and keeps it in the cache."""
 
 import json
 from collections.abc import Callable, Iterable
@@ -16,7 +16,7 @@ from category.models import Category
 
 
 def transform_song(song: Song, number: int) -> dict:
-    """Transforms song into a dict; its categories must be prefetched into `tenant_categories`"""
+    """Transforms song into a dict; its categories must be prefetched into `tenant_categories`."""
     transformed = model_to_dict(song, ["id", "name", "capo", "author", "link", "archived"])
     transformed["number"] = number
     transformed["cats"] = [category.slug for category in song.tenant_categories]
@@ -25,15 +25,14 @@ def transform_song(song: Song, number: int) -> dict:
 
 
 def visible_songs(queryset: QuerySet, include_archived: bool) -> QuerySet:
-    """Restricts queryset to songs the current user may see"""
+    """Restricts queryset to songs the current user may see."""
     if include_archived:
         return queryset
     return queryset.filter(archived=False)
 
 
 def songs_to_json(songs: Iterable[Song]) -> str:
-    """
-    Serializes songs into the JSON list consumed by the reader.
+    """Serializes songs into the JSON list consumed by the reader.
 
     Songs are numbered 1..N in queryset order; archived songs are moved to the end
     and keep counting, so numbers are stable for the public part of the list.
@@ -57,7 +56,7 @@ def songs_to_json(songs: Iterable[Song]) -> str:
 
 
 def tenant_songs(tenant, include_archived: bool) -> QuerySet:
-    """Songs of the tenant the user may see, each with its tenant's categories prefetched"""
+    """Songs of the tenant the user may see, each with its tenant's categories prefetched."""
     songs = (
         Song.objects.filter(categories__tenant=tenant)
         .distinct()
@@ -69,13 +68,12 @@ def tenant_songs(tenant, include_archived: bool) -> QuerySet:
 
 
 def build_songs_payload(tenant, include_archived: bool) -> str:
-    """Serializes every song of the tenant together with the slugs of the tenant's categories it is in"""
+    """Serializes every song of the tenant together with the slugs of the tenant's categories it is in."""
     return songs_to_json(tenant_songs(tenant, include_archived))
 
 
 def build_songs_delta(tenant, include_archived: bool, since: int, etag: str) -> str:
-    """
-    Serializes what a reader holding the list as of `since` (epoch seconds) is missing.
+    """Serializes what a reader holding the list as of `since` (epoch seconds) is missing.
 
     `ids` names every current song in list order, which is also what numbers them, so the reader drops
     the songs that are gone, renumbers by position and takes the rows of `changed`, the songs edited
@@ -98,14 +96,14 @@ def build_songs_delta(tenant, include_archived: bool, since: int, etag: str) -> 
 
 
 def cached_songs_payload(tenant, include_archived: bool) -> str:
-    """Returns the combined songs payload of the tenant from the cache, building it on a miss"""
+    """Returns the combined songs payload of the tenant from the cache, building it on a miss."""
     return cached_json(
         songs_payload_key(tenant, include_archived), lambda: build_songs_payload(tenant, include_archived)
     )
 
 
 def cached_json(key: str, build: Callable[[], str]) -> str:
-    """Returns the JSON string stored under key, building and storing it only on a cache miss"""
+    """Returns the JSON string stored under key, building and storing it only on a cache miss."""
     cached = cache.get(key)
     if cached is None:
         cached = build()

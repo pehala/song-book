@@ -1,4 +1,4 @@
-"""Frontend URL configuration"""
+"""Frontend URL configuration."""
 
 from django.urls import path
 
