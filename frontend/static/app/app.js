@@ -171,7 +171,7 @@ function App() {
                 <div class="input-group">
                     <label class="addon" for="search"><${Icon} name="search" /><span class="sr-only">${_("Search")}</span></label>
                     <input id="search" type="search" placeholder=${_("Number, text or author")} value=${query} onInput=${event => setQuery(event.target.value)} />
-                    ${query.trim() && html`<output class="addon count" for="search">${visible.length} / ${rows.length}</output>`}
+                    ${query.trim() && html`<output class="addon count" for="search" title=${_("Songs matching the search")}>${_("{found} of {total}").replace("{found}", visible.length).replace("{total}", rows.length)}</output>`}
                     <button class="sb-btn" title=${_("Random song")} aria-label=${_("Random song")} disabled=${visible.length === 0} onClick=${openRandom}><${Icon} name="shuffle" /></button>
                 </div>
             </div>
