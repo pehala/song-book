@@ -64,15 +64,16 @@ function SongBody({song, me, urls, _}) {
     const next = "?next=" + encodeURIComponent(location.pathname);
     return html`
         <div class="tools">
-            ${song.link && html`<a class="sb-btn sb-primary" href=${song.link} title="YouTube"><${Icon} name="play" /></a>`}
             <div class="stepper" role="group" aria-label=${_("Transpose")}>
+                <span class="stepper-name" aria-hidden="true">${_("Transpose")}</span>
                 <button class="sb-btn" aria-label=${_("Transpose") + " −1"} onClick=${() => setShift(Math.max(-11, shift - 1))}><${Icon} name="minus" /></button>
                 <output aria-label=${_("Transpose")}>${shift > 0 ? "+" + shift : shift}</output>
                 <button class="sb-btn" aria-label=${_("Transpose") + " +1"} onClick=${() => setShift(Math.min(11, shift + 1))}><${Icon} name="plus" /></button>
             </div>
             ${song.capo > 0 && html`<span class="capo">${_("Capo")} ${song.capo}</span>`}
+            <span class="gap"></span>
+            ${song.link && html`<a class="sb-btn sb-ghost" href=${song.link} title="YouTube"><${Icon} name="play" /> YouTube</a>`}
             ${me?.localadmin && html`
-                <span class="gap"></span>
                 <a class="sb-btn sb-ghost" href=${urls.edit.replace(/0$/, song.id) + next}><${Icon} name="edit" /> ${_("Edit")}</a>
                 <a class="sb-btn sb-ghost" href=${urls.delete.replace(/0$/, song.id) + next}><${Icon} name="trash" /> ${_("Delete")}</a>`}
         </div>
