@@ -14,6 +14,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.utils.timezone import now
 
+from backend.utils import regenerate_pdf
 from pdf.generate import CONTENTS_COLUMNS, generate_pdf, generate_pdf_file, generate_pdf_job
 from pdf.models import Section, Status
 from pdf.models.request import PDFFile
@@ -159,6 +160,26 @@ def test_delay_offsets_scheduled_at(mock_weasyprint, pdf_category):
     file = generate_pdf_file(pdf_category, delay=delay)
     after = now()
     assert before + timedelta(seconds=delay) <= file.scheduled_at <= after + timedelta(seconds=delay)
+
+
+def test_takes_the_display_name_of_the_template(mock_weasyprint, pdf_category):
+    """The file is named publicly as the template is."""
+    pdf_category.display_name = "Campfire"
+    pdf_category.save()
+
+    file = generate_pdf_file(pdf_category)
+
+    assert (file.display_name, file.name) == ("Campfire", "Campfire")
+
+
+def test_song_edit_regenerates_the_all_songs_file_with_the_display_name(mock_weasyprint, song, all_songs_template):
+    """The automatically regenerated all songs file keeps the public name set on the template."""
+    all_songs_template.display_name = "Everything"
+    all_songs_template.save()
+
+    regenerate_pdf(song)
+
+    assert PDFFile.objects.get(template=all_songs_template).display_name == "Everything"
 
 
 def test_returns_pdffile_instance(mock_weasyprint, pdf_category):

@@ -120,6 +120,7 @@ def generate_pdf_file(template: AllowedTemplates, delay: int = 0):
         scheduled_at=scheduled_time,
         public=template.public,
         filename=template.filename,
+        display_name=template.display_name,
     )
     generate_pdf_job.schedule(kwargs={"file": file, "template": template}, eta=scheduled_time)
 
