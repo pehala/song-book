@@ -74,11 +74,7 @@ def test_saving_does_not_duplicate_categories(tenant_admin, rf, tenant, category
     assert Category.objects.filter(tenant=tenant).count() == before
 
 
-def test_changelist_renders(superuser_client, tenant):
-    """The tenant changelist is reachable for site administrators."""
-    assert superuser_client.get("/admin/tenants/tenant/").status_code == 200
-
-
-def test_link_changelist_renders(superuser_client, tenant):
-    """The link changelist is reachable for site administrators."""
-    assert superuser_client.get("/admin/tenants/link/").status_code == 200
+@pytest.mark.parametrize("url", ["/admin/tenants/tenant/", "/admin/tenants/link/"])
+def test_changelist_renders(superuser_client, tenant, url):
+    """The tenant and link changelists are reachable for site administrators."""
+    assert superuser_client.get(url).status_code == 200

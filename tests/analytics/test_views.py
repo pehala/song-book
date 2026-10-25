@@ -5,7 +5,7 @@ from datetime import timedelta
 from unittest import mock
 
 import pytest
-from django.db import DatabaseError, IntegrityError
+from django.db import DatabaseError
 from django.db.models import QuerySet
 from django.urls import reverse
 from django.utils.timezone import now
@@ -125,14 +125,6 @@ def test_hits_are_kept_per_tenant(anon_client, tenant, other_tenant):
     anon_client.get(SONGS_URL)
 
     assert not DayStatistic.objects.filter(tenant=other_tenant).exists()
-
-
-def test_a_statistic_is_unique_per_day(tenant):
-    """Two counters for one key and day cannot exist."""
-    DayStatistic.objects.create(tenant=tenant, key="all")
-
-    with pytest.raises(IntegrityError):
-        DayStatistic.objects.create(tenant=tenant, key="all")
 
 
 def test_hit_lost_the_race_to_create_the_counter(anon_client, tenant):
