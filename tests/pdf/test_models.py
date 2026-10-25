@@ -134,6 +134,29 @@ def test_the_default_section_is_in_song_number_order(manual_template, pdf_song, 
     assert manual_template.get_sections() == [Section(None, [(1, first), (2, pdf_song)])]
 
 
+def test_manual_template_divides_its_songs_by_their_labels(manual_template, pdf_song, make_song, pdf_category):
+    """A run of songs with one label is a section; songs without a label are untitled, and numbers order them."""
+    songs = [make_song(pdf_category, name=name) for name in ("A", "B", "C", "D")]
+    for number, song, section in [(4, songs[3], "Camp"), (1, pdf_song, ""), (3, songs[2], "Camp"), (2, songs[1], "")]:
+        PDFSong.objects.create(song=song, request=manual_template, song_number=number, section=section)
+
+    assert manual_template.get_sections() == [
+        Section(None, [(1, pdf_song), (2, songs[1])]),
+        Section("Camp", [(3, songs[2]), (4, songs[3])]),
+    ]
+
+
+def test_manual_template_titles_songs_without_a_section_after_a_titled_one(
+    manual_template, pdf_song, pdf_category, make_song
+):
+    """Songs added to a template with sections come last without a label, and print as a section of their own."""
+    added = make_song(pdf_category, name="Added")
+    PDFSong.objects.create(song=pdf_song, request=manual_template, song_number=1, section="Camp")
+    PDFSong.objects.create(song=added, request=manual_template, song_number=2)
+
+    assert manual_template.get_sections() == [Section("Camp", [(1, pdf_song)]), Section("Ostatní", [(2, added)])]
+
+
 def test_upload_path_is_namespaced_by_tenant(tenant):
     """Uploaded files are stored per tenant and day."""
     file = make_file(tenant)

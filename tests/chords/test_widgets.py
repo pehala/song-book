@@ -2,6 +2,7 @@
 
 import pytest
 from django.http import QueryDict
+from django.utils.safestring import SafeString
 
 from chords.widgets import AppendWidget, NoopWidget, PrependWidget
 
@@ -26,6 +27,11 @@ def test_addon_widgets_wrap_the_input(widget_class, expected_order):
 def test_noop_widget_renders_nothing():
     """The noop widget is invisible in the form."""
     assert NoopWidget().render("songs", [1, 2]) == ""
+
+
+def test_noop_widget_does_not_make_the_fields_after_it_unsafe():
+    """A form renderer that joins the rendered fields would escape the HTML of the ones after the noop widget."""
+    assert isinstance(NoopWidget().render("songs", [1, 2]), SafeString)
 
 
 def test_noop_widget_is_hidden():

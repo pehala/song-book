@@ -5,7 +5,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.urls import reverse
 
-from pdf.models import Status
+from pdf.models import Section, Status
 from pdf.models.request import AllSongsTemplate, ManualPDFTemplate, PDFFile, PDFSong
 from tenants.utils import tenant_cache_key
 
@@ -29,16 +29,17 @@ def template_payload(**overrides):
 
 
 def songs_formset_payload(*pairs):
-    """Management form plus one entry per (song, number) pair."""
+    """Management form plus one entry per (song, number) pair, or (song, number, section) triple."""
     data = {
         "songs-TOTAL_FORMS": str(len(pairs)),
         "songs-INITIAL_FORMS": "0",
         "songs-MIN_NUM_FORMS": "1",
         "songs-MAX_NUM_FORMS": "1000",
     }
-    for index, (song, number) in enumerate(pairs):
+    for index, (song, number, *section) in enumerate(pairs):
         data[f"songs-{index}-song"] = str(song.pk)
         data[f"songs-{index}-song_number"] = str(number)
+        data[f"songs-{index}-section"] = "".join(section)
         data[f"songs-{index}-name"] = song.name
     return data
 
@@ -69,6 +70,14 @@ def test_new_page_translates_the_song_table_headers(staff_client):
 
     assert "<th>Autor</th>" in html
     assert '<th class="d-none">Kategorie</th>' in html
+
+
+def test_new_page_offers_the_choice_of_sections(staff_client, song):
+    """The song selection shows the choice of sections as a form field, not as escaped markup."""
+    content = staff_client.get(reverse("pdf:templates:new")).content.decode()
+
+    assert '<select name="sections"' in content
+    assert "&lt;select" not in content
 
 
 def test_new_page_lists_the_categories(staff_client, category):
@@ -106,7 +115,96 @@ def test_creating_a_template_asks_for_song_numbers(staff_client, song):
     )
 
     assert "pdf/templates/assign.html" in [template.name for template in response.templates]
-    assert response.context["formset"].initial == [{"name": song.name, "song_number": 1, "song": song}]
+    assert response.context["formset"].initial == [{"name": song.name, "song_number": 1, "song": song, "section": ""}]
+
+
+def test_the_songs_can_start_in_a_section_for_each_category(staff_client, tenant, category, make_category, make_song):
+    """Asking for sections by category prefills the numbering page with the songs under their categories."""
+    second_category = make_category(tenant, name="Second", slug="second")
+    first = make_song(category, name="First")
+    second = make_song(second_category, name="Second")
+
+    response = staff_client.post(
+        reverse("pdf:templates:new"),
+        template_payload() | {"songs": [str(second.pk), str(first.pk)], "sections": "category"},
+    )
+
+    assert [(row["song_number"], row["song"], row["section"]) for row in response.context["formset"].initial] == [
+        (1, first, category.name),
+        (2, second, "Second"),
+    ]
+
+
+def test_sections_by_category_use_the_own_categories(staff_client, category, other_category, make_song):
+    """A song that is also in a category of another tenant is sectioned by this tenant's category, and none is lost."""
+    shared = make_song(category, other_category, name="Shared")
+    mine = make_song(category, name="Mine")
+
+    response = staff_client.post(
+        reverse("pdf:templates:new"),
+        template_payload() | {"songs": [str(mine.pk), str(shared.pk)], "sections": "category"},
+    )
+
+    assert [(row["song"], row["section"]) for row in response.context["formset"].initial] == [
+        (shared, category.name),
+        (mine, category.name),
+    ]
+
+
+def test_editing_a_template_starts_from_its_order_and_sections(
+    staff_client, manual_template, pdf_song, pdf_category, make_song
+):
+    """The songs the template has keep their order and section, and the song added follows them without one."""
+    first = make_song(pdf_category, name="First")
+    added = make_song(pdf_category, name="Added")
+    PDFSong.objects.create(song=pdf_song, request=manual_template, song_number=1, section="Camp")
+    PDFSong.objects.create(song=first, request=manual_template, song_number=2, section="Camp")
+
+    response = staff_client.post(
+        reverse("pdf:templates:edit", kwargs={"pk": manual_template.pk}),
+        template_payload() | {"songs": [str(song.pk) for song in (added, first, pdf_song)]},
+    )
+
+    assert [(row["song_number"], row["song"], row["section"]) for row in response.context["formset"].initial] == [
+        (1, pdf_song, "Camp"),
+        (2, first, "Camp"),
+        (3, added, ""),
+    ]
+
+
+def test_the_numbering_page_has_a_heading_where_the_section_changes(
+    staff_client, manual_template, pdf_song, pdf_category, make_song
+):
+    """A heading row, with its title in it, comes before the first song of each section, plus the one to copy."""
+    others = [make_song(pdf_category, name=name) for name in ("Second", "Third")]
+    PDFSong.objects.create(song=pdf_song, request=manual_template, song_number=1)
+    PDFSong.objects.create(song=others[0], request=manual_template, song_number=2, section="Camp")
+    PDFSong.objects.create(song=others[1], request=manual_template, song_number=3, section="")
+
+    response = staff_client.post(
+        reverse("pdf:templates:edit", kwargs={"pk": manual_template.pk}),
+        template_payload() | {"songs": [str(song.pk) for song in (pdf_song, *others)]},
+    )
+
+    content = response.content.decode()
+    rows = content.split('<template id="section-template">')[0]
+    assert rows.count('class="section-row') == 2
+    assert 'value="Camp"' in rows
+    assert 'value=""' in rows
+    assert rows.index('value="Camp"') < rows.index('value=""')
+    assert content.count('class="section-row') == 3
+
+
+def test_a_song_before_any_heading_has_none(staff_client, manual_template, pdf_song, make_song, pdf_category):
+    """Songs without a section at the start of the list need no heading."""
+    PDFSong.objects.create(song=pdf_song, request=manual_template, song_number=1)
+
+    response = staff_client.post(
+        reverse("pdf:templates:edit", kwargs={"pk": manual_template.pk}),
+        template_payload() | {"songs": [str(pdf_song.pk)]},
+    )
+
+    assert response.content.decode().split('<template id="section-template">')[0].count('class="section-row') == 0
 
 
 def test_updating_a_template_keeps_its_identity(staff_client, manual_template, song):
@@ -151,6 +249,37 @@ def test_assigning_numbers_stores_the_songs(staff_client, manual_template, song,
 
     assert response.status_code == 302
     assert manual_template.get_songs() == [(1, song), (2, second)]
+
+
+def test_assigning_numbers_stores_the_sections(staff_client, manual_template, song, make_song, category):
+    """The section of every row is stored with the song and divides the template."""
+    second = make_song(category, name="Second Song")
+    third = make_song(category, name="Third Song")
+
+    staff_client.post(
+        reverse("pdf:templates:assign", kwargs={"pk": manual_template.pk}),
+        songs_formset_payload((song, 1), (second, 2, "Camp"), (third, 3, "Camp")),
+    )
+
+    assert manual_template.get_sections() == [
+        Section(None, [(1, song)]),
+        Section("Camp", [(2, second), (3, third)]),
+    ]
+
+
+def test_a_section_that_comes_back_is_rejected(staff_client, manual_template, song, make_song, category):
+    """The page is shown again with the error and nothing is stored."""
+    second = make_song(category, name="Second Song")
+    third = make_song(category, name="Third Song")
+
+    response = staff_client.post(
+        reverse("pdf:templates:assign", kwargs={"pk": manual_template.pk}),
+        songs_formset_payload((song, 1, "Camp"), (second, 2, "Evening"), (third, 3, "Camp")),
+    )
+
+    assert response.status_code == 200
+    assert response.context["formset"].non_form_errors()
+    assert manual_template.get_songs() == []
 
 
 def test_duplicate_song_numbers_are_rejected(staff_client, manual_template, pdf_song_entry, make_song, pdf_category):
