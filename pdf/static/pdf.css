@@ -8,6 +8,7 @@
      src: url(OpenSans-Bold.ttf);
 }
  @page {
+     margin: 2cm 1.5cm;
      @bottom-left {
          content: counter(page);
          font-size: 9pt;
@@ -86,16 +87,17 @@
      color: black;
      font-weight: 400;
      break-before: page;
-     font-size: 24pt;
+     font-size: 20pt;
      string-set: heading content();
-     margin-bottom: 10pt;
+     margin-bottom: 6pt;
      margin-top: 0;
 }
  h3 {
      color: black;
      bookmark-level: none;
      font-weight: 300;
-     font-size: 15pt;
+     font-size: 12pt;
+     margin: 6pt 0;
 }
  h4 {
      color: black;
@@ -107,6 +109,7 @@
  .text {
      columns: 2;
      column-gap: 1cm;
+     line-height: 1.25;
      padding-top: 0;
 }
  .text p {

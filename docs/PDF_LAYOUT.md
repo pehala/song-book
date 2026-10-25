@@ -3,6 +3,13 @@
 How the songbook PDF is laid out by `pdf/templates/pdf/index.html` and `pdf/static/pdf.css`, which WeasyPrint
 renders (`docs/FILES.md` describes the template/file workflow).
 
+## Page
+
+* The margins are 2 cm at the top and bottom and 1.5 cm at the sides, the least a printer reliably reaches. The
+  header and footer margin boxes sit in the top and bottom margins, so those stay at 2 cm.
+* Each song starts on a page of its own and fills two columns of `.text`. The song heading is 20 pt and the author
+  line 12 pt, and `.text` has a line height of 1.25, so most songs fit on one page.
+
 ## Chords
 
 PDFs always use `PDF_RENDERER` (`Song.pdf_markdown`), whatever `SONG_RENDERER` says and never from the
