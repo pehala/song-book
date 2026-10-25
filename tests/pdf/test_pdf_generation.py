@@ -46,6 +46,18 @@ def test_link_is_a_clickable_anchor_with_a_scheme(mock_weasyprint, category, mak
     assert '<a class="link" href="https://jerry.crazycactus.eu">https://jerry.crazycactus.eu</a>' in html
 
 
+def test_contents_entries_do_not_set_the_footer_name(mock_weasyprint, category, make_song, pdf_file):
+    """Only the contents heading and the song headings set the running name, so a contents page that continues
+    on the next one keeps the heading in its footer"""
+    make_song(category, text="Hello")
+
+    generate_pdf(pdf_file, category)
+
+    html = mock_weasyprint.call_args.kwargs["string"]
+    contents = html.split('<ul class="contents-list">')[1].split("</ul>")[0]
+    assert 'class="name"' not in contents
+
+
 def test_no_anchor_without_a_link(mock_weasyprint, category, make_song, pdf_file):
     """A template without a link prints no anchor"""
     make_song(category, text="Hello")

@@ -44,7 +44,7 @@
       <h3 class="contents-title name">{% trans "Table of Contents" %}</h3>
       <ul class="contents-list">
         {% for number,song in sorted_songs %}
-            <li><a href="#{{ song.id }}-title">{{ number }}. <span class="name">{{ song.name }}</span></a></li>
+            <li><a href="#{{ song.id }}-title">{{ number }}. {{ song.name }}</a></li>
         {% endfor %}
       </ul>
     </article>
