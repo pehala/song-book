@@ -36,7 +36,9 @@ a[aria-current] {
     interpolate-size: allow-keywords;
 }
 
+/* flow-root keeps the loader's margin inside, so the list does not move main up when it replaces the loader */
 main {
+    display: flow-root;
     padding: 0 1rem 70px;
 }
 

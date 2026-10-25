@@ -125,3 +125,16 @@ def test_reduced_motion_stops_the_animations(page, library):
     )
 
     assert set(durations) <= {"0s", ""}
+
+
+def test_drawing_the_list_does_not_shift_the_page(page, library):
+    """The list takes the place of the loader without moving what is around it"""
+    page.add_init_script(
+        """window.shifts = [];
+        new PerformanceObserver(list => window.shifts.push(...list.getEntries().map(entry => entry.value)))
+            .observe({type: "layout-shift", buffered: true});"""
+    )
+    page.goto("/categories/cs")
+    expect(page.locator("details.song").first).to_be_visible()
+
+    assert page.evaluate("window.shifts") == []

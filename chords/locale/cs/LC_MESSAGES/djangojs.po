@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-24 11:46-0500\n"
+"POT-Creation-Date: 2026-10-25 05:01-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -258,19 +258,19 @@ msgstr "Změnit heslo"
 msgid "Log out"
 msgstr "Odhlásit se"
 
-#: frontend/static/app/header.js:202
+#: frontend/static/app/header.js:203
 msgid "Log in"
 msgstr "Přihlásit se"
 
-#: frontend/static/app/header.js:203
+#: frontend/static/app/header.js:204
 msgid "QR"
 msgstr "QR"
 
-#: frontend/static/app/header.js:217 frontend/static/app/header.js:235
+#: frontend/static/app/header.js:218 frontend/static/app/header.js:236
 msgid "Close"
 msgstr "Zavřít"
 
-#: frontend/static/app/header.js:233 frontend/static/app/header.js:234
+#: frontend/static/app/header.js:234 frontend/static/app/header.js:235
 msgid "QR code"
 msgstr "QR kód"
 
