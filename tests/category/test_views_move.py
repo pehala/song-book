@@ -1,6 +1,8 @@
 """Tests for moving categories between tenants."""
 
 import pytest
+from django.conf import settings
+from django.core.cache import cache
 from django.urls import reverse
 from django.utils import translation
 from django.utils.timezone import now
@@ -8,6 +10,7 @@ from django.utils.timezone import now
 from backend.models import Song
 from category.models import Category
 from pdf.models.request import PDFFile
+from tenants.utils import tenant_cache_key
 
 pytestmark = pytest.mark.django_db
 
@@ -90,6 +93,17 @@ def test_move_takes_the_generated_files_along(superuser_client, category, pdf_fi
 
     pdf_file.refresh_from_db()
     assert pdf_file.tenant == other_tenant
+
+
+def test_move_drops_the_files_menu_of_both_tenants(superuser_client, category, tenant, other_tenant):
+    """The files of the category leave the menu of one tenant and enter the menu of the other."""
+    for each in (tenant, other_tenant):
+        cache.set(tenant_cache_key(each, settings.PDF_CACHE_KEY), ["stale"], 60)
+
+    superuser_client.post(MOVE_URL, move_payload(other_tenant, category))
+
+    for each in (tenant, other_tenant):
+        assert cache.get(tenant_cache_key(each, settings.PDF_CACHE_KEY)) is None
 
 
 def test_move_leaves_other_tenants_files_alone(superuser_client, category, other_tenant, tenant):
