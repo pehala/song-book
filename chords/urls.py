@@ -20,9 +20,12 @@ from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path, re_path
 
+from backend.views import SongImageUploadView, SongPreviewView
+
 urlpatterns = [
     path("accounts/", include("django.contrib.auth.urls")),
-    re_path(r"^markdownx/", include("markdownx.urls")),
+    path("markdownx/upload/", SongImageUploadView.as_view(), name="markdownx_upload"),
+    path("markdownx/markdownify/", SongPreviewView.as_view(), name="markdownx_markdownify"),
     path("i18n/", include("django.conf.urls.i18n")),
     path("pdf/", include(("pdf.urls", "pdf"), namespace="pdf")),
     path("categories/", include(("category.urls", "category"), namespace="category")),
