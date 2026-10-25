@@ -84,7 +84,7 @@ class BasePDFSongFormset(BaseFormSet):
         for form in self.forms:
             number = form.instance.song_number
             if number in numbers:
-                raise ValidationError(_("Each song has to have distinct song number"))
+                raise ValidationError(_("Each song must have a distinct number"))
             numbers.add(number)
 
 

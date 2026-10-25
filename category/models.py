@@ -25,7 +25,7 @@ class Category(PDFTemplate):
     )
     generate_pdf = BooleanField(
         verbose_name=_("PDF generation"),
-        help_text=_("True, if the PDF file be automatically generated when a category or song changes?"),
+        help_text=_("Check to generate the PDF file automatically when a category or song changes"),
     )
 
     def get_songs(self) -> Iterable[tuple[int, Song]]:

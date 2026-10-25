@@ -67,7 +67,7 @@ class GenerateFromTemplateView(LocalAdminRequired, View, SingleObjectMixin):
         file = generate_pdf_file(obj)
         messages.success(
             request,
-            _("Scheduled File (%(id)s) generation from template %(template)s") % {"id": file.id, "template": obj.name},
+            _("Scheduled generation of file %(id)s from template %(template)s") % {"id": file.id, "template": obj.name},
         )
         return redirect("pdf:files:wait", pk=file.id)
 

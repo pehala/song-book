@@ -807,7 +807,7 @@ def test_admin_sees_edit_links_and_can_log_out(page, context, library, staff_use
     sign_in(staff_user)
     page.goto("/categories/cs")
     open_menu(page, "Account")
-    expect(page.get_by_text("Logged as")).to_contain_text("staff")
+    expect(page.get_by_text("Logged in as")).to_contain_text("staff")
     song = library.category_set.get(slug="cs").song_set.get(name="Hrad")
 
     page.keyboard.press("Escape")

@@ -7,7 +7,7 @@
 {% block framed_body %}
   <form method="post">
     {% csrf_token %}
-    <p class="text-center">{% blocktrans %}Are you sure, you want to delete {{ model_verbose_name }}{% endblocktrans %} <b>{{ identifier }}</b>?</p>
+    <p class="text-center">{% blocktrans %}Are you sure you want to delete {{ model_verbose_name }}{% endblocktrans %} <b>{{ identifier }}</b>?</p>
     <div class="mb-2">
       <a class="btn btn-secondary mx-auto ps-3 pe-3 "
          href="{{ success_url }}">{% trans 'No' %}</a>

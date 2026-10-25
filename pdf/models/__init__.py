@@ -39,7 +39,7 @@ class PDFTemplate(PolymorphicModel):
         max_length=30,
         null=True,
         blank=True,
-        help_text=_("(Optional) Display name for the generated files. If empty filename will be used"),
+        help_text=_("(Optional) Display name for the generated files. If empty, the file name will be used"),
         verbose_name=_("Display name"),
     )
     filename = CharField(
@@ -51,7 +51,7 @@ class PDFTemplate(PolymorphicModel):
     )
     public = BooleanField(
         default=True,
-        help_text=_("True, if the file should be visible in the menu"),
+        help_text=_("Check to show the file in the menu"),
         verbose_name=_("Public file"),
     )
     locale = CharField(
@@ -63,30 +63,30 @@ class PDFTemplate(PolymorphicModel):
     title = CharField(
         max_length=100,
         blank=True,
-        help_text=_("Name to be used on the title page of the PDF, usually only this or Title image should be used"),
+        help_text=_("Name for the title page of the PDF, usually only this or the title image is needed"),
         verbose_name=_("Title"),
     )
     show_date = BooleanField(
         default=True,
         verbose_name=_("Show date"),
-        help_text=_("True, if the date should be included in the PDF"),
+        help_text=_("Check to include the date in the PDF"),
     )
     image = ImageField(
-        verbose_name=_("Title Image"),
+        verbose_name=_("Title image"),
         help_text=_("(Optional) title image for the PDF"),
         null=True,
         blank=True,
         upload_to="uploads/",
     )
     margin = FloatField(
-        verbose_name=_("Title Image margins"),
+        verbose_name=_("Title image margins"),
         help_text=_("Margins for title image, might be needed for some printers"),
         default=0,
     )
     link = CharField(
         max_length=300,
         blank=True,
-        help_text=_("(Optional) URL Link to include in the PDF"),
+        help_text=_("(Optional) URL to include in the PDF"),
         verbose_name=_("Link"),
     )
 
