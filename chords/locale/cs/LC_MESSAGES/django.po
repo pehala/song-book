@@ -63,7 +63,7 @@ msgstr "Nová %(class)s"
 msgid "Name"
 msgstr "Jméno"
 
-#: backend/models.py:38 pdf/templates/pdf/index.html:52
+#: backend/models.py:38 pdf/templates/pdf/index.html:54
 msgid "Capo"
 msgstr "Capo"
 
@@ -498,7 +498,7 @@ msgstr "Upravit Šablonu"
 msgid "Waiting for render of %(filename)s"
 msgstr "Čekání na vygenerování %(filename)s"
 
-#: pdf/templates/pdf/index.html:42
+#: pdf/templates/pdf/index.html:44
 msgid "Table of Contents"
 msgstr "Obsah"
 
