@@ -199,9 +199,9 @@ function Header({site, navigate, onReload}) {
                             <a href=${urls.password}>${_("Change password")}</a>
                             <button class="sb-link" onClick=${logout}>${_("Log out")}</button>
                         <//>`
-                    : html`<a class=${"sb-btn" + (me ? "" : " sb-pending")} aria-hidden=${me ? null : "true"} tabindex=${me ? null : "-1"}
-                               href=${urls.login + "?next=" + encodeURIComponent(location.pathname)}>${_("Log in")}</a>`}
-                <button class="sb-btn" onClick=${showQr}>${_("QR")}</button>
+                    : html`<a class=${"sb-item" + (me ? "" : " sb-pending")} aria-hidden=${me ? null : "true"} tabindex=${me ? null : "-1"}
+                               href=${urls.login + "?next=" + encodeURIComponent(location.pathname)}><${Icon} name="login" /> ${_("Log in")}</a>`}
+                <button class="sb-item" title=${_("QR code")} onClick=${showQr}><${Icon} name="qr" /> <span class="sb-narrow">${_("QR code")}</span></button>
             </nav>
         </header>`;
 }

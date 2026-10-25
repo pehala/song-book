@@ -182,8 +182,23 @@
     padding: 0 .5rem;
 }
 
-.sb-menu > .sb-btn {
-    margin: .25rem 0;
+/* Log in and the QR code: entries of the menu with an icon, the QR code an icon alone in the wide bar */
+.sb-item {
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+    min-width: var(--tap);
+    min-height: var(--tap);
+    padding: 0 .5rem;
+    font: inherit;
+    color: var(--link);
+    background: none;
+    border: 0;
+    cursor: pointer;
+}
+
+.sb-bar .sb-item:hover {
+    color: var(--hi);
 }
 
 .sb-gap {
@@ -362,8 +377,17 @@
         gap: .25rem .75rem;
     }
 
-    .sb-menu > .sb-btn {
-        margin: 0;
+    .sb-item {
+        justify-content: center;
+    }
+
+    .sb-narrow {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
     }
 
     .sb-gap {

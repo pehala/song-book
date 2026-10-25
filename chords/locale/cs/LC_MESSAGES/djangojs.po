@@ -262,17 +262,14 @@ msgstr "Odhlásit se"
 msgid "Log in"
 msgstr "Přihlásit se"
 
-#: frontend/static/app/header.js:204
-msgid "QR"
-msgstr "QR"
+#: frontend/static/app/header.js:204 frontend/static/app/header.js:234
+#: frontend/static/app/header.js:235
+msgid "QR code"
+msgstr "QR kód"
 
 #: frontend/static/app/header.js:218 frontend/static/app/header.js:236
 msgid "Close"
 msgstr "Zavřít"
-
-#: frontend/static/app/header.js:234 frontend/static/app/header.js:235
-msgid "QR code"
-msgstr "QR kód"
 
 #: frontend/static/app/progress.js:10
 msgid "Waiting for start"
