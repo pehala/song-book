@@ -3,6 +3,11 @@
   {% if item.filename %}
     {% if item.has_scheduled_file %}
       <span class="dropdown-item text-secondary"><i class="icon-file-pdf"></i>{% trans "Already in queue" %}</span>
+      {% with item.latest_file as pdf %}
+        {% if pdf.status == "SC" %}
+          {% include "pdf/files/generate_now_item.html" %}
+        {% endif %}
+      {% endwith %}
     {% else %}
       <a href="{% url "pdf:templates:generate" pk=item.id %}"
          class="dropdown-item text-primary"><i class="icon-file-pdf"></i>{% trans "Generate PDF" %}</a>

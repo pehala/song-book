@@ -65,6 +65,9 @@
                 <span class="visually-hidden">{% trans "Toggle Dropdown" %}</span>
               </button>
               <ul class="dropdown-menu dropdown-menu-end">
+                {% if pdf.status == "SC" and pdf.template %}
+                  <li>{% include "pdf/files/generate_now_item.html" %}</li>
+                {% endif %}
                 <li>
                   {% if pdf.template %}
                     <a type="button" class="dropdown-item text-primary"

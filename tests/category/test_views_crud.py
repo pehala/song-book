@@ -249,3 +249,14 @@ def test_category_cannot_be_moved_to_another_tenant(staff_client, tenant, other_
     category.refresh_from_db()
     assert category.tenant == tenant
     assert category.name != "Renamed"
+
+
+def test_list_offers_generating_a_scheduled_file_now(staff_client, tenant, category):
+    """A category whose file waits for its time can be generated at once."""
+    file = PDFFile.objects.create(
+        tenant=tenant, template=category, filename="songbook", status=Status.SCHEDULED, update_date=now()
+    )
+
+    content = staff_client.get(reverse("category:list")).content.decode()
+
+    assert reverse("pdf:files:generate_now", kwargs={"pk": file.pk}) in content

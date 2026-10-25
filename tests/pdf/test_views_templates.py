@@ -451,3 +451,12 @@ def test_generating_from_a_template_of_another_tenant_is_refused(staff_client, f
 
     assert response.status_code == 404
     assert not PDFFile.objects.filter(template=foreign_template).exists()
+
+
+def test_list_offers_generating_a_scheduled_file_now(staff_client, manual_template, make_pdf_file):
+    """A template whose file waits for its time can be generated at once."""
+    file = make_pdf_file(manual_template, status=Status.SCHEDULED)
+
+    content = staff_client.get(reverse("pdf:templates:list")).content.decode()
+
+    assert reverse("pdf:files:generate_now", kwargs={"pk": file.pk}) in content

@@ -233,7 +233,9 @@ template's locale and saves the file.
 
 Category PDFs regenerate automatically on song/category change via
 `request_pdf_regeneration()` (and, for the tenant's `AllSongsTemplate`, `request_all_songs_pdf_regeneration()`), delayed by `CATEGORY_PDF_DELAY` (30 min) so an editing spree
-batches into one file; it is skipped while the template already has an unfinished file.
+batches into one file; it is skipped while the template already has an unfinished file. A scheduled file can be
+generated at once (`generate_file_now`, `pdf:files:generate_now`): a job runs a file only while it is still `SCHEDULED`, so the
+original delayed job skips a file that was already generated.
 `docs/FILES.md` describes the template/file workflow, `docs/PDF_LAYOUT.md` the page layout.
 
 Locally, set `HUEY = {"immediate": True}` in `chords/settings/production.py` to run generation

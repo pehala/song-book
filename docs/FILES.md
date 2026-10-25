@@ -42,6 +42,12 @@
 * Song updated -> [Schedule PDF generation for every Category the song is in, if it is enabled]
 * Song updated -> [Schedule PDF generation of the all songs PDF of the song's tenants, if it is enabled]
 
+### Generating now
+A scheduled file can be generated at once from the file list, the template list or the category list ("Generate now",
+`generate_file_now`). Its `scheduled_at` becomes now and a second job is queued; the original job stays queued, and
+`generate_pdf_job` only runs a file that is still `SCHEDULED`, so whichever job comes first generates it and the other
+one skips it.
+
 ### Manual
 Create Template -> Generate File
 Existing Template (Including Categories) -> Generate File
