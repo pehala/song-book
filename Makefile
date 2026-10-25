@@ -6,6 +6,7 @@ pre-commit: messages migrations reformat
 
 # The container image sets RUN empty: its virtualenv is already on PATH and it has no uv
 RUN ?= uv run
+RUN_DEV ?= uv run --group dev
 MANAGE ?= $(RUN) python manage.py
 
 SETTINGS ?= chords.settings.production
@@ -13,10 +14,10 @@ DEV_SETTINGS ?= chords.settings.development
 PORT ?= 8000
 
 ruff:
-	$(RUN) ruff check . --fix
+	$(RUN_DEV) ruff check . --fix
 
 reformat:
-	$(RUN) ruff format .
+	$(RUN_DEV) ruff format .
 
 check-fuzzy:
 	@ for po in django djangojs; do \
@@ -30,13 +31,13 @@ check-messages: messages
 	@ if [ ! -z "$$(msgattrib chords/locale/cs/LC_MESSAGES/djangojs.po --untranslated)" ]; then echo "djangojs.po contains untranslated strings" && exit 1; fi
 
 messages: messages-js
-	$(MANAGE) makemessages -l cs
+	$(MANAGE) makemessages -l cs --settings $(DEV_SETTINGS)
 
 messages-js:
-	$(MANAGE) makemessages -l cs -d djangojs -i "*/vendor/*" -i "backend/static/*" -i "pdf/static/*" -i "*/templates/*" -i "staticfiles/*"
+	$(MANAGE) makemessages -l cs -d djangojs -i "*/vendor/*" -i "backend/static/*" -i "pdf/static/*" -i "*/templates/*" -i "staticfiles/*" --settings $(DEV_SETTINGS)
 
 migrations:
-	$(MANAGE) makemigrations
+	$(MANAGE) makemigrations --settings $(DEV_SETTINGS)
 
 deploy: migrate prerender cache_clear compilemessages collectstatic ## Deploys to production
 
@@ -83,13 +84,13 @@ init: ## Initializes project for development
 	$(MANAGE) migrate
 
 test: ## Runs the test suite
-	uv run --group dev pytest tests/
+	$(RUN_DEV) pytest tests/
 
 e2e: ## Runs the browser tests of the reader (needs: uv run playwright install --with-deps chromium)
-	uv run --group dev pytest tests/e2e -m e2e --tracing retain-on-failure
+	$(RUN_DEV) pytest tests/e2e -m e2e --tracing retain-on-failure
 
 coverage: ## Runs the test suite and reports coverage
-	uv run --group dev pytest tests/ --cov
+	$(RUN_DEV) pytest tests/ --cov
 
 run: ## Runs the development server
 	$(MANAGE) runserver --settings $(SETTINGS)
