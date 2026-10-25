@@ -36,14 +36,6 @@ def pdf_song(pdf_category):
 
 
 @pytest.fixture
-def archived_pdf_song(pdf_category):
-    """An archived song in pdf_category — should be excluded from PDF."""
-    s = Song.objects.create(name="Archived PDF Song", text="x", archived=True)
-    s.categories.add(pdf_category)
-    return s
-
-
-@pytest.fixture
 def manual_template(tenant):
     """A ManualPDFTemplate linked to tenant."""
     return ManualPDFTemplate.objects.create(
@@ -62,12 +54,6 @@ def pdf_song_entry(manual_template, pdf_song):
         request=manual_template,
         song_number=1,
     )
-
-
-@pytest.fixture(autouse=True)
-def media_root(settings, tmp_path):
-    """Redirects uploaded PDFs to a temporary directory instead of the source tree."""
-    settings.MEDIA_ROOT = str(tmp_path / "media")
 
 
 @pytest.fixture
