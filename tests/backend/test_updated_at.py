@@ -8,7 +8,8 @@ from django.urls import reverse
 
 from backend.models import Song
 from tests.backend.test_views_crud import song_payload
-from tests.category.test_views_move import MOVE_URL, move_payload
+from tests.category.test_views_move import MOVE_URL
+from tests.test_move_views import move_payload
 
 pytestmark = pytest.mark.django_db
 

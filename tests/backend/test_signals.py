@@ -106,6 +106,15 @@ def test_category_rename_clears_payload_and_menu(anon_client, song, tenant, cate
     assert songs(anon_client)["Test Song"]["cats"] == ["renamed"]
 
 
+def test_category_create_clears_the_menu(tenant, make_category):
+    """A new category has to show up in the navigation."""
+    cache.set(tenant_cache_key(tenant, CATEGORY_CACHE_KEY), ["menu"])
+
+    make_category(tenant, name="Created", slug="created")
+
+    assert cache.get(tenant_cache_key(tenant, CATEGORY_CACHE_KEY)) is None
+
+
 def test_category_delete_clears_payload_and_menu(anon_client, song, tenant, category):
     """Deleting a category clears the payload and the category menu."""
     prime_payload(anon_client)
