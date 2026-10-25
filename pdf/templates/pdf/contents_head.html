@@ -1,0 +1,6 @@
+{% load i18n %}
+<div class="contents-head">
+  {% for column in contents_columns %}
+  <div><span class="head-number">{% trans "No." %}</span><span class="head-title">{% trans "Song title" %}</span><span class="head-page">{% trans "Page" %}</span></div>
+  {% endfor %}
+</div>

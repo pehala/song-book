@@ -36,11 +36,40 @@ to.
 * Copying text out of the PDF gives `AmiMám`, with no space between chord and word.
 * Rows with chords are taller, so a song with many chords may need an extra page.
 
+## Table of contents
+
+`#contents` holds the title, the date, the header link, the contents heading, the header of the columns and the list.
+The entries are sorted by title in the collation of the template's language and carry the number of the song.
+
+* The list has `CONTENTS_COLUMNS` columns (`pdf/generate.py`); the `columns` of `.contents-list` in `pdf.css` must
+  match.
+* An entry is `<span class="number">`, the title and `<span class="last-word" href="…">`. The number is positioned
+  absolutely in a 26 pt gutter and the link has `padding-left` of the same width, so a title that wraps hangs under its
+  first line. `without_last_word` and `last_word` (`pdf/templatetags/contents.py`) split the title.
+* `.last-word::after` is a no-break space, `leader('.')`, a no-break space and `target-counter(attr(href), page)`, the
+  page of the song heading. `white-space: nowrap` on the span keeps the last word, the dots and the page number on one
+  line, so a wrapped title has them on its last line only and never a line made of dots. `attr(href)` is read from the
+  span, which is why it carries the `href`.
+* The number is not a negative `text-indent` because WeasyPrint then sizes the leader of the first line without
+  that indent and the dots stop short of the right edge.
+* `contents_head.html` is the header (number, song title, page) of every column. It is included twice: in the flow
+  above the list, and inside `.running-head`, which `position: running(contents-head)` takes out of the flow.
+  `#contents` has `page: contents`, so `@page contents` prints the running header in the `@top-center` margin box of every
+  contents page, and `@page contents:first` keeps the `title` string there on the first page, which has the header
+  in the flow. `.running-head` has the 8 px side padding of the body so its columns line up with the list.
+* A named page forces a page break between it and the content before it, so the header link lives inside `#contents`
+  and not before it.
+* Pages with the running header put the header link at the top of its margin box (`@page contents:nth(n+2)`), because
+  the header link and the running header otherwise share the same strip.
+* With a cover image the contents start on page 2 (`.date` breaks before it), so `contents:first` has no
+  `@top-center` and page 2, which has the header in the flow, shows the `title` string; the running header starts on
+  page 3.
+
 ## Header link
 
 * `PDFTemplate.link` is free text. `PDFTemplate.link_url` returns it with `https://` in front unless it names a
   scheme (`scheme://` or `mailto:`), and the template only uses `link_url`.
-* The template writes `<a class="link" href="{{ link_url }}">` first in the body. `position: running(link)` takes it
+* The template writes `<a class="link" href="{{ link_url }}">` first in `#contents`. `position: running(link)` takes it
   out of the flow and `content: element(link)` puts it in the `@top-right` margin box of every page. A string in
   `content` would only be text, while an element keeps its hyperlink.
 * `.link` sets the 9 pt size of the margin box and no underline, because a running element keeps the font size of the

@@ -5,6 +5,7 @@ Tests cover scheduling, status transitions, output correctness, and model
 correctness.  Tests for distinct_requests() live in test_distinct_requests.py.
 """
 
+from contextlib import nullcontext
 from datetime import timedelta
 from unittest.mock import MagicMock, patch
 
@@ -13,7 +14,7 @@ from django.conf import settings
 from django.core.cache import cache
 from django.utils.timezone import now
 
-from pdf.generate import generate_pdf, generate_pdf_file, generate_pdf_job
+from pdf.generate import CONTENTS_COLUMNS, generate_pdf, generate_pdf_file, generate_pdf_job
 from pdf.models import Status
 from pdf.models.request import PDFFile
 from tenants.utils import tenant_cache_key
@@ -56,6 +57,51 @@ def test_contents_entries_do_not_set_the_footer_name(mock_weasyprint, category, 
     html = mock_weasyprint.call_args.kwargs["string"]
     contents = html.split('<ul class="contents-list">')[1].split("</ul>")[0]
     assert 'class="name"' not in contents
+
+
+def test_contents_entry_keeps_its_last_word_with_the_page_number(mock_weasyprint, category, make_song, pdf_file):
+    """The last word of a title is a span of its own that carries the link to the song, so the dots and the page
+    number are drawn after it and wrap with it"""
+    song = make_song(category, name="Hlupák Váhá", text="Hello")
+
+    generate_pdf(pdf_file, category)
+
+    html = mock_weasyprint.call_args.kwargs["string"]
+    assert (
+        f'<a href="#{song.id}-title"><span class="number">1</span>Hlupák '
+        f'<span class="last-word" href="#{song.id}-title">Váhá</span></a>'
+    ) in html
+
+
+def test_contents_entry_of_a_one_word_title_is_all_last_word(mock_weasyprint, category, make_song, pdf_file):
+    """A title of one word has nothing before the span"""
+    song = make_song(category, name="Amazonka", text="Hello")
+
+    generate_pdf(pdf_file, category)
+
+    html = mock_weasyprint.call_args.kwargs["string"]
+    assert f'<span class="number">1</span><span class="last-word" href="#{song.id}-title">Amazonka</span>' in html
+
+
+def test_contents_have_a_header_over_every_column_in_the_language_of_the_template(
+    mock_weasyprint, category, make_song, pdf_file
+):
+    """The header names the columns of each of the contents columns, once in the page and once as the running
+    element that repeats it on the later contents pages"""
+    category.locale = "cs"
+    make_song(category, text="Hello")
+
+    with patch("pdf.generate.changed_locale", nullcontext):
+        generate_pdf(pdf_file, category)
+
+    html = mock_weasyprint.call_args.kwargs["string"]
+    assert html.count('class="contents-head"') == 2
+    assert html.count('class="running-head"') == 1
+    for label in ("head-number", "head-title", "head-page"):
+        assert html.count(f'class="{label}"') == 2 * CONTENTS_COLUMNS
+    assert html.count(">Číslo</span>") == 2 * CONTENTS_COLUMNS
+    assert html.count(">Název</span>") == 2 * CONTENTS_COLUMNS
+    assert html.count(">Strana</span>") == 2 * CONTENTS_COLUMNS
 
 
 def test_no_anchor_without_a_link(mock_weasyprint, category, make_song, pdf_file):

@@ -31,6 +31,9 @@ logger.setLevel(logging.INFO)
 
 AllowedTemplates = Category | ManualPDFTemplate | AllSongsTemplate
 
+# Number of columns of the table of contents; the `columns` of `.contents-list` in pdf.css must match
+CONTENTS_COLUMNS = 3
+
 
 def update_status(file: PDFFile, status: Status):
     """Updates status of the request if it is in DB"""
@@ -68,6 +71,7 @@ def generate_pdf(pdf_file: PDFFile, template: AllowedTemplates):
                     context={
                         "songs": songs,
                         "sorted_songs": sorted_songs,
+                        "contents_columns": range(CONTENTS_COLUMNS),
                         "name": template.title or template.tenant.display_name,
                         "request": template,
                         "link_url": template.link_url,
