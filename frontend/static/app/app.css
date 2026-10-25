@@ -82,6 +82,16 @@ main {
     outline-offset: 0;
 }
 
+/* The first addon is the magnifier; the label's text is for screen readers */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+}
+
 .input-group .addon {
     display: flex;
     align-items: center;
