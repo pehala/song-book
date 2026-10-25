@@ -159,29 +159,16 @@ def test_every_module_is_reachable_from_an_entry():
     assert set(sources) == imported
 
 
-@pytest.fixture
-def development_files(tmp_path, monkeypatch, settings):
-    """Development: static files are not hashed, and the stylesheet is a file the test can edit."""
-    settings.DEBUG = True
-    stylesheet = tmp_path / "header.css"
-    stylesheet.write_text("a {}")
-    find = finders.find
-    monkeypatch.setattr(
-        "frontend.views.finders.find", lambda path: stylesheet if path == "app/header.css" else find(path)
-    )
-    return stylesheet
-
-
-def test_worker_version_follows_file_content_in_development(anon_client, tenant, development_files):
+def test_worker_version_follows_file_content_in_development(anon_client, tenant, development_stylesheet):
     """Edited files change the worker, since their urls do not change."""
     before = cache_name(anon_client)
 
-    development_files.write_text("a { color: red }")
+    development_stylesheet.write_text("a { color: red }")
 
     assert cache_name(anon_client) != before
 
 
-def test_worker_version_is_stable_while_nothing_changes(anon_client, tenant, development_files):
+def test_worker_version_is_stable_while_nothing_changes(anon_client, tenant, development_stylesheet):
     """The worker is served while static files are not hashed, and the browser does not install one per request."""
     assert anon_client.get(SERVICE_WORKER_URL).status_code == 200
     assert cache_name(anon_client) == cache_name(anon_client)

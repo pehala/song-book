@@ -70,6 +70,39 @@ def offline_cdn(page):
 
 
 @pytest.fixture
+def hold(page):
+    """Holds the requests to a url pattern until the test continues them; returns the list of held routes."""
+
+    def hold(pattern):
+        held = []
+
+        def keep(route):  # Playwright cannot wrap the builtin held.append
+            held.append(route)
+
+        page.route(pattern, keep)
+        return held
+
+    return hold
+
+
+@pytest.fixture
+def poll(page):
+    """Waits up to five seconds for a condition that wait_for_function cannot check.
+
+    A cookie is outside the page, and the CSP of the server pages forbids the eval wait_for_function needs.
+    """
+
+    def poll(condition):
+        for _ in range(50):
+            if condition():
+                return
+            page.wait_for_timeout(100)
+        raise AssertionError("the condition never held")
+
+    return poll
+
+
+@pytest.fixture
 def requests_made(page):
     """Every request the page makes, as (method, url) pairs."""
     made = []
