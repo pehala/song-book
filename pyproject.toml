@@ -55,6 +55,7 @@ branch = true
 omit = [
   "*/migrations/*",
   "*/apps.py",
+  "chords/settings/container.py",
   "chords/settings/development.py",
   "chords/settings/production.py",
   "chords/wsgi.py",
