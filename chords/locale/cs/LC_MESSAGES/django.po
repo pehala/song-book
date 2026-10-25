@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 11:49-0500\n"
+"POT-Creation-Date: 2026-10-25 13:12-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -59,15 +59,17 @@ msgstr "Nová %(class)s"
 
 #: backend/models.py:35 category/forms.py:46 category/models.py:20
 #: category/templates/category/list.html:12
-#: pdf/templates/pdf/templates/list.html:31 tenants/models.py:41
+#: pdf/templates/pdf/templates/list.html:31
+#: pdf/templates/pdf/templates/select.html:43 tenants/models.py:41
 msgid "Name"
 msgstr "Jméno"
 
 #: backend/models.py:38 pdf/templates/pdf/index.html:59
+#: pdf/templates/pdf/templates/select.html:45
 msgid "Capo"
 msgstr "Capo"
 
-#: backend/models.py:39
+#: backend/models.py:39 pdf/templates/pdf/templates/select.html:44
 msgid "Author"
 msgstr "Autor"
 
@@ -78,6 +80,7 @@ msgstr "Odkaz na Youtube"
 #: backend/models.py:41 category/models.py:39
 #: category/templates/category/list.html:5
 #: category/templates/category/list.html:6
+#: pdf/templates/pdf/templates/select.html:46
 msgid "Categories"
 msgstr "Kategorie"
 
