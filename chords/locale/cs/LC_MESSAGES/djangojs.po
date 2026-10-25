@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-25 05:01-0500\n"
+"POT-Creation-Date: 2026-10-25 05:02-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -120,20 +120,20 @@ msgstr "Náhodná písnička"
 msgid "Updating songs…"
 msgstr "Aktualizace písniček…"
 
-#: frontend/static/app/app.js:185
+#: frontend/static/app/app.js:186
 msgid "Back to top"
 msgstr "Nahoru"
 
-#: frontend/static/app/app.js:186
+#: frontend/static/app/app.js:187
 msgid "Scroll down"
 msgstr "Posunout dolů"
 
-#: frontend/static/app/app.js:198
+#: frontend/static/app/app.js:200
 #, javascript-format
 msgid "%s s left"
 msgstr "zbývá asi %s s"
 
-#: frontend/static/app/app.js:199
+#: frontend/static/app/app.js:201
 #, javascript-format
 msgid "%s min left"
 msgstr "zbývá asi %s min"
