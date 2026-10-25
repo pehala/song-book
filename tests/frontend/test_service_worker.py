@@ -31,33 +31,35 @@ def worker(client):
     return client.get(SERVICE_WORKER_URL).content.decode()
 
 
+def cache_name(client):
+    """Returns the name of the cache the served worker uses."""
+    return re.search(r'CACHE = "(.*)"', worker(client)).group(1)
+
+
 def test_worker_is_javascript_served_from_the_root(anon_client, tenant):
-    """The path decides the scope, so it has to be the root."""
+    """The path decides the scope, so it has to be the root, and the browser has to see a new worker at once."""
     response = anon_client.get(SERVICE_WORKER_URL)
 
     assert SERVICE_WORKER_URL == "/service_worker.js"
     assert response["Content-Type"].startswith("application/javascript")
-
-
-def test_worker_is_never_cached(anon_client, tenant):
-    """The browser has to see a new worker as soon as there is one."""
-    assert "no-cache" in anon_client.get(SERVICE_WORKER_URL)["Cache-Control"]
+    assert "no-cache" in response["Cache-Control"]
 
 
 def test_worker_precaches_the_shell_and_the_static_files(anon_client, tenant):
-    """The cached files are the content-hashed urls the pages ask for."""
+    """The cached files are the content-hashed urls the pages ask for; the manifest is fetched by the browser."""
     source = worker(anon_client)
 
     assert static("app/vendor/preact-htm.module.js") in array(source, "PRECACHE")
     for path in ("app/app.css", "app/header.css", "app/site.js", "app/header.js"):
         assert static(path) in array(source, "PRECACHE")
     assert 'const SHELL = "/";' in source
+    assert MANIFEST_URL in array(source, "RUNTIME")
 
 
 def test_cache_name_belongs_to_the_tenant(tenant, other_tenant):
     """A hostname that changes tenant starts from an empty cache."""
-    first = re.search(r'CACHE = "(.*)"', worker(Client(HTTP_HOST="localhost"))).group(1)
-    second = re.search(r'CACHE = "(.*)"', worker(Client(HTTP_HOST="other.localhost"))).group(1)
+    first = cache_name(Client(HTTP_HOST="localhost"))
+    second = cache_name(Client(HTTP_HOST="other.localhost"))
 
     assert first.startswith(f"shell-{tenant.id}-")
     assert second.startswith(f"shell-{other_tenant.id}-")
@@ -65,15 +67,10 @@ def test_cache_name_belongs_to_the_tenant(tenant, other_tenant):
 
 def test_cache_name_follows_the_precached_urls(anon_client, tenant, settings):
     """New static files mean a new cache, which makes the browser install the new worker."""
-    before = re.search(r'CACHE = "(.*)"', worker(anon_client)).group(1)
+    before = cache_name(anon_client)
     settings.STATIC_URL = "/other-static/"
 
-    assert re.search(r'CACHE = "(.*)"', worker(anon_client)).group(1) != before
-
-
-def test_manifest_is_cached_at_runtime(anon_client, tenant):
-    """The manifest is fetched by the browser, not by the page."""
-    assert MANIFEST_URL in array(worker(anon_client), "RUNTIME")
+    assert cache_name(anon_client) != before
 
 
 def test_logo_is_cached_at_runtime(anon_client, tenant):
@@ -175,16 +172,6 @@ def development_files(tmp_path, monkeypatch, settings):
     return stylesheet
 
 
-def cache_name(client):
-    """Returns the name of the cache the served worker uses."""
-    return re.search(r'CACHE = "(.*)"', worker(client)).group(1)
-
-
-def test_worker_is_built_in_development(anon_client, tenant, development_files):
-    """The worker is served while static files are not hashed."""
-    assert anon_client.get(SERVICE_WORKER_URL).status_code == 200
-
-
 def test_worker_version_follows_file_content_in_development(anon_client, tenant, development_files):
     """Edited files change the worker, since their urls do not change."""
     before = cache_name(anon_client)
@@ -195,5 +182,6 @@ def test_worker_version_follows_file_content_in_development(anon_client, tenant,
 
 
 def test_worker_version_is_stable_while_nothing_changes(anon_client, tenant, development_files):
-    """The browser does not install a worker per request."""
+    """The worker is served while static files are not hashed, and the browser does not install one per request."""
+    assert anon_client.get(SERVICE_WORKER_URL).status_code == 200
     assert cache_name(anon_client) == cache_name(anon_client)

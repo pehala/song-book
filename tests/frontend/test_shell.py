@@ -1,7 +1,6 @@
 """Tests for the page every reader route is served with."""
 
 import json
-import re
 
 import pytest
 from django.test import Client
@@ -10,15 +9,9 @@ from django.utils.html import escape
 
 from frontend.views import MODULES
 from tenants.bootstrap import bootstrap_payload
+from tests.frontend.test_header import inlined
 
 pytestmark = pytest.mark.django_db
-
-
-def boot_of(response):
-    """The bootstrap JSON inlined into the page."""
-    return json.loads(
-        re.search(r'<script id="boot" type="application/json">(.*?)</script>', response.content.decode()).group(1)
-    )
 
 
 @pytest.fixture
@@ -27,11 +20,21 @@ def shell_urls(category):
     return ["/", reverse("chords:all"), reverse("category:index", kwargs={"slug": category.slug})]
 
 
-def test_index_is_the_shell_not_a_redirect(anon_client, tenant):
-    """The reader moves to the landing page itself, which saves a round trip."""
-    response = anon_client.get(reverse("chords:index"))
+@pytest.mark.parametrize(
+    ("url", "status"),
+    [
+        pytest.param(reverse("chords:index"), 200, id="index"),
+        pytest.param(reverse("category:index", kwargs={"slug": "nope"}), 404, id="unknown category"),
+    ],
+)
+def test_index_and_unknown_categories_get_the_shell(anon_client, tenant, url, status):
+    """The reader moves to the landing page itself, which saves a round trip, and says a category is missing.
 
-    assert response.status_code == 200
+    The status of a missing category keeps the page out of the service worker's cache.
+    """
+    response = anon_client.get(url)
+
+    assert response.status_code == status
     assert 'id="app"' in response.content.decode()
 
 
@@ -44,7 +47,7 @@ def test_every_reader_route_serves_the_same_page(anon_client, shell_urls):
 
 def test_page_carries_the_bootstrap(anon_client, tenant, category):
     """Navigation and urls are inlined so the first draw needs no request."""
-    boot = boot_of(anon_client.get(reverse("chords:all")))
+    boot = inlined(anon_client.get(reverse("chords:all")), "boot")
 
     assert boot == json.loads(json.dumps(bootstrap_payload(tenant)))
 
@@ -87,14 +90,6 @@ def test_page_is_described_in_the_language_of_the_page(tenant):
     assert f'<meta name="description" content="Zpěvník {escape(tenant.display_name)}:' in czech
 
 
-def test_unknown_category_gets_the_page_with_404(anon_client, tenant):
-    """The client says the category is missing; the status keeps it out of the service worker's cache."""
-    response = anon_client.get(reverse("category:index", kwargs={"slug": "nope"}))
-
-    assert response.status_code == 404
-    assert 'id="app"' in response.content.decode()
-
-
 def test_category_of_another_tenant_is_not_found(anon_client, other_category):
     """Categories are not reachable across tenants."""
     assert anon_client.get(reverse("category:index", kwargs={"slug": other_category.slug})).status_code == 404
@@ -125,17 +120,13 @@ def test_etag_follows_the_content(anon_client, tenant, make_category):
 
 
 @pytest.mark.parametrize("client_fixture", ["anon_client", "plain_client", "staff_client", "superuser_client"])
-def test_page_does_not_vary_on_the_user(request, client_fixture, tenant):
-    """No cookie is read or set, so any cache may keep one copy for everybody."""
+def test_page_does_not_vary_on_the_user(request, anon_client, client_fixture, tenant):
+    """Nothing in the page depends on who asks and no cookie is read or set, so any cache may keep one copy."""
     response = request.getfixturevalue(client_fixture).get("/")
 
+    assert response.content == anon_client.get("/").content
     assert "Cookie" not in response.get("Vary", "")
     assert "Set-Cookie" not in response
-
-
-def test_page_is_the_same_for_every_user(anon_client, superuser_client, tenant):
-    """Nothing in it depends on who asks."""
-    assert anon_client.get("/").content == superuser_client.get("/").content
 
 
 def test_page_leaves_messages_for_the_api(staff_client, song):

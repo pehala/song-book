@@ -28,11 +28,6 @@ def test_translated_languages_map_msgids_to_translations(locale_dir):
     assert reader_catalogues() == {"cs": {"Close": "Zavřít"}}
 
 
-def test_source_language_has_no_catalogue(locale_dir):
-    """English is the msgid itself."""
-    assert "en" not in reader_catalogues()
-
-
 def test_language_without_translations_does_not_borrow_the_default(locale_dir, settings):
     """Django falls back to Czech for other languages; the reader would show Czech in a German page."""
     settings.LANGUAGES = (("en", "English"), ("cs", "Česky"), ("de", "Deutsch"))
