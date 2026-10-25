@@ -199,7 +199,8 @@ function Header({site, navigate, onReload}) {
                             <a href=${urls.password}>${_("Change password")}</a>
                             <button class="sb-link" onClick=${logout}>${_("Log out")}</button>
                         <//>`
-                    : me && html`<a class="sb-btn" href=${urls.login + "?next=" + encodeURIComponent(location.pathname)}>${_("Log in")}</a>`}
+                    : html`<a class=${"sb-btn" + (me ? "" : " sb-pending")} aria-hidden=${me ? null : "true"} tabindex=${me ? null : "-1"}
+                               href=${urls.login + "?next=" + encodeURIComponent(location.pathname)}>${_("Log in")}</a>`}
                 <button class="sb-btn" onClick=${showQr}>${_("QR")}</button>
             </nav>
         </header>`;

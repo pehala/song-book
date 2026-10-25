@@ -145,6 +145,11 @@
     outline-offset: 2px;
 }
 
+/* Holds the place of the login link until the user is known, so nothing moves when it appears */
+.sb-pending {
+    visibility: hidden;
+}
+
 .sb-btn.sb-burger {
     margin-left: auto;
 }
