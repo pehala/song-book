@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: chords\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-26 01:39-0500\n"
+"POT-Creation-Date: 2026-10-26 02:05-0500\n"
 "PO-Revision-Date: 2026-10-25 12:00+0000\n"
 "Last-Translator: pehala <halapetr@selfnet.cz>\n"
 "Language-Team: Czech\n"
@@ -206,6 +206,18 @@ msgstr "Ano"
 
 msgid "Preview"
 msgstr "Náhled"
+
+msgid "Fits on one page of the PDF"
+msgstr "Vejde se na jednu stranu PDF"
+
+msgid "Close to the end of the page in the PDF, check it there"
+msgstr "V PDF je skoro na konci strany, zkontrolujte ho tam"
+
+msgid "Might not fit on one page of the PDF"
+msgstr "Možná se nevejde na jednu stranu PDF"
+
+msgid "Might look cramped in three columns, many lines wrap there"
+msgstr "Ve třech sloupcích může působit natěsnaně, hodně řádků se tam zalamuje"
 
 msgid "Help"
 msgstr "Nápověda"

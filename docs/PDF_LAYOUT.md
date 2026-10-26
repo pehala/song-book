@@ -13,6 +13,21 @@ renders (`docs/FILES.md` describes the template/file workflow).
   `.text`. A narrow song whose lines stay short enough not to wrap in a column of about 5.3 cm fits on one page in three
   columns where two would need a second page; a song with long lines wraps in them, so it keeps two.
 
+### Overflow estimate
+
+The song editor tells whether the song fits on one page without rendering it: `backend/static/backend/song_pdf_estimate.js`
+adds up the height of the lines. A source line takes `ceil(visible characters / W)` lines of 16.67 px, where the visible
+characters leave out `{chords}` and count `/n/` as n spaces and `W` is 52 in two columns and 31 in three; a line with
+chords adds 11.85 px, each gap between stanzas 13.3 px and the heading 27 px. The song fits when the sum is at most
+872 px (the room of a column) times the number of columns; within 2 % of that the editor only says the song is close.
+The constants were fitted to the page counts of a whole songbook, so they change with `.text`, the page margins or the
+heading in `pdf.css`. The heading is a single line in the estimate, so a title long enough to wrap is not counted.
+
+In three columns the editor also warns when more than 7 % of the lines carry chords and are longer than `W`. Such a line
+wraps in the narrow column, is taller, can leave its last chord alone on a row above the orphaned word and stretches
+the justified text; a plain line that wraps reads as prose and is not counted. In the songbook that rule separates the
+songs that look cramped (a refrain of wrapping chord lines, 9 % and more) from those that do not (4.6 % and less).
+
 ## Chords
 
 PDFs always use `PDF_RENDERER` (`Song.pdf_markdown`), whatever `SONG_RENDERER` says and never from the

@@ -12,6 +12,13 @@
           <div class="markdownx-preview rounded border pt-2 ps-2 h-100"></div>
       </div>
     </div>
+    <div class="mt-2 fw-bold" data-pdf-pages data-fits="{% trans 'Fits on one page of the PDF' %}" data-close="{% trans 'Close to the end of the page in the PDF, check it there' %}" data-overflows="{% trans 'Might not fit on one page of the PDF' %}" role="status" hidden>
+      <span class="pdf-pages-icon" aria-hidden="true"></span>
+      <span class="pdf-pages-label"></span>
+      <div class="pdf-pages-cramped text-warning-emphasis" hidden>
+        <span aria-hidden="true">⚠</span> {% trans "Might look cramped in three columns, many lines wrap there" %}
+      </div>
+    </div>
     <div class="row">
       <div class="d-flex align-items-start flex-column mt-2">
             <h4 class="ps-3">{% trans "Help" %}:</h4>
