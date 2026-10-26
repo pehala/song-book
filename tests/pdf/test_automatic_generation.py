@@ -40,6 +40,7 @@ def test_editing_a_song_generates_the_pdf(staff_client, tenant, pdf_category, pr
         {
             "name": "Campfire Song",
             "capo": 0,
+            "pdf_columns": 2,
             "author": "",
             "link": "",
             "text": "{C}Hello",

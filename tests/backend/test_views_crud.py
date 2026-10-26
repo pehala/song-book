@@ -22,6 +22,7 @@ def song_payload(category, **overrides):
     data = {
         "name": "Created Song",
         "capo": 0,
+        "pdf_columns": 2,
         "author": "",
         "link": "",
         "text": "{C}Hello",

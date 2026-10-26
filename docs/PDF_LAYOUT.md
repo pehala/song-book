@@ -9,6 +9,9 @@ renders (`docs/FILES.md` describes the template/file workflow).
   header and footer margin boxes sit in the top and bottom margins, so those stay at 2 cm.
 * Each song starts on a page of its own and fills two columns of `.text`. The song heading is 20 pt and the author
   line 12 pt, and `.text` has a line height of 1.25, so most songs fit on one page.
+* `Song.pdf_columns` (2 by default, or 3) sets the number of columns of one song, as the class `columns-<n>` of
+  `.text`. A narrow song whose lines stay short enough not to wrap in a column of about 5.3 cm fits on one page in three
+  columns where two would need a second page; a song with long lines wraps in them, so it keeps two.
 
 ## Chords
 
