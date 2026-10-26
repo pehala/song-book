@@ -62,7 +62,7 @@
               <h2 id="{{ song.id }}-title">{{ song_number }}. <span class="name">{{ song.name }}</span></h2>
               <h3 class="">{{ song.author }} {% if song.capo > 0 %}<span class="right">{% trans "Capo" %} {{ song.capo }}</span> {% endif %}</h3>
 
-              <section class="text">
+              <section class="text columns-{{ song.pdf_columns }}">
                 {{ song.pdf_markdown|safe }}
               </section>
             </article>

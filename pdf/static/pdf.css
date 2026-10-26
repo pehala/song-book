@@ -112,6 +112,9 @@
      line-height: 1.25;
      padding-top: 0;
 }
+ .text.columns-3 {
+     columns: 3;
+}
  .text p {
      text-align: justify;
 }

@@ -10,6 +10,7 @@ from django.db.models import (
     CharField,
     DateField,
     DateTimeField,
+    IntegerChoices,
     ManyToManyField,
     Model,
     PositiveSmallIntegerField,
@@ -32,6 +33,12 @@ from tenants.utils import tenant_cache_key
 class Song(Model):
     """Song model."""
 
+    class PDFColumns(IntegerChoices):
+        """Numbers of columns a song can be set in on a PDF page."""
+
+        TWO = 2, "2"
+        THREE = 3, "3"
+
     name = CharField(verbose_name=_("Name"), max_length=100)
     date = DateField(auto_now_add=True, editable=False)
     updated_at = DateTimeField(auto_now=True, db_index=True)
@@ -40,6 +47,13 @@ class Song(Model):
     link = URLField(verbose_name=_("YouTube link"), null=True, blank=True)
     categories = ManyToManyField(Category, verbose_name=_("Categories"))
     archived = BooleanField(verbose_name=_("Archived"), default=False)
+    pdf_columns = PositiveSmallIntegerField(
+        verbose_name=_("PDF columns"),
+        help_text=_("Columns of the song in PDFs; three fit a narrow song that overflows one page in two."),
+        choices=PDFColumns,
+        default=PDFColumns.TWO,
+        db_default=Value(PDFColumns.TWO),
+    )
     text = MarkdownxField(verbose_name=_("Lyrics"))
     prerendered = TextField(null=True)
 

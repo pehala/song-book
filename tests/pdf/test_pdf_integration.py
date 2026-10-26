@@ -17,6 +17,7 @@ import pytest
 from django_weasyprint.utils import DjangoURLFetcher
 from weasyprint import HTML
 
+from backend.models import Song
 from pdf.generate import generate_pdf, get_base_url
 from pdf.models import Status
 
@@ -79,3 +80,36 @@ def test_contents_entry_is_a_single_link(mock_weasyprint, pdf_category, make_pdf
 
     targets = [target for link_type, target, *_ in document.pages[0].links if link_type == "internal"]
     assert sorted(targets) == sorted(f"{song.id}-title" for song in songs)
+
+
+@pytest.fixture
+def render_song_pages(mock_weasyprint, pdf_category, make_pdf_file):
+    """Returns a function that renders a PDF of one narrow song and returns the pages from the song on.
+
+    The generation only captures the HTML, which is then laid out by WeasyPrint here, so the pages are real.
+    """
+
+    def render(**song_fields):
+        stanza = "\n".join(f"{{C}}Short line {{G}}{line}" for line in range(4))
+        song = Song.objects.create(name="Narrow Song", text="\n\n".join([stanza] * 16), **song_fields)
+        song.categories.add(pdf_category)
+        generate_pdf(make_pdf_file(pdf_category), pdf_category)
+
+        document = HTML(
+            string=mock_weasyprint.call_args.kwargs["string"], url_fetcher=DjangoURLFetcher(), base_url=get_base_url()
+        ).render()
+
+        first_song_page = next(index for index, page in enumerate(document.pages) if f"{song.id}-title" in page.anchors)
+        return document.pages[first_song_page:]
+
+    return render
+
+
+def test_a_narrow_song_overflows_in_two_columns(render_song_pages):
+    """The song of the next test needs more than one page in the default two columns."""
+    assert len(render_song_pages()) == 2
+
+
+def test_a_song_of_three_columns_fits_on_one_page(render_song_pages):
+    """A song with `pdf_columns` of 3 is set in three columns, which fit it on the page it overflows in two."""
+    assert len(render_song_pages(pdf_columns=Song.PDFColumns.THREE)) == 1
