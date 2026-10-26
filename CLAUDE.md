@@ -35,6 +35,11 @@ make image                          # podman build of the Containerfile
 make help                           # all targets
 ```
 
+Testing server: `make dev` (SQLite, no Redis, no `make init`) serves on `PORT` (default in the Makefile) using
+`db.sqlite3` of the working tree, or the file named by `DB_FILE`. In a git worktree there is no `db.sqlite3` yet (it is
+git-ignored), so copy the main checkout's first with `cp ../db.sqlite3 db.sqlite3`: a copy, not a symlink, because
+`make dev` runs `migrate` and the worktree's migrations must not touch the main checkout's data.
+
 Single test / subset:
 
 ```bash
