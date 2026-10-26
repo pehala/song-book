@@ -36,7 +36,7 @@ SITE_ENTRY = "app/site.js"
 # Draw the content of some of the pages the server renders, through what page.js shares
 PAGE_ENTRIES = ["app/progress.js", "app/analytics.js"]
 PAGE_MODULES = ["app/page.js", *PAGE_ENTRIES]
-STYLESHEETS = ["app/header.css", "app/app.css"]
+STYLESHEETS = ["app/header.css", "app/song.css", "app/app.css"]
 ASSETS = [*MODULES, SITE_ENTRY, *PAGE_MODULES, *STYLESHEETS]
 
 SHELL_URL = "/"

@@ -1,0 +1,44 @@
+/* How the text of a song looks, wherever it is shown: the reader and the preview of the song editor.
+   It leans on the colours of header.css and carries no layout of the page around it. */
+
+.song-text {
+    font-size: 1.0625rem;
+    /* tall enough for a chord over every line, so lines with and without chords are spaced alike */
+    line-height: 2;
+}
+
+.hide-chords .song-text {
+    line-height: 1.7;
+}
+
+/* Verses are spaced below only: a margin above would push the first column below the others */
+.song-text p {
+    margin: 0 0 1em;
+    break-inside: avoid-column;
+}
+
+.song-text ruby {
+    ruby-position: over;
+    ruby-align: start;
+}
+
+.chord {
+    font-size: .95em;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+span.chord {
+    position: relative;
+    top: -.5em;
+    line-height: 0;
+}
+
+rt.chord {
+    font-size: .85em;
+    line-height: 1;
+}
+
+.hide-chords .chord {
+    display: none;
+}
