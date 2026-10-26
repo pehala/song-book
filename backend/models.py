@@ -54,6 +54,12 @@ class Song(Model):
         default=PDFColumns.TWO,
         db_default=Value(PDFColumns.TWO),
     )
+    pdf_keep_verses = BooleanField(
+        verbose_name=_("Keep verses together in PDFs"),
+        help_text=_("A verse never splits between two columns; a song with long verses may need a second page."),
+        default=False,
+        db_default=Value(False),
+    )
     text = MarkdownxField(verbose_name=_("Lyrics"))
     prerendered = TextField(null=True)
 

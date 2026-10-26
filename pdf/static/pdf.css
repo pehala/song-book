@@ -120,6 +120,9 @@
      text-align: justify;
      margin: 0 0 1em;
 }
+ .text.keep-verses p {
+     break-inside: avoid-column;
+}
  .contents-list {
      list-style: none;
      padding-left: 0;

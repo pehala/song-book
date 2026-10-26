@@ -17,6 +17,11 @@ renders (`docs/FILES.md` describes the template/file workflow).
 * `Song.pdf_columns` (2 by default, or 3) sets the number of columns of one song, as the class `columns-<n>` of
   `.text`. A narrow song whose lines stay short enough not to wrap in a column of about 5.3 cm fits on one page in three
   columns where two would need a second page; a song with long lines wraps in them, so it keeps two.
+* `Song.pdf_keep_verses` (off by default) adds the class `keep-verses` to `.text`, whose `p` elements, the verses, then
+  never split between two columns (`break-inside: avoid-column`). Without it the columns are balanced by height and cut
+  a verse where they meet, which happens in about half of a songbook. A song with a verse too long to share a column
+  with the others then needs a second page, and WeasyPrint lays such a song out several times slower, so the option is
+  set per song for the songs that benefit. The overflow estimate below does not know about it.
 
 ### Overflow estimate
 
