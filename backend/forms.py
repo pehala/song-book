@@ -2,6 +2,7 @@
 
 from django.db.models import Q
 from django.forms import CheckboxSelectMultiple, ModelForm, ModelMultipleChoiceField
+from django.forms.widgets import Script
 
 from backend.models import Song
 from category.models import Category
@@ -9,6 +10,9 @@ from category.models import Category
 
 class AdminSongForm(ModelForm):
     """Song form."""
+
+    class Media:
+        js = [Script("backend/song_pdf_pages.js", type="module")]
 
     categories = ModelMultipleChoiceField(widget=CheckboxSelectMultiple, queryset=Category.objects.all())
 
