@@ -220,41 +220,12 @@ quoted arguments in `HealthCmd=`: older quadlet generators drop a closing quote.
 
 ## Tests
 
-`tests/` is a pytest-django suite split per app (`tests/backend/`, `tests/category/`,
-`tests/pdf/`, `tests/tenants/`, `tests/chords/`, `tests/analytics/`, `tests/frontend/`), plus two suite-wide
-modules: `tests/test_url_permissions.py`, a parametrized matrix asserting login redirect, 403
-and allowed access for every URL in the project, and `tests/test_menus.py`. Each directory is a
-package — the `__init__.py` files are what keep same-named modules such as
-`backend/test_models.py` and `category/test_models.py` from colliding.
+`tests/README.md` describes the suite: layout, fixtures, settings and the Playwright tests. Traps:
 
-`tests/conftest.py` provides the shared fixtures: `tenant`/`other_tenant`, `category`, `song`,
-`archived_song`, the `make_category`/`make_song`/`make_pdf_file` factories, `manual_template`, `pdf_file`,
-`superuser`/`staff_user`/`plain_user` and the matching `Client` fixtures. Three autouse fixtures
-clear the cache, flush the task queue and point `MEDIA_ROOT` at a `tmp_path`, so generated PDFs
-and uploads never reach the source tree. A session-scoped autouse fixture, `compiled_messages`, compiles the `.po` files with `msgfmt` into a
-temporary directory and points `LOCALE_PATHS` there, so the tests run in the default language (Czech) with real translations whatever
-`.mo` files lie in the source tree; assert the Czech strings. The e2e browser is pinned to `en-US`
-(`browser_context_args`), so the reader is English there until a test switches the language. `tests/pdf/conftest.py` adds the PDF-only fixtures; fixtures used by a single
-module live in that module. The initial migration already seeds a category for the default
-tenant, so tests look categories up by slug rather than assume the fixture is the only one.
-`tests/backend/test_signals.py` covers the signal-driven invalidation and prerender-on-save;
-`tests/chords/test_storage.py` runs a real `collectstatic` into a `tmp_path` to check that hashed
-modules import hashed modules.
-
-`tests/e2e/` drives the reader in Chromium through Playwright (pytest-playwright against pytest-django's
-`live_server`) and is excluded from the default run by `addopts = "-m 'not e2e'"`; `make e2e` runs it.
-Its `library` fixture builds a two-category songbook, `sign_in(user)` puts a session cookie into the
-browser, and `DJANGO_ALLOW_ASYNC_UNSAFE` is set so the test thread can use the ORM next to Playwright's
-event loop. The live server shares one in-memory SQLite database, so wait for the page to go idle before
-writing from the test. There is no JS unit test runner: behaviour of the client is covered here.
-
-It runs on SQLite against `chords.settings.test`; production uses PostgreSQL and Redis, so
-anything cache- or tenant-related is exercised through LocMemCache here. Those test settings run
-Huey with `immediate=True`, so a task scheduled without a delay renders inline — tests that do
-not want a real PDF use the `mock_weasyprint` fixture, and the few that do are marked `slow`
-(`pytest -m "not slow"` skips them). Passwords are hashed with MD5 there: the default PBKDF2
-hasher costs ~200 ms per user and the tests sign in with `force_login()`.
-
-Coverage is configured in `pyproject.toml` (branch coverage, migrations/`apps.py`/`wsgi.py`, the
-uncommitted `production.py` and the env-driven `container.py` omitted) and currently sits at 100%; `make coverage`
-reports it.
+- Tests run in Czech against the compiled `.po` files; assert the Czech strings.
+- The default tenant is seeded by a migration: `get_or_create` it, and give the test `Client` `HTTP_HOST="localhost"`.
+  Look categories up by slug, since the initial migration seeds one too.
+- Huey is `immediate`, so a task without a delay renders a real PDF inline: use `mock_weasyprint`, or mark the test
+  `slow`.
+- `tests/e2e/` is excluded from `make test` (`-m 'not e2e'`); `make e2e` runs it. The client has no JS unit tests, so
+  its behaviour is covered there.
