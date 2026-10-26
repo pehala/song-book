@@ -175,18 +175,11 @@ layout.
 
 ## Container deployment
 
-`Containerfile` builds one image for web and worker. Its entrypoint is `make`, so container
-arguments are Makefile targets: the build bakes in `compilemessages collectstatic compress_static`,
-web runs `migrate prerender cache_clear export_static start`, the worker runs `worker`. Keep those
-targets working without uv (the image sets `RUN` empty). `deploy/` holds the guide (`deploy/DEPLOY.md`), the quadlet
-templates, the `songbook@.target`, gunicorn config, user tmpfiles.d entries, nginx config and SELinux modules. The
-quadlets are user-level (`systemctl --user`) **templates**, one instance per songbook, started through
-`songbook@<instance>.target` (`enable` is refused for generated units); `UserNS=keep-id` makes files on the host belong
-to the service user, which is also the PostgreSQL role (peer authentication); containers have `Network=none` and
-talk over unix sockets in `$XDG_RUNTIME_DIR/songbook/<instance>` and `~/nginx/<instance>`. The PostgreSQL of the host is
-the default (its `/run/postgresql` is mounted as it is); `deploy/postgres-container/` swaps in a PostgreSQL container
-with a unit, drop-ins and two `sed` lines. Keep the units free of quoted arguments in `HealthCmd=` (older quadlet generators
-drop a closing quote).
+`Containerfile` builds one image for web and worker, and `deploy/DEPLOY.md` is the guide to the quadlets, nginx and
+PostgreSQL. The entrypoint is `make`, so container arguments are Makefile targets (the build bakes in
+`compilemessages collectstatic compress_static`, web runs `migrate prerender cache_clear export_static start`, the
+worker runs `worker`); keep those targets working without uv (the image sets `RUN` empty). Keep the units free of
+quoted arguments in `HealthCmd=`: older quadlet generators drop a closing quote.
 
 ## Conventions
 
