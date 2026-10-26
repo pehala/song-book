@@ -291,6 +291,10 @@
     width: 100%;
 }
 
+.sb-panel > .sb-btn {
+    margin: .5rem 1rem;
+}
+
 .sb-meta {
     color: var(--muted);
     justify-content: space-between;
