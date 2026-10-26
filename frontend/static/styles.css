@@ -9,11 +9,6 @@
  [data-bs-theme="dark"] {
      --bs-body-bg: #000000;
 }
- .chord {
-     font-weight: bold;
-     font-size: 100%;
-     vertical-align: super;
- }
  hr {
      background-color: var(--bs-border-color);
      height: 2px;
