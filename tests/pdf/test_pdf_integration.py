@@ -89,9 +89,9 @@ def render_song_pages(mock_weasyprint, pdf_category, make_pdf_file):
     The generation only captures the HTML, which is then laid out by WeasyPrint here, so the pages are real.
     """
 
-    def render(**song_fields):
+    def render(text=None, **song_fields):
         stanza = "\n".join(f"{{C}}Short line {{G}}{line}" for line in range(4))
-        song = Song.objects.create(name="Narrow Song", text="\n\n".join([stanza] * 16), **song_fields)
+        song = Song.objects.create(name="Narrow Song", text=text or "\n\n".join([stanza] * 16), **song_fields)
         song.categories.add(pdf_category)
         generate_pdf(make_pdf_file(pdf_category), pdf_category)
 
@@ -113,3 +113,39 @@ def test_a_narrow_song_overflows_in_two_columns(render_song_pages):
 def test_a_song_of_three_columns_fits_on_one_page(render_song_pages):
     """A song with `pdf_columns` of 3 is set in three columns, which fit it on the page it overflows in two."""
     assert len(render_song_pages(pdf_columns=Song.PDFColumns.THREE)) == 1
+
+
+def count_verse_fragments(pages):
+    """Returns the number of block boxes the `p` elements of the pages are laid out in, and the number of elements."""
+    boxes = []
+
+    def walk(box):
+        if box.element_tag == "p" and type(box).__name__ == "BlockBox":
+            boxes.append(box.element)
+        for child in getattr(box, "children", ()):
+            walk(child)
+
+    for page in pages:
+        walk(page._page_box)
+    return len(boxes), len(set(map(id, boxes)))
+
+
+@pytest.fixture
+def three_verses():
+    """Returns the text of three verses of 20 lines, which balanced over two columns cut the second one."""
+    verse = "\n".join(f"Line {line} of the verse" for line in range(20))
+    return "\n\n".join([verse] * 3)
+
+
+def test_a_verse_splits_between_two_columns(render_song_pages, three_verses):
+    """The columns are balanced by height, so the second of three verses starts in one and ends in the other."""
+    fragments, verses = count_verse_fragments(render_song_pages(three_verses))
+    assert fragments == verses + 1
+
+
+def test_a_song_keeping_its_verses_together_does_not_split_them(render_song_pages, three_verses):
+    """A song with `pdf_keep_verses` lays each verse out in one column, on the page the song fits."""
+    pages = render_song_pages(three_verses, pdf_keep_verses=True)
+    fragments, verses = count_verse_fragments(pages)
+    assert len(pages) == 1
+    assert fragments == verses

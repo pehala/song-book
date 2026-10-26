@@ -118,6 +118,9 @@
  .text p {
      text-align: justify;
 }
+ .text.keep-verses p {
+     break-inside: avoid-column;
+}
  .contents-list {
      list-style: none;
      padding-left: 0;
