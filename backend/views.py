@@ -1,10 +1,13 @@
 """Views for backend app."""
 
 import hashlib
+from urllib.parse import quote
 
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
-from django.urls import reverse_lazy
+from django.urls import reverse, reverse_lazy
 from django.utils.cache import get_conditional_response
+from django.utils.http import url_has_allowed_host_and_scheme, urlencode
+from django.utils.translation import gettext_lazy as _
 from django.views import View
 from markdownx.views import ImageUploadView, MarkdownifyView
 
@@ -18,6 +21,8 @@ from backend.songs import build_songs_delta, cached_songs_payload
 from backend.utils import regenerate_pdf
 
 SIZE_HEADER = "X-Songs-Size"
+SAVED_COOKIE = "sb-saved"
+SAVED_COOKIE_AGE = 24 * 60 * 60
 
 
 class ETagJsonMixin:
@@ -75,12 +80,43 @@ class MeView(View):
         return response
 
 
-class SongCreateView(LocalAdminRequired, PassRequestToFormMixin, UniversalCreateView):
+class SongEditorMixin:
+    """Renders the song editor, which can also save a song and stay on its page."""
+
+    template_name = "backend/song_form.html"
+
+    def form_valid(self, form):
+        """Tells the browser which editor page the server saved, so that it drops the draft of that page."""
+        response = super().form_valid(form)
+        response.set_cookie(SAVED_COOKIE, quote(self.request.path, safe=""), max_age=SAVED_COOKIE_AGE, samesite="Lax")
+        return response
+
+    def get_context_data(self, **kwargs):
+        """Adds the address the Cancel button leads back to: where the author came from, or the reader."""
+        ctx = super().get_context_data(**kwargs)
+        back = self.request.GET.get("next", "")
+        if not url_has_allowed_host_and_scheme(back, allowed_hosts={self.request.get_host()}):
+            back = str(self.success_url)
+        ctx["cancel_url"] = back
+        return ctx
+
+    def get_success_url(self):
+        """Returns to the editor of the saved song when asked to keep editing."""
+        if "continue" not in self.request.POST:
+            return super().get_success_url()
+        url = reverse("backend:edit", kwargs={"pk": self.object.pk})
+        if "next" in self.request.GET:
+            url += "?" + urlencode({"next": self.request.GET["next"]})
+        return url
+
+
+class SongCreateView(LocalAdminRequired, PassRequestToFormMixin, SongEditorMixin, UniversalCreateView):
     """Creates new song."""
 
     form_class = SongForm
     model = Song
     success_url = reverse_lazy("backend:index")
+    title_message = _("New song")
 
     def get_success_url(self):
         """Schedules the PDF regeneration for the new song's categories."""
@@ -101,6 +137,7 @@ class SongUpdateView(
     TenantSongsMixin,
     PassRequestToFormMixin,
     RegenerateViewMixin,
+    SongEditorMixin,
     UniversalUpdateView,
 ):
     """Updates existing song."""
@@ -108,6 +145,7 @@ class SongUpdateView(
     form_class = SongForm
     model = Song
     success_url = reverse_lazy("backend:index")
+    title_message = _("Editing %(identifier)s")
 
     def post(self, request, *args, **kwargs):
         """Saves the song and schedules the PDF regeneration for its categories when it changed."""

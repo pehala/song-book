@@ -46,6 +46,9 @@ behaviour of the client is covered here.
   language.
 - `DJANGO_ALLOW_ASYNC_UNSAFE` is set so the test thread can use the ORM next to Playwright's event loop. The live server
   shares one in-memory SQLite database, so wait for the page to go idle before writing from the test.
+- The song editor's tests are the package `e2e/editor/`: `conftest.py` has the `editor` fixture (the editor of a song on a
+  phone), `helpers.py` what the modules share, and each module one part of the page (layout, keys, changes, splitter,
+  details).
 
 ## Coverage
 

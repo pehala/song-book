@@ -11,7 +11,7 @@ The modules are in `frontend/static/app/`:
 - `header.js`, `options.js`, `songs.js`, `store.js`, `i18n.js`
 - `page.js` and the page entries (`progress.js`, `analytics.js`)
 - `vendor/preact-htm.module.js`, `vendor/qr.mjs`
-- `header.css`, `app.css`
+- `header.css`, `song.css`, `app.css`
 
 They are listed once in `frontend.views` (`MODULES`, `SITE_ENTRY`, `PAGE_ENTRIES`/`PAGE_MODULES`, `STYLESHEETS`), which
 feeds the preload links and the service worker's precache. A new file must be added there. Keep modules free of import
@@ -29,6 +29,10 @@ The shell reads no user, session, message, CSRF or language, so there is no `Var
 `Cache-Control: no-cache`. An unknown category slug gets the same body with status 404. Keep it that way: the service
 worker serves one cached copy to every route and every user. `RecognizeTenantMiddleware` resolves `is_localadmin`
 lazily for the same reason.
+
+`song.css` holds how the text of a song looks (size, line height, verses, chords, `hide-chords`) and nothing of the page
+around it. The reader and the preview of the song editor (`docs/EDITOR.md`) both load it, so a chord looks the same in
+both; `app.css` keeps the reader's layout of `.song-text` (columns, width).
 
 ## The header
 
@@ -78,3 +82,9 @@ all of it, so keep colours in the `--*` variables of `header.css`.
 
 A new worker waits; the page shows a toast and sends `skipWaiting`. Reader routes in `service_worker.js` (`READER`)
 must stay in step with the URLconf.
+
+Static caching: in production every static url is content-hashed (`ManifestStorage`, nginx long-lived headers) and the
+worker serves any `/static/` file from its cache, so a changed file is a new url and nothing can be stale; that holds
+for the files of the song editor too. Under `DEBUG` urls are not hashed, so the browser's own cache and the worker may
+keep an old copy of a file that is not precached: hard-reload, or check a change with `DEBUG` off and `collectstatic`
+run, where the urls are hashed.
