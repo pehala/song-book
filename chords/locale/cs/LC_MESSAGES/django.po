@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: chords\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-10-26 07:00-0500\n"
+"POT-Creation-Date: 2026-10-27 02:22-0500\n"
 "PO-Revision-Date: 2026-10-25 12:00+0000\n"
 "Last-Translator: pehala <halapetr@selfnet.cz>\n"
 "Language-Team: Czech\n"
@@ -91,6 +91,79 @@ msgstr "Písnička"
 
 msgid "Songs"
 msgstr "Písničky"
+
+msgid "Fits on one page of the PDF"
+msgstr "Vejde se na jednu stranu PDF"
+
+msgid "Close to the end of the page in the PDF, check it there"
+msgstr "V PDF je skoro na konci strany, zkontrolujte ho tam"
+
+msgid "Might not fit on one page of the PDF"
+msgstr "Možná se nevejde na jednu stranu PDF"
+
+msgid "Might look cramped in three columns, many lines wrap there"
+msgstr "Ve třech sloupcích může působit natěsnaně, hodně řádků se tam zalamuje"
+
+msgid "Unsaved changes"
+msgstr "Neuložené změny"
+
+msgid "Cancel"
+msgstr "Zrušit"
+
+msgid "Save and continue"
+msgstr "Uložit a pokračovat"
+
+msgid "Save"
+msgstr "Uložit"
+
+msgid "Sections of the editor"
+msgstr "Části editoru"
+
+msgid "Details"
+msgstr "Podrobnosti"
+
+msgid "Preview"
+msgstr "Náhled"
+
+msgid "Unsaved changes from an earlier visit were found."
+msgstr "Našly se neuložené změny z předchozí návštěvy."
+
+msgid "The song has changed since then."
+msgstr "Písnička se mezitím změnila."
+
+msgid "Restore"
+msgstr "Obnovit"
+
+msgid "Discard"
+msgstr "Zahodit"
+
+msgid "Hide the details"
+msgstr "Skrýt podrobnosti"
+
+msgid "Show the details"
+msgstr "Zobrazit podrobnosti"
+
+msgid "Help"
+msgstr "Nápověda"
+
+msgid "Displays the chord above the word"
+msgstr "Zobrazí akord nad slovem"
+
+msgid "Adds N empty spaces"
+msgstr "Přidá N mezer"
+
+msgid "An empty line starts a new verse"
+msgstr "Prázdný řádek začíná novou sloku"
+
+msgid "Bold text"
+msgstr "Tučný text"
+
+msgid "New song"
+msgstr "Nová písnička"
+
+#, python-format
+msgid "Editing %(identifier)s"
+msgstr "Úprava písničky %(identifier)s"
 
 msgid "Move Category to a different Tenant"
 msgstr "Přesunout Kategorie do jiného Zpěvníku"
@@ -214,29 +287,27 @@ msgstr "Ne"
 msgid "Yes"
 msgstr "Ano"
 
-msgid "Preview"
-msgstr "Náhled"
+msgid "Insert"
+msgstr "Vložit"
 
-msgid "Fits on one page of the PDF"
-msgstr "Vejde se na jednu stranu PDF"
+msgid "Undo"
+msgstr "Zpět"
 
-msgid "Close to the end of the page in the PDF, check it there"
-msgstr "V PDF je skoro na konci strany, zkontrolujte ho tam"
+msgid "Redo"
+msgstr "Znovu"
 
-msgid "Might not fit on one page of the PDF"
-msgstr "Možná se nevejde na jednu stranu PDF"
+msgid "Insert an empty chord, to be typed between the braces"
+msgstr "Vložit prázdný akord, který se napíše mezi závorky"
 
-msgid "Might look cramped in three columns, many lines wrap there"
-msgstr "Ve třech sloupcích může působit natěsnaně, hodně řádků se tam zalamuje"
+msgid "Insert four spaces"
+msgstr "Vložit čtyři mezery"
 
-msgid "Help"
-msgstr "Nápověda"
+#, python-format
+msgid "Insert the chord %(chord)s"
+msgstr "Vložit akord %(chord)s"
 
-msgid "Displays chord"
-msgstr "Zobrazí akord"
-
-msgid "Adds N empty spaces"
-msgstr "Přidá N mezer"
+msgid "Width of the lyrics and the preview"
+msgstr "Šířka textu a náhledu"
 
 msgid "Login"
 msgstr "Přihlášení"

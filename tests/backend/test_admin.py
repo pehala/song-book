@@ -2,6 +2,7 @@
 
 import pytest
 from django.contrib.admin.sites import AdminSite
+from django.urls import reverse
 
 from backend.admin import SongAdmin
 from backend.models import Song
@@ -34,3 +35,13 @@ def test_categories_column_is_empty_without_categories(song_admin, make_song):
 def test_admin_changelist_renders(superuser_client, song):
     """The song changelist is reachable for site administrators."""
     assert superuser_client.get("/admin/backend/song/").status_code == 200
+
+
+def test_admin_song_form_has_none_of_the_editor_markup(superuser_client, song):
+    """The admin has no tabs and no Bootstrap, so the lyrics widget leaves out the splitter and the tab panels."""
+    response = superuser_client.get(reverse("admin:backend_song_change", args=[song.pk]))
+
+    content = response.content.decode()
+    assert "markdownx-editor" in content
+    for editor_only in ("data-split", "tabpanel", "data-panel", "aria-labelledby"):
+        assert editor_only not in content

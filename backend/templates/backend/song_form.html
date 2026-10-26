@@ -1,0 +1,85 @@
+{% extends "base/index.html" %}
+{% load i18n %}
+{% load django_bootstrap5 %}
+
+{% block title %}{{ title }}{% endblock %}
+{% block extra_head %}{{ form.media.css }}{% endblock %}
+
+{% block body %}
+  <form method="post" class="sb-ed d-flex flex-column" data-editor
+        data-initial-tab="{% if form.text.errors %}lyrics{% elif form.errors or not form.instance.pk %}details{% else %}lyrics{% endif %}"
+        {% if form.errors or not form.instance.pk %}data-show-details{% endif %}>
+    {% csrf_token %}
+    {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
+    <div class="sticky-top bg-body-tertiary border-bottom">
+      <div class="d-flex align-items-center gap-2 px-3 py-2">
+        <h1 class="h5 mb-0 flex-grow-1 text-truncate">{{ title }}</h1>
+        <span class="text-body-secondary small text-nowrap" role="status" aria-label="{% trans 'Unsaved changes' %}" data-status hidden>
+          <span class="text-primary" aria-hidden="true">●</span><span class="d-none d-md-inline"> {% trans "Unsaved changes" %}</span>
+        </span>
+        <a class="btn btn-outline-secondary d-inline-flex align-items-center justify-content-center" href="{{ cancel_url }}">{% trans "Cancel" %}</a>
+        <button type="submit" name="continue" value="1" class="btn btn-outline-secondary d-none d-md-inline-block">{% trans "Save and continue" %}</button>
+        <button type="submit" class="btn btn-primary">{% trans "Save" %}</button>
+      </div>
+      {% include "backend/pdf_pages.html" with classes="px-3 pb-2" %}
+      <div class="sb-ed-tabs nav nav-underline nav-fill d-xl-none" role="tablist" aria-label="{% trans 'Sections of the editor' %}" hidden>
+        <button type="button" class="nav-link" role="tab" id="tab-details" aria-controls="panel-details" data-tab="details">{% trans "Details" %}</button>
+        <button type="button" class="nav-link" role="tab" id="tab-lyrics" aria-controls="panel-lyrics" data-tab="lyrics">{% trans "Lyrics" %}</button>
+        <button type="button" class="nav-link" role="tab" id="tab-preview" aria-controls="panel-preview" data-tab="preview">{% trans "Preview" %}</button>
+      </div>
+    </div>
+
+    <div class="alert alert-warning mx-3 mt-3 mb-0" role="alert" data-draft hidden>
+      <div class="d-flex flex-wrap align-items-center justify-content-between gap-2">
+        <span>
+          {% trans "Unsaved changes from an earlier visit were found." %}
+          <span data-draft-stale hidden>{% trans "The song has changed since then." %}</span>
+        </span>
+        <span class="d-flex gap-2">
+          <button type="button" class="btn btn-outline-secondary" data-draft-restore>{% trans "Restore" %}</button>
+          <button type="button" class="btn btn-outline-secondary" data-draft-discard>{% trans "Discard" %}</button>
+        </span>
+      </div>
+    </div>
+
+    {% bootstrap_form_errors form type="all" %}
+
+    <div class="sb-ed-body d-flex flex-column flex-xl-row flex-grow-1">
+      <section class="sb-ed-meta d-xl-block flex-xl-shrink-0 overflow-y-auto" id="panel-details" role="tabpanel" aria-labelledby="tab-details" data-panel="details">
+        <div class="d-none d-xl-flex align-items-center justify-content-between mb-3" data-fold-row>
+          <span class="sb-ed-fold-label fw-semibold">{% trans "Details" %}</span>
+          <button type="button" class="sb-ed-fold btn btn-outline-secondary d-inline-flex align-items-center justify-content-center p-0"
+                  aria-expanded="true" aria-controls="sb-ed-fields" title="{% trans 'Hide the details' %}" aria-label="{% trans 'Hide the details' %}"
+                  data-title-hide="{% trans 'Hide the details' %}" data-title-show="{% trans 'Show the details' %}">
+            <svg viewBox="0 0 16 16" width="20" height="20" aria-hidden="true"><path d="M10 3 5 8l5 5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+        <div class="sb-ed-fields" id="sb-ed-fields">
+          <div class="row">
+            <div class="col-12">{% bootstrap_field form.name %}</div>
+            <div class="col-8">{% bootstrap_field form.author %}</div>
+            <div class="col-4">{% bootstrap_field form.capo %}</div>
+          </div>
+          <div class="row">
+            {% for field in form.detail_fields %}
+              <div class="col-12">{% bootstrap_field field %}</div>
+            {% endfor %}
+          </div>
+          <details class="mt-3" open>
+            <summary class="d-flex align-items-center fw-semibold">{% trans "Help" %}</summary>
+            <ul class="mt-2">
+              <li><code>{Ami}word</code> - {% trans "Displays the chord above the word" %}</li>
+              <li><code>/N/</code> - {% trans "Adds N empty spaces" %}</li>
+              <li>{% trans "An empty line starts a new verse" %}</li>
+              <li><code>**text**</code> - {% trans "Bold text" %}</li>
+            </ul>
+          </details>
+        </div>
+      </section>
+
+      <label class="visually-hidden" for="{{ form.text.id_for_label }}">{{ form.text.label }}</label>
+      {{ form.text }}
+    </div>
+  </form>
+  {{ form.media.js }}
+{% endblock %}

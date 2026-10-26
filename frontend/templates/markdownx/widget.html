@@ -1,31 +1,26 @@
 {% load i18n %}
-<div class="markdownx">
-    <div class="row row-cols-1 row-cols-lg-2">
-      <div class="col">
-          {% include 'django/forms/widgets/textarea.html' %}
-      </div>
-      <div class="col">
-          <div class="d-lg-none">
-                <hr>
-                <h4>{% trans "Preview" %}</h4>
-          </div>
-          <div class="markdownx-preview rounded border pt-2 ps-2 h-100"></div>
-      </div>
-    </div>
-    <div class="mt-2 fw-bold" data-pdf-pages data-fits="{% trans 'Fits on one page of the PDF' %}" data-close="{% trans 'Close to the end of the page in the PDF, check it there' %}" data-overflows="{% trans 'Might not fit on one page of the PDF' %}" role="status" hidden>
-      <span class="pdf-pages-icon" aria-hidden="true"></span>
-      <span class="pdf-pages-label"></span>
-      <div class="pdf-pages-cramped text-warning-emphasis" hidden>
-        <span aria-hidden="true">⚠</span> {% trans "Might look cramped in three columns, many lines wrap there" %}
+<div class="markdownx sb-ed-work d-flex flex-column flex-xl-row flex-grow-1 p-xl-3">
+  <div class="sb-ed-pane d-flex flex-column d-xl-flex p-3 p-xl-0"{% if widget.editor %} id="panel-lyrics" role="tabpanel" aria-labelledby="tab-lyrics" data-panel="lyrics"{% endif %}>
+    {% include 'django/forms/widgets/textarea.html' %}
+    {% if not widget.editor %}{% include "backend/pdf_pages.html" with classes="mt-2" %}{% endif %}
+    <div class="sb-ed-keys bg-body-tertiary border-top" role="toolbar" aria-label="{% trans 'Insert' %}" data-keys hidden>
+      <div class="sb-ed-line song-text d-xl-none px-3 pt-3 pb-1 overflow-auto border-bottom" data-line hidden></div>
+      <div class="sb-ed-keys-row d-flex gap-2 flex-xl-wrap overflow-x-auto p-2">
+        <button type="button" class="sb-ed-key btn flex-shrink-0 btn-outline-secondary fs-5 py-0" data-command="undo" title="{% trans 'Undo' %}" aria-label="{% trans 'Undo' %}">↶</button>
+        <button type="button" class="sb-ed-key btn flex-shrink-0 btn-outline-secondary fs-5 py-0" data-command="redo" title="{% trans 'Redo' %}" aria-label="{% trans 'Redo' %}">↷</button>
+        <button type="button" class="sb-ed-key btn flex-shrink-0 btn-outline-secondary font-monospace fw-semibold" data-insert="{}" title="{% trans 'Insert an empty chord, to be typed between the braces' %}" aria-label="{% trans 'Insert an empty chord, to be typed between the braces' %}">{ }</button>
+        <button type="button" class="sb-ed-key btn flex-shrink-0 btn-outline-secondary font-monospace fw-semibold" data-insert="/4/" title="{% trans 'Insert four spaces' %}" aria-label="{% trans 'Insert four spaces' %}">/4/</button>
+        {% for chord in widget.chords %}
+        <button type="button" class="sb-ed-key btn flex-shrink-0 btn-outline-primary font-monospace" data-chord="{{ chord }}" title="{% blocktrans %}Insert the chord {{ chord }}{% endblocktrans %}">{{ chord }}</button>
+        {% endfor %}
       </div>
     </div>
-    <div class="row">
-      <div class="d-flex align-items-start flex-column mt-2">
-            <h4 class="ps-3">{% trans "Help" %}:</h4>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item text-start"><code>{Ami}</code> - {% trans "Displays chord" %}</li>
-                <li class="list-group-item text-start"><code>/N/</code> - {% trans "Adds N empty spaces" %}</li>
-            </ul>
-      </div>
-    </div>
+  </div>
+  {% if widget.editor %}
+  <div class="sb-ed-split d-none d-xl-block flex-shrink-0" role="separator" aria-orientation="vertical" tabindex="0"
+       aria-label="{% trans 'Width of the lyrics and the preview' %}" data-split></div>
+  {% endif %}
+  <div class="sb-ed-pane d-xl-block overflow-auto p-3"{% if widget.editor %} id="panel-preview" role="tabpanel" aria-labelledby="tab-preview" data-panel="preview"{% endif %}>
+    <div class="markdownx-preview song-text"></div>
+  </div>
 </div>

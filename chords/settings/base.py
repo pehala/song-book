@@ -41,6 +41,7 @@ INSTALLED_APPS = [
 # chords.markdown.INLINE_RENDERER keeps them inline (prerendered songs have to be rendered again)
 SONG_RENDERER = "chords.markdown.RUBY_RENDERER"
 MARKDOWNX_MARKDOWNIFY_FUNCTION = SONG_RENDERER
+MARKDOWNX_EDITOR_RESIZABLE = False
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",

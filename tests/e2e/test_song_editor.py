@@ -1,16 +1,9 @@
 """Browser tests of the song editor."""
 
-import pytest
 from playwright.sync_api import expect
 
 # Short lines with chords: too tall for the two columns of a page, but not for three
 NARROW_TEXT = "\n".join(f"{{C}}Line {number}" for number in range(75))
-
-
-@pytest.fixture(autouse=True)
-def offline_cdn(page):
-    """Bootstrap comes from a CDN; the editor does not need it, so tests do not wait for it."""
-    page.route("https://cdn.jsdelivr.net/**", lambda route: route.fulfill(body="", content_type="text/plain"))
 
 
 def test_the_editor_tells_whether_the_song_fits_on_a_page_of_the_pdf(page, library, staff_user, sign_in, song):

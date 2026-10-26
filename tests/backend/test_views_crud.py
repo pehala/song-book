@@ -1,10 +1,13 @@
 """Tests for creating, updating and deleting songs."""
 
 import json
+import re
 
 import pytest
+from django.forms import HiddenInput
 from django.urls import reverse
 
+from backend.forms import SongForm
 from backend.models import Song
 from pdf.models import Status
 from pdf.models.request import AllSongsTemplate, PDFFile
@@ -92,7 +95,158 @@ def test_update_page_shows_title(staff_client, song):
     """The edit page is titled after the song being edited."""
     response = staff_client.get(reverse("backend:edit", kwargs={"pk": song.pk}))
 
-    assert song.name in response.context["title"]
+    assert response.context["title"] == f"Úprava písničky {song.name}"
+
+
+@pytest.mark.parametrize("url_name", [pytest.param("backend:add", id="add"), pytest.param("backend:edit", id="edit")])
+def test_editor_shows_every_field_of_the_form(staff_client, song, url_name):
+    """The editor lists all the fields of the song, so a field added to the model is not left out."""
+    response = staff_client.get(reverse(url_name, kwargs={"pk": song.pk} if url_name == "backend:edit" else {}))
+
+    content = response.content.decode()
+    names = [field.name for field in response.context["form"].visible_fields()]
+    assert {"pdf_columns", "pdf_keep_verses"} <= set(names)
+    for field in response.context["form"].visible_fields():
+        assert field.id_for_label in content
+
+
+def test_editor_renders_the_hidden_fields_of_the_form(staff_client, song, monkeypatch):
+    """A hidden field has no place in the layout, but it is still posted back with the rest."""
+    monkeypatch.setattr(SongForm.base_fields["pdf_keep_verses"], "widget", HiddenInput())
+
+    response = staff_client.get(reverse("backend:edit", kwargs={"pk": song.pk}))
+
+    assert re.search(r'<input type="hidden" name="pdf_keep_verses"', response.content.decode())
+
+
+def test_admin_song_form_keeps_the_pdf_indicator_in_its_widget(superuser_client, song):
+    """The Django admin has no details panel, so its lyrics widget shows the PDF indicator itself."""
+    response = superuser_client.get(reverse("admin:backend_song_change", args=[song.pk]))
+
+    assert response.content.decode().count("data-pdf-pages") == 1
+
+
+def test_create_page_shows_title(staff_client):
+    """The add page is titled as a new song."""
+    response = staff_client.get(reverse("backend:add"))
+
+    assert response.context["title"] == "Nová písnička"
+
+
+def test_create_and_continue_opens_the_editor_of_the_new_song(staff_client, category):
+    """Saving with the continue button leaves the author in the editor of the song just created."""
+    response = staff_client.post(reverse("backend:add"), {**song_payload(category), "continue": "1"})
+
+    song = Song.objects.get(name="Created Song")
+    assert response["Location"] == reverse("backend:edit", kwargs={"pk": song.pk})
+
+
+def test_update_and_continue_keeps_the_page_the_author_came_from(staff_client, category, song):
+    """The way back to the reader survives saving and continuing."""
+    url = reverse("backend:edit", kwargs={"pk": song.pk})
+
+    response = staff_client.post(f"{url}?next=/all", {**song_payload(category, name="Renamed"), "continue": "1"})
+
+    song.refresh_from_db()
+    assert song.name == "Renamed"
+    assert response["Location"] == f"{url}?next=%2Fall"
+
+
+def test_update_and_continue_without_next(staff_client, category, song):
+    """Without a page to go back to, continuing returns to the plain editor."""
+    url = reverse("backend:edit", kwargs={"pk": song.pk})
+
+    response = staff_client.post(url, {**song_payload(category), "continue": "1"})
+
+    assert response["Location"] == url
+
+
+def test_save_without_continue_leaves_the_editor(staff_client, category, song):
+    """The save button goes on to the reader."""
+    response = staff_client.post(reverse("backend:edit", kwargs={"pk": song.pk}), song_payload(category))
+
+    assert response["Location"] == reverse("backend:index")
+
+
+def test_cancel_leads_back_to_the_page_the_author_came_from(staff_client, song):
+    """The reader hands over where it was, and Cancel returns there."""
+    response = staff_client.get(reverse("backend:edit", kwargs={"pk": song.pk}), {"next": "/all"})
+
+    assert response.context["cancel_url"] == "/all"
+
+
+@pytest.mark.parametrize("address", ["https://example.org/phish", "//example.org/phish", "javascript:alert(1)", ""])
+def test_cancel_does_not_leave_the_site(staff_client, song, address):
+    """Only an address of this site is followed; anything else leads to the reader."""
+    response = staff_client.get(reverse("backend:edit", kwargs={"pk": song.pk}), {"next": address})
+
+    assert response.context["cancel_url"] == reverse("backend:index")
+
+
+@pytest.mark.parametrize("page", ["backend:add", "backend:edit"])
+def test_editor_page_loads_the_styles_and_script_of_the_song_editor(staff_client, song, page):
+    """The editor shows the song as the reader does and enhances itself with a module script."""
+    kwargs = {"pk": song.pk} if page == "backend:edit" else {}
+    html = staff_client.get(reverse(page, kwargs=kwargs)).content.decode()
+
+    assert "/static/app/song.css" in html
+    assert "/static/backend/editor.css" in html
+    assert re.search(r'<script src="/static/backend/editor.js"[^>]* type="module"', html)
+
+
+def test_editor_keeps_the_phone_keyboard_from_rewriting_the_lyrics(staff_client, song):
+    """Autocorrect and capitals would turn chords into words."""
+    response = staff_client.get(reverse("backend:edit", kwargs={"pk": song.pk}))
+
+    textarea = re.search(r"<textarea[^>]*>", response.content.decode()).group(0)
+    for attribute in ('autocapitalize="off"', 'autocorrect="off"', 'spellcheck="false"'):
+        assert attribute in textarea
+
+
+def test_editor_opens_on_the_details_when_creating_and_on_the_lyrics_when_editing(staff_client, song):
+    """A new song needs its name and category first; an existing one is opened to change its text."""
+    creating = staff_client.get(reverse("backend:add")).content.decode()
+    editing = staff_client.get(reverse("backend:edit", kwargs={"pk": song.pk})).content.decode()
+
+    assert 'data-initial-tab="details"' in creating
+    assert 'data-initial-tab="lyrics"' in editing
+
+
+def test_editor_opens_on_the_lyrics_when_they_are_what_failed(staff_client, category):
+    """A rejected form is shown where the error is."""
+    response = staff_client.post(reverse("backend:add"), song_payload(category, text=""))
+
+    assert 'data-initial-tab="lyrics"' in response.content.decode()
+
+
+def test_editor_keeps_the_details_unfolded_for_a_new_song_and_for_a_refused_form(staff_client, category, song):
+    """A refused form lists errors of the details whichever section opens first, so the details are never folded."""
+    creating = staff_client.get(reverse("backend:add")).content.decode()
+    editing = staff_client.get(reverse("backend:edit", kwargs={"pk": song.pk})).content.decode()
+    refused = staff_client.post(
+        reverse("backend:edit", kwargs={"pk": song.pk}), song_payload(category, text="", categories=[])
+    ).content.decode()
+
+    assert "data-show-details" in creating
+    assert "data-show-details" not in editing
+    assert 'data-initial-tab="lyrics"' in refused
+    assert "data-show-details" in refused
+
+
+def test_saving_tells_the_browser_which_page_was_saved(staff_client, category, song):
+    """The editor drops the draft of a page only when the server confirms its save."""
+    url = reverse("backend:edit", kwargs={"pk": song.pk})
+
+    response = staff_client.post(url, song_payload(category))
+
+    assert response.cookies["sb-saved"].value == f"%2Fedit%2F{song.pk}"
+
+
+def test_a_refused_save_does_not_tell_the_browser_anything(staff_client, category, song):
+    """A draft must survive a form the server refused."""
+    response = staff_client.post(reverse("backend:edit", kwargs={"pk": song.pk}), song_payload(category, text=""))
+
+    assert "sb-saved" not in response.cookies
 
 
 def test_delete_page_shows_identifier(staff_client, song):

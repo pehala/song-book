@@ -134,6 +134,19 @@ worker and the client state. Rules:
 - The CSS is mobile first and checked by `tests/e2e/test_layout.py` (44 px controls, 16 px form text, WCAG AA contrast
   in both themes, `prefers-reduced-motion`); keep colours in the `--*` variables of `header.css`.
 
+## The song editor
+
+`/add` and `/edit/<pk>` are Bootstrap pages, not part of the reader; `docs/EDITOR.md` describes the template, the
+widget, the layout and the script. Rules:
+
+- The template places only the name, the author and the capo; the other fields of `SongForm` come from
+  `detail_fields()`, so a new `Song` field needs no template change.
+- The preview is the server's (`/markdownx/markdownify/`, `SONG_RENDERER`); never render song markup in JS.
+- Layout is Bootstrap classes first, with one breakpoint at 1200px; below it the sections are tabs. A `hidden`
+  attribute does not beat Bootstrap's `d-flex`: put the flex on an inner element.
+- `editor.js` has no catalogue: every string comes from the template. `song.css` is shared with the reader.
+- e2e tests stub nothing, not even the Bootstrap CDN.
+
 ## Songs payload + caching
 
 `GET /api/songs` returns every song of the tenant as one JSON string, cached per tenant (`{id}-SONGS`,
