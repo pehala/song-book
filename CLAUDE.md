@@ -203,7 +203,8 @@ quoted arguments in `HealthCmd=`: older quadlet generators drop a closing quote.
 
 ## Tests
 
-`tests/README.md` describes the suite: layout, fixtures, settings and the Playwright tests. Traps:
+`tests/README.md` describes the suite: layout, fixtures, settings and the Playwright tests. The `writing-test` skill
+lists every fixture with do/don't rules; use it when adding a test. Traps:
 
 - Tests run in Czech against the compiled `.po` files; assert the Czech strings.
 - The default tenant is seeded by a migration: `get_or_create` it, and give the test `Client` `HTTP_HOST="localhost"`.
