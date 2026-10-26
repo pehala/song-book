@@ -167,22 +167,11 @@ worker and the client state. Rules:
 
 ## PDF generation
 
-`PDFTemplate` is a django-polymorphic model and the configuration for a PDF; `Category`,
-`ManualPDFTemplate` and `AllSongsTemplate` (the virtual all songs category, one per tenant, created on first
-open of the category list) are its concrete subclasses, each supplying `get_songs()`. Generating
-creates a `PDFFile` row (status `QUEUED`/`SCHEDULED`/`IN_PROGRESS`/`DONE`/`FAILED`) and schedules
-the Huey task `generate_pdf_job`, which renders `pdf/index.html` through WeasyPrint under the
-template's locale and saves the file.
-
-Category PDFs regenerate automatically on song/category change via
-`request_pdf_regeneration()` (and, for the tenant's `AllSongsTemplate`, `request_all_songs_pdf_regeneration()`), delayed by `CATEGORY_PDF_DELAY` (30 min) so an editing spree
-batches into one file; it is skipped while the template already has an unfinished file. A scheduled file can be
-generated at once (`generate_file_now`, `pdf:files:generate_now`): a job runs a file only while it is still `SCHEDULED`, so the
-original delayed job skips a file that was already generated.
-`docs/FILES.md` describes the template/file workflow, `docs/PDF_LAYOUT.md` the page layout.
-
-Locally, set `HUEY = {"immediate": True}` in `chords/settings/production.py` to run generation
-inline instead of running `make worker`.
+`PDFTemplate` is a django-polymorphic model and the configuration for a PDF; `Category`, `ManualPDFTemplate` and
+`AllSongsTemplate` are its concrete subclasses, each supplying `get_songs()`. Generating creates a `PDFFile` row and
+schedules the Huey task `generate_pdf_job`, which runs a file only while it is still `SCHEDULED`.
+`docs/FILES.md` describes the template/file workflow and the automatic regeneration, `docs/PDF_LAYOUT.md` the page
+layout.
 
 ## Container deployment
 

@@ -42,6 +42,10 @@
 * Song updated -> [Schedule PDF generation for every Category the song is in, if it is enabled]
 * Song updated -> [Schedule PDF generation of the all songs PDF of the song's tenants, if it is enabled]
 
+Category PDFs regenerate through `request_pdf_regeneration()` (and, for the tenant's `AllSongsTemplate`,
+`request_all_songs_pdf_regeneration()`). The job is delayed by `CATEGORY_PDF_DELAY` (30 min) so an editing spree batches
+into one file, and the request is skipped while the template already has an unfinished file.
+
 ### Generating now
 A scheduled file can be generated at once from the file list, the template list or the category list ("Generate now",
 `generate_file_now`). Its `scheduled_at` becomes now and a second job is queued; the original job stays queued, and
