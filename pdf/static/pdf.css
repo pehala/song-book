@@ -90,7 +90,7 @@
      font-size: 20pt;
      string-set: heading content();
      bookmark-label: attr(data-bookmark);
-     margin-bottom: 4pt;
+     margin-bottom: 8pt;
      margin-top: 0;
 }
  h3 {

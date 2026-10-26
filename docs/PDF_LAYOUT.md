@@ -13,7 +13,7 @@ renders (`docs/FILES.md` describes the template/file workflow).
   so they take no row of their own and a title that is too long for the line wraps beside it. The song name and its
   number are the bookmark: `bookmark-label` reads `data-bookmark` because the float is inside the heading.
 * `.text p` has a bottom margin only, so the first line of the first column starts at the same height as the first line
-  of a column that begins after a column break, where a top margin would be dropped. The `h2` has a bottom margin of 4 pt.
+  of a column that begins after a column break, where a top margin would be dropped. The `h2` has a bottom margin of 8 pt.
 * `Song.pdf_columns` (2 by default, or 3) sets the number of columns of one song, as the class `columns-<n>` of
   `.text`. A narrow song whose lines stay short enough not to wrap in a column of about 5.3 cm fits on one page in three
   columns where two would need a second page; a song with long lines wraps in them, so it keeps two.
