@@ -59,8 +59,7 @@
         {% for song_number, song in section.songs %}
             <article class="columns{% if forloop.first and section.title %} section-start{% endif %}">
               {% if forloop.first and section.title %}<h1 class="section-title" id="section-{{ forloop.parentloop.counter }}">{{ section.title }}</h1>{% endif %}
-              <h2 id="{{ song.id }}-title">{{ song_number }}. <span class="name">{{ song.name }}</span></h2>
-              <h3 class="">{{ song.author }} {% if song.capo > 0 %}<span class="right">{% trans "Capo" %} {{ song.capo }}</span> {% endif %}</h3>
+              <h2 id="{{ song.id }}-title" data-bookmark="{{ song_number }}. {{ song.name }}">{% if song.author or song.capo > 0 %}<span class="right author">{{ song.author }}{% if song.author and song.capo > 0 %} · {% endif %}{% if song.capo > 0 %}{% trans "Capo" %} {{ song.capo }}{% endif %}</span>{% endif %}{{ song_number }}. <span class="name">{{ song.name }}</span></h2>
 
               <section class="text columns-{{ song.pdf_columns }}">
                 {{ song.pdf_markdown|safe }}
