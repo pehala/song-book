@@ -89,7 +89,8 @@
      break-before: page;
      font-size: 20pt;
      string-set: heading content();
-     margin-bottom: 6pt;
+     bookmark-label: attr(data-bookmark);
+     margin-bottom: 4pt;
      margin-top: 0;
 }
  h3 {
@@ -117,6 +118,7 @@
 }
  .text p {
      text-align: justify;
+     margin: 0 0 1em;
 }
  .contents-list {
      list-style: none;
@@ -223,4 +225,9 @@
      border-bottom: .5pt solid #999;
      padding-bottom: 3pt;
      margin: 0 0 14pt;
+}
+ h2 .author {
+     font-size: 12pt;
+     font-weight: 300;
+     line-height: 20pt;
 }
