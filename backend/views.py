@@ -6,7 +6,7 @@ from urllib.parse import quote
 from django.http import HttpResponse, HttpResponseRedirect, JsonResponse
 from django.urls import reverse, reverse_lazy
 from django.utils.cache import get_conditional_response
-from django.utils.http import url_has_allowed_host_and_scheme, urlencode
+from django.utils.http import urlencode
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 from markdownx.views import ImageUploadView, MarkdownifyView
@@ -94,10 +94,7 @@ class SongEditorMixin:
     def get_context_data(self, **kwargs):
         """Adds the address the Cancel button leads back to: where the author came from, or the reader."""
         ctx = super().get_context_data(**kwargs)
-        back = self.request.GET.get("next", "")
-        if not url_has_allowed_host_and_scheme(back, allowed_hosts={self.request.get_host()}):
-            back = str(self.success_url)
-        ctx["cancel_url"] = back
+        ctx["cancel_url"] = self.next_url() or str(self.success_url)
         return ctx
 
     def get_success_url(self):
@@ -105,8 +102,8 @@ class SongEditorMixin:
         if "continue" not in self.request.POST:
             return super().get_success_url()
         url = reverse("backend:edit", kwargs={"pk": self.object.pk})
-        if "next" in self.request.GET:
-            url += "?" + urlencode({"next": self.request.GET["next"]})
+        if next_url := self.next_url():
+            url += "?" + urlencode({"next": next_url})
         return url
 
 

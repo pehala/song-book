@@ -168,6 +168,15 @@ def test_save_without_continue_leaves_the_editor(staff_client, category, song):
     assert response["Location"] == reverse("backend:index")
 
 
+def test_save_does_not_follow_an_address_of_another_site(staff_client, category, song):
+    """Saving goes on to the reader when next names a page of another site."""
+    url = reverse("backend:edit", kwargs={"pk": song.pk})
+
+    response = staff_client.post(f"{url}?next=https://example.org/phish", song_payload(category))
+
+    assert response["Location"] == reverse("backend:index")
+
+
 def test_cancel_leads_back_to_the_page_the_author_came_from(staff_client, song):
     """The reader hands over where it was, and Cancel returns there."""
     response = staff_client.get(reverse("backend:edit", kwargs={"pk": song.pk}), {"next": "/all"})
