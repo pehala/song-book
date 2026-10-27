@@ -1,6 +1,7 @@
 """General mixins."""
 
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
+from django.utils.http import url_has_allowed_host_and_scheme
 
 from backend.auth import is_localadmin, is_superadmin
 
@@ -61,10 +62,16 @@ class RedirectToNextMixin:
 
     default_next_page = None
 
+    def next_url(self):
+        """Returns the page named by the next parameter when it is on this site, and an empty string otherwise."""
+        for source in (self.request.GET, self.request.POST):
+            url = source.get("next", "")
+            if url_has_allowed_host_and_scheme(
+                url, allowed_hosts={self.request.get_host()}, require_https=self.request.is_secure()
+            ):
+                return url
+        return ""
+
     def get_success_url(self):
         """Returns success_url to redirect to."""
-        if "next" in self.request.GET:
-            return self.request.GET["next"]
-        if "next" in self.request.POST:
-            return self.request.POST["next"]
-        return self.default_next_page or self.success_url
+        return self.next_url() or self.default_next_page or self.success_url
