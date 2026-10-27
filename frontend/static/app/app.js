@@ -278,7 +278,7 @@ function Progress({progress, label, retryLabel, centered, _}) {
              aria-valuenow=${total ? loaded : undefined}>
             <div style=${total ? {transform: `scaleX(${ratio})`} : undefined}></div>
         </div>
-        ${centered && html`<p class="progress-caption" aria-hidden="true">${text} ${detail}</p>`}`;
+        ${centered && html`<p class="progress-caption" aria-hidden="true"><span>${text}</span><span>${detail}</span></p>`}`;
 }
 
 const root = document.getElementById("app");

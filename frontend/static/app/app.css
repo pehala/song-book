@@ -328,10 +328,16 @@ rt.chord {
     background: var(--line);
 }
 
+/* The label and the detail are lines of their own, so the detail filling in moves neither */
 .progress-caption {
     margin: 0 0 4rem;
     text-align: center;
     color: var(--muted);
+}
+
+.progress-caption span {
+    display: block;
+    min-height: 1.5em;
 }
 
 .progress > div {
