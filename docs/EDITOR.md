@@ -1,8 +1,9 @@
 # The song editor
 
 `/add` and `/edit/<pk>` are Bootstrap pages (`backend/templates/backend/song_form.html`, chosen by `SongEditorMixin`),
-not part of the reader. `SongForm.Media` loads `app/song.css`, `backend/editor.css`, `backend/editor.js` and
-`backend/song_pdf_pages.js` (modules; the service worker does not precache them). The `text` widget
+not part of the reader. `SongForm.Media` loads `app/song.css`, `backend/vendor/prism-code-editor.css`,
+`backend/editor.css`, `backend/editor.js` (which imports `backend/highlight.js`) and `backend/song_pdf_pages.js`
+(modules; the service worker does not precache them). The `text` widget
 (`frontend/templates/markdownx/widget.html`) holds the lyrics textarea, the chord bar and the preview pane.
 
 ## Fields
@@ -24,6 +25,27 @@ neither.
 The preview is the server's: django-markdownx posts the text to `/markdownx/markdownify/`, which renders it with
 `SONG_RENDERER`; nothing of the markup is rendered in JS. The line preview above the phone keyboard asks the same
 endpoint.
+
+## Highlighting
+
+`highlight.js` colours the syntax of the lyrics: the chord (its name and its braces), spaces such as `/4/`, and a brace
+that belongs to no chord, which is underlined because the server draws it as plain text. It replaces the textarea with a
+prism-code-editor (vendored in `backend/static/backend/vendor/`, whose README gives the version and how it is built)
+before `editor.js` sets anything up on it. The editor is a layer of coloured lines under a real textarea, so the typing,
+the undo and the keyboard of a phone stay the browser's. The new textarea takes the attributes of the old one (name, id,
+the data of markdownx and the phone keyboard's settings) and its `markdownx-editor` class, so the form, the label,
+markdownx and `editor.js` know it as before. The editor's container scrolls, not the textarea, and `editor.js` follows
+it as `scroller`. Without the script, and in the Django admin, the lyrics stay a plain textarea.
+
+- The patterns are the parser's: `SongForm` gives the textarea `data-chord-re` and `data-spaces-re` from `CHORD_RE` and
+  `SPACES_RE`, and the script spells Python's `(?P<name>` the JavaScript way. An escaped character and a code span are
+  text to Markdown, so no chord starts in them.
+- The token names carry the `sb-` prefix because `song.css` styles `.chord`. `editor.css` colours them from Bootstrap's
+  variables and from `--accent`, the colour of the chords in the preview; a brace without a chord uses
+  `--bs-danger-text-emphasis`, since `--bs-danger` is below 4.5:1 on the dark background. Spaces get a tinted pill without padding or
+  border, which would move the coloured text off the textarea under it.
+- What listens to the text field of the form goes on the form, whose `input` events the new textarea sends as well, or
+  runs after the swap: the element is replaced when `editor.js` loads (`song_pdf_pages.js` listens on the form).
 
 ## Layout
 
@@ -58,4 +80,4 @@ The line preview remembers the line it last asked the server for and does not as
 ## Tests
 
 `tests/e2e/editor/` and `tests/e2e/test_song_editor.py` drive all of it against the real Bootstrap from the CDN:
-e2e tests stub nothing.
+e2e tests stub nothing. `test_highlight.py` checks the colours against what the server renders for the same text.

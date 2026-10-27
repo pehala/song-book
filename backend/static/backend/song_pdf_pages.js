@@ -26,8 +26,11 @@ for (const indicator of document.querySelectorAll("[data-pdf-pages]")) {
     cramped.hidden = columns < 3 || wrappedChordShare(text, columns) <= CRAMPED;
   };
 
-  for (const name of ["text", "pdf_columns"]) {
-    form.elements[name]?.addEventListener("input", update);
-  }
+  // On the form, because the element of the text can be replaced by an editor after this runs
+  form.addEventListener("input", event => {
+    if (["text", "pdf_columns"].includes(event.target.name)) {
+      update();
+    }
+  });
   update();
 }
