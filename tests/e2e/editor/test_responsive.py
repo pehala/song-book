@@ -214,6 +214,52 @@ def test_preview_follows_the_lyrics_as_they_are_scrolled_on_a_wide_screen(editor
     pytest.fail("the preview did not follow the lyrics")
 
 
+def test_preview_follows_the_caret_of_lyrics_that_fit_the_screen(editor):
+    """The line the caret is on is in view in the preview, though the lyrics do not scroll and the preview does."""
+    editor.set_viewport_size(DESKTOP)
+    box = lyrics(editor)
+    box.fill("\n".join(f"{{C}}Line {number}" for number in range(18)))
+    chords = editor.locator(".markdownx-preview rt.chord")
+    expect(chords).to_have_count(18)
+    assert editor.locator(".prism-code-editor").evaluate("e => e.scrollHeight <= e.clientHeight")
+    assert editor.locator("[data-panel=preview]").evaluate("e => e.scrollHeight > e.clientHeight")
+
+    box.press("Control+Home")
+    for _ in range(9):
+        box.press("ArrowDown")
+    expect(chords.nth(9)).to_be_in_viewport()
+
+    box.press("Control+End")
+    expect(chords.nth(17)).to_be_in_viewport()
+
+    box.press("Control+Home")
+    expect(chords.nth(0)).to_be_in_viewport()
+
+
+def test_preview_tab_opens_where_the_caret_is_on_a_phone(editor):
+    """The preview is hidden while the lyrics are typed, and is scrolled to the caret's line once its tab is opened."""
+    # Tall enough for the lyrics to show the caret's line without scrolling, and for the preview not to
+    editor.set_viewport_size({"width": 390, "height": 1700})
+    box = lyrics(editor)
+    box.fill("\n".join(f"{{C}}Line {number}" for number in range(100)))
+    chords = editor.locator(".markdownx-preview rt.chord")
+    editor.locator("#tab-preview").click()
+    expect(chords).to_have_count(100)
+    expect(chords.nth(50)).not_to_be_in_viewport()
+
+    editor.locator("#tab-lyrics").click()
+    box.press("Control+Home")
+    for _ in range(50):
+        box.press("ArrowDown")
+    editor.locator("#tab-preview").click()
+    expect(chords.nth(50)).to_be_in_viewport()
+
+    editor.locator("#tab-lyrics").click()
+    box.press("Control+Home")
+    editor.locator("#tab-preview").click()
+    expect(chords.nth(0)).to_be_in_viewport()
+
+
 def test_long_details_scroll_in_their_column_on_a_wide_screen(editor):
     """The page keeps the height of the screen, so the text boxes stay in view while the details are scrolled."""
     editor.set_viewport_size({"width": 1280, "height": 600})

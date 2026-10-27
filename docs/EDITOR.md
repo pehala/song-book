@@ -37,6 +37,13 @@ the data of markdownx and the phone keyboard's settings) and its `markdownx-edit
 markdownx and `editor.js` know it as before. The editor's container scrolls, not the textarea, and `editor.js` follows
 it as `scroller`. Without the script, and in the Django admin, the lyrics stay a plain textarea.
 
+The preview follows the caret (`setupPreviewFollow`): the line the caret is on is put in the preview at the height it
+has in the lyrics, which also follows lyrics that fit the screen while the preview does not. It moves on typing, on keys,
+on a pointer release and after the preview is redrawn, since the server's HTML changes its height. While the caret is out
+of sight the preview follows the scrolling of the lyrics by proportion. Where the lyrics stand is kept: on a phone the
+preview is a tab that is hidden while they are typed, a hidden element cannot be scrolled, and it is put in place when
+its tab is opened.
+
 - The patterns are the parser's: `SongForm` gives the textarea `data-chord-re` and `data-spaces-re` from `CHORD_RE` and
   `SPACES_RE`, and the script spells Python's `(?P<name>` the JavaScript way. An escaped character and a code span are
   text to Markdown, so no chord starts in them.

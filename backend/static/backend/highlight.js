@@ -13,7 +13,8 @@ function pattern(source) {
     return new RegExp(source.replaceAll("(?P<", "(?<"), "g");
 }
 
-// Replaces the textarea with the editor and returns the textarea the editor types into and the element that scrolls
+// Replaces the textarea with the editor and returns the textarea the editor types into, the element that scrolls and a
+// function that gives the element of a line of the text, counted from 0
 export function highlight(textarea) {
     // Markdown reads an escaped character and a code span as text, so no chord starts in one; the token names carry a
     // prefix because song.css styles .chord
@@ -51,5 +52,5 @@ export function highlight(textarea) {
     }
     typed.classList.add("markdownx-editor");
     textarea.replaceWith(editor.container);
-    return {textarea: typed, scroller: editor.container};
+    return {textarea: typed, scroller: editor.container, line: index => editor.lines[index + 1]};
 }
