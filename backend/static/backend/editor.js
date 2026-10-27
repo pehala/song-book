@@ -16,8 +16,8 @@ const LINE_DELAY = 300;
 const form = document.querySelector("[data-editor]");
 const lyrics = form?.querySelector("textarea.markdownx-editor");
 // The editor that colours the syntax takes the place of the lyrics' textarea before anything else is set up on it:
-// `text` is what is typed into and `scroller` what scrolls
-const {textarea: text, scroller} = lyrics ? highlight(lyrics) : {};
+// `text` is what is typed into, `scroller` what scrolls and `lineBox` gives the element of a line
+const {textarea: text, scroller, line: lineBox} = lyrics ? highlight(lyrics) : {};
 
 if (form && text) {
     const showTab = setupTabs();
@@ -25,7 +25,7 @@ if (form && text) {
     setupViewport();
     setupKeys();
     setupBraces();
-    setupSyncedScroll();
+    setupPreviewFollow();
     setupSplit();
     setupChanges();
 
@@ -308,15 +308,69 @@ function setupSplit() {
     set(share);
 }
 
-// The preview follows the lyrics as they are scrolled
-function setupSyncedScroll() {
+// The preview follows the caret: the line it is on is put in the preview at the height it has in the lyrics, so a
+// song that fits the screen is followed as well. While the caret is out of sight the preview follows the scrolling.
+// Where the lyrics stand is kept, because on a phone the preview is not shown while they are, and a hidden element
+// cannot be scrolled: it is put in place when it is shown.
+function setupPreviewFollow() {
     const preview = form.querySelector("[data-panel=preview]");
-    scroller.addEventListener("scroll", () => {
-        const room = scroller.scrollHeight - scroller.clientHeight;
-        if (room > 0 && preview.offsetParent) {
-            preview.scrollTop = (scroller.scrollTop / room) * (preview.scrollHeight - preview.clientHeight);
+    let anchor = null;
+    let queued = false;
+
+    function caretLine() {
+        return text.value.slice(0, text.selectionStart).split("\n").length - 1;
+    }
+
+    // The caret's place in the text and in the view, or how far the lyrics are scrolled when the caret is out of sight
+    function measure() {
+        const view = scroller.getBoundingClientRect();
+        if (!view.height) {
+            return;
+        }
+        const box = lineBox(caretLine())?.getBoundingClientRect();
+        if (box && box.bottom > view.top && box.top < view.bottom) {
+            const height = box.top - view.top;
+            anchor = {share: (height + scroller.scrollTop) / scroller.scrollHeight, height};
+        } else if (scroller.scrollHeight > scroller.clientHeight) {
+            anchor = {scrolled: scroller.scrollTop / (scroller.scrollHeight - scroller.clientHeight)};
+        }
+    }
+
+    function place() {
+        const room = preview.scrollHeight - preview.clientHeight;
+        if (anchor && room > 0 && preview.offsetParent) {
+            preview.scrollTop =
+                anchor.share === undefined ? anchor.scrolled * room : anchor.share * preview.scrollHeight - anchor.height;
+        }
+    }
+
+    function follow() {
+        queued = false;
+        measure();
+        place();
+    }
+
+    function followSoon() {
+        if (!queued) {
+            queued = true;
+            requestAnimationFrame(follow);
+        }
+    }
+
+    scroller.addEventListener("scroll", followSoon);
+    // The caret moves by typing, by keys and by a finger or a mouse, and not every browser reports a selection change
+    for (const type of ["input", "keydown", "keyup", "pointerup"]) {
+        text.addEventListener(type, followSoon);
+    }
+    document.addEventListener("selectionchange", () => {
+        if (document.activeElement === text) {
+            followSoon();
         }
     });
+    // The preview is redrawn a moment after the typing, and its height with it
+    form.querySelector(".markdownx").addEventListener("markdownx.update", followSoon);
+    // A preview that was hidden has a size again when its tab is opened
+    new ResizeObserver(place).observe(preview);
 }
 
 // Unsaved changes: the status in the bar, a guard against leaving, a draft kept in the browser and Ctrl+S
