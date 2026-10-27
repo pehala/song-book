@@ -1,6 +1,8 @@
-// Enhances the song editor: the sections as tabs on a phone, the chord bar above the keyboard, brace completion,
-// the unsaved changes with their draft, and Ctrl+S. Without it the form still works with every section shown.
-// The preview is the server's: this only types text and asks the server to render a line.
+// Enhances the song editor: the syntax colours of the lyrics, the sections as tabs on a phone, the chord bar above the
+// keyboard, brace completion, the unsaved changes with their draft, and Ctrl+S. Without it the form still works with
+// every section shown. The preview is the server's: this only types text and asks the server to render a line.
+
+import {highlight} from "./highlight.js";
 
 const SPLIT_KEY = "sb-editor-split";
 const DETAILS_KEY = "sb-editor-details";
@@ -12,7 +14,10 @@ const SAVE_DELAY = 400;
 const LINE_DELAY = 300;
 
 const form = document.querySelector("[data-editor]");
-const text = form?.querySelector("textarea.markdownx-editor");
+const lyrics = form?.querySelector("textarea.markdownx-editor");
+// The editor that colours the syntax takes the place of the lyrics' textarea before anything else is set up on it:
+// `text` is what is typed into and `scroller` what scrolls
+const {textarea: text, scroller} = lyrics ? highlight(lyrics) : {};
 
 if (form && text) {
     const showTab = setupTabs();
@@ -306,10 +311,10 @@ function setupSplit() {
 // The preview follows the lyrics as they are scrolled
 function setupSyncedScroll() {
     const preview = form.querySelector("[data-panel=preview]");
-    text.addEventListener("scroll", () => {
-        const room = text.scrollHeight - text.clientHeight;
+    scroller.addEventListener("scroll", () => {
+        const room = scroller.scrollHeight - scroller.clientHeight;
         if (room > 0 && preview.offsetParent) {
-            preview.scrollTop = (text.scrollTop / room) * (preview.scrollHeight - preview.clientHeight);
+            preview.scrollTop = (scroller.scrollTop / room) * (preview.scrollHeight - preview.clientHeight);
         }
     });
 }

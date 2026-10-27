@@ -7,6 +7,8 @@ from markdownx.widgets import MarkdownxWidget
 
 from backend.models import Song
 from category.models import Category
+from chords.plugins import CHORD_RE
+from chords.plugins.spaces import SPACES_RE
 
 # The chords of the chord bar of the song editor: the ones most songs use, in a fixed order
 EDITOR_CHORDS = ("C", "D", "E", "F", "G", "Ami", "Emi")
@@ -49,6 +51,9 @@ class SongForm(AdminSongForm):
                     "autocapitalize": "off",
                     "autocorrect": "off",
                     "spellcheck": "false",
+                    # What the editor colours as a chord and as spaces is what the server's parser takes for them
+                    "data-chord-re": CHORD_RE,
+                    "data-spaces-re": SPACES_RE,
                 }
             )
         }
@@ -56,7 +61,7 @@ class SongForm(AdminSongForm):
     field_order = ["name", "author", "capo", "categories"]
 
     class Media:
-        css = {"all": ["app/song.css", "backend/editor.css"]}
+        css = {"all": ["app/song.css", "backend/vendor/prism-code-editor.css", "backend/editor.css"]}
         js = [Script("backend/editor.js", type="module")]
 
     def __init__(self, *args, **kwargs):

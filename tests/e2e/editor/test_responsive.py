@@ -202,7 +202,10 @@ def test_preview_follows_the_lyrics_as_they_are_scrolled_on_a_wide_screen(editor
     lyrics(editor).fill("\n\n".join(f"{{C}}Line {number}" for number in range(150)))
     expect(editor.locator(".markdownx-preview ruby")).to_have_count(150)
 
-    lyrics(editor).evaluate("e => { e.scrollTop = e.scrollHeight; }")
+    # Typing the lines may have left the caret, and so the lyrics, at the end already
+    editor.locator(".prism-code-editor").evaluate(
+        "async e => { e.scrollTop = 0; await new Promise(requestAnimationFrame); e.scrollTop = e.scrollHeight; }"
+    )
 
     for _ in range(50):
         if editor.locator("[data-panel=preview]").evaluate("e => e.scrollTop") > 0:

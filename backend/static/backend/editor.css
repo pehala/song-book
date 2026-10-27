@@ -43,6 +43,52 @@
     tab-size: 4;
 }
 
+/* The editor that colours the lyrics takes the textarea's place and scrolls itself; Bootstrap's utilities give it its
+   border and its font, which its layout stylesheet does not know */
+.sb-ed .sb-ed-pane > .prism-code-editor {
+    flex: 1;
+    min-height: 16rem;
+    line-height: 1.6;
+    tab-size: 4;
+    --padding-inline: .75rem;
+    --pce-cursor: var(--bs-body-color);
+    --pce-selection: color-mix(in srgb, var(--bs-primary) 30%, transparent);
+}
+
+.sb-ed .prism-code-editor:focus-within {
+    box-shadow: 0 0 0 .25rem color-mix(in srgb, var(--bs-primary) 25%, transparent);
+}
+
+.sb-ed .token.sb-chord-name {
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.sb-ed .token.sb-brace {
+    color: var(--bs-secondary-color);
+}
+
+/* Spaces are layout, not words or chords: a tinted pill whose number is what counts. It has no padding or border, which
+   would move the text off the textarea under it */
+.sb-ed .token.sb-spaces {
+    background: var(--bs-info-bg-subtle);
+    border-radius: .25rem;
+}
+
+.sb-ed .token.sb-spaces-count {
+    font-weight: 700;
+    color: var(--bs-info-text-emphasis);
+}
+
+.sb-ed .token.sb-spaces-mark {
+    color: var(--bs-secondary-color);
+}
+
+.sb-ed .token.sb-stray {
+    color: var(--bs-danger-text-emphasis);
+    text-decoration: underline wavy;
+}
+
 /* A whole row of a checkbox is the target, not the box alone; its help goes under the row */
 .sb-ed .form-check {
     display: flex;

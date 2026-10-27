@@ -2,6 +2,7 @@
 
 import json
 import re
+from html import unescape
 
 import pytest
 from django.forms import HiddenInput
@@ -9,6 +10,8 @@ from django.urls import reverse
 
 from backend.forms import SongForm
 from backend.models import Song
+from chords.plugins import CHORD_RE
+from chords.plugins.spaces import SPACES_RE
 from pdf.models import Status
 from pdf.models.request import AllSongsTemplate, PDFFile
 
@@ -210,6 +213,22 @@ def test_editor_keeps_the_phone_keyboard_from_rewriting_the_lyrics(staff_client,
     textarea = re.search(r"<textarea[^>]*>", response.content.decode()).group(0)
     for attribute in ('autocapitalize="off"', 'autocorrect="off"', 'spellcheck="false"'):
         assert attribute in textarea
+
+
+def test_editor_hands_the_script_the_patterns_of_the_parser(staff_client, song):
+    """What the editor colours as a chord and as spaces is what the server's parser takes for them."""
+    response = staff_client.get(reverse("backend:edit", kwargs={"pk": song.pk}))
+
+    textarea = unescape(re.search(r"<textarea[^>]*>", response.content.decode()).group(0))
+    assert f'data-chord-re="{CHORD_RE}"' in textarea
+    assert f'data-spaces-re="{SPACES_RE}"' in textarea
+
+
+def test_editor_loads_the_stylesheet_of_its_code_editor_before_its_own(staff_client, song):
+    """The editor's own rules refine the library's layout, so they come after it."""
+    html = staff_client.get(reverse("backend:edit", kwargs={"pk": song.pk})).content.decode()
+
+    assert html.index("backend/vendor/prism-code-editor.css") < html.index("backend/editor.css")
 
 
 def test_editor_opens_on_the_details_when_creating_and_on_the_lyrics_when_editing(staff_client, song):
