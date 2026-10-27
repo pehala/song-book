@@ -210,12 +210,17 @@ main {
     font-variant-numeric: tabular-nums;
 }
 
+/* The left margin of the tools and the text keeps them clear of the open song's highlight bar */
+.song {
+    --inset: .25rem;
+}
+
 .tools {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: .5rem;
-    margin: .25rem 0 .5rem;
+    margin: .5rem 0 .75rem var(--inset);
 }
 
 .stepper {
@@ -259,7 +264,8 @@ main {
     column-count: min(var(--chords-grid-columns), var(--verses, 1));
     column-gap: 5em;
     width: fit-content;
-    max-width: 100%;
+    margin-left: var(--inset);
+    max-width: calc(100% - var(--inset));
 }
 
 .empty {
@@ -351,16 +357,7 @@ main {
         font-size: 1.25rem;
     }
 
-    /* room between the open song's text and its title row and highlight bar */
-    .tools,
-    .song-text {
-        margin-left: 1rem;
-    }
-
-    .song-text {
-        max-width: calc(100% - 1rem);
-    }
-
+    /* room between the open song's text and its title row */
     .tools {
         margin-top: 1rem;
         margin-bottom: 1rem;
