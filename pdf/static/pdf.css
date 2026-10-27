@@ -138,6 +138,9 @@
      line-height: 1.4;
      break-inside: avoid;
 }
+ .contents-list li:has(+ .contents-section) {
+     margin-bottom: 8pt;
+}
  .contents-list li::before {
      content: attr(data-number);
      position: absolute;
@@ -207,7 +210,6 @@
      padding-left: 0;
      break-after: avoid;
      break-inside: avoid;
-     margin-top: 8pt;
      font-size: 10pt;
      font-weight: bold;
      border-bottom: .5pt solid #999;

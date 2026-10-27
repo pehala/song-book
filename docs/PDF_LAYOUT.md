@@ -118,7 +118,9 @@ heading and the running name of the section before it.
   document.
 * The contents list one `li.contents-section` per titled section before its songs, in the style of an entry: the
   title, dots and the page of the label, linked to `#section-<n>`. The songs of a section are sorted by title
-  among themselves, so the numbers of a section need not ascend.
+  among themselves, so the numbers of a section need not ascend. The space above a label is a bottom margin of the entry
+  before it (`li:has(+ .contents-section)`), so a label at the top of any column starts at the same height as one at
+  the top of the first, where a top margin would be dropped.
 
 ## Header link
 
