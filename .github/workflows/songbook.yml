@@ -53,7 +53,7 @@ jobs:
         run: echo "version=$(uv run playwright --version | awk '{print $NF}')" >> "$GITHUB_OUTPUT"
       - name: Cache Chromium
         id: chromium-cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: ~/.cache/ms-playwright
           key: chromium-shell-${{ runner.os }}-${{ steps.playwright.outputs.version }}
@@ -68,7 +68,7 @@ jobs:
           make e2e
       - name: Keep traces of failed tests
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: playwright-traces
           path: test-results/
