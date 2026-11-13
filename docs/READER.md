@@ -47,8 +47,9 @@ The header (`header.js`: `SiteHeader`, which draws the bar, the notices and the 
   expanded. It is placed under its trigger by anchor positioning, or by a `beforetoggle` listener of `header.js`
   where that is missing; a browser without popovers shows no menu. `closeDropdowns()` closes the open one, for
   example when the reader changes category.
-- The theme is the `data-bs-theme` attribute on `<html>` (set early by an inline script, then by `options.js`), which
-  both Bootstrap and the reader's CSS follow.
+- The theme is the `data-bs-theme` attribute on `<html>` (set early by the inline script of `shell/theme.html`, then by
+  `options.js`), which both Bootstrap and the reader's CSS follow. The same include carries the `color-scheme` and
+  `theme-color` meta tags, which `options.js` sets to the chosen theme and the colour of the bar.
 - Pages the server renders (`server: true`) take their language from `<html lang>`, change it by POSTing `setlang` and
   reloading, and leave out the options that need songs.
 

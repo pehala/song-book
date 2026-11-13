@@ -1,0 +1,5 @@
+{# The theme before any stylesheet: the script applies the stored choice to the page, the browser's own parts and a phone's status bar (the light and the dark theme-color are --bar of header.css); options.js keeps them in step afterwards. #}
+<meta name="color-scheme" content="light dark">
+<meta name="theme-color" content="#f8f9fa" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#212529" media="(prefers-color-scheme: dark)">
+<script>try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark")t=matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";document.documentElement.dataset.bsTheme=t;document.querySelector('meta[name="color-scheme"]').content=t;var c=document.querySelectorAll('meta[name="theme-color"]');c[0].content=c[1].content=c[t==="dark"?1:0].content}catch(e){}</script>

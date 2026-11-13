@@ -27,6 +27,14 @@ export function useStored(key, initial) {
     return [value, set];
 }
 
+// The browser's own parts (scrollbars, form controls) and a phone's status bar take the theme of the page, which
+// may differ from the system's, and the status bar the colour of the header bar
+function themeBrowser(theme) {
+    document.querySelector('meta[name="color-scheme"]')?.setAttribute("content", theme);
+    const bar = getComputedStyle(document.documentElement).getPropertyValue("--bar").trim();
+    document.querySelectorAll('meta[name="theme-color"]').forEach(meta => meta.setAttribute("content", bar));
+}
+
 // Columns of lyrics that suit the screen the reader is opened on, for readers who have not chosen
 function defaultColumns() {
     return innerWidth >= 1600 ? 3 : innerWidth >= 1024 ? 2 : 1;
@@ -49,7 +57,9 @@ export function useOptions({server = false} = {}) {
     useEffect(() => {
         const media = matchMedia("(prefers-color-scheme: dark)");
         const apply = () => {
-            document.documentElement.dataset.bsTheme = theme === "auto" ? (media.matches ? "dark" : "light") : theme;
+            const chosen = theme === "auto" ? (media.matches ? "dark" : "light") : theme;
+            document.documentElement.dataset.bsTheme = chosen;
+            themeBrowser(chosen);
         };
         apply();
         if (theme === "auto") {

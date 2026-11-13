@@ -632,6 +632,36 @@ def test_theme_is_applied_and_remembered(page, library):
     expect(page.locator("html")).to_have_attribute("data-bs-theme", "dark")
 
 
+def test_browser_follows_the_chosen_theme(page, library):
+    """The browser's own parts and the status bar take the chosen theme, not the system's."""
+    page.emulate_media(color_scheme="light")
+    page.goto("/categories/cs")
+    expect(page.locator('meta[name="theme-color"]').first).to_have_attribute("content", "#f8f9fa")
+    open_menu(page, "Options")
+
+    page.get_by_role("button", name="Dark").click()
+
+    expect(page.locator('meta[name="color-scheme"]')).to_have_attribute("content", "dark")
+    for meta in page.locator('meta[name="theme-color"]').all():
+        expect(meta).to_have_attribute("content", "#212529")
+    page.reload()
+    assert page.evaluate("getComputedStyle(document.documentElement).colorScheme") == "dark"
+
+
+def test_status_bar_takes_the_stored_theme_before_the_reader_loads(page, library, hold):
+    """A reader who chose dark on a light system gets a dark status bar while the scripts are still on their way."""
+    page.emulate_media(color_scheme="light")
+    page.add_init_script("localStorage.setItem('theme', 'dark')")
+    hold("**/app/app*.js")
+
+    page.goto("/categories/cs", wait_until="commit")
+
+    expect(page.locator('meta[name="color-scheme"]')).to_have_attribute("content", "dark")
+    for meta in page.locator('meta[name="theme-color"]').all():
+        expect(meta).to_have_attribute("content", "#212529")
+    expect(page.locator("header.sb-bar")).to_have_count(0)
+
+
 def test_language_can_be_switched(page, library):
     """The interface changes language at once and remembers it."""
     page.goto("/categories/cs")
