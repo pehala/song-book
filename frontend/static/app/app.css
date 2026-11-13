@@ -127,6 +127,18 @@ main {
     border-left-color: var(--accent);
 }
 
+/* A closed song off the screen is neither laid out nor painted; it keeps the height it last had, or the estimate of
+   a row with an author, so the scrollbar does not jump. The open song stays out of it, so its title can stick. */
+.song:not([open]) {
+    content-visibility: auto;
+    contain-intrinsic-size: auto none auto 4rem;
+}
+
+/* Paint containment clips what draws outside the row, so the ring of a closed title is drawn inside it */
+.song:not([open]) > summary:focus-visible {
+    outline-offset: -2px;
+}
+
 /* The open song keeps its title in view under the search bar while its text scrolls past */
 .song[open] > summary {
     position: sticky;
