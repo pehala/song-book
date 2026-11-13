@@ -31,6 +31,9 @@ function scrollBehavior() {
 
 const SCROLL_GAP = 8;
 
+// How far below the screen a verse is still looked for; no song is longer
+const BELOW = 100000;
+
 function openVerses() {
     return [...document.querySelectorAll("details.song[open] .song-text p")].map(element => element.getBoundingClientRect());
 }
@@ -68,6 +71,7 @@ function App() {
     const [scrolled, setScrolled] = useState(false);
     const [canScrollDown, setCanScrollDown] = useState(false);
     const [scrollToOpen, setScrollToOpen] = useState(false);
+    const top = useRef(null);
     const site = useSiteHeader({boot});
     const {_, toast} = site;
     const route = useMemo(() => parseRoute(path), [path]);
@@ -105,28 +109,56 @@ function App() {
 
     useEffect(() => {
         const onPop = () => setPath(location.pathname);
-        const onScroll = () => setScrolled(scrollY > 50);
         addEventListener("popstate", onPop);
-        addEventListener("scroll", onScroll, {passive: true});
-        return () => {
-            removeEventListener("popstate", onPop);
-            removeEventListener("scroll", onScroll);
-        };
+        return () => removeEventListener("popstate", onPop);
     }, []);
 
-    // Scroll down is offered while the open song continues below the screen; the song's size changes as it opens
-    // and with the columns, the chords and the window
+    // Back to top is offered once the strip at the top of the page has left the screen
     useEffect(() => {
-        const update = () => setCanScrollDown(openId !== null && songRemaining(openVerses()) > 1);
-        const resized = new ResizeObserver(update);
-        resized.observe(document.querySelector("main"));
-        addEventListener("scroll", update, {passive: true});
-        addEventListener("resize", update);
-        update();
+        const observer = new IntersectionObserver(([entry]) => setScrolled(!entry.isIntersecting));
+        observer.observe(top.current);
+        return () => observer.disconnect();
+    }, []);
+
+    // Scroll down is offered while a verse of the open song reaches below the line it scrolls to: the verses are
+    // watched against a band starting just under that line, so nothing is measured while the page scrolls. The band
+    // follows the window's height, and the verses are watched again when transposing draws them anew.
+    useEffect(() => {
+        const text = openId === null ? null : document.querySelector("details.song[open] .song-text");
+        if (!text) {
+            setCanScrollDown(false);
+            return;
+        }
+        const below = new Set();
+        let verses = null;
+        const watch = () => {
+            verses?.disconnect();
+            below.clear();
+            verses = new IntersectionObserver(
+                entries => {
+                    for (const entry of entries) {
+                        if (entry.isIntersecting) {
+                            below.add(entry.target);
+                        } else {
+                            below.delete(entry.target);
+                        }
+                    }
+                    setCanScrollDown(below.size > 0);
+                },
+                {rootMargin: `${SCROLL_GAP - 2 - innerHeight}px 0px ${BELOW}px 0px`}
+            );
+            text.querySelectorAll("p").forEach(verse => verses.observe(verse));
+            // the observer answers a frame later; until then the verses are measured once
+            setCanScrollDown(songRemaining(openVerses()) > 1);
+        };
+        const redrawn = new MutationObserver(watch);
+        redrawn.observe(text, {childList: true});
+        addEventListener("resize", watch);
+        watch();
         return () => {
-            resized.disconnect();
-            removeEventListener("scroll", update);
-            removeEventListener("resize", update);
+            verses.disconnect();
+            redrawn.disconnect();
+            removeEventListener("resize", watch);
         };
     }, [openId]);
 
@@ -239,6 +271,7 @@ function App() {
     }
 
     return html`
+        <div class="top-strip" ref=${top} aria-hidden="true"></div>
         <${SiteHeader} site=${site} navigate=${navigate} onReload=${reload} />
         ${songs !== null && progress && html`<${Progress} progress=${progress} label=${_("Updating songs…")} retryLabel=${_("Fetching the whole list…")} />`}
         <main>${content}</main>

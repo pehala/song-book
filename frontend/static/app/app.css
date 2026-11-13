@@ -376,6 +376,16 @@ main {
     }
 }
 
+/* The strip of the page that Back to top waits to leave the screen */
+.top-strip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 1px;
+    height: 50px;
+    pointer-events: none;
+}
+
 /* Back to top hangs under the sticky bars at the top, Scroll down is in the corner the thumb reaches */
 .to-top,
 .to-bottom {
