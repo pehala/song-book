@@ -386,13 +386,17 @@ main {
     pointer-events: none;
 }
 
-/* Back to top hangs under the sticky bars at the top, Scroll down is in the corner the thumb reaches */
-.to-top,
-.to-bottom {
+/* Back to top hangs under the sticky bars at the top, Scroll down is in the corner the thumb reaches. Both are the
+   same square with the same arrow, pointing the way each one scrolls. */
+.fab {
     position: fixed;
     right: 20px;
     z-index: var(--z-fab);
+    width: 3rem;
+    height: 3rem;
+    padding: 0;
     font-size: 1.25rem;
+    box-shadow: 0 1px 4px rgb(0 0 0 / .3);
 }
 
 .to-top {

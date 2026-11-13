@@ -102,17 +102,19 @@ def test_desktop_menu_is_a_row_without_hamburger(page, library):
 
 
 @pytest.mark.parametrize("theme", ["light", "dark"])
-def test_text_has_enough_contrast(page, library, theme):
-    """Menu entries, muted text and primary buttons meet WCAG AA (4.5:1) in both themes."""
+def test_text_has_enough_contrast(page, library, make_song, theme):
+    """Menu entries, muted text and the floating buttons meet WCAG AA (4.5:1) in both themes."""
+    make_song(library.category_set.get(slug="cs"), name="Long", text="\n\n".join(f"Verse {n}" for n in range(60)))
     page.add_init_script(f"localStorage.setItem('theme', '{theme}')")
+    page.emulate_media(reduced_motion="reduce")
     page.goto("/categories/cs")
-    page.locator("details.song summary").first.click()
-    expect(page.locator(".song-text")).to_be_visible()
-    page.evaluate("document.querySelector('main').style.minHeight = '4000px'")
+    page.locator("details.song", has_text="Long").locator("summary").click()
+    expect(page.locator(".song-text p")).to_have_count(60)
     page.evaluate("scrollTo(0, 1000)")
     expect(page.get_by_role("button", name="Back to top")).to_be_visible()
+    expect(page.get_by_role("button", name="Scroll down")).to_be_visible()
 
-    for selector in ("header .sb-dd > summary", "header .sb-brand", ".song small", ".sb-btn.sb-primary", ".song h2"):
+    for selector in ("header .sb-dd > summary", "header .sb-brand", ".song small", ".to-top", ".to-bottom", ".song h2"):
         foreground, background = colors(page, selector)
         assert contrast(foreground, background) >= 4.5, (theme, selector, foreground, background)
 

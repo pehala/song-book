@@ -275,8 +275,8 @@ function App() {
         <${SiteHeader} site=${site} navigate=${navigate} onReload=${reload} />
         ${songs !== null && progress && html`<${Progress} progress=${progress} label=${_("Updating songs…")} retryLabel=${_("Fetching the whole list…")} />`}
         <main>${content}</main>
-        ${scrolled && html`<button class="sb-btn sb-primary to-top" title=${_("Back to top")} aria-label=${_("Back to top")} onClick=${() => scrollTo({top: 0, behavior: scrollBehavior()})}><${Icon} name="up" /></button>`}
-        ${canScrollDown && html`<button class="sb-btn sb-primary to-bottom" title=${_("Scroll down")} aria-label=${_("Scroll down")} onClick=${scrollDown}><${Icon} name="down" /></button>`}`;
+        ${scrolled && html`<button class="sb-btn sb-primary fab to-top" title=${_("Back to top")} aria-label=${_("Back to top")} onClick=${() => scrollTo({top: 0, behavior: scrollBehavior()})}><${Icon} name="up" /></button>`}
+        ${canScrollDown && html`<button class="sb-btn sb-primary fab to-bottom" title=${_("Scroll down")} aria-label=${_("Scroll down")} onClick=${scrollDown}><${Icon} name="down" /></button>`}`;
 }
 
 function formatSize(bytes) {
