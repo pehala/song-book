@@ -50,6 +50,8 @@ The header (`header.js`: `SiteHeader`, which draws the bar, the notices and the 
 - The theme is the `data-bs-theme` attribute on `<html>` (set early by the inline script of `shell/theme.html`, then by
   `options.js`), which both Bootstrap and the reader's CSS follow. The same include carries the `color-scheme` and
   `theme-color` meta tags, which `options.js` sets to the chosen theme and the colour of the bar.
+- Options of the reader offer "Install app" only while the browser can install it (`navigator.install` exists, or
+  `beforeinstallprompt` handed over its prompt); only the shell links the manifest, so server pages never offer it.
 - Pages the server renders (`server: true`) take their language from `<html lang>`, change it by POSTing `setlang` and
   reloading, and leave out the options that need songs.
 

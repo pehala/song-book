@@ -648,6 +648,15 @@ def test_browser_follows_the_chosen_theme(page, library):
     assert page.evaluate("getComputedStyle(document.documentElement).colorScheme") == "dark"
 
 
+def test_install_is_offered_only_when_the_browser_can_install(page, library):
+    """A songbook without a logo has no icon to install with, so Options shows no install button that cannot work."""
+    page.goto("/categories/cs")
+    open_menu(page, "Options")
+
+    expect(page.get_by_role("button", name="Reload songs")).to_be_visible()
+    expect(page.get_by_role("button", name="Install app")).to_have_count(0)
+
+
 def test_status_bar_takes_the_stored_theme_before_the_reader_loads(page, library, hold):
     """A reader who chose dark on a light system gets a dark status bar while the scripts are still on their way."""
     page.emulate_media(color_scheme="light")
