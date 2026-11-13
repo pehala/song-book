@@ -1,6 +1,6 @@
 import {html, render, useCallback, useEffect, useMemo, useRef, useState} from "./vendor/preact-htm.module.js";
 import {SiteHeader, Icon, Link, closeDropdowns, useSiteHeader} from "./header.js";
-import {SongList, filterRows, routeRows} from "./songs.js";
+import {SongList, filterRows, indexSongs, routeRows} from "./songs.js";
 import {detectLanguage, translator} from "./i18n.js";
 import {inlinedJson, loadSongs, reloadSongs, remainingSeconds} from "./store.js";
 
@@ -186,6 +186,18 @@ function App() {
             .catch(() => {});
         navigator.storage?.persist?.().catch(() => {});
     }, []);
+
+    // The search text is built while the reader looks at the list, not on the first key they press
+    useEffect(() => {
+        if (!songs) {
+            return;
+        }
+        const job = {cancelled: false};
+        indexSongs(songs, job);
+        return () => {
+            job.cancelled = true;
+        };
+    }, [songs]);
 
     const rows = useMemo(() => (songs && route.kind !== "missing" ? routeRows(songs, route) : []), [songs, route]);
     const visible = useMemo(() => filterRows(rows, query), [rows, query]);

@@ -40,6 +40,31 @@ function haystack(song) {
     return song.hay;
 }
 
+// How long the search text is built for before the browser gets the main thread back: a task longer than this
+// delays the input that arrives meanwhile
+const TASK_BUDGET = 50;
+
+function yieldToMain() {
+    return globalThis.scheduler?.yield ? scheduler.yield() : new Promise(resolve => setTimeout(resolve, 0));
+}
+
+// Builds the search text of every song in short tasks after the list is drawn, so the first search finds it ready
+// instead of building it for the whole list while the reader types. Stops once job.cancelled is set.
+export async function indexSongs(songs, job) {
+    await yieldToMain();
+    let deadline = performance.now() + TASK_BUDGET;
+    for (const song of songs) {
+        if (job.cancelled) {
+            return;
+        }
+        haystack(song);
+        if (performance.now() >= deadline) {
+            await yieldToMain();
+            deadline = performance.now() + TASK_BUDGET;
+        }
+    }
+}
+
 // The songs of a route in list order, numbered from 1; archived songs are already last in the payload
 export function routeRows(songs, route) {
     const chosen = route.kind === "category" ? songs.filter(song => song.cats.includes(route.key)) : songs;
