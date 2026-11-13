@@ -57,6 +57,8 @@ PUBLIC_URLS = [
     url("category:index", "slug"),
     url("pdf:files:wait", "pdf_file"),
     url("pdf:files:info", "pdf_file"),
+    url("frontend:icon", "logo"),
+    url("frontend:icon_maskable", "logo"),
 ]
 
 LOGIN_URL = "/accounts/login/"
@@ -69,6 +71,9 @@ def url_for(request):
     def resolve(name, source):
         if source is None:
             return reverse(name)
+        if source == "logo":
+            request.getfixturevalue("logo")
+            return reverse(name, kwargs={"size": 192})
         if source == "slug":
             return reverse(name, kwargs={"slug": request.getfixturevalue("category").slug})
         return reverse(name, kwargs={"pk": request.getfixturevalue(source).pk})

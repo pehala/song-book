@@ -1,5 +1,6 @@
 """Shared pytest fixtures for the whole test suite."""
 
+import io
 import subprocess
 from pathlib import Path
 
@@ -13,6 +14,7 @@ from django.db import transaction
 from django.test import Client, override_settings
 from django.utils.timezone import now
 from huey.contrib.djhuey import HUEY
+from PIL import Image
 
 from backend.models import Song
 from category.models import Category
@@ -70,6 +72,15 @@ def media_root(settings, tmp_path):
     """Redirects uploads and generated PDFs away from the source tree."""
     settings.MEDIA_ROOT = str(tmp_path)
     return tmp_path
+
+
+@pytest.fixture
+def logo(tenant):
+    """Gives the default tenant a red 64×48 PNG logo, as an upload would; returns the tenant."""
+    buffer = io.BytesIO()
+    Image.new("RGB", (64, 48), "red").save(buffer, "PNG")
+    tenant.icon.save("logo.png", ContentFile(buffer.getvalue()))
+    return tenant
 
 
 @pytest.fixture
