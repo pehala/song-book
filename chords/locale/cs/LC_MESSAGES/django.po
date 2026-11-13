@@ -325,6 +325,9 @@ msgstr "Změnit heslo"
 msgid "Songbook %(name)s: lyrics with chords that work offline"
 msgstr "Zpěvník %(name)s: texty s akordy, které fungují i offline"
 
+msgid "All songs"
+msgstr "Všechny písničky"
+
 msgid "Move Template to a different Tenant"
 msgstr "Přesunout Šablony do jiného Zpěvníku"
 
@@ -654,10 +657,12 @@ msgstr "Zaškrtněte, pokud se má do navigace přidat odkaz na všechny písni�
 msgid "Logo"
 msgstr "Logo"
 
-msgid "Optional site logo, around 50×50 px and in PNG format"
+msgid ""
+"Optional site logo, a square PNG of at least 512×512 px, also used for the "
+"app icons"
 msgstr ""
-"Nepovinné logo zpěvníku, mělo by mít rozměry kolem 50×50 px a být ve formátu "
-"PNG"
+"Nepovinné logo zpěvníku, čtvercové PNG o rozměrech alespoň 512×512 px, "
+"použije se i pro ikony aplikace"
 
 msgid "See also"
 msgstr "Podobné stránky"

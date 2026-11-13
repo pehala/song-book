@@ -52,7 +52,7 @@ class Tenant(Model):
     )
     icon = ImageField(
         verbose_name=_("Logo"),
-        help_text=_("Optional site logo, around 50×50 px and in PNG format"),
+        help_text=_("Optional site logo, a square PNG of at least 512×512 px, also used for the app icons"),
         null=True,
         blank=True,
         upload_to="uploads/",

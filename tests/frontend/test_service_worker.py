@@ -7,11 +7,9 @@ from pathlib import Path
 
 import pytest
 from django.contrib.staticfiles import finders
-from django.core.files.uploadedfile import SimpleUploadedFile
 from django.templatetags.static import static
 from django.test import Client
 from django.urls import reverse
-from PIL import Image
 
 from frontend.views import ASSETS, ENTRY, MODULES, PAGE_ENTRIES, PAGE_MODULES, SITE_ENTRY, STYLESHEETS
 
@@ -101,26 +99,32 @@ def test_manifest_describes_the_tenant(anon_client, tenant):
     assert "icons" not in manifest
 
 
-def test_manifest_lists_the_logo(anon_client, tenant, media_root):
-    """The uploaded logo is the app icon."""
-    buffer = media_root / "logo.png"
-    Image.new("RGB", (64, 48)).save(buffer)
-    tenant.icon = SimpleUploadedFile("logo.png", buffer.read_bytes(), content_type="image/png")
+def test_manifest_has_a_stable_id(anon_client, tenant):
+    """The app keeps its identity whatever its start url, so browsers can install it from a button."""
+    assert json.loads(anon_client.get(MANIFEST_URL).content)["id"] == "/"
+
+
+def test_manifest_has_shortcuts_to_the_lists(anon_client, tenant, make_category):
+    """The installed app offers all songs and every category of the tenant as shortcuts."""
+    tenant.all_songs_category = True
+    tenant.save()
+    make_category(tenant, name="Táborové", slug="taborove")
+
+    shortcuts = json.loads(anon_client.get(MANIFEST_URL).content)["shortcuts"]
+
+    assert shortcuts[0] == {"name": "Všechny písničky", "url": reverse("backend:all")}
+    assert {"name": "Táborové", "url": "/categories/taborove"} in shortcuts
+
+
+def test_manifest_leaves_out_all_songs_when_hidden(anon_client, tenant, other_category):
+    """Without the all songs list there is no shortcut to it, and other songbooks' categories never appear."""
+    tenant.all_songs_category = False
     tenant.save()
 
-    icons = json.loads(anon_client.get(MANIFEST_URL).content)["icons"]
+    shortcuts = json.loads(anon_client.get(MANIFEST_URL).content)["shortcuts"]
 
-    assert icons == [{"src": tenant.icon.url, "sizes": "64x48", "type": "image/png"}]
-
-
-def test_manifest_survives_a_missing_logo_file(anon_client, tenant):
-    """A logo that is no longer in the storage costs the icon, not the manifest."""
-    tenant.icon = "uploads/gone.png"
-    tenant.save()
-
-    manifest = json.loads(anon_client.get(MANIFEST_URL).content)
-
-    assert "icons" not in manifest
+    assert reverse("backend:all") not in [shortcut["url"] for shortcut in shortcuts]
+    assert other_category.name not in [shortcut["name"] for shortcut in shortcuts]
 
 
 def test_manifest_follows_the_tenant(tenant, other_tenant):
