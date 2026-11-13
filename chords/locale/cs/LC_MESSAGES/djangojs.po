@@ -111,6 +111,9 @@ msgstr "zbývá asi %s s"
 msgid "%s min left"
 msgstr "zbývá asi %s min"
 
+msgid "The app could not be installed"
+msgstr "Aplikaci se nepodařilo nainstalovat"
+
 msgid "Signing out failed"
 msgstr "Odhlášení se nezdařilo"
 
@@ -182,6 +185,9 @@ msgstr "Zabránit uspání"
 
 msgid "Reload songs"
 msgstr "Načíst písničky znovu"
+
+msgid "Install app"
+msgstr "Nainstalovat aplikaci"
 
 msgid "Version"
 msgstr "Verze"

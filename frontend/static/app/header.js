@@ -54,6 +54,47 @@ function Dropdown({label, children}) {
         </div>`;
 }
 
+// Installs the reader as an app, or null while the browser offers no way to or the reader already runs as the
+// installed app: navigator.install() where it exists, otherwise the prompt Chromium hands over in
+// beforeinstallprompt, which can be shown once
+function useInstall(toast, _) {
+    const [offer, setOffer] = useState(null);
+    const [installed, setInstalled] = useState(() => matchMedia("(display-mode: standalone)").matches);
+    useEffect(() => {
+        const offered = event => {
+            event.preventDefault();
+            setOffer(event);
+        };
+        const done = () => setInstalled(true);
+        addEventListener("beforeinstallprompt", offered);
+        addEventListener("appinstalled", done);
+        return () => {
+            removeEventListener("beforeinstallprompt", offered);
+            removeEventListener("appinstalled", done);
+        };
+    }, []);
+    const native = typeof navigator.install === "function";
+    if (installed || !(native || offer)) {
+        return null;
+    }
+    // called from the click itself, which the browser requires
+    return async () => {
+        try {
+            if (native) {
+                await navigator.install();
+                setInstalled(true);
+                return;
+            }
+            setOffer(null);
+            await offer.prompt();
+        } catch (error) {
+            if (error.name !== "AbortError") {
+                toast(_("The app could not be installed"), null, "error");
+            }
+        }
+    };
+}
+
 // `server` pages are rendered by Django: their language is changed by the server, and leaving is a page load
 export function useSiteHeader({boot, initialMe = null, server = false}) {
     const urls = boot.urls;
@@ -134,11 +175,27 @@ export function useSiteHeader({boot, initialMe = null, server = false}) {
         setQr({src, url: location.href});
     }, []);
 
-    return {boot, server, _, me, options: {...options, setLang}, toasts, toast, dismiss, logout, showQr, qr, setQr};
+    // only the reader links the manifest, so only it can be installed
+    const install = useInstall(toast, _);
+    return {
+        boot,
+        server,
+        _,
+        me,
+        options: {...options, setLang},
+        toasts,
+        toast,
+        dismiss,
+        logout,
+        showQr,
+        qr,
+        setQr,
+        install: server ? null : install,
+    };
 }
 
 function Header({site, navigate, onReload}) {
-    const {boot, _, me, options, server, showQr, logout} = site;
+    const {boot, _, me, options, server, showQr, logout, install} = site;
     const urls = boot.urls;
     const [menuOpen, setMenuOpen] = useState(false);
     const go = to => {
@@ -198,7 +255,8 @@ function Header({site, navigate, onReload}) {
                             ${_("Prevent sleep")}
                             <input type="checkbox" checked=${options.preventSleep} disabled=${!("wakeLock" in navigator)} onChange=${event => options.setPreventSleep(event.target.checked)} />
                         </label>
-                        ${onReload && html`<button class="sb-btn" onClick=${onReload}>${_("Reload songs")}</button>`}`}
+                        ${onReload && html`<button class="sb-btn" onClick=${onReload}>${_("Reload songs")}</button>`}
+                        ${install && html`<button class="sb-btn" onClick=${install}>${_("Install app")}</button>`}`}
                     <div class="sb-sep"></div>
                     <div class="sb-meta"><span>${_("Version")}</span><span>${boot.version}</span></div>
                     <div class="sb-meta"><span>${_("Git")}</span><span>${boot.rev}</span></div>
