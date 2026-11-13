@@ -9,12 +9,9 @@ export function Icon({name}) {
     return html`<svg class="sb-i" aria-hidden="true"><use href=${"#i-" + name} /></svg>`;
 }
 
-export function closeDropdowns(except = null) {
-    document.querySelectorAll("details.sb-dd[open]").forEach(dropdown => {
-        if (dropdown !== except) {
-            dropdown.open = false;
-        }
-    });
+// Closes the open dropdown, for example when the reader moves to another page
+export function closeDropdowns() {
+    document.querySelectorAll(".sb-panel:popover-open").forEach(panel => panel.hidePopover());
 }
 
 export function Link({to, onNavigate, children, ...props}) {
@@ -28,8 +25,33 @@ export function Link({to, onNavigate, children, ...props}) {
     return html`<a href=${to} onClick=${click} ...${props}>${children}</a>`;
 }
 
+let panels = 0;
+
+// Without anchor positioning a panel is put under its trigger, ending where the trigger ends, just before it opens.
+// A popover in the top layer is placed against the page, so it scrolls away with the header.
+if (!CSS.supports("position-area", "block-end")) {
+    document.addEventListener(
+        "beforetoggle",
+        event => {
+            if (event.newState === "open" && event.target.matches(".sb-panel")) {
+                const trigger = event.target.previousElementSibling.getBoundingClientRect();
+                event.target.style.top = `${trigger.bottom + scrollY}px`;
+                event.target.style.right = `${Math.max(8, document.documentElement.clientWidth - trigger.right)}px`;
+            }
+        },
+        true
+    );
+}
+
+// A popover the browser opens from its trigger, under which it floats, and closes on Escape, a click elsewhere or
+// another dropdown opening; the browser also tells assistive technology whether it is expanded
 function Dropdown({label, children}) {
-    return html`<details class="sb-dd"><summary>${label}</summary><div class="sb-panel">${children}</div></details>`;
+    const [id] = useState(() => `sb-panel-${++panels}`);
+    return html`
+        <div class="sb-dd">
+            <button type="button" class="sb-dd-trigger" popovertarget=${id}>${label}</button>
+            <div id=${id} class="sb-panel" popover="auto">${children}</div>
+        </div>`;
 }
 
 // `server` pages are rendered by Django: their language is changed by the server, and leaving is a page load
@@ -61,17 +83,6 @@ export function useSiteHeader({boot, initialMe = null, server = false}) {
                 setTimeout(() => dismiss(id), 6000);
             });
         });
-    }, []);
-
-    useEffect(() => {
-        const onClick = event => closeDropdowns(event.target.closest?.("details.sb-dd"));
-        const onKey = event => event.key === "Escape" && closeDropdowns();
-        document.addEventListener("click", onClick);
-        document.addEventListener("keydown", onKey);
-        return () => {
-            document.removeEventListener("click", onClick);
-            document.removeEventListener("keydown", onKey);
-        };
     }, []);
 
     const setLang = useCallback(

@@ -50,12 +50,18 @@ def colors(page, selector):
     )
 
 
-def open_everything(page):
-    """Opens the burger menu, every dropdown and the first song."""
-    page.locator(".sb-burger").click()
-    for dropdown in page.locator("details.sb-dd").all():
-        dropdown.locator("summary").click()
+def open_each_dropdown(page):
+    """Opens the first song and the burger menu, then each dropdown in turn, yielding while it is open.
+
+    Only one dropdown can be open at a time, so a check of everything runs once per dropdown.
+    """
     page.locator("details.song summary").first.click()
+    page.locator(".sb-burger").click()
+    for trigger in page.locator(".sb-dd-trigger").all():
+        trigger.click()
+        expect(page.locator(".sb-panel:popover-open")).to_have_count(1)
+        yield
+        page.keyboard.press("Escape")
 
 
 @pytest.fixture
@@ -69,27 +75,26 @@ def phone(page, library):
 
 def test_controls_are_at_least_44px_on_a_phone(phone):
     """Header, menus, options and the song's tools are big enough for a thumb."""
-    open_everything(phone)
+    too_small = set()
+    for _ in open_each_dropdown(phone):
+        too_small |= {tuple(item[:3]) for item in phone.evaluate(SIZES, CONTROLS) if item[1] < 44 or item[2] < 44}
 
-    too_small = [item[:3] for item in phone.evaluate(SIZES, CONTROLS) if item[1] < 44 or item[2] < 44]
-
-    assert too_small == []
+    assert too_small == set()
 
 
 def test_form_fields_use_at_least_16px_text(phone):
     """Smaller text makes iOS zoom the page when a field gets focus."""
-    open_everything(phone)
+    small = set()
+    for _ in open_each_dropdown(phone):
+        small |= {item[0] for item in phone.evaluate(SIZES, "select, input:not([type=checkbox])") if item[3] < 16}
 
-    fields = phone.evaluate(SIZES, "select, input:not([type=checkbox])")
-
-    assert [item[0] for item in fields if item[3] < 16] == []
+    assert small == set()
 
 
 def test_phone_layout_does_not_scroll_sideways(phone):
     """Everything fits the width of the screen."""
-    open_everything(phone)
-
-    assert phone.evaluate("document.documentElement.scrollWidth <= innerWidth")
+    for _ in open_each_dropdown(phone):
+        assert phone.evaluate("document.documentElement.scrollWidth <= innerWidth")
 
 
 def test_desktop_menu_is_a_row_without_hamburger(page, library):
@@ -98,7 +103,7 @@ def test_desktop_menu_is_a_row_without_hamburger(page, library):
     page.goto("/categories/cs")
 
     expect(page.locator(".sb-burger")).to_be_hidden()
-    expect(page.locator("summary", has_text="Categories")).to_be_visible()
+    expect(page.locator(".sb-dd-trigger", has_text="Categories")).to_be_visible()
 
 
 @pytest.mark.parametrize("theme", ["light", "dark"])
@@ -114,7 +119,7 @@ def test_text_has_enough_contrast(page, library, make_song, theme):
     expect(page.get_by_role("button", name="Back to top")).to_be_visible()
     expect(page.get_by_role("button", name="Scroll down")).to_be_visible()
 
-    for selector in ("header .sb-dd > summary", "header .sb-brand", ".song small", ".to-top", ".to-bottom", ".song h2"):
+    for selector in ("header .sb-dd-trigger", "header .sb-brand", ".song small", ".to-top", ".to-bottom", ".song h2"):
         foreground, background = colors(page, selector)
         assert contrast(foreground, background) >= 4.5, (theme, selector, foreground, background)
 

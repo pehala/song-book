@@ -85,9 +85,9 @@ def test_header_menus_open_over_the_sticky_bar(editor, menu):
     """A menu of the site header is not hidden behind the bar with the title and the save buttons."""
     editor.set_viewport_size(DESKTOP)
 
-    editor.locator("summary", has_text=menu).click()
+    editor.locator(".sb-dd-trigger", has_text=menu).click()
 
-    panel = editor.locator("details[open] .sb-panel")
+    panel = editor.locator(".sb-panel:popover-open")
     expect(panel).to_be_visible()
     assert panel.evaluate(NEAR_TOP_IS_ON_TOP)
 
