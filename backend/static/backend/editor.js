@@ -26,6 +26,7 @@ if (form && text) {
     setupKeys();
     setupBraces();
     setupSilentEdits();
+    setupPreviewOrder();
     setupPreviewFollow();
     setupSplit();
     setupChanges();
@@ -277,6 +278,21 @@ function setupSilentEdits() {
     });
     text.addEventListener("keydown", check, true);
     text.addEventListener("keyup", check, true);
+}
+
+// markdownx shows the answer of whichever preview request ends last, so a slow answer about older lyrics would replace
+// the preview of the newer ones: a preview request that is still open is aborted when the next one is sent, and markdownx
+// never hears of an aborted one. The requests are told by the content they carry; an image upload carries a file.
+function setupPreviewOrder() {
+    const send = XMLHttpRequest.prototype.send;
+    let latest = null;
+    XMLHttpRequest.prototype.send = function (body) {
+        if (body instanceof FormData && body.has("content")) {
+            latest?.abort();
+            latest = this;
+        }
+        return send.call(this, body);
+    };
 }
 
 // The share of the width the lyrics have beside the preview, from 1200px: the splitter is dragged, moved with the arrow

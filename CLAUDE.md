@@ -148,7 +148,9 @@ widget, the layout and the script. Rules:
 - Layout is Bootstrap classes first, with one breakpoint at 1200px; below it the sections are tabs. A `hidden`
   attribute does not beat Bootstrap's `d-flex`: put the flex on an inner element.
 - `editor.js` has no catalogue: every string comes from the template. `song.css` is shared with the reader.
-- e2e tests stub nothing, not even the Bootstrap CDN.
+- e2e tests stub nothing, not even the Bootstrap CDN. The one exception is the test of the preview's order in
+  `test_keys.py`, which holds the real preview requests and releases them in reverse, since nothing else makes the
+  server answer out of order; it fakes no response.
 
 ## Songs payload + caching
 

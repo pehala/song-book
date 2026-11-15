@@ -90,7 +90,13 @@ and Ctrl+] and puts the markup of an uploaded image in, by assigning the textare
 `input` event when the text differs, so the colours, the unsaved status and the draft follow without a typed character
 being told twice.
 
+markdownx shows the answer of whichever preview request ends last, so `setupPreviewOrder` aborts a preview request that
+is still open when the next one is sent (they are told from an image upload by their `content` field); the preview is
+always the one of the latest lyrics.
+
 ## Tests
 
 `tests/e2e/editor/` and `tests/e2e/test_song_editor.py` drive all of it against the real Bootstrap from the CDN:
-e2e tests stub nothing. `test_highlight.py` checks the colours against what the server renders for the same text.
+e2e tests stub nothing, with one exception: the test that the preview is the one of the latest lyrics
+(`test_keys.py`) holds the real requests to `/markdownx/markdownify/` and lets them through in reverse order, since
+nothing else makes the server answer out of order; no response is faked. `test_highlight.py` checks the colours against what the server renders for the same text.
