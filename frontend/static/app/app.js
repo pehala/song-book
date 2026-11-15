@@ -61,6 +61,14 @@ function scrollDown() {
     scrollBy({top: Math.min(distance, remaining), behavior: scrollBehavior()});
 }
 
+// A double click on the open song, beside its text as well as on it, scrolls it down like the button; the title, the
+// tools and the links keep their own double clicks
+function scrollDownOnDoubleClick(event) {
+    if (event.target.closest("details.song[open]") && !event.target.closest("summary, .tools, a")) {
+        scrollDown();
+    }
+}
+
 function App() {
     const [path, setPath] = useState(location.pathname);
     const [songs, setSongs] = useState(null);
@@ -161,6 +169,11 @@ function App() {
             removeEventListener("resize", watch);
         };
     }, [openId]);
+
+    useEffect(() => {
+        addEventListener("dblclick", scrollDownOnDoubleClick);
+        return () => removeEventListener("dblclick", scrollDownOnDoubleClick);
+    }, []);
 
     // Back to top sits under the open song's sticky title, whatever height the title has
     useEffect(() => {
@@ -274,7 +287,7 @@ function App() {
         <div class="top-strip" ref=${top} aria-hidden="true"></div>
         <${SiteHeader} site=${site} navigate=${navigate} onReload=${reload} />
         ${songs !== null && progress && html`<${Progress} progress=${progress} label=${_("Updating songs…")} retryLabel=${_("Fetching the whole list…")} />`}
-        <main>${content}</main>
+        <main class=${canScrollDown ? "can-scroll-down" : ""}>${content}</main>
         ${scrolled && html`<button class="sb-btn sb-primary fab to-top" title=${_("Back to top")} aria-label=${_("Back to top")} onClick=${() => scrollTo({top: 0, behavior: scrollBehavior()})}><${Icon} name="up" /></button>`}
         ${canScrollDown && html`<button class="sb-btn sb-primary fab to-bottom" title=${_("Scroll down")} aria-label=${_("Scroll down")} onClick=${scrollDown}><${Icon} name="down" /></button>`}`;
 }
