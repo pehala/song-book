@@ -30,6 +30,37 @@ function scrollBehavior() {
 }
 
 const SCROLL_GAP = 8;
+// Scrolling takes this many ms per pixel, but never less than the first or more than the second
+const SCROLL_MS_PER_PIXEL = 1.2;
+const SCROLL_MIN_DURATION = 400;
+const SCROLL_MAX_DURATION = 800;
+
+let scrollAnimation = null;
+
+function stopScrollAnimation() {
+    cancelAnimationFrame(scrollAnimation);
+}
+
+// Scrolls by a distance, easing in and out, for a time that grows with the distance; the browser's own smooth scrolling
+// cannot be slowed
+function animateScrollBy(distance) {
+    stopScrollAnimation();
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        scrollBy({top: distance, behavior: "auto"});
+        return;
+    }
+    const duration = Math.min(Math.max(Math.abs(distance) * SCROLL_MS_PER_PIXEL, SCROLL_MIN_DURATION), SCROLL_MAX_DURATION);
+    const start = scrollY;
+    const began = performance.now();
+    const step = now => {
+        const progress = Math.min((now - began) / duration, 1);
+        scrollTo(0, start + distance * (progress < 0.5 ? 2 * progress ** 2 : 1 - (-2 * progress + 2) ** 2 / 2));
+        if (progress < 1) {
+            scrollAnimation = requestAnimationFrame(step);
+        }
+    };
+    scrollAnimation = requestAnimationFrame(step);
+}
 
 // How far below the screen a verse is still looked for; no song is longer
 const BELOW = 100000;
@@ -58,7 +89,7 @@ function scrollDown() {
     const distances = verses.map(rect => rect.top - top - SCROLL_GAP).filter(distance => distance > 1 && distance <= reach);
     // with no verse start in reach (one taller than the screen), move by the whole reach
     const distance = distances.length ? Math.max(...distances) : reach;
-    scrollBy({top: Math.min(distance, remaining), behavior: scrollBehavior()});
+    animateScrollBy(Math.min(distance, remaining));
 }
 
 // A double click on the open song, beside its text as well as on it, scrolls it down like the button; the title, the
@@ -172,7 +203,14 @@ function App() {
 
     useEffect(() => {
         addEventListener("dblclick", scrollDownOnDoubleClick);
-        return () => removeEventListener("dblclick", scrollDownOnDoubleClick);
+        // the reader's own scrolling takes over from an animation under way
+        const interrupts = ["wheel", "touchstart", "keydown"];
+        interrupts.forEach(type => addEventListener(type, stopScrollAnimation, {passive: true}));
+        return () => {
+            removeEventListener("dblclick", scrollDownOnDoubleClick);
+            interrupts.forEach(type => removeEventListener(type, stopScrollAnimation));
+            stopScrollAnimation();
+        };
     }, []);
 
     // Back to top sits under the open song's sticky title, whatever height the title has
