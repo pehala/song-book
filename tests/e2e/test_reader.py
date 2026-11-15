@@ -483,6 +483,51 @@ def test_double_tap_zoom_is_off_only_while_the_button_is_shown(page, library, ma
     expect(long).to_have_css("touch-action", "auto")
 
 
+def test_scroll_down_is_animated_and_the_reader_can_interrupt_it(page, library, make_song):
+    """Without reduced motion the press scrolls over time, and the wheel stops it where it is."""
+    open_long_song(page, library, make_song)
+    page.emulate_media(reduced_motion="no-preference")
+    before = page.evaluate("scrollY")
+    page.get_by_role("button", name="Scroll down").click()
+    page.wait_for_function("before => scrollY > before", arg=before)
+    assert page.evaluate("scrollY") - before < 100
+
+    page.mouse.wheel(0, 1)
+    page.wait_for_timeout(200)
+    stopped = page.evaluate("scrollY")
+    page.wait_for_timeout(1200)
+
+    assert page.evaluate("scrollY") == stopped
+
+
+def test_scroll_down_takes_longer_for_a_longer_distance(page, library, make_song):
+    """A press with a screen to cover is still moving when one with a few lines left has already arrived."""
+    page.set_viewport_size({"width": 1280, "height": 900})
+    open_long_song(page, library, make_song)
+    page.emulate_media(reduced_motion="no-preference")
+    page.clock.install(time=0)
+    page.clock.pause_at(1000)
+
+    def press_and_settle():
+        """Presses Scroll down; returns where the page is 450 ms later and where it ends."""
+        before = page.evaluate("scrollY")
+        page.get_by_role("button", name="Scroll down").click()
+        page.clock.run_for(450)
+        early = page.evaluate("scrollY")
+        page.clock.run_for(1000)
+        late = page.evaluate("scrollY")
+        assert before < early <= late
+        return early, late
+
+    early, late = press_and_settle()
+    assert early < late
+
+    page.evaluate("scrollTo(0, document.documentElement.scrollHeight - innerHeight - 200)")
+    expect(page.get_by_role("button", name="Scroll down")).to_be_visible()
+    early, late = press_and_settle()
+    assert early == late
+
+
 def test_scroll_down_stops_at_the_end_of_the_song(page, library, make_song):
     """The last press leaves the end of the song at the bottom edge, with the next songs still below the screen."""
     long = open_long_song(page, library, make_song)
