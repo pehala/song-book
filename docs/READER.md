@@ -42,11 +42,10 @@ The header (`header.js`: `SiteHeader`, which draws the bar, the notices and the 
 - `base/index.html` has an empty `#site-header`, the `boot` and `me` JSON (from `frontend.context_processors.header`,
   evaluated only when printed) and loads `site.js`. A menu entry is added in `header.js` only.
 - Header markup and `header.css` use `sb-` prefixed classes so they cannot clash with Bootstrap.
-- Each dropdown is a `popover="auto"` panel opened by its trigger's `popovertarget`, in the bar and in the burger menu
-  alike: the browser closes it on Escape, an outside click or another dropdown opening, and reports the trigger as
-  expanded. It is placed under its trigger by anchor positioning, or by a `beforetoggle` listener of `header.js`
-  where that is missing; a browser without popovers shows no menu. `closeDropdowns()` closes the open one, for
-  example when the reader changes category.
+- Each dropdown is a button with `aria-expanded` that shows and hides the panel after it: in the burger menu the
+  panel unfolds in place and pushes the rest of the menu down, in the bar it floats under its trigger. It closes on
+  Escape, a click elsewhere (another dropdown opening included) and `closeDropdowns()`, which the reader calls when it
+  changes category.
 - The theme is the `data-bs-theme` attribute on `<html>` (set early by the inline script of `shell/theme.html`, then by
   `options.js`), which both Bootstrap and the reader's CSS follow. The same include carries the `color-scheme` and
   `theme-color` meta tags, which `options.js` sets to the chosen theme and the colour of the bar.

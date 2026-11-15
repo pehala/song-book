@@ -87,7 +87,7 @@ def test_header_menus_open_over_the_sticky_bar(editor, menu):
 
     editor.locator(".sb-dd-trigger", has_text=menu).click()
 
-    panel = editor.locator(".sb-panel:popover-open")
+    panel = editor.locator(".sb-panel:visible")
     expect(panel).to_be_visible()
     assert panel.evaluate(NEAR_TOP_IS_ON_TOP)
 

@@ -221,34 +221,27 @@
     white-space: pre;
 }
 
-.sb-dd:has(> .sb-panel:popover-open) > .sb-dd-trigger,
 .sb-dd-trigger:hover {
     color: var(--hi);
 }
 
-/* A popover in the top layer, placed against the page under its trigger, ending where the trigger ends unless
-   that leaves the screen; without anchor positioning header.js places it. Hidden unless open, so a browser without
-   popovers shows no menu rather than all of them. */
+/* In the burger menu a part of the menu under its trigger, pushing the rest down; in the bar it floats (below) */
 .sb-panel {
-    display: none;
-    position: absolute;
-    inset: auto;
-    margin: .25rem 0 0;
-    min-width: min(18rem, calc(100vw - 1rem));
-    max-width: calc(100vw - 1rem);
-    padding: .5rem 0;
+    display: flex;
+    flex-direction: column;
+    padding: .25rem 0;
     color: var(--fg);
     background: var(--bar);
     border: 1px solid var(--line);
     border-radius: var(--radius);
-    box-shadow: var(--shadow);
-    flex-direction: column;
-    position-area: block-end span-inline-start;
-    position-try-fallbacks: flip-inline;
 }
 
-.sb-panel:popover-open {
-    display: flex;
+.sb-panel[hidden] {
+    display: none;
+}
+
+.sb-dd-trigger[aria-expanded="true"] {
+    color: var(--hi);
 }
 
 .sb-panel > * {
@@ -412,5 +405,20 @@
 
     .sb-dd-trigger {
         width: auto;
+    }
+
+    .sb-dd {
+        position: relative;
+    }
+
+    /* Floats under its trigger, ending where the trigger ends */
+    .sb-panel {
+        position: absolute;
+        right: 0;
+        z-index: var(--z-panel);
+        min-width: 18rem;
+        margin-top: .25rem;
+        padding: .5rem 0;
+        box-shadow: var(--shadow);
     }
 }
