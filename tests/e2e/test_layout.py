@@ -78,7 +78,7 @@ def test_controls_are_at_least_44px_on_a_phone(phone):
     for _ in open_each_dropdown(phone):
         too_small |= {tuple(item[:3]) for item in phone.evaluate(SIZES, CONTROLS) if item[1] < 44 or item[2] < 44}
 
-    assert too_small == set()
+    assert not too_small
 
 
 def test_form_fields_use_at_least_16px_text(phone):
@@ -87,7 +87,7 @@ def test_form_fields_use_at_least_16px_text(phone):
     for _ in open_each_dropdown(phone):
         small |= {item[0] for item in phone.evaluate(SIZES, "select, input:not([type=checkbox])") if item[3] < 16}
 
-    assert small == set()
+    assert not small
 
 
 def test_phone_layout_does_not_scroll_sideways(phone):
