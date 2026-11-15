@@ -16,6 +16,14 @@ def lyrics(page):
     return page.locator("textarea.markdownx-editor")
 
 
+def coloured_text(page):
+    """Returns the text the highlighting layer of the lyrics draws, line by line."""
+    return page.evaluate(
+        "() => [...document.querySelectorAll('.prism-code-editor .pce-line')]"
+        ".map(line => line.textContent.replace(/\\n$/, '')).join('\\n')"
+    )
+
+
 def chip(page, name):
     """Returns the locator of the key of the chord bar that holds exactly this chord."""
     return page.locator("[data-chord]").get_by_text(name, exact=True)

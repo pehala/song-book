@@ -84,6 +84,12 @@ page drops a sent draft whose save is confirmed and offers any other, so edits a
 Submitting clears the cookie first, and a page restored from the back-forward cache is not being submitted any more.
 The line preview remembers the line it last asked the server for and does not ask again for the same one.
 
+markdownx changes the text without an `input` event: it indents, unindents and duplicates lines on Tab, Ctrl+D, Ctrl+[
+and Ctrl+] and puts the markup of an uploaded image in, by assigning the textarea's value (an upload ends with a
+`keyup`). `setupSilentEdits` keeps the text the last `input` event left and, once a key has been handled, sends an
+`input` event when the text differs, so the colours, the unsaved status and the draft follow without a typed character
+being told twice.
+
 ## Tests
 
 `tests/e2e/editor/` and `tests/e2e/test_song_editor.py` drive all of it against the real Bootstrap from the CDN:
