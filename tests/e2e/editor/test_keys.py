@@ -23,6 +23,9 @@ DROP_IMAGE = """png => {
     document.querySelector("textarea.markdownx-editor").dispatchEvent(drop);
 }"""
 
+# A little over the 500 ms markdownx waits after a change before it asks the server for the preview
+MARKDOWNX_LATENCY = 700
+
 
 def test_wide_screen_has_the_chord_bar_always(editor):
     """The chords can be clicked without the textarea having to be focused first."""
@@ -225,3 +228,29 @@ def test_what_markdownx_changes_by_a_key_is_drawn_and_counted_as_a_change(editor
     expect(box).not_to_have_value(original)
     expect(editor.locator("[data-status]")).to_be_visible()
     assert coloured_text(editor) == box.input_value()
+
+
+def test_a_slow_preview_of_older_lyrics_does_not_replace_the_newer_one(editor):
+    """The preview of the lyrics is the one of the last request, however the answers arrive.
+
+    The one e2e test that touches the network: the real requests are held and let through in reverse order, because
+    nothing else makes the server answer out of order. No response is faked.
+    """
+    held = []
+
+    def hold(route):
+        held.append(route)
+
+    editor.route("**/markdownx/markdownify/", hold)
+    box = lyrics(editor)
+
+    box.fill("PRVNI")
+    editor.wait_for_timeout(MARKDOWNX_LATENCY)
+    box.fill("DRUHY")
+    editor.wait_for_timeout(MARKDOWNX_LATENCY)
+    for route in reversed(held):
+        route.continue_()
+
+    expect(editor.locator(".markdownx-preview")).to_have_text("DRUHY")
+    editor.wait_for_timeout(MARKDOWNX_LATENCY)
+    expect(editor.locator(".markdownx-preview")).to_have_text("DRUHY")
