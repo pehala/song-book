@@ -1,8 +1,27 @@
 """Browser tests of what the song editor types for the author: the chord bar, the braces and the line preview."""
 
+import base64
+import io
+import re
+
+import pytest
+from PIL import Image
 from playwright.sync_api import expect
 
-from tests.e2e.editor.helpers import DESKTOP, PHONE, chip, lyrics, type_into_lyrics
+from tests.e2e.editor.helpers import DESKTOP, PHONE, chip, coloured_text, lyrics, type_into_lyrics, wait_for_draft
+
+COUNT_INPUTS = """() => {
+    window.inputs = 0;
+    document.querySelector("form[data-editor]").addEventListener("input", () => { window.inputs += 1; });
+}"""
+
+DROP_IMAGE = """png => {
+    const bytes = Uint8Array.from(atob(png), character => character.charCodeAt(0));
+    const files = new DataTransfer();
+    files.items.add(new File([bytes], "picture.png", {type: "image/png"}));
+    const drop = new DragEvent("drop", {dataTransfer: files, bubbles: true, cancelable: true});
+    document.querySelector("textarea.markdownx-editor").dispatchEvent(drop);
+}"""
 
 
 def test_wide_screen_has_the_chord_bar_always(editor):
@@ -160,3 +179,49 @@ def test_moving_the_caret_within_a_line_does_not_ask_the_server_again(editor):
     editor.wait_for_timeout(800)
 
     assert [request.url for request in lines if "markdownify" in request.url] == []
+
+
+@pytest.mark.parametrize(("typed", "changes"), [("abc", 3), ("{", 1)])
+def test_a_typed_character_is_one_change(editor, typed, changes):
+    """Typing is told once to everything that follows the text, not once by the browser and once more by the editor."""
+    box = lyrics(editor)
+    box.click()
+    box.press("Control+End")
+    editor.evaluate(COUNT_INPUTS)
+
+    box.press_sequentially(typed)
+    editor.wait_for_timeout(200)
+
+    assert editor.evaluate("() => window.inputs") == changes
+
+
+def test_an_image_dropped_into_the_lyrics_is_drawn_and_counted_as_a_change(editor, media_root):
+    """The markup markdownx puts in for an uploaded image is coloured, counts as a change and goes in the draft."""
+    editor.set_viewport_size(DESKTOP)
+    picture = io.BytesIO()
+    Image.new("RGB", (1, 1)).save(picture, "PNG")
+    box = lyrics(editor)
+    box.click()
+
+    editor.evaluate(DROP_IMAGE, base64.b64encode(picture.getvalue()).decode())
+
+    expect(box).to_have_value(re.compile(r"!\["))
+    expect(editor.locator("[data-status]")).to_be_visible()
+    assert coloured_text(editor) == box.input_value()
+    wait_for_draft(editor)
+
+
+@pytest.mark.parametrize("key", ["Tab", "Control+d"])
+def test_what_markdownx_changes_by_a_key_is_drawn_and_counted_as_a_change(editor, key):
+    """Indenting and duplicating a line show in the coloured text and mark the song as changed."""
+    editor.set_viewport_size(DESKTOP)
+    box = lyrics(editor)
+    box.click()
+    box.press("Control+Home")
+    original = box.input_value()
+
+    box.press(key)
+
+    expect(box).not_to_have_value(original)
+    expect(editor.locator("[data-status]")).to_be_visible()
+    assert coloured_text(editor) == box.input_value()

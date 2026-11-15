@@ -25,6 +25,7 @@ if (form && text) {
     setupViewport();
     setupKeys();
     setupBraces();
+    setupSilentEdits();
     setupPreviewFollow();
     setupSplit();
     setupChanges();
@@ -256,6 +257,26 @@ function setupBraces() {
             }
         }
     });
+}
+
+// markdownx changes the text without an input event: it indents, unindents and duplicates lines on Tab, Ctrl+D, Ctrl+[
+// and Ctrl+] and puts the markup of an uploaded image in, by assigning the textarea's value (an upload ends with a
+// keyup). The colours, the unsaved status and the draft would not hear of it, so once a key has been handled the text is
+// compared with what the last input event left, and an input event is sent when they differ
+function setupSilentEdits() {
+    let known = text.value;
+    const check = () => {
+        setTimeout(() => {
+            if (text.value !== known) {
+                text.dispatchEvent(new Event("input", {bubbles: true}));
+            }
+        });
+    };
+    text.addEventListener("input", () => {
+        known = text.value;
+    });
+    text.addEventListener("keydown", check, true);
+    text.addEventListener("keyup", check, true);
 }
 
 // The share of the width the lyrics have beside the preview, from 1200px: the splitter is dragged, moved with the arrow
