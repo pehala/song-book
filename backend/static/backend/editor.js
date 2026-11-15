@@ -415,13 +415,22 @@ function setupChanges() {
     const status = form.querySelector("[data-status]");
     const banner = form.querySelector("[data-draft]");
     const draftKey = `sb-draft:${location.pathname}`;
-    const initial = snapshot();
+    const initial = rendered();
     let saveTimer;
+    let pending = false;
     let submitting = false;
 
     // What the form would send, without the token and the button that was pressed
-    function snapshot() {
-        return JSON.stringify([...new FormData(form)].filter(([name]) => name !== "csrfmiddlewaretoken"));
+    function snapshot(source = form) {
+        return JSON.stringify([...new FormData(source)].filter(([name]) => name !== "csrfmiddlewaretoken"));
+    }
+
+    // What the form held as the server rendered it, which is the saved song: the browser may have restored some of the
+    // fields since (Back, a reload), and what it restored is a change like any other
+    function rendered() {
+        const copy = form.cloneNode(true);
+        copy.reset();
+        return snapshot(copy);
     }
 
     function stored() {
@@ -445,6 +454,7 @@ function setupChanges() {
     }
 
     function update(sent = false) {
+        pending = false;
         const now = snapshot();
         const dirty = now !== initial;
         status.hidden = !dirty;
@@ -461,6 +471,7 @@ function setupChanges() {
     }
 
     function changed() {
+        pending = true;
         clearTimeout(saveTimer);
         saveTimer = setTimeout(update, SAVE_DELAY);
         status.hidden = snapshot() === initial;
@@ -496,10 +507,24 @@ function setupChanges() {
         forgetSaved();
         update(true);
     });
-    // A page restored by going back from a failed save is not being submitted any more
+    // The draft is written a moment after a change: leaving in that moment must not lose it
+    window.addEventListener("pagehide", () => {
+        if (pending && !submitting) {
+            clearTimeout(saveTimer);
+            update();
+        }
+    });
     window.addEventListener("pageshow", event => {
         if (event.persisted) {
+            // A page restored by going back from a failed save is not being submitted any more
             submitting = false;
+        } else {
+            // Some browsers give the fields back only after the scripts have run: what they restored is a change,
+            // which the draft keeps unless it is the draft being offered
+            status.hidden = snapshot() === initial;
+            if (banner.hidden && snapshot() !== initial) {
+                update();
+            }
         }
     });
     window.addEventListener("beforeunload", event => {
@@ -515,10 +540,11 @@ function setupChanges() {
     });
 
     const draft = stored();
+    status.hidden = snapshot() === initial;
     if (draft?.sent && saved()) {
         store(null);
         forgetSaved();
-    } else if (draft && draft.now !== initial) {
+    } else if (draft && draft.now !== snapshot()) {
         banner.hidden = false;
         banner.querySelector("[data-draft-stale]").hidden = draft.base === initial;
         banner.querySelector("[data-draft-restore]").addEventListener("click", () => {
@@ -529,6 +555,8 @@ function setupChanges() {
             store(null);
             banner.hidden = true;
         });
+    } else if (snapshot() !== initial) {
+        update();
     } else if (draft) {
         store(null);
     }

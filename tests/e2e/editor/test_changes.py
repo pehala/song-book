@@ -186,3 +186,44 @@ def test_save_goes_back_to_the_reader(editor, song):
 
     editor.wait_for_url(lambda url: "/edit/" not in url)
     editor.wait_for_load_state("networkidle")
+
+
+def test_going_back_marks_what_the_browser_restored_as_unsaved(editor, song):
+    """The browser gives back the fields it can, the lyrics are the saved ones, and the draft offers the rest."""
+    editor.on("dialog", lambda dialog: dialog.accept())
+    editor.set_viewport_size(DESKTOP)
+    editor.fill("input[name=name]", "Changed name")
+    lyrics(editor).fill("{Emi}")
+    wait_for_draft(editor)
+
+    editor.goto("about:blank")
+    editor.go_back()
+
+    expect(editor.locator("input[name=name]")).to_have_value("Changed name")
+    expect(lyrics(editor)).to_have_value(song.text)
+    expect(editor.locator("[data-status]")).to_be_visible()
+    assert editor.evaluate(LEAVE_PREVENTED) is True
+    editor.locator("[data-draft-restore]").click()
+    expect(lyrics(editor)).to_have_value("{Emi}")
+
+
+def test_a_change_made_just_before_leaving_is_in_the_draft(editor):
+    """The draft is written a moment after a change, and leaving in that moment does not skip it."""
+    editor.on("dialog", lambda dialog: dialog.accept())
+    lyrics(editor).fill("{Emi}")
+
+    editor.reload()
+
+    expect(editor.locator("[data-draft]")).to_be_visible()
+
+
+def test_leaving_with_the_draft_unanswered_keeps_it(editor):
+    """A draft that was offered and not yet restored or discarded is still there the next time."""
+    editor.on("dialog", lambda dialog: dialog.accept())
+    lyrics(editor).fill("{Emi}")
+    editor.reload()
+    expect(editor.locator("[data-draft]")).to_be_visible()
+
+    editor.reload()
+
+    expect(editor.locator("[data-draft]")).to_be_visible()

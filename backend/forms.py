@@ -51,6 +51,9 @@ class SongForm(AdminSongForm):
                     "autocapitalize": "off",
                     "autocorrect": "off",
                     "spellcheck": "false",
+                    # The browser restores no lyrics (the highlighter replaces this textarea): the saved text is what
+                    # the page shows, and what was left unsaved is offered as the draft
+                    "autocomplete": "off",
                     # What the editor colours as a chord and as spaces is what the server's parser takes for them
                     "data-chord-re": CHORD_RE,
                     "data-spaces-re": SPACES_RE,
