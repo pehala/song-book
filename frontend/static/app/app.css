@@ -280,6 +280,11 @@ main {
     max-width: calc(100% - var(--inset));
 }
 
+/* while Scroll down is offered, a double tap on the open song scrolls instead of zooming */
+.can-scroll-down details.song[open] {
+    touch-action: manipulation;
+}
+
 .empty {
     text-align: center;
     color: var(--muted);

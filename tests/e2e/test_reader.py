@@ -414,6 +414,75 @@ def test_scroll_down_is_offered_only_while_the_song_continues(page, library, mak
     expect(button).to_be_visible()
 
 
+def test_double_click_on_the_song_scrolls_down(page, library, make_song):
+    """A double click on the open song's text scrolls like the button."""
+    long = open_long_song(page, library, make_song)
+    before = page.evaluate("scrollY")
+
+    long.locator(".song-text p").nth(3).dblclick()
+
+    page.wait_for_function("before => scrollY > before", arg=before)
+
+
+def test_double_click_beside_the_text_scrolls_down(page, library, make_song):
+    """The empty space on the same line as the text counts as the text."""
+    long = open_long_song(page, library, make_song)
+    text = long.locator(".song-text").bounding_box()
+    verse = long.locator(".song-text p").nth(3).bounding_box()
+    right = long.bounding_box()["x"] + long.bounding_box()["width"] - 4
+    assert right > text["x"] + text["width"] + 20
+    before = page.evaluate("scrollY")
+
+    page.mouse.dblclick(right, verse["y"] + verse["height"] / 2)
+
+    page.wait_for_function("before => scrollY > before", arg=before)
+
+
+def test_double_click_at_the_end_of_the_song_selects_the_word(page, library, make_song):
+    """Once the button is gone a double click only selects a word, which stays selected."""
+    long = open_long_song(page, library, make_song, verse="Verse")
+    page.evaluate("scrollTo(0, document.documentElement.scrollHeight)")
+    expect(page.get_by_role("button", name="Scroll down")).to_have_count(0)
+    end = page.evaluate("scrollY")
+
+    long.locator(".song-text p").nth(59).dblclick()
+
+    assert page.evaluate("scrollY") == end
+    assert page.evaluate("getSelection().toString().trim()") in {"Verse", "59"}
+
+
+def test_double_click_on_the_song_tools_does_not_scroll(page, library, make_song):
+    """The transpose value and the capo badge belong to the song but are not its text."""
+    long = open_long_song(page, library, make_song)
+    before = page.evaluate("scrollY")
+
+    long.locator(".stepper output").dblclick()
+
+    assert page.evaluate("scrollY") == before
+
+
+def test_double_click_on_the_title_does_not_scroll(page, library, make_song):
+    """The title toggles the song, so a double click on it leaves the song open and the scroll position alone."""
+    long = open_long_song(page, library, make_song)
+    before = page.evaluate("scrollY")
+
+    long.locator("summary").dblclick()
+
+    expect(long).to_have_attribute("open", "")
+    assert page.evaluate("scrollY") == before
+
+
+def test_double_tap_zoom_is_off_only_while_the_button_is_shown(page, library, make_song):
+    """The open song hands a double tap to the page only while Scroll down is offered."""
+    long = open_long_song(page, library, make_song)
+    expect(long).to_have_css("touch-action", "manipulation")
+
+    page.evaluate("scrollTo(0, document.documentElement.scrollHeight)")
+
+    expect(page.get_by_role("button", name="Scroll down")).to_have_count(0)
+    expect(long).to_have_css("touch-action", "auto")
+
+
 def test_scroll_down_stops_at_the_end_of_the_song(page, library, make_song):
     """The last press leaves the end of the song at the bottom edge, with the next songs still below the screen."""
     long = open_long_song(page, library, make_song)
