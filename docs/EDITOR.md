@@ -86,6 +86,10 @@ set by the highlighter), so it counts as a change: the status, the guard against
 is looked at again on `pageshow` because some browsers restore the fields after the scripts have run. A change still
 waiting for its write is written when the page is hidden.
 
+A form the server refused is re-rendered with what it was sent, none of it saved; the template marks it
+`data-refused`, and the script then has no saved state to compare with: the page counts as changed from the start (the
+status, the guard against leaving) and keeps its state as the draft, which the next visit offers.
+
 The draft survives a submit: it is marked as sent and stays until the server has saved the song, which
 `SongEditorMixin.form_valid` tells through the `sb-saved` cookie (the quoted path of the page). The next load of that
 page drops a sent draft whose save is confirmed and offers any other, so edits are not lost to a connection that failed.

@@ -415,7 +415,8 @@ function setupChanges() {
     const status = form.querySelector("[data-status]");
     const banner = form.querySelector("[data-draft]");
     const draftKey = `sb-draft:${location.pathname}`;
-    const initial = rendered();
+    // A form the server refused holds what it was sent and none of it is saved: it has no saved state to compare with
+    const initial = form.hasAttribute("data-refused") ? null : rendered();
     let saveTimer;
     let pending = false;
     let submitting = false;
@@ -546,7 +547,7 @@ function setupChanges() {
         forgetSaved();
     } else if (draft && draft.now !== snapshot()) {
         banner.hidden = false;
-        banner.querySelector("[data-draft-stale]").hidden = draft.base === initial;
+        banner.querySelector("[data-draft-stale]").hidden = draft.base === null || draft.base === initial;
         banner.querySelector("[data-draft-restore]").addEventListener("click", () => {
             restore(JSON.parse(draft.now));
             banner.hidden = true;

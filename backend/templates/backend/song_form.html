@@ -8,7 +8,8 @@
 {% block body %}
   <form method="post" class="sb-ed d-flex flex-column" data-editor
         data-initial-tab="{% if form.text.errors %}lyrics{% elif form.errors or not form.instance.pk %}details{% else %}lyrics{% endif %}"
-        {% if form.errors or not form.instance.pk %}data-show-details{% endif %}>
+        {% if form.errors or not form.instance.pk %}data-show-details{% endif %}
+        {% if form.errors %}data-refused{% endif %}>
     {% csrf_token %}
     {% for hidden in form.hidden_fields %}{{ hidden }}{% endfor %}
     <div class="sticky-top bg-body-tertiary border-bottom">

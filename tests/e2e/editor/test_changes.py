@@ -227,3 +227,38 @@ def test_leaving_with_the_draft_unanswered_keeps_it(editor):
     editor.reload()
 
     expect(editor.locator("[data-draft]")).to_be_visible()
+
+
+def refuse_a_save(page):
+    """Sends the form without a name, which the browser would not let through, and waits for the server's refusal."""
+    page.set_viewport_size(DESKTOP)
+    page.evaluate("() => { document.querySelector('form[data-editor]').noValidate = true; }")
+    page.locator("input[name=name]").fill("")
+    lyrics(page).fill("{Emi}Nic z toho nesmí zmizet")
+    with page.expect_navigation():
+        page.locator("button[type=submit]:not([name=continue])").click()
+    expect(page.locator(".invalid-feedback, .text-danger").first).to_be_visible()
+
+
+def test_a_refused_save_is_still_marked_as_unsaved(editor):
+    """The server sends back what it was given and saved none of it, so the page must not pass for the saved song."""
+    editor.on("dialog", lambda dialog: dialog.accept())
+    refuse_a_save(editor)
+
+    expect(editor.locator("[data-status]")).to_be_visible()
+    assert editor.evaluate(LEAVE_PREVENTED) is True
+    assert editor.evaluate(DRAFT_STORED) is True
+    expect(editor.locator("[data-draft]")).to_be_hidden()
+
+
+def test_edits_of_a_refused_save_come_back_as_a_draft(editor, song):
+    """Leaving the refused form does not lose what it held."""
+    editor.on("dialog", lambda dialog: dialog.accept())
+    refuse_a_save(editor)
+
+    editor.goto(reverse("backend:edit", kwargs={"pk": song.pk}))
+
+    expect(editor.locator("[data-draft]")).to_be_visible()
+    expect(editor.locator("[data-draft-stale]")).to_be_hidden()
+    editor.locator("[data-draft-restore]").click()
+    expect(lyrics(editor)).to_have_value("{Emi}Nic z toho nesmí zmizet")
