@@ -34,6 +34,7 @@ pytestmark = pytest.mark.django_db
 
 URL = reverse("chords:songs_api")
 
+
 def test_304_on_matching_etag(anon_client, song):
     """Second request with matching If-None-Match returns 304 Not Modified."""
     etag = anon_client.get(URL)["ETag"]
