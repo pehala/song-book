@@ -9,9 +9,9 @@ export function Icon({name}) {
     return html`<svg class="sb-i" aria-hidden="true"><use href=${"#i-" + name} /></svg>`;
 }
 
-// Closes the open dropdown, for example when the reader moves to another page
+// Closes the open dropdowns, for example when the reader moves to another page
 export function closeDropdowns() {
-    document.querySelectorAll(".sb-panel:popover-open").forEach(panel => panel.hidePopover());
+    document.dispatchEvent(new Event("sb-close-dropdowns"));
 }
 
 export function Link({to, onNavigate, children, ...props}) {
@@ -27,30 +27,37 @@ export function Link({to, onNavigate, children, ...props}) {
 
 let panels = 0;
 
-// Without anchor positioning a panel is put under its trigger, ending where the trigger ends, just before it opens.
-// A popover in the top layer is placed against the page, so it scrolls away with the header.
-if (!CSS.supports("position-area", "block-end")) {
-    document.addEventListener(
-        "beforetoggle",
-        event => {
-            if (event.newState === "open" && event.target.matches(".sb-panel")) {
-                const trigger = event.target.previousElementSibling.getBoundingClientRect();
-                event.target.style.top = `${trigger.bottom + scrollY}px`;
-                event.target.style.right = `${Math.max(8, document.documentElement.clientWidth - trigger.right)}px`;
-            }
-        },
-        true
-    );
-}
-
-// A popover the browser opens from its trigger, under which it floats, and closes on Escape, a click elsewhere or
-// another dropdown opening; the browser also tells assistive technology whether it is expanded
+// A button that shows and hides the panel under it: in the burger menu the panel unfolds in place, in the bar it floats
+// under the button. It closes on Escape, on a click elsewhere (another dropdown opening included) and on
+// closeDropdowns().
 function Dropdown({label, children}) {
     const [id] = useState(() => `sb-panel-${++panels}`);
+    const [open, setOpen] = useState(false);
+    const root = useRef(null);
+    useEffect(() => {
+        const close = () => setOpen(false);
+        const click = event => root.current.contains(event.target) || close();
+        const key = event => {
+            if (event.key === "Escape") {
+                close();
+                if (root.current.contains(document.activeElement)) {
+                    root.current.querySelector(".sb-dd-trigger").focus();
+                }
+            }
+        };
+        document.addEventListener("sb-close-dropdowns", close);
+        document.addEventListener("click", click);
+        document.addEventListener("keydown", key);
+        return () => {
+            document.removeEventListener("sb-close-dropdowns", close);
+            document.removeEventListener("click", click);
+            document.removeEventListener("keydown", key);
+        };
+    }, []);
     return html`
-        <div class="sb-dd">
-            <button type="button" class="sb-dd-trigger" popovertarget=${id}>${label}</button>
-            <div id=${id} class="sb-panel" popover="auto">${children}</div>
+        <div class="sb-dd" ref=${root}>
+            <button type="button" class="sb-dd-trigger" aria-expanded=${open} aria-controls=${id} onClick=${() => setOpen(!open)}>${label}</button>
+            <div id=${id} class="sb-panel" hidden=${!open}>${children}</div>
         </div>`;
 }
 

@@ -53,15 +53,14 @@ def colors(page, selector):
 def open_each_dropdown(page):
     """Opens the first song and the burger menu, then each dropdown in turn, yielding while it is open.
 
-    Only one dropdown can be open at a time, so a check of everything runs once per dropdown.
+    Opening a dropdown closes the one open before, so a check of everything runs once per dropdown.
     """
     page.locator("details.song summary").first.click()
     page.locator(".sb-burger").click()
     for trigger in page.locator(".sb-dd-trigger").all():
         trigger.click()
-        expect(page.locator(".sb-panel:popover-open")).to_have_count(1)
+        expect(trigger).to_have_attribute("aria-expanded", "true")
         yield
-        page.keyboard.press("Escape")
 
 
 @pytest.fixture
@@ -95,6 +94,25 @@ def test_phone_layout_does_not_scroll_sideways(phone):
     """Everything fits the width of the screen."""
     for _ in open_each_dropdown(phone):
         assert phone.evaluate("document.documentElement.scrollWidth <= innerWidth")
+
+
+def test_phone_dropdown_unfolds_in_the_menu(phone):
+    """In the burger menu a dropdown opens in place under its trigger and pushes the rest of the menu down."""
+    phone.locator(".sb-burger").click()
+    trigger = phone.locator(".sb-dd-trigger", has_text="Options")
+    login = phone.get_by_role("link", name="Log in")
+    before = login.bounding_box()["y"]
+
+    trigger.click()
+
+    panel = phone.locator(".sb-dd", has=trigger).locator(".sb-panel")
+    expect(panel).to_be_visible()
+    assert panel.bounding_box()["y"] >= trigger.bounding_box()["y"] + trigger.bounding_box()["height"]
+    assert login.bounding_box()["y"] >= before + panel.bounding_box()["height"]
+
+    trigger.click()
+    expect(panel).to_be_hidden()
+    expect(trigger).to_have_attribute("aria-expanded", "false")
 
 
 def test_desktop_menu_is_a_row_without_hamburger(page, library):

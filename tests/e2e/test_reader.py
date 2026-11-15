@@ -803,14 +803,14 @@ def test_dropdown_closes_on_escape_and_outside_click(page, library):
     """Only one menu is open and it goes away when asked."""
     page.goto("/categories/cs")
     open_menu(page, "Options")
-    expect(page.locator(".sb-panel:popover-open")).to_have_count(1)
+    expect(page.locator(".sb-panel:visible")).to_have_count(1)
 
     page.keyboard.press("Escape")
-    expect(page.locator(".sb-panel:popover-open")).to_have_count(0)
+    expect(page.locator(".sb-panel:visible")).to_have_count(0)
 
     open_menu(page, "Categories")
     page.get_by_label("Search").click()
-    expect(page.locator(".sb-panel:popover-open")).to_have_count(0)
+    expect(page.locator(".sb-panel:visible")).to_have_count(0)
 
 
 def test_dropdown_closes_when_a_category_is_chosen(page, library):
@@ -819,7 +819,7 @@ def test_dropdown_closes_when_a_category_is_chosen(page, library):
     go_to_category(page, "English")
 
     expect(songs(page)).to_have_count(2)
-    expect(page.locator(".sb-panel:popover-open")).to_have_count(0)
+    expect(page.locator(".sb-panel:visible")).to_have_count(0)
 
 
 def test_qr_code_dialog(page, library):
