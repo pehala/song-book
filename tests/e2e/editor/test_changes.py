@@ -114,7 +114,7 @@ def test_a_failed_save_keeps_the_draft(editor, song):
     editor.context.set_offline(True)
 
     editor.locator("button[type=submit]:not([name=continue])").click()
-    editor.wait_for_url("chrome-error://chromewebdata/")
+    expect(editor.locator("form[data-editor]")).to_have_count(0)  # the browser's own error page took its place
     editor.context.set_offline(False)
     editor.goto(reverse("backend:edit", kwargs={"pk": song.pk}))
 
