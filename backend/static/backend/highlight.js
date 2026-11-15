@@ -36,7 +36,7 @@ export function highlight(textarea) {
     };
     const editor = createEditor(null, {
         language: "songbook",
-        value: textarea.value,
+        value: textarea.defaultValue,
         lineNumbers: false,
         wordWrap: true,
         tabSize: 4,
@@ -51,6 +51,8 @@ export function highlight(textarea) {
         }
     }
     typed.classList.add("markdownx-editor");
+    // The text as the server rendered it, which a reset of the form and the unsaved changes are measured from
+    typed.defaultValue = textarea.defaultValue;
     textarea.replaceWith(editor.container);
     return {textarea: typed, scroller: editor.container, line: index => editor.lines[index + 1]};
 }

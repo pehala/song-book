@@ -78,6 +78,14 @@ text (the fixed chord chips of `EDITOR_CHORDS`, `{}` completion, undo through `e
 draft in `localStorage` under `sb-draft:<path>` and `Ctrl+S` = the "Save and continue" button, which posts `continue`
 so `SongEditorMixin.get_success_url` returns to `/edit/<pk>` with `?next=` kept.
 
+The browser's autocomplete stays on for the fields, but not for the lyrics (`autocomplete="off"` on the textarea, which
+the highlighter replaces anyway): the lyrics are always the saved text, and what was left unsaved is offered as the
+draft. What the browser gives back to the other fields on a reload or Back is measured from the form as the server
+rendered it (`rendered()`: a reset copy of the form, whose defaults are the saved song, with the lyrics' `defaultValue`
+set by the highlighter), so it counts as a change: the status, the guard against leaving and the draft follow, and it
+is looked at again on `pageshow` because some browsers restore the fields after the scripts have run. A change still
+waiting for its write is written when the page is hidden.
+
 The draft survives a submit: it is marked as sent and stays until the server has saved the song, which
 `SongEditorMixin.form_valid` tells through the `sb-saved` cookie (the quoted path of the page). The next load of that
 page drops a sent draft whose save is confirmed and offers any other, so edits are not lost to a connection that failed.
