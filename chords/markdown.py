@@ -42,3 +42,8 @@ def load_renderer(path: str):
 def song_renderer():
     """The renderer configured by SONG_RENDERER."""
     return load_renderer(settings.SONG_RENDERER)
+
+
+def render_song(text: str) -> str:
+    """Renders the markdown of a song with the renderer configured by SONG_RENDERER."""
+    return song_renderer()(text)

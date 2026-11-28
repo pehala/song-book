@@ -37,7 +37,7 @@ class AdminSongForm(ModelForm):
 
     class Meta:
         model = Song
-        exclude = ["prerendered"]
+        fields = "__all__"
 
 
 class SongForm(AdminSongForm):

@@ -29,6 +29,21 @@ def test_prerender_leaves_songs_with_current_html_alone(song):
     assert Song.objects.get(pk=song.pk).updated_at.year == 2020
 
 
+def test_prerender_stores_nothing_when_it_fails(song, monkeypatch):
+    """A run that cannot mark the songs as changed keeps their html as it was, so the next run finds them again."""
+    Song.objects.filter(pk=song.pk).update(prerendered="stale")
+
+    def fail(songs):
+        raise RuntimeError("interrupted")
+
+    monkeypatch.setattr("backend.management.commands.prerender.touch_songs", fail)
+
+    with pytest.raises(RuntimeError):
+        call_command("prerender")
+
+    assert Song.objects.get(pk=song.pk).prerendered == "stale"
+
+
 def test_clear_prerender_empties_every_song(song):
     """The clear_prerender command drops all cached html."""
     call_command("prerender")
@@ -68,9 +83,9 @@ def test_import_rejects_unknown_category(tmp_path, db):
         call_command("import", str(source), category=999999)
 
 
-def test_import_prerenders_when_enabled(settings, category, tmp_path):
-    """With prerendering on, imported songs arrive with their html already rendered."""
-    settings.USE_PRERENDERED_MARKDOWN = True
+def test_import_renders_when_the_cache_is_on(settings, category, tmp_path):
+    """With the cache on, imported songs arrive with their html already rendered."""
+    settings.MARKDOWN_CACHE = True
     source = tmp_path / "songs.json"
     source.write_text(json.dumps([{"name": "Imported", "text": "{C}one"}]), encoding="UTF-8")
 

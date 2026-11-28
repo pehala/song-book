@@ -26,6 +26,9 @@ STORAGES = {
 # Run Huey tasks synchronously in the same process — no worker needed
 HUEY = {"immediate": True}
 
+# Songs are rendered on every read unless a test turns the cache on
+MARKDOWN_CACHE = False
+
 # Keep the production-style delay so editing songs in tests never renders a PDF inline
 CATEGORY_PDF_DELAY = 30 * 60
 

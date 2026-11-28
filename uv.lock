@@ -106,6 +106,19 @@ wheels = [
 ]
 
 [[package]]
+name = "cached-markdown-field"
+version = "1.0.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django" },
+    { name = "django-markdownx" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/cd/44/9fec07387dedd6e7b368c1f88c0f5ce7893d2a88e34731bfc6f42c4d49c5/cached_markdown_field-1.0.0.tar.gz", hash = "sha256:e54345f268fa93526851aee0c1681c6a482164ecdac47b532afa791e0a4c04b0", size = 10080, upload-time = "2026-11-28T14:31:11.41Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/48/9b/a422d41e7e52a9c8b72158413ffa6347c2528a2e3c6c06fa9bf1ce962573/cached_markdown_field-1.0.0-py3-none-any.whl", hash = "sha256:ff3a3caf5747311116f60cfeb9a0b95e65cac8ea536ebafb5eb204a6c70382df", size = 11899, upload-time = "2026-11-28T14:31:10.72Z" },
+]
+
+[[package]]
 name = "cffi"
 version = "2.1.1"
 source = { registry = "https://pypi.org/simple" }
@@ -196,6 +209,7 @@ version = "0.1.0"
 source = { virtual = "." }
 default-groups = []
 dependencies = [
+    { name = "cached-markdown-field" },
     { name = "django" },
     { name = "django-bootstrap5" },
     { name = "django-debug-toolbar" },
@@ -227,6 +241,7 @@ production = [
 
 [package.metadata]
 requires-dist = [
+    { name = "cached-markdown-field", specifier = "==1.0.0" },
     { name = "django", specifier = ">=6.0.6" },
     { name = "django-bootstrap5" },
     { name = "django-debug-toolbar" },

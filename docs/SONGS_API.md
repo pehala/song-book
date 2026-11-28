@@ -32,9 +32,11 @@ tests of the deferral use `real_on_commit`.
 
 Views do **not** invalidate by hand. The one exception is `CategoryMoveView`, whose `bulk_update` sends no signals.
 
-A `pre_save` receiver refreshes `prerendered` on every full `save()` while `USE_PRERENDERED_MARKDOWN` is on (a save with
-`update_fields` skips it), so admin edits and scripts cannot leave it stale. `bulk_create` sends no signals, so
-`manage.py import` prerenders before it.
+`Song.text` is a `cached_markdown_field.CachedMarkdownField` that stores its HTML in the `prerendered` column while
+`MARKDOWN_CACHE` is on: assigning the text renders it and the first save of an instance renders it again, so admin
+edits and scripts cannot leave it stale, and `bulk_create` (which `manage.py import` uses) renders through the column's
+`pre_save`. `update()` and `bulk_update()` render nothing, which is why `manage.py prerender` follows its rewrite with
+`touch_songs()`. The payload carries `Song.text_html`.
 
 ## Delta
 

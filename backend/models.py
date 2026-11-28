@@ -2,6 +2,7 @@
 
 from functools import partial
 
+from cached_markdown_field.models import CachedMarkdownField
 from django.conf import settings
 from django.core.cache import cache
 from django.db import transaction
@@ -14,18 +15,16 @@ from django.db.models import (
     ManyToManyField,
     Model,
     PositiveSmallIntegerField,
-    TextField,
     URLField,
     Value,
 )
 from django.db.models.signals import m2m_changed, post_delete, post_save, pre_delete, pre_save
 from django.dispatch import receiver
 from django.utils.translation import gettext_lazy as _
-from markdownx.models import MarkdownxField
 
 from backend.cache import invalidate_songs_cache, invalidate_tenant_songs_cache, song_tenants, touch_songs
 from category.models import Category
-from chords.markdown import PDF_RENDERER, song_renderer
+from chords.markdown import PDF_RENDERER, render_song
 from tenants.models import Tenant
 from tenants.utils import tenant_cache_key
 
@@ -60,39 +59,7 @@ class Song(Model):
         default=False,
         db_default=Value(False),
     )
-    text = MarkdownxField(verbose_name=_("Lyrics"))
-    prerendered = TextField(null=True)
-
-    def _get_rendered_markdown(self):
-        """Returns rendered markdown for specific type of application.
-
-        If USE_PRERENDERED_MARKDOWN is True, it will cache the changes indefinitely.
-        If USE_DYNAMIC_PRERENDER is False, it will fail if there is no cached version ready.
-        """
-        if not settings.USE_PRERENDERED_MARKDOWN:
-            return song_renderer()(self.text)
-
-        field = self.prerendered
-
-        if field is None:
-            if settings.USE_DYNAMIC_PRERENDER:
-                return self.prerender()
-            raise ValueError("No prerendered song found and USE_DYNAMIC_PRERENDER is set to false")
-        return field
-
-    def prerender(self, save: bool = True):
-        """Generates prerendered html for specific type with a specific rendered."""
-        html = song_renderer()(self.text)
-        self.prerendered = html
-
-        if save:
-            self.save(update_fields=["prerendered"])
-        return html
-
-    @property
-    def rendered_markdown(self):
-        """Returns rendered markdown for web."""
-        return self._get_rendered_markdown()
+    text = CachedMarkdownField(verbose_name=_("Lyrics"), compiler=render_song, cache_field="prerendered")
 
     @property
     def pdf_markdown(self):
@@ -106,13 +73,6 @@ class Song(Model):
         verbose_name = _("Song")
         verbose_name_plural = _("Songs")
         ordering = ["date", "id"]
-
-
-@receiver(pre_save, sender=Song)
-def song_pre_save(sender, instance, update_fields, **kwargs):
-    """Keeps the prerendered html in step with the text on every full save (views, admin, scripts)."""
-    if settings.USE_PRERENDERED_MARKDOWN and update_fields is None:
-        instance.prerender(save=False)
 
 
 @receiver(post_save, sender=Song)

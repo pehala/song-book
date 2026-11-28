@@ -13,11 +13,6 @@ SECRET_KEY = "$sr-v9zx(s!!q)6*2!1#t_+-z5ku*$+=edf*gstxjwz3opj94n"
 # nginx has to serve /media/ itself once this is off (Django serves it only in DEBUG).
 DEBUG = False
 
-# Serve the prerendered html column instead of rendering markdown on every request;
-# USE_DYNAMIC_PRERENDER fills rows that are still empty (the deploy target runs `prerender` anyway).
-USE_PRERENDERED_MARKDOWN = True
-USE_DYNAMIC_PRERENDER = True
-
 CACHES = {
     "default": {
         "BACKEND": "django_redis.cache.RedisCache",

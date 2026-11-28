@@ -18,9 +18,5 @@ if "DB_FILE" in os.environ:
 # DEBUG serves the static files unhashed, straight from the source tree, and Django serves /media/ itself
 DEBUG = True
 
-# Same markdown behaviour as production: serve the prerendered column and fill rows that are still empty
-USE_PRERENDERED_MARKDOWN = True
-USE_DYNAMIC_PRERENDER = True
-
 # Generate PDFs inline instead of needing a worker
 HUEY = {"immediate": True}

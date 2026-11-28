@@ -22,7 +22,7 @@ matching `Client` fixtures.
 - The initial migration already seeds a category for the default tenant, so tests look categories up by slug rather than
   assume the fixture is the only one.
 
-`backend/test_signals.py` covers the signal-driven invalidation and prerender-on-save; `chords/test_storage.py` runs a
+`backend/test_signals.py` covers the signal-driven invalidation and prerender-on-save through the cached markdown field; `chords/test_storage.py` runs a
 real `collectstatic` into a `tmp_path` to check that hashed modules import hashed modules.
 
 ## Settings
