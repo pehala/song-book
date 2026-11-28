@@ -5,7 +5,6 @@ import logging
 from argparse import ArgumentParser
 from pathlib import Path
 
-from django.conf import settings
 from django.core.management import BaseCommand
 from django.db import transaction
 
@@ -40,10 +39,6 @@ class Command(BaseCommand):
             imported = json.load(file)
 
         songs = [Song(**song) for song in imported]
-        if settings.USE_PRERENDERED_MARKDOWN:
-            # bulk_create sends no signals, so the pre_save receiver does not fill the prerendered html
-            for song in songs:
-                song.prerender(save=False)
 
         with transaction.atomic():
             songs = Song.objects.bulk_create(songs)

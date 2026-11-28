@@ -41,7 +41,7 @@ songs that look cramped (a refrain of wrapping chord lines, 9 % and more) from t
 ## Chords
 
 PDFs always use `PDF_RENDERER` (`Song.pdf_markdown`), whatever `SONG_RENDERER` says and never from the
-`prerendered` column. Its `raised` plugin (`chords/plugins/raised.py`) prints each chord above the word it belongs
+`prerendered` column (`text_html`). Its `raised` plugin (`chords/plugins/raised.py`) prints each chord above the word it belongs
 to.
 
 ### Markup and CSS

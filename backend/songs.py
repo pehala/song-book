@@ -20,7 +20,7 @@ def transform_song(song: Song, number: int) -> dict:
     transformed = model_to_dict(song, ["id", "name", "capo", "author", "link", "archived"])
     transformed["number"] = number
     transformed["cats"] = [category.slug for category in song.tenant_categories]
-    transformed["text"] = song.rendered_markdown
+    transformed["text"] = song.text_html
     return transformed
 
 

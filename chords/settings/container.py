@@ -80,7 +80,3 @@ SESSION_COOKIE_AGE = env_int("SESSION_COOKIE_AGE", SESSION_COOKIE_AGE)  # noqa: 
 # Dotted path of the renderer of the songs, e.g. chords.markdown.RUBY_RENDERER; the preview of the editor follows it
 SONG_RENDERER = os.environ.get("SONG_RENDERER", SONG_RENDERER)  # noqa: F405
 MARKDOWNX_MARKDOWNIFY_FUNCTION = SONG_RENDERER
-
-# The web container prerenders every song on start (make prerender); edits re-render the edited song
-USE_PRERENDERED_MARKDOWN = True
-USE_DYNAMIC_PRERENDER = True

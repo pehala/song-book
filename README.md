@@ -22,7 +22,7 @@ The recommended way is the container image with Podman quadlets, described in [d
   * Set `TENANT_HOSTNAME` to the hostname that the site should use
   * Keep `DEBUG = False`: besides the debug pages, `DEBUG` makes Django emit unhashed static URLs, and the
     10-year cache on `/static/` would then serve stale files after every deploy
-  * Keep `USE_PRERENDERED_MARKDOWN = True` (and `USE_DYNAMIC_PRERENDER = True` as a safety net) so songs are
+  * Keep `MARKDOWN_CACHE = True` (and `MARKDOWN_CACHE_RUNTIME = True` as a safety net) so songs are
     rendered once on save instead of on every request; `make deploy` runs `prerender` for existing rows
 * Setup gunicorn or any other WSGI server
 * Setup Worker

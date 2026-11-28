@@ -108,12 +108,13 @@ renderer needs `manage.py prerender`.
 PDFs use `PDF_RENDERER` (`Song.pdf_markdown`) instead, whatever `SONG_RENDERER` says; `docs/PDF_LAYOUT.md`
 describes how their chords, header link and running footer are laid out.
 
-`Song.rendered_markdown` chooses between rendering on the fly and the stored `prerendered`
-column, controlled by two settings:
+`Song.text` is a `cached_markdown_field.CachedMarkdownField` (compiler `chords.markdown.render_song`, so it follows
+`SONG_RENDERER`; HTML column `prerendered`): `song.text` is the markdown, `song.text_html` the HTML. Two settings of the
+library control it:
 
-- `USE_PRERENDERED_MARKDOWN` — serve `Song.prerendered` instead of re-rendering.
-- `USE_DYNAMIC_PRERENDER` — when a song has no prerendered HTML, render and save it on first
-  request; with both the first off and the second off, a missing value raises.
+- `MARKDOWN_CACHE` — store and serve `Song.prerendered` instead of re-rendering (off in tests).
+- `MARKDOWN_CACHE_RUNTIME` — when a song has no stored HTML, render and store it on first read; with the first on and
+  this off, a missing value raises.
 
 `make deploy` runs `manage.py prerender` to fill the column for every song.
 
@@ -161,8 +162,9 @@ widget, the layout and the script. Rules:
   The one exception is `CategoryMoveView`, whose `bulk_update` sends no signals.
 - `Song.updated_at` feeds the delta. A bare `update()`/`bulk_update()` that alters a displayed field must call
   `touch_songs()`.
-- A `pre_save` receiver refreshes `prerendered` on a full `save()`; `bulk_create` sends no signals, so
-  `manage.py import` prerenders before it.
+- The field refreshes `prerendered` when the text is assigned and on a full `save()` or `bulk_create`; `update()` and
+  `bulk_update()` render nothing, so `manage.py prerender` (which wraps the library's `prerender()`) follows its rewrite
+  with `touch_songs()`.
 - Tests: the autouse `run_on_commit_at_once` runs `transaction.on_commit` callbacks at once; tests of the deferral use
   `real_on_commit`.
 

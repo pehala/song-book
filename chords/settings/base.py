@@ -38,7 +38,7 @@ INSTALLED_APPS = [
 ]
 
 # Dotted path of the markdown renderer of songs: chords.markdown.RUBY_RENDERER writes chords above the text,
-# chords.markdown.INLINE_RENDERER keeps them inline (prerendered songs have to be rendered again)
+# chords.markdown.INLINE_RENDERER keeps them inline (run `manage.py prerender` after a change)
 SONG_RENDERER = "chords.markdown.RUBY_RENDERER"
 MARKDOWNX_MARKDOWNIFY_FUNCTION = SONG_RENDERER
 MARKDOWNX_EDITOR_RESIZABLE = False
@@ -196,11 +196,11 @@ PDF_FILE_DIR = "pdfs"
 CACHE_TIMEOUT = 86400
 
 
-# If true, it will prerender all markdowns on create/update and then use them in fetch requests
-USE_PRERENDERED_MARKDOWN = False
-# This setting will prerender markdown on fetch request and save it for future use, if it is empty
-# might incur performance penalties on production, for production deployment use
-USE_DYNAMIC_PRERENDER = False
+# cached-markdown-field: store the HTML of the songs when they are saved and serve it instead of rendering the markdown
+# on every request
+MARKDOWN_CACHE = True
+# Render and store the HTML of a song that has none when it is read; when False, reading it raises ValueError
+MARKDOWN_CACHE_RUNTIME = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.AutoField"
 

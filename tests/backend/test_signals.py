@@ -148,9 +148,9 @@ def test_other_tenant_untouched(anon_client, song, tenant):
     assert cache.get(payload_key(other_tenant)) == "[]"
 
 
-@override_settings(USE_PRERENDERED_MARKDOWN=True)
+@override_settings(MARKDOWN_CACHE=True)
 def test_save_prerenders_when_enabled(category):
-    """With prerendering on, every save fills the prerendered column from the text."""
+    """With the cache on, every save fills the prerendered column from the text."""
     song = Song.objects.create(name="Pre", text="{Ami}Hello")
     assert '<rt class="chord">Ami</rt>' in song.prerendered
     song.text = "{C}Changed"
@@ -160,19 +160,9 @@ def test_save_prerenders_when_enabled(category):
     assert "Ami" not in song.prerendered
 
 
-@override_settings(USE_PRERENDERED_MARKDOWN=True)
-def test_update_fields_without_text_keeps_prerendered(category):
-    """A save restricted to other fields does not re-render the text."""
-    song = Song.objects.create(name="Pre", text="{Ami}Hello")
-    song.text = "{C}Changed"
-    song.save(update_fields=["name"])
-    song.refresh_from_db()
-    assert "Ami" in song.prerendered
-
-
 def test_save_leaves_prerendered_alone_when_disabled(category):
-    """With prerendering off (the default in tests) the column stays untouched."""
-    assert settings.USE_PRERENDERED_MARKDOWN is False
+    """With the cache off (the default in tests) the column stays untouched."""
+    assert settings.MARKDOWN_CACHE is False
     song = Song.objects.create(name="Pre", text="{Ami}Hello")
     assert song.prerendered is None
 
