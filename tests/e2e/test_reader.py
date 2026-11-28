@@ -763,7 +763,12 @@ def test_browser_follows_the_chosen_theme(page, library):
 
 
 def test_install_is_offered_only_when_the_browser_can_install(page, library):
-    """A songbook without a logo has no icon to install with, so Options shows no install button that cannot work."""
+    """A songbook without a logo has no icon to install with, so Options shows no install button that cannot work.
+
+    Chromium 158 and newer define `navigator.install`, which offers the button whatever the manifest says, so the test
+    removes it to leave the `beforeinstallprompt` path, which the missing icons keep silent.
+    """
+    page.add_init_script("delete Navigator.prototype.install")
     page.goto("/categories/cs")
     open_menu(page, "Options")
 
